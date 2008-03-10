@@ -53,10 +53,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DimensionDescriptors\LuminousIntensityDescriptor.cs" />
+    <Compile Include="DimensionDescriptors\AmountOfSubstanceDescriptor.cs" />
+    <Compile Include="DimensionDescriptors\TemperatureDescriptor.cs" />
+    <Compile Include="DimensionDescriptors\ElectricCurrentDescriptor.cs" />
+    <Compile Include="DimensionDescriptors\TimeDescriptor.cs" />
+    <Compile Include="DimensionDescriptors\MassDescriptor.cs" />
+    <Compile Include="DimensionDescriptors\LengthDescriptor.cs" />
     <Compile Include="DimensionNotFoundException.cs" />
+    <Compile Include="DimensionDescriptors\IDimensionDescriptor.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="QuantitiesNotDimensionallyEqualException.cs" />
     <Compile Include="Quantities\BaseQuantities\AmountOfSubstance.cs" />
+    <Compile Include="Quantities\DimensionlessQuantities\Angle.cs" />
     <Compile Include="Quantities\BaseQuantities\AnyQuantity.cs" />
     <Compile Include="Quantities\BaseQuantities\BaseQuantity.cs" />
     <Compile Include="Quantities\BaseQuantities\ElectricalCurrent.cs" />
@@ -75,6 +84,9 @@
     <Compile Include="Quantities\KinematicViscosity.cs" />
     <Compile Include="Quantities\Power.cs" />
     <Compile Include="Quantities\Pressure.cs" />
+    <Compile Include="Quantities\Torque.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Quantities\Velocity.cs" />
     <Compile Include="Quantities\Viscosity.cs" />
     <Compile Include="Quantities\Volume.cs" />
@@ -82,8 +94,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuantityDimension.cs" />
     <Compile Include="QuantityNotFoundException.cs" />
-    <Compile Include="UnitNotFoundException.cs" />
-    <Compile Include="UnitsNotDimensionallyEqualException.cs" />
+    <Compile Include="Units\Radian.cs" />
+    <Compile Include="Units\UnitNotFoundException.cs" />
+    <Compile Include="Units\UnitsNotDimensionallyEqualException.cs" />
     <Compile Include="Units\EEUnits\EEUnit.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -134,10 +147,11 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Dimensions Pattern.txt" />
-    <Content Include="SIUnit Multiplication.txt" />
-    <Content Include="Units pattern.txt" />
-    <Content Include="Units Patterns 2.txt" />
+    <Content Include="Notes\Dimensions Pattern.txt" />
+    <Content Include="Notes\Lengths Description.txt" />
+    <Content Include="Notes\SIUnit Multiplication.txt" />
+    <Content Include="Notes\Units pattern.txt" />
+    <Content Include="Notes\Units Patterns 2.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="QuantitySystem.snk" />

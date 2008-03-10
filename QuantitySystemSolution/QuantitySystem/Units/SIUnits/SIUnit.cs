@@ -152,7 +152,8 @@ namespace QuantitySystem.Units.SIUnits
 
             ISIUnit unitBaseUnits = ((ISIUnit)unit).GetUnitInBaseUnits();
 
-            if (MeInBaseUnits.Dimension.Equals(unitBaseUnits.Dimension) == false)
+            //if (MeInBaseUnits.Dimension.Equals(unitBaseUnits.Dimension) == false)
+            if (MeInBaseUnits.Dimension.IsEqual(unitBaseUnits.Dimension) == false)
             {
                 throw new UnitsNotDimensionallyEqualException();
             }
