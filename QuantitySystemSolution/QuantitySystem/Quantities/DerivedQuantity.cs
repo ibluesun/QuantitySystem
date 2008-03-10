@@ -27,12 +27,12 @@ namespace QuantitySystem.Quantities
 
         }
 
-        public AnyQuantity[] GetInternalDimensions()
+        public AnyQuantity[] GetInternalQuantities()
         {
             return InternalQuantities;
         }
 
-        internal void SetInternalDimensions(AnyQuantity[] quantities)
+        internal void SetInternalQuantities(AnyQuantity[] quantities)
         {
             InternalQuantities = quantities;
         }
@@ -51,7 +51,7 @@ namespace QuantitySystem.Quantities
 
                 foreach (AnyQuantity  aq in InternalQuantities)
                 {
-                        QDTotal += aq.Dimension;
+                    QDTotal += aq.Dimension;
                 }
 
                 return QDTotal;
@@ -68,7 +68,7 @@ namespace QuantitySystem.Quantities
             }
 
             DerivedQuantity dq = (DerivedQuantity) base.Invert();
-            dq.SetInternalDimensions(lq.ToArray());
+            dq.SetInternalQuantities(lq.ToArray());
             return dq;
         }
         

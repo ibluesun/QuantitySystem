@@ -9,6 +9,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
 using QuantitySystem.Units.SIUnits;
 using QuantitySystem.Units.SIUnits.BaseUnits;
+using QuantitySystem.Quantities.DimensionlessQuantities;
 
 namespace QuantitySystem.Units.UnitSystems
 {
@@ -175,7 +176,7 @@ namespace QuantitySystem.Units.UnitSystems
             if (quantityType == typeof(Force)) return new Newton();
             if (quantityType == typeof(Pressure)) return new Pascal();
             if (quantityType == typeof(Power)) return new Watt();
-
+            if (quantityType == typeof(Angle)) return new Radian();
             #endregion
 
 

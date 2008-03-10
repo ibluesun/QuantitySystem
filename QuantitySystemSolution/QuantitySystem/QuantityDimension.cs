@@ -7,6 +7,8 @@ using System.Reflection;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Quantities;
 
+using QuantitySystem.DimensionDescriptors;
+
 namespace QuantitySystem
 {
     /// <summary>
@@ -15,14 +17,15 @@ namespace QuantitySystem
     /// </summary>
     public class QuantityDimension
     {
-        #region Exponent Fields
-        private int L;  //Length
-        private int M;  //Mass
-        private int T;  //Time
-        private int I;  //electric current
-        private int O;  //thermodynamic temperature
-        private int N;  //amount of substance
-        private int J;  //luminous intensity
+
+        #region Dimension properties
+        public MassDescriptor Mass { get; set; }
+        public LengthDescriptor Length { get; set; }
+        public TimeDescriptor Time { get; set; }
+        public ElectricCurrentDescriptor ElectricCurrent { get; set; }
+        public TemperatureDescriptor Temperature { get; set; }
+        public AmountOfSubstanceDescriptor AmountOfSubstance { get; set; }
+        public LuminousIntensityDescriptor LuminousIntensity { get; set; }
         #endregion
 
         #region Constructors
@@ -31,91 +34,44 @@ namespace QuantitySystem
         {
         }
 
+        /// <summary>
+        /// basic constructor for MLT Dimensions.
+        /// </summary>
+        /// <param name="mass"></param>
+        /// <param name="length"></param>
+        /// <param name="time"></param>
         public QuantityDimension(int mass, int length, int time)
         {
-            M = mass;
-            L = length;
-            T = time;
+            Mass = new MassDescriptor(mass);
+            Length = new LengthDescriptor(length, 0);
+            Time = new TimeDescriptor(time);
+
         }
+
 
         public QuantityDimension(int mass, int length, int time, int temperature)
         {
-            M = mass;
-            L = length;
-            T = time;
-            O = temperature;
+            Mass = new MassDescriptor(mass);
+            Length = new LengthDescriptor(length, 0);
+            Time = new TimeDescriptor(time);
+            Temperature = new TemperatureDescriptor(temperature);
+
         }
 
 
         public QuantityDimension(int mass, int length, int time, int temperature, int electricalCurrent, int amountOfSubstance, int luminousIntensity)
         {
-            M = mass;
-            L = length;
-            T = time;
-            I = electricalCurrent;
-            O = temperature;
-            N = amountOfSubstance;
-            J = luminousIntensity;
+            Mass = new MassDescriptor(mass);
+            Length = new LengthDescriptor(length, 0);
+            Time = new TimeDescriptor(time);
+            Temperature = new TemperatureDescriptor(temperature);
+
+            ElectricCurrent=new ElectricCurrentDescriptor( electricalCurrent);
+            AmountOfSubstance = new AmountOfSubstanceDescriptor(amountOfSubstance);
+            LuminousIntensity = new LuminousIntensityDescriptor(luminousIntensity);
         }
 
-        #endregion
 
-        #region Exponent Properties
-        public int LengthExponent
-        {
-            get
-            {
-                return L;
-            }
-        }
-
-        public int MassExponent
-        {
-            get
-            {
-                return M;
-            }
-        }
-
-        public int TimeExponent
-        {
-            get
-            {
-                return T;
-            }
-        }
-
-        public int ElectricCurrentExponent
-        {
-            get
-            {
-                return I;
-            }
-        }
-
-        public int TemperatureExponent
-        {
-            get
-            {
-                return O;
-            }
-        }
-
-        public int AmountOfSubstanceExponent
-        {
-            get
-            {
-                return N;
-            }
-        }
-
-        public int LuminousIntensityExponent
-        {
-            get
-            {
-                return J;
-            }
-        }
         #endregion
 
 
@@ -128,9 +84,9 @@ namespace QuantitySystem
         {
             get
             {
-                string mass = "M" + MassExponent.ToString(CultureInfo.InvariantCulture);
-                string length = "L" + LengthExponent.ToString(CultureInfo.InvariantCulture);
-                string time = "T" + TimeExponent.ToString(CultureInfo.InvariantCulture);
+                string mass = "M" + Mass.Exponent.ToString(CultureInfo.InvariantCulture);
+                string length = "L" + Length.Exponent.ToString(CultureInfo.InvariantCulture);
+                string time = "T" + Time.Exponent.ToString(CultureInfo.InvariantCulture);
 
                 return mass + length + time;
             }
@@ -151,7 +107,7 @@ namespace QuantitySystem
                 //M1L1T-2
                 //take from MLT untill the M==0
 
-                int TargetM = MassExponent;
+                int TargetM = Mass.Exponent;
 
 
                 int TargetF = 0;
@@ -178,11 +134,11 @@ namespace QuantitySystem
                 //M1L1T-2
                 //take from MLT untill the M==0
 
-                int TargetM = MassExponent;
+                int TargetM = Mass.Exponent;
 
-                int TargetL = LengthExponent;
+                int TargetL = Length.Exponent;
 
-                int TargetT = TimeExponent;
+                int TargetT = Time.Exponent;
 
                 int TargetF = 0;
 
@@ -215,13 +171,13 @@ namespace QuantitySystem
         {
             string dim = "";
 
-            dim += "M" + M.ToString(CultureInfo.InvariantCulture);
-            dim += "L" + L.ToString(CultureInfo.InvariantCulture);
-            dim += "T" + T.ToString(CultureInfo.InvariantCulture);
-            dim += "I" + I.ToString(CultureInfo.InvariantCulture);
-            dim += "O" + O.ToString(CultureInfo.InvariantCulture);
-            dim += "N" + N.ToString(CultureInfo.InvariantCulture);
-            dim += "J" + J.ToString(CultureInfo.InvariantCulture);
+            dim += "M" + Mass.Exponent.ToString(CultureInfo.InvariantCulture);
+            dim += "L" + Length.Exponent.ToString(CultureInfo.InvariantCulture);
+            dim += "T" + Time.Exponent.ToString(CultureInfo.InvariantCulture);
+            dim += "I" + ElectricCurrent.Exponent.ToString(CultureInfo.InvariantCulture);
+            dim += "O" + Temperature.Exponent.ToString(CultureInfo.InvariantCulture);
+            dim += "N" + AmountOfSubstance.Exponent.ToString(CultureInfo.InvariantCulture);
+            dim += "J" + LuminousIntensity.Exponent.ToString(CultureInfo.InvariantCulture);
 
             return dim;
         }
@@ -229,21 +185,28 @@ namespace QuantitySystem
         {
             QuantityDimension QD = obj as QuantityDimension;
 
+
             if (QD != null)
             {
-                if (this.ElectricCurrentExponent != QD.ElectricCurrentExponent)
+                if (!this.ElectricCurrent.Equals(QD.ElectricCurrent))
                     return false;
-                if (this.LengthExponent != QD.LengthExponent)
+
+                if (!this.Length.Equals(QD.Length))
                     return false;
-                if (this.LuminousIntensityExponent != QD.LuminousIntensityExponent)
+                
+                if (!this.LuminousIntensity.Equals( QD.LuminousIntensity))
                     return false;
-                if (this.MassExponent != QD.MassExponent)
+
+                if (!this.Mass.Equals(QD.Mass))
                     return false;
-                if (this.AmountOfSubstanceExponent != QD.AmountOfSubstanceExponent)
+
+                if (!this.AmountOfSubstance.Equals(QD.AmountOfSubstance))
                     return false;
-                if (this.TemperatureExponent != QD.TemperatureExponent)
+
+                if (!this.Temperature.Equals(QD.Temperature))
                     return false;
-                if (this.TimeExponent != QD.TimeExponent)
+
+                if (!this.Time.Equals(QD.Time))
                     return false;
 
                 return true;
@@ -252,6 +215,37 @@ namespace QuantitySystem
             {
                 return false; 
             }
+        }
+
+        /// <summary>
+        /// rquality here based on first level of exponent validation.
+        /// </summary>
+        /// <param name="dimension"></param>
+        /// <returns></returns>
+        public bool IsEqual(QuantityDimension dimension)
+        {
+            if (this.ElectricCurrent.Exponent != dimension.ElectricCurrent.Exponent)
+                return false;
+
+            if (this.Length.Exponent != dimension.Length.Exponent)
+                return false;
+
+            if (this.LuminousIntensity.Exponent != dimension.LuminousIntensity.Exponent)
+                return false;
+
+            if (this.Mass.Exponent != dimension.Mass.Exponent)
+                return false;
+
+            if (this.AmountOfSubstance.Exponent != dimension.AmountOfSubstance.Exponent)
+                return false;
+
+            if (this.Temperature.Exponent != dimension.Temperature.Exponent)
+                return false;
+
+            if (this.Time.Exponent != dimension.Time.Exponent)
+                return false;
+
+            return true;
         }
 
         public override int GetHashCode()
@@ -271,15 +265,16 @@ namespace QuantitySystem
 
         public static QuantityDimension Add(QuantityDimension firstDimension, QuantityDimension secondDimension)
         {
-            QuantityDimension QD = new QuantityDimension(
-                firstDimension.MassExponent + secondDimension.MassExponent
-                , firstDimension.LengthExponent + secondDimension.LengthExponent
-                , firstDimension.TimeExponent + secondDimension.TimeExponent
-                , firstDimension.TemperatureExponent + secondDimension.TemperatureExponent
-                , firstDimension.ElectricCurrentExponent + secondDimension.ElectricCurrentExponent
-                , firstDimension.AmountOfSubstanceExponent + secondDimension.AmountOfSubstanceExponent
-                , firstDimension.LuminousIntensityExponent + secondDimension.LuminousIntensityExponent
-                );
+
+            QuantityDimension QD = new QuantityDimension();
+
+            QD.Mass = firstDimension.Mass.Add(secondDimension.Mass);
+            QD.Length = firstDimension.Length.Add(secondDimension.Length);
+            QD.Time =  firstDimension.Time.Add( secondDimension.Time);
+            QD.Temperature = firstDimension.Temperature.Add(secondDimension.Temperature);
+            QD.ElectricCurrent = firstDimension.ElectricCurrent.Add(secondDimension.ElectricCurrent);
+            QD.AmountOfSubstance = firstDimension.AmountOfSubstance.Add( secondDimension.AmountOfSubstance);
+            QD.LuminousIntensity = firstDimension.LuminousIntensity.Add(secondDimension.LuminousIntensity);
 
             return QD;
         }
@@ -291,15 +286,15 @@ namespace QuantitySystem
 
         public static QuantityDimension Subtract(QuantityDimension firstDimension, QuantityDimension secondDimension)
         {
-            QuantityDimension QD = new QuantityDimension(
-                firstDimension.MassExponent - secondDimension.MassExponent
-                , firstDimension.LengthExponent - secondDimension.LengthExponent
-                , firstDimension.TimeExponent - secondDimension.TimeExponent
-                , firstDimension.TemperatureExponent - secondDimension.TemperatureExponent
-                , firstDimension.ElectricCurrentExponent - secondDimension.ElectricCurrentExponent
-                , firstDimension.AmountOfSubstanceExponent - secondDimension.AmountOfSubstanceExponent
-                , firstDimension.LuminousIntensityExponent - secondDimension.LuminousIntensityExponent
-                );
+            QuantityDimension QD = new QuantityDimension();
+
+            QD.Mass = firstDimension.Mass.Subtract(secondDimension.Mass);
+            QD.Length = firstDimension.Length.Subtract(secondDimension.Length);
+            QD.Time = firstDimension.Time.Subtract(secondDimension.Time);
+            QD.Temperature = firstDimension.Temperature.Subtract(secondDimension.Temperature);
+            QD.ElectricCurrent = firstDimension.ElectricCurrent.Subtract(secondDimension.ElectricCurrent);
+            QD.AmountOfSubstance = firstDimension.AmountOfSubstance.Subtract(secondDimension.AmountOfSubstance);
+            QD.LuminousIntensity = firstDimension.LuminousIntensity.Subtract(secondDimension.LuminousIntensity);
 
             return QD;
         }
@@ -311,15 +306,16 @@ namespace QuantitySystem
 
         public static QuantityDimension Multiply(QuantityDimension dimension, int exponent)
         {
-            QuantityDimension QD = new QuantityDimension(
-                dimension.MassExponent * exponent
-                , dimension.LengthExponent * exponent
-                , dimension.TimeExponent * exponent
-                , dimension.TemperatureExponent * exponent
-                , dimension.ElectricCurrentExponent * exponent
-                , dimension.AmountOfSubstanceExponent * exponent
-                , dimension.LuminousIntensityExponent * exponent
-                );
+            QuantityDimension QD = new QuantityDimension();
+
+
+            QD.Mass = dimension.Mass.Multiply(exponent);
+            QD.Length = dimension.Length.Multiply(exponent);
+            QD.Time = dimension.Time.Multiply(exponent);
+            QD.Temperature = dimension.Temperature.Multiply(exponent);
+            QD.ElectricCurrent = dimension.ElectricCurrent.Multiply(exponent);
+            QD.AmountOfSubstance = dimension.AmountOfSubstance.Multiply(exponent);
+            QD.LuminousIntensity = dimension.LuminousIntensity.Multiply(exponent);
 
             return QD;
 
@@ -366,13 +362,30 @@ namespace QuantitySystem
                     //make sure not to include Dimensionless quantities due to they are F0L0T0
                     if (QuantityType.BaseType.Name != "DimensionlessQuantity")
                     {
-                        //store dimension as key and Quantity instance.
-                        AnyQuantity Quantity = (AnyQuantity)Activator.CreateInstance(QuantityType);
-                        CurrentQuantitiesDictionary.Add(Quantity.Dimension, Quantity);
+                        if (QuantityType != typeof(Length))
+                        {
+                            //store dimension as key and Quantity instance.
+                            AnyQuantity Quantity = (AnyQuantity)Activator.CreateInstance(QuantityType);
 
-                        //store quantity type as key dimension as value.
+                            CurrentQuantitiesDictionary.Add(Quantity.Dimension, Quantity);
 
-                        CurrentDimensionsDictionary.Add(QuantityType, Quantity.Dimension);
+                            //store quantity type as key dimension as value.
+
+                            CurrentDimensionsDictionary.Add(QuantityType, Quantity.Dimension);
+                        }
+                        else
+                        {
+                            //length have three variants I should take care of them.
+                            Length NormalLength = new Length(1, LengthType.Normal);
+                            Length RadiusLength = new Length(1, LengthType.Radius);
+
+                            CurrentQuantitiesDictionary.Add(NormalLength.Dimension, NormalLength);
+                            CurrentDimensionsDictionary.Add(QuantityType, NormalLength.Dimension);  // so when getting dimension by typeof(Length) return the normal one.
+
+                            CurrentQuantitiesDictionary.Add(RadiusLength.Dimension, RadiusLength);
+
+
+                        }
 
                     }
                 }
@@ -394,10 +407,48 @@ namespace QuantitySystem
             {
                 return (AnyQuantity)CurrentQuantitiesDictionary[dimension].Clone();
             }
-            catch
+            catch(KeyNotFoundException)
             {
+                //the key not found if the dimension is having length inside it
+                // it may be that this length type is not the normal type
+                // i mean it is Arc Length or radius length or combination
+                // so to overcome this issue i'll make another dimension
+                // with the same variables 
+                // but with length exponent in NormalExponent
 
-                throw new QuantityNotFoundException();
+                QuantityDimension LookUpDimension = (QuantityDimension)dimension.MemberwiseClone();
+
+                LookUpDimension.Length = new LengthDescriptor(dimension.Length.Exponent,  0);
+
+
+
+                if (CurrentQuantitiesDictionary.ContainsKey(LookUpDimension))
+                {
+                    AnyQuantity qty =  (AnyQuantity)CurrentQuantitiesDictionary[LookUpDimension].Clone();
+
+
+                    //then get back the original dimension length to that quantity.
+                    //aq.Dimension.Length = new LengthDescriptor(dimension.Length.NormalExponent, dimension.Length.ArcExponent, dimension.Length.RadiusExponent);
+
+                    //to change the dimension of the length
+                    // we must go through all Internal Dimensions
+                    // and we must change the length exponent based on the dimension.
+
+                    if(qty is DerivedQuantity)
+                    {
+                        foreach (AnyQuantity q in ((DerivedQuantity)qty).GetInternalQuantities())
+                        {
+                        }
+                    }
+
+                    
+
+                    return qty;
+                }
+                else
+                {
+                    throw new QuantityNotFoundException();
+                }
             }
         }
 

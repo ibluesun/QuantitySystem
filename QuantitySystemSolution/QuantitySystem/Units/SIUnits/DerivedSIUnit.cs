@@ -34,52 +34,52 @@ namespace QuantitySystem.Units.SIUnits
 
             Dimension = dimension;
 
-            if (Dimension.MassExponent != 0)
+            if (Dimension.Mass.Exponent != 0)
             {
                 ISIUnit u = new BaseUnits.Gram();
-                u.Exponent = dimension.MassExponent;
+                u.Exponent = dimension.Mass.Exponent;
                 SubUnits.Add(u);
             }
 
-            if (Dimension.LengthExponent != 0)
+            if (Dimension.Length.Exponent != 0)
             {
                 ISIUnit u = new BaseUnits.Metre();
-                u.Exponent = dimension.LengthExponent;
+                u.Exponent = dimension.Length.Exponent;
                 SubUnits.Add(u);
             }
 
-            if (Dimension.TimeExponent != 0)
+            if (Dimension.Time.Exponent != 0)
             {
                 ISIUnit u = new Second();
-                u.Exponent = dimension.TimeExponent;
+                u.Exponent = dimension.Time.Exponent;
                 SubUnits.Add(u);
             }
 
-            if (Dimension.TemperatureExponent != 0)
+            if (Dimension.Temperature.Exponent != 0)
             {
                 ISIUnit u = new BaseUnits.Kelvin();
-                u.Exponent = dimension.TemperatureExponent;
+                u.Exponent = dimension.Temperature.Exponent;
                 SubUnits.Add(u);
             }
 
-            if (Dimension.LuminousIntensityExponent != 0)
+            if (Dimension.LuminousIntensity.Exponent != 0)
             {
                 ISIUnit u = new BaseUnits.Candela();
-                u.Exponent = dimension.LuminousIntensityExponent;
+                u.Exponent = dimension.LuminousIntensity.Exponent;
                 SubUnits.Add(u);
             }
 
-            if (Dimension.AmountOfSubstanceExponent != 0)
+            if (Dimension.AmountOfSubstance.Exponent != 0)
             {
                 ISIUnit u = new BaseUnits.Mole();
-                u.Exponent = dimension.AmountOfSubstanceExponent;
+                u.Exponent = dimension.AmountOfSubstance.Exponent;
                 SubUnits.Add(u);
             }
 
-            if (Dimension.ElectricCurrentExponent != 0)
+            if (Dimension.ElectricCurrent.Exponent != 0)
             {
                 ISIUnit u = new BaseUnits.Ampere();
-                u.Exponent = dimension.ElectricCurrentExponent;
+                u.Exponent = dimension.ElectricCurrent.Exponent;
                 SubUnits.Add(u);
             }
 

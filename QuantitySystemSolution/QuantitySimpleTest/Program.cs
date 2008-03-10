@@ -9,6 +9,9 @@ using QuantitySystem.Units.SIUnits;
 using QuantitySystem.Units.SIUnits.BaseUnits;
 using QuantitySystem.Units.UnitSystems;
 
+using QuantitySystem.Quantities.BaseQuantities;
+using QuantitySystem.Quantities.DimensionlessQuantities;
+
 namespace QuantitySimpleTest
 {
     class Program
@@ -16,9 +19,46 @@ namespace QuantitySimpleTest
         static void Main(string[] args)
         {
 
-            test4();
+
+            var l1 = SIUnitSystem.Kilo<Metre>(5);
+            var l2 = SIUnitSystem.Default<Metre>(10);
+
+            var total = l1 + l2;
+
+            var tor = SIUnitSystem.GetQuantityUnitOf<Torque>(20);
+            var w2 = tor * SIUnitSystem.GetQuantityUnitOf<Angle>(1.5);
+            var wor = SIUnitSystem.Default<Joule>(10);
+
+            total = w2 + wor;
+
+
+            test5();
+
+
 
         }
+
+        static void test5()
+        {
+            var t = SIUnitSystem.GetQuantityUnitOf<Torque>(100);
+
+            var f = SIUnitSystem.Default<Newton>(5);
+
+            var a = SIUnitSystem.GetQuantityUnitOf<Angle>(Math.PI);
+
+            var e = t * a;
+
+            var l = t / f;
+
+            Console.WriteLine(e.ToString());
+            Console.WriteLine(l.ToString());
+
+
+            var a2 = e / t;
+
+            Console.WriteLine(a2.ToString());
+        }
+
         static void test4()
         {
             var l = SIUnitSystem.Default<Metre>(100);
