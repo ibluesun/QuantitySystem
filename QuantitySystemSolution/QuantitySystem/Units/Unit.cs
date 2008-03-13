@@ -106,5 +106,14 @@ namespace QuantitySystem.Units
             return unit;
         }
 
+
+        public virtual QuantityDimension Dimension 
+        {
+            get
+            {
+                return null;
+            }
+        }
+
     }
 }

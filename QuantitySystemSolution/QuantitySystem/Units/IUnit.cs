@@ -58,5 +58,9 @@ namespace QuantitySystem.Units
         IUnit Subtract(IUnit unit);
 
         IUnit CorrectUnitBy(IUnit unit);
+
+
+        QuantityDimension Dimension { get; }
+
     }
 }

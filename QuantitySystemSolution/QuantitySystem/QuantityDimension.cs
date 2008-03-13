@@ -407,48 +407,11 @@ namespace QuantitySystem
             {
                 return (AnyQuantity)CurrentQuantitiesDictionary[dimension].Clone();
             }
-            catch(KeyNotFoundException)
+            catch(KeyNotFoundException ex)
             {
-                //the key not found if the dimension is having length inside it
-                // it may be that this length type is not the normal type
-                // i mean it is Arc Length or radius length or combination
-                // so to overcome this issue i'll make another dimension
-                // with the same variables 
-                // but with length exponent in NormalExponent
+                QuantityNotFoundException qnfe = new QuantityNotFoundException("Couldn't Find the quantity dimension in the dimensions Hash Key", ex);
 
-                QuantityDimension LookUpDimension = (QuantityDimension)dimension.MemberwiseClone();
-
-                LookUpDimension.Length = new LengthDescriptor(dimension.Length.Exponent,  0);
-
-
-
-                if (CurrentQuantitiesDictionary.ContainsKey(LookUpDimension))
-                {
-                    AnyQuantity qty =  (AnyQuantity)CurrentQuantitiesDictionary[LookUpDimension].Clone();
-
-
-                    //then get back the original dimension length to that quantity.
-                    //aq.Dimension.Length = new LengthDescriptor(dimension.Length.NormalExponent, dimension.Length.ArcExponent, dimension.Length.RadiusExponent);
-
-                    //to change the dimension of the length
-                    // we must go through all Internal Dimensions
-                    // and we must change the length exponent based on the dimension.
-
-                    if(qty is DerivedQuantity)
-                    {
-                        foreach (AnyQuantity q in ((DerivedQuantity)qty).GetInternalQuantities())
-                        {
-                        }
-                    }
-
-                    
-
-                    return qty;
-                }
-                else
-                {
-                    throw new QuantityNotFoundException();
-                }
+                throw qnfe;
             }
         }
 
@@ -527,5 +490,21 @@ namespace QuantitySystem
 
         #endregion
 
+
+
+        public bool IsDimensionLess
+        {
+            get
+            {
+                if (
+                    Mass.Exponent == 0 && Length.Exponent == 0 && Time.Exponent == 0 &&
+                    ElectricCurrent.Exponent == 0 && Temperature.Exponent == 0 && AmountOfSubstance.Exponent == 0 &&
+                    LuminousIntensity.Exponent == 0
+                    )
+                    return true;
+                else
+                    return false;
+            }
+        }
     }
 }

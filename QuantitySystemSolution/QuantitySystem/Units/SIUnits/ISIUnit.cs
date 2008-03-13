@@ -14,6 +14,5 @@ namespace QuantitySystem.Units.SIUnits
 
         ISIUnit GetUnitInBaseUnits();
 
-        QuantityDimension Dimension { get; }
     }
 }

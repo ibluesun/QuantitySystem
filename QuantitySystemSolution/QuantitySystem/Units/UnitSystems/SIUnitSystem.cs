@@ -159,7 +159,7 @@ namespace QuantitySystem.Units.UnitSystems
         /// </summary>
         /// <param name="quantityType"></param>
         /// <returns></returns>
-        private static IUnit UnitOf(Type quantityType)
+        private static ISIUnit UnitOf(Type quantityType)
         {
             #region base Quanities
             if (quantityType == typeof(Mass)) return new Gram();
@@ -201,7 +201,22 @@ namespace QuantitySystem.Units.UnitSystems
             else
             {
                 //if failed you should generate it
-                return new DerivedSIUnit(QuantityDimension.DimensionFrom(typeof(TQuantity)));
+                //try first the child quantities in the quantity instance if its base is dervied quantity
+                // and DerivedQuantity itself.
+
+                QuantityDimension dimension = QuantityDimension.DimensionFrom(typeof(TQuantity));
+                
+                //AnyQuantity quantity = QuantityDimension.QuantityFrom(dimension);
+
+                //if(quantity.GetType().BaseType == typeof(DerivedQuantity))
+                //{
+                    
+                //    return new DerivedSIUnit(((DerivedQuantity)quantity).GetInternalQuantities());
+                //}
+                //else
+                {
+                    return new DerivedSIUnit(dimension);
+                }
             }
 
         }
@@ -211,23 +226,40 @@ namespace QuantitySystem.Units.UnitSystems
         /// </summary>
         /// <param name="quantity"></param>
         /// <returns></returns>
-        public static IUnit UnitOf(AnyQuantity quantity)
+        public static ISIUnit UnitOf(AnyQuantity quantity)
         {
 
             //try direct mapping first.
 
-            IUnit unit = UnitOf(quantity.GetType());
-            if (unit != null) 
+            ISIUnit unit = UnitOf(quantity.GetType());
+            if (unit != null)
+            {
                 return unit;
+            }
             else
-                return new DerivedSIUnit(quantity.Dimension);
+            {
+                //if (quantity.GetType().BaseType == typeof(DerivedQuantity))
+                //{
+                //    return new DerivedSIUnit(((DerivedQuantity)quantity).GetInternalQuantities());
+                //}
+                //else
+                {
+                    return new DerivedSIUnit(quantity.Dimension);
+                }
+            }
         }
 
-        public static AnyQuantity GetQuantityUnitOf<TQuantity>(double value) where TQuantity : AnyQuantity, new()
+        public static AnyQuantity GetUnitizedQuantityOf<TQuantity>(double value) where TQuantity : AnyQuantity, new()
         {
             IUnit unit = UnitOf<TQuantity>();
+            
+            
             AnyQuantity aq = unit.CreateThisUnitQuantity();
+            
+            
             aq.Value = value;
+
+
             return aq;
         }
         

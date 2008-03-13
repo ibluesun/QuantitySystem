@@ -91,6 +91,36 @@ namespace QuantitySystem.Units.SIUnits
 
         }
 
+        public DerivedSIUnit(params AnyQuantity[] quantities)
+        {
+            Dimension = new QuantityDimension();
+            SubUnits = new List<ISIUnit>();
+
+
+            foreach (AnyQuantity aq in quantities)
+            {
+                Dimension += aq.Dimension;
+
+                ISIUnit si = SIUnitSystem.UnitOf(aq);
+                
+                if (aq.Exponent < 0) si = (ISIUnit)si.Invert();
+
+                DerivedSIUnit dsi = si as DerivedSIUnit;
+
+                if (dsi != null)
+                {
+                    SubUnits.AddRange(dsi.SubUnits);
+                }
+                else
+                    SubUnits.Add(si);
+
+            }
+
+            GenerateUnitNameFromSubBaseUnits();
+
+            CalculatePrefix();
+        }
+
         /// <summary>
         /// Construct Derived SI unit from base units or strongly typed units.
         /// </summary>
@@ -136,15 +166,23 @@ namespace QuantitySystem.Units.SIUnits
         /// <returns></returns>
         public IUnit CorrectUnitBy(IUnit unit)
         {
-            //throw new NotSupportedException("review your code");
-            DerivedSIUnit neu = (DerivedSIUnit)this.MemberwiseClone();
+            if (unit.Dimension.IsDimensionLess == false)
+            {
+                //throw new NotSupportedException("review your code");
+                DerivedSIUnit neu = (DerivedSIUnit)this.MemberwiseClone();
 
-            neu.GetSubunits()[0].Prefix += ((ISIUnit)unit).Prefix;
-            //neu.Prefix = ((ISIUnit)unit).Prefix;
+                neu.GetSubunits()[0].Prefix += ((ISIUnit)unit).Prefix;
+                //neu.Prefix = ((ISIUnit)unit).Prefix;
 
-            neu.Refresh();
+                neu.Refresh();
 
-            return neu;
+                return neu;
+            }
+            else
+            {
+                return this;
+            }
+        
         }
 
         public void AddPrefix(SIPrefix prefix)
