@@ -191,7 +191,7 @@ namespace QuantitySystem.Units.SIUnits
             }
         }
 
-        public virtual QuantityDimension Dimension
+        public override QuantityDimension Dimension
         {
             get
             {

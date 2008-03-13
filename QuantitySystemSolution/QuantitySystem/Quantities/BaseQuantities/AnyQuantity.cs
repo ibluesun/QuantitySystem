@@ -220,6 +220,20 @@ namespace QuantitySystem.Quantities.BaseQuantities
         }
 
 
+        public static AnyQuantity operator *(AnyQuantity quantity, double value)
+        {
+            return Multiply(quantity, value);
+        }
+
+        public static AnyQuantity Multiply(AnyQuantity quantity, double value)
+        {
+            AnyQuantity q = (AnyQuantity)quantity.MemberwiseClone();
+
+            q.Value *= value;
+
+            return q;
+
+        }
 
         public static AnyQuantity operator /(AnyQuantity firstQuantity, AnyQuantity secondQuantity)
         {
@@ -277,6 +291,20 @@ namespace QuantitySystem.Quantities.BaseQuantities
         }
 
 
+        public static AnyQuantity operator /(AnyQuantity quantity, double value)
+        {
+            return Divide(quantity, value);
+        }
+
+        public static AnyQuantity Divide(AnyQuantity quantity, double value)
+        {
+            AnyQuantity q = (AnyQuantity)quantity.MemberwiseClone();
+
+            q.Value /= value;
+
+            return q;
+
+        }
         public static DerivedQuantity ConstructDerivedQuantity(params AnyQuantity[] quantities)
         {
             DerivedQuantity DQ = new DerivedQuantity(1, quantities);

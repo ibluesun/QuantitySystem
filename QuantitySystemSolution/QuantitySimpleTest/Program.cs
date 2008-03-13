@@ -19,36 +19,74 @@ namespace QuantitySimpleTest
         static void Main(string[] args)
         {
 
+            test1();
 
-            var l1 = SIUnitSystem.Kilo<Metre>(5);
-            var l2 = SIUnitSystem.Default<Metre>(10);
+            test2();
 
-            var total = l1 + l2;
+            test3();
 
-            var tor = SIUnitSystem.GetQuantityUnitOf<Torque>(20);
-            var w2 = tor * SIUnitSystem.GetQuantityUnitOf<Angle>(1.5);
-            var wor = SIUnitSystem.Default<Joule>(10);
-
-            total = w2 + wor;
-
+            test4();
 
             test5();
+
+            test6();
+
+
+            System.Windows.Forms.Application.EnableVisualStyles();
+            System.Windows.Forms.Application.Run(new TestingTorqueForm());
 
 
 
         }
 
+        static void test6()
+        {
+
+            Console.WriteLine();
+            Console.WriteLine("Test 6");
+
+
+            var pre = SIUnitSystem.Default<Pascal>(100);
+            var ts = SIUnitSystem.Default<Second>(12);
+
+            var tpr = pre * ts;
+            Console.WriteLine(tpr.ToString());
+
+            var vis = SIUnitSystem.GetUnitizedQuantityOf<Viscosity>(100);
+
+            Console.WriteLine(vis.ToString());
+
+
+            var a = SIUnitSystem.Default<Radian>(100);
+            var t = SIUnitSystem.Milli<Second>(35.5);
+
+            var angularSpeed = a / t;
+            Console.WriteLine(a / t);
+
+            Torque tor = (Torque)SIUnitSystem.GetUnitizedQuantityOf<Torque>(100);
+
+            Console.WriteLine(tor.ToString());
+            Console.WriteLine(tor * angularSpeed);
+        }
+
         static void test5()
         {
-            var t = SIUnitSystem.GetQuantityUnitOf<Torque>(100);
+            Console.WriteLine();
+            Console.WriteLine("Test 5");
+
+            var t = SIUnitSystem.GetUnitizedQuantityOf<Torque>(100);
 
             var f = SIUnitSystem.Default<Newton>(5);
 
-            var a = SIUnitSystem.GetQuantityUnitOf<Angle>(Math.PI);
+            var a = SIUnitSystem.GetUnitizedQuantityOf<Angle>(Math.PI);
 
             var e = t * a;
 
             var l = t / f;
+
+            
+
+            var wr = f * l;
 
             Console.WriteLine(e.ToString());
             Console.WriteLine(l.ToString());
@@ -61,6 +99,9 @@ namespace QuantitySimpleTest
 
         static void test4()
         {
+            Console.WriteLine();
+            Console.WriteLine("Test 4");
+
             var l = SIUnitSystem.Default<Metre>(100);
             var s = SIUnitSystem.Default<Second>(5);
             var speed = l / s;
@@ -85,6 +126,9 @@ namespace QuantitySimpleTest
 
         static void test3()
         {
+            Console.WriteLine();
+            Console.WriteLine("Test 3");
+
             var kPa = SIUnitSystem.Kilo<Pascal>(100);
             var s = SIUnitSystem.Default<Second>(10);
 
@@ -94,9 +138,12 @@ namespace QuantitySimpleTest
 
         static void test2()
         {
+            Console.WriteLine();
+            Console.WriteLine("Test 2");
+
             var kw = SIUnitSystem.Kilo<Watt>(100);
             var s = SIUnitSystem.Default<Second>(10);
-            var a = SIUnitSystem.GetQuantityUnitOf<Area>(50);
+            var a = SIUnitSystem.GetUnitizedQuantityOf<Area>(50);
             var p = SIUnitSystem.Kilo<Pascal>(5.5);
 
             var result = kw * s / a / p;
@@ -105,6 +152,9 @@ namespace QuantitySimpleTest
 
         static void test1()
         {
+            Console.WriteLine();
+            Console.WriteLine("Test 1");
+
             var g = SIUnitSystem.Default<Gram>(100);
             var m = SIUnitSystem.Default<Metre>(10);
 
@@ -117,7 +167,7 @@ namespace QuantitySimpleTest
             result = kg * km;                        //10000 <kg.km>
             Console.WriteLine(result.ToString());    //should be fixed
 
-            var acc = SIUnitSystem.GetQuantityUnitOf<Acceleration>(10);
+            var acc = SIUnitSystem.GetUnitizedQuantityOf<Acceleration>(10);
 
             result = kg * acc;                       //1000 N
             Console.WriteLine(result.ToString());  //error, fixed
