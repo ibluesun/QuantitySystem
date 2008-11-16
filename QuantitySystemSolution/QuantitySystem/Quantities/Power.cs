@@ -7,16 +7,27 @@ using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities
 {
-    public class Power : DerivedQuantity
+    public class Power<T> : DerivedQuantity<T>
     {
         public Power()
-            : base(1, new Energy(), new Time(-1))
+            : base(1, new Energy<T>(), new Time<T>(-1))
         {
         }
 
         public Power(int exponent)
-            : base(exponent, new Energy(exponent), new Time(-1 * exponent))
+            : base(exponent, new Energy<T>(exponent), new Time<T>(-1 * exponent))
         {
         }
+
+
+        public static implicit operator Power<T>(T value)
+        {
+            Power<T> Q = new Power<T>();
+
+            Q.Value = value;
+
+            return Q;
+        }
+
     }
 }

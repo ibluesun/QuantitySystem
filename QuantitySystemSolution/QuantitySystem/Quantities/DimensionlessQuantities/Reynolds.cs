@@ -8,11 +8,21 @@ using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities.DimensionlessQuantities
 {
-    public class Reynolds : DimensionlessQuantity
+    public class Reynolds<T> : DimensionlessQuantity<T>
     {
         public Reynolds()
-            :base (1, new Density(), new Velocity(), new Length(), new Viscosity(-1))
+            :base (1, new Density<T>(), new Velocity<T>(), new Length<T>(), new Viscosity<T>(-1))
         {
         }
+
+        public static implicit operator Reynolds<T>(T value)
+        {
+            Reynolds<T> Q = new Reynolds<T>();
+
+            Q.Value = value;
+
+            return Q;
+        }
+
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace QuantitySystem.Quantities.BaseQuantities
 {
-    public class Temperature : AnyQuantity
+    public class Temperature<T> : AnyQuantity<T>
     {
         public Temperature() : base(1) { }
 
@@ -19,5 +19,14 @@ namespace QuantitySystem.Quantities.BaseQuantities
             }
         }
 
+
+        public static implicit operator Temperature<T>(T value)
+        {
+            Temperature<T> Q = new Temperature<T>();
+
+            Q.Value = value;
+
+            return Q;
+        }
     }
 }

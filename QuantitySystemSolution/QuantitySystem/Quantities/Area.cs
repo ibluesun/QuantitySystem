@@ -8,17 +8,28 @@ using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities
 {
-    public class Area : DerivedQuantity
+    public class Area<T> : DerivedQuantity<T>
     {
         public Area()
-            : base(1, new Length(2))
+            : base(1, new Length<T>(2))
         {
         }
 
         public Area(int exponent)
-            : base(exponent, new Length(2 * exponent))
+            : base(exponent, new Length<T>(2 * exponent))
         {
         }
+
+
+        public static implicit operator Area<T>(T value)
+        {
+            Area<T> Q = new Area<T>();
+
+            Q.Value = value;
+
+            return Q;
+        }
+
 
     }
 }

@@ -7,18 +7,29 @@ using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities
 {
-    public class Density : DerivedQuantity
+    public class Density<T> : DerivedQuantity<T>
     {
 
         public Density()
-            : base(1, new Mass(), new Volume(-1))
+            : base(1, new Mass<T>(), new Volume<T>(-1))
         {
         }
 
         public Density(int exponent)
-            : base(exponent, new Mass(exponent), new Volume(-1 * exponent))
+            : base(exponent, new Mass<T>(exponent), new Volume<T>(-1 * exponent))
         {
         }
+
+
+        public static implicit operator Density<T>(T value)
+        {
+            Density<T> Q = new Density<T>();
+
+            Q.Value = value;
+
+            return Q;
+        }
+
 
     }
 }

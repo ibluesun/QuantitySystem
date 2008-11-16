@@ -5,7 +5,7 @@ using System.Text;
 
 namespace QuantitySystem.Quantities.BaseQuantities
 {
-    public class Mass : AnyQuantity
+    public class Mass<T> : AnyQuantity<T>
     {
         /// <summary>
         /// Create Mass object with dimension equals 1 M^1.
@@ -30,5 +30,16 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 return new QuantityDimension(1, 0, 0) * Exponent;
             }
         }
+
+
+        public static implicit operator Mass<T>(T value)
+        {
+            Mass<T> Q = new Mass<T>();
+
+            Q.Value = value;
+
+            return Q;
+        }
+
     }
 }
