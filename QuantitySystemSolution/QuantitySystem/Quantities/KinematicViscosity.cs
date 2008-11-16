@@ -5,16 +5,26 @@ using System.Text;
 
 namespace QuantitySystem.Quantities
 {
-    public class KinematicViscosity : DerivedQuantity
+    public class KinematicViscosity<T> : DerivedQuantity<T>
     {
         public KinematicViscosity()
-            : base(1, new Viscosity(), new Density(-1))
+            : base(1, new Viscosity<T>(), new Density<T>(-1))
         {
         }
 
         public KinematicViscosity(int exponent)
-            : base(exponent, new Viscosity(exponent), new Density(-1 * exponent))
+            : base(exponent, new Viscosity<T>(exponent), new Density<T>(-1 * exponent))
         {
         }
+
+        public static implicit operator KinematicViscosity<T>(T value)
+        {
+            KinematicViscosity<T> Q = new KinematicViscosity<T>();
+
+            Q.Value = value;
+
+            return Q;
+        }
+
     }
 }

@@ -8,6 +8,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Quantities;
 
 using QuantitySystem.DimensionDescriptors;
+using QuantitySystem.Quantities.DimensionlessQuantities;
 
 namespace QuantitySystem
 {
@@ -327,10 +328,11 @@ namespace QuantitySystem
         #region Quantities Preparation
         private static List<Type> CurrentQuantityTypes = new List<Type>();
 
+
         /// <summary>
         /// holding Dimension -> Quantity instance  to be clonned.
         /// </summary>
-        private static Dictionary<QuantityDimension, AnyQuantity> CurrentQuantitiesDictionary = new Dictionary<QuantityDimension,AnyQuantity>();
+        private static Dictionary<QuantityDimension, Type> CurrentQuantitiesDictionary = new Dictionary<QuantityDimension, Type>();
 
         /// <summary>
         /// 
@@ -353,43 +355,34 @@ namespace QuantitySystem
 
             CurrentQuantityTypes.AddRange(QuantityTypes);
 
+            //storing the quantity types with thier dimensions
+
             foreach (Type QuantityType in CurrentQuantityTypes)
             {
                 //cach the quantities that is not abstract types
 
-                if (QuantityType.IsAbstract == false && QuantityType.Name != "DerivedQuantity")
+                if (QuantityType.IsAbstract == false && QuantityType != typeof(DerivedQuantity<>))
                 {
                     //make sure not to include Dimensionless quantities due to they are F0L0T0
-                    if (QuantityType.BaseType.Name != "DimensionlessQuantity")
+                    if (QuantityType.BaseType.Name != typeof(DimensionlessQuantity<>).Name)
                     {
-                        if (QuantityType != typeof(Length))
-                        {
-                            //store dimension as key and Quantity instance.
-                            AnyQuantity Quantity = (AnyQuantity)Activator.CreateInstance(QuantityType);
 
-                            CurrentQuantitiesDictionary.Add(Quantity.Dimension, Quantity);
+                        //store dimension as key and Quantity Type .
+                        
+                        //create AnyQuantity<Object>  Object container used just for instantiation
+                        AnyQuantity<Object> Quantity = (AnyQuantity<Object>)Activator.CreateInstance(QuantityType.MakeGenericType(typeof(object)));
 
-                            //store quantity type as key dimension as value.
+                        //store the Dimension and the corresponding Type;
+                        CurrentQuantitiesDictionary.Add(Quantity.Dimension, QuantityType);
 
-                            CurrentDimensionsDictionary.Add(QuantityType, Quantity.Dimension);
-                        }
-                        else
-                        {
-                            //length have three variants I should take care of them.
-                            Length NormalLength = new Length(1, LengthType.Normal);
-                            Length RadiusLength = new Length(1, LengthType.Radius);
-
-                            CurrentQuantitiesDictionary.Add(NormalLength.Dimension, NormalLength);
-                            CurrentDimensionsDictionary.Add(QuantityType, NormalLength.Dimension);  // so when getting dimension by typeof(Length) return the normal one.
-
-                            CurrentQuantitiesDictionary.Add(RadiusLength.Dimension, RadiusLength);
-
-
-                        }
-
+                        //store quantity type as key and corresponding dimension as value.
+                        CurrentDimensionsDictionary.Add(QuantityType, Quantity.Dimension);
+                    
                     }
                 }
             }
+
+            
             
         }
         #endregion
@@ -398,14 +391,26 @@ namespace QuantitySystem
         #region Quantity utilities
 
 
-        public static AnyQuantity QuantityFrom(QuantityDimension dimension)
+        /// <summary>
+        /// Returns Any Quantity From the dimension
+        /// </summary>
+        /// <typeparam name="T">The value container of the Quantity</typeparam>
+        /// <param name="dimension"></param>
+        /// <returns></returns>
+        public static AnyQuantity<T> QuantityFrom<T>(QuantityDimension dimension)
         {
-            //the method should return the target Quantity
-            //with respect to the mlt string.
 
+            
             try
             {
-                return (AnyQuantity)CurrentQuantitiesDictionary[dimension].Clone();
+                Type QuantityType = CurrentQuantitiesDictionary[dimension];
+
+                //the quantity type now is without container type we should generate it
+
+                Type QuantityWithContainerType = QuantityType.MakeGenericType(typeof(T));
+
+                return (AnyQuantity<T>)Activator.CreateInstance(QuantityWithContainerType);
+
             }
             catch(KeyNotFoundException ex)
             {

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace QuantitySystem.Quantities.BaseQuantities
 {
-    public class LuminousIntensity : AnyQuantity
+    public class LuminousIntensity<T> : AnyQuantity<T>
     {
         public LuminousIntensity() : base(1) { }
 
@@ -18,5 +18,16 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 return new QuantityDimension(0, 0, 0, 0, 0, 0, 1) * Exponent;
             }
         }
+
+
+        public static implicit operator LuminousIntensity<T>(T value)
+        {
+            LuminousIntensity<T> Q = new LuminousIntensity<T>();
+
+            Q.Value = value;
+
+            return Q;
+        }
+
     }
 }

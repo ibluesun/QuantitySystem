@@ -12,27 +12,27 @@ using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities
 {
-    public class DerivedQuantity : AnyQuantity
+    public class DerivedQuantity<T> : AnyQuantity<T>
     {
 
 
         #region class instantiation
-        private AnyQuantity[] InternalQuantities;
+        private AnyQuantity<T>[] InternalQuantities;
 
 
-        public DerivedQuantity(int exponent, params AnyQuantity[] internalQuantities)
+        public DerivedQuantity(int exponent, params AnyQuantity<T>[] internalQuantities)
             : base(exponent)
         {
             InternalQuantities = internalQuantities;
 
         }
 
-        public AnyQuantity[] GetInternalQuantities()
+        public AnyQuantity<T>[] GetInternalQuantities()
         {
             return InternalQuantities;
         }
 
-        internal void SetInternalQuantities(AnyQuantity[] quantities)
+        internal void SetInternalQuantities(AnyQuantity<T>[] quantities)
         {
             InternalQuantities = quantities;
         }
@@ -49,7 +49,7 @@ namespace QuantitySystem.Quantities
             {
                 QuantityDimension QDTotal = new QuantityDimension();
 
-                foreach (AnyQuantity  aq in InternalQuantities)
+                foreach (AnyQuantity<T>  aq in InternalQuantities)
                 {
                     QDTotal += aq.Dimension;
                 }
@@ -60,25 +60,19 @@ namespace QuantitySystem.Quantities
 
         public override BaseQuantity Invert()
         {
-            List<AnyQuantity> lq = new List<AnyQuantity>();
+            List<AnyQuantity<T>> lq = new List<AnyQuantity<T>>();
 
-            foreach (AnyQuantity qty in InternalQuantities)
+            foreach (AnyQuantity<T> qty in InternalQuantities)
             {
-                lq.Add((AnyQuantity)qty.Invert());
+                lq.Add((AnyQuantity<T>)qty.Invert());
             }
 
-            DerivedQuantity dq = (DerivedQuantity) base.Invert();
+            DerivedQuantity<T> dq = (DerivedQuantity<T>) base.Invert();
             dq.SetInternalQuantities(lq.ToArray());
             return dq;
         }
         
         
-        #endregion
-
-
-
-
-
-        
+        #endregion        
     }
 }

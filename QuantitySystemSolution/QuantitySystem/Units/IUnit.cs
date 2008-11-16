@@ -11,7 +11,7 @@ namespace QuantitySystem.Units
     public interface IUnit
     {
 
-        AnyQuantity CreateThisUnitQuantity();
+        //AnyQuantity CreateThisUnitQuantity();
 
         string Symbol { get; }
 

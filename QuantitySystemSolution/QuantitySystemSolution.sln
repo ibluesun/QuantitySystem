@@ -3,7 +3,15 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantitySystem", "QuantitySystem\QuantitySystem.csproj", "{78909C0B-AA53-48F9-8AC9-F3937383629C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantitySimpleTest", "QuantitySimpleTest\QuantitySimpleTest.csproj", "{DB30729C-1062-47F0-9BD8-5D95F51BB371}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "QuantitySystemTests", "QuantitySystemTests", "{11635727-736E-4C7D-93FE-CD36FE61917E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantitySystemTestingProject", "QuantitySystemTestingProject\QuantitySystemTestingProject.csproj", "{6B22C63C-7927-4CB2-87A8-2BA3428570DC}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{27291231-815B-4D24-B9C9-7ABDBEEE948E}"
+	ProjectSection(SolutionItems) = preProject
+		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
+		QuantitySystemSolution.vsmdi = QuantitySystemSolution.vsmdi
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -11,12 +19,16 @@ Global
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
 		SccLocalPath0 = .
-		SccProjectUniqueName1 = QuantitySimpleTest\\QuantitySimpleTest.csproj
-		SccProjectName1 = QuantitySimpleTest
-		SccLocalPath1 = QuantitySimpleTest
-		SccProjectUniqueName2 = QuantitySystem\\QuantitySystem.csproj
-		SccProjectName2 = QuantitySystem
-		SccLocalPath2 = QuantitySystem
+		SccProjectUniqueName1 = QuantitySystem\\QuantitySystem.csproj
+		SccProjectName1 = QuantitySystem
+		SccLocalPath1 = QuantitySystem
+		SccProjectUniqueName2 = QuantitySystemTestingProject\\QuantitySystemTestingProject.csproj
+		SccProjectTopLevelParentUniqueName2 = QuantitySystemSolution.sln
+		SccProjectName2 = QuantitySystemTestingProject
+		SccLocalPath2 = QuantitySystemTestingProject
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = QuantitySystemSolution.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,12 +39,15 @@ Global
 		{78909C0B-AA53-48F9-8AC9-F3937383629C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78909C0B-AA53-48F9-8AC9-F3937383629C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78909C0B-AA53-48F9-8AC9-F3937383629C}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DB30729C-1062-47F0-9BD8-5D95F51BB371}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DB30729C-1062-47F0-9BD8-5D95F51BB371}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DB30729C-1062-47F0-9BD8-5D95F51BB371}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DB30729C-1062-47F0-9BD8-5D95F51BB371}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B22C63C-7927-4CB2-87A8-2BA3428570DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6B22C63C-7927-4CB2-87A8-2BA3428570DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6B22C63C-7927-4CB2-87A8-2BA3428570DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6B22C63C-7927-4CB2-87A8-2BA3428570DC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{6B22C63C-7927-4CB2-87A8-2BA3428570DC} = {11635727-736E-4C7D-93FE-CD36FE61917E}
 	EndGlobalSection
 EndGlobal

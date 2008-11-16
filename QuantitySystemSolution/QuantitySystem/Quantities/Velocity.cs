@@ -7,35 +7,46 @@ using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities
 {
-    public class Velocity : DerivedQuantity
+    public class Velocity<T> : DerivedQuantity<T>
     {
         public Velocity()
-            : base(1, new Length(), new Time(-1))
+            : base(1, new Length<T>(), new Time<T>(-1))
         {
         }
 
         public Velocity(int exponent)
-            : base(exponent, new Length(exponent), new Time(-1 * exponent))
+            : base(exponent, new Length<T>(exponent), new Time<T>(-1 * exponent))
         {
         }
 
-        public static Velocity LightSpeed
+        public static Velocity<double> LightSpeed
         {
             get
             {
-                Velocity v = new Velocity();
+                Velocity<double> v = new Velocity<double>();
                 v.Value = 299792458;
 
-                //assign the unit here  m/s
-                Units.SIUnits.BaseUnits.Metre m = new QuantitySystem.Units.SIUnits.BaseUnits.Metre();
+                ////assign the unit here  m/s
+                //Units.SIUnits.BaseUnits.Metre m = new QuantitySystem.Units.SIUnits.BaseUnits.Metre();
 
-                Units.Second s = new Units.Second();
+                //Units.Second s = new Units.Second();
 
-                s = (Units.Second)s.Invert();
+                //s = (Units.Second)s.Invert();
 
-                v.Unit = new Units.SIUnits.DerivedSIUnit(m, s);
+                //v.Unit = new Units.SIUnits.DerivedSIUnit(m, s);
                 return v;
             }
         }
+
+
+        public static implicit operator Velocity<T>(T value)
+        {
+            Velocity<T> Q = new Velocity<T>();
+
+            Q.Value = value;
+
+            return Q;
+        }
+
     }
 }

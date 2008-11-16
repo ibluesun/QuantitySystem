@@ -13,7 +13,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
         Radius
     }
 
-    public class Length : AnyQuantity
+    public class Length<T> : AnyQuantity<T>
     {
 
         public LengthType LengthType { get; set; }
@@ -21,7 +21,6 @@ namespace QuantitySystem.Quantities.BaseQuantities
         public Length() : base(1) 
         {
             LengthType = LengthType.Normal;
-
         }
 
         public Length(int exponent) : base(exponent) 
@@ -39,8 +38,6 @@ namespace QuantitySystem.Quantities.BaseQuantities
         {
             get
             {
-
-
                 QuantityDimension LengthDimension = new QuantityDimension();
 
                 switch (LengthType)
@@ -56,5 +53,36 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 return LengthDimension;
             }
         }
+
+
+        public static implicit operator Length<T>(T value)
+        {
+            Length<T> Q = new Length<T>();
+
+            Q.Value = value;
+
+            return Q;
+        }
+
+    }
+
+
+    /// <summary>
+    /// The Length but in Radius mode
+    /// very usefull in differentiating of anlges and Angular quantities in general.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class RadiusLength<T> : Length<T>
+    {
+        public RadiusLength() : base(1) 
+        {
+            LengthType = LengthType.Radius;
+        }
+
+        public RadiusLength(int exponent) : base(exponent) 
+        {
+            LengthType = LengthType.Radius;
+        }
+
     }
 }

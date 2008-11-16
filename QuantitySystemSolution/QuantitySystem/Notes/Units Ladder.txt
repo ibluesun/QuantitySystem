@@ -1,0 +1,24 @@
+﻿expressing the unit in unit ladder
+or MeasuringLadder
+
+its a ladder which have Default or ParkingUnit
+
+for example  of feet and inch
+
+this is the LengthUnitLadder in Imperial System
+
+
+or QuantityUnitsLadder
+
+which describe the Quantity
+
+also to not forget lets describe the whole line
+
+Length<float> Bridge = SIUnit.Kilo<Meter>(30.23);
+
+Pressure<int> zz = SIUnit.Mega<Pascal>(800.30);
+
+the Meter and or Pascal should be strongly typed so that the programmer can feel it intuitive
+
+Area<double> a1 = SIUnit.Kilo<Meter<2>>(30.21);
+

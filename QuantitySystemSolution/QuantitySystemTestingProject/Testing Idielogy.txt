@@ -1,0 +1,18 @@
+﻿
+
+For every Quantity
+
+	Instantiation
+		1- Test its Dimension.
+
+
+For General Operations
+(
+	Addition
+	Subtraction
+	Multiplication
+	Division
+)
+	
+Use the Mass Quantity for double ValueContainer and ComplexNumber Value Container.
+

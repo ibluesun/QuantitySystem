@@ -3,7 +3,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>9.0.21022</ProductVersion>
+    <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{78909C0B-AA53-48F9-8AC9-F3937383629C}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -18,6 +18,7 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
+    <TargetFrameworkSubset>Client</TargetFrameworkSubset>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -65,6 +66,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="QuantitiesNotDimensionallyEqualException.cs" />
     <Compile Include="Quantities\BaseQuantities\AmountOfSubstance.cs" />
+    <Compile Include="Quantities\BaseQuantities\AnyQuantity_Operations.cs" />
     <Compile Include="Quantities\DimensionlessQuantities\Angle.cs" />
     <Compile Include="Quantities\BaseQuantities\AnyQuantity.cs" />
     <Compile Include="Quantities\BaseQuantities\BaseQuantity.cs" />
@@ -94,62 +96,16 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuantityDimension.cs" />
     <Compile Include="QuantityNotFoundException.cs" />
-    <Compile Include="Units\Radian.cs" />
     <Compile Include="Units\UnitNotFoundException.cs" />
     <Compile Include="Units\UnitsNotDimensionallyEqualException.cs" />
-    <Compile Include="Units\EEUnits\EEUnit.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Units\EEUnits\IEEUnit.cs" />
-    <Compile Include="Units\SIUnits\DerivedSIUnit.cs" />
-    <Compile Include="Units\SIUnits\BaseUnits\Ampere.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Units\SIUnits\BaseUnits\Candela.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Units\SIUnits\BaseUnits\Kelvin.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Units\SIUnits\BaseUnits\Metre.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Units\SIUnits\BaseUnits\Mole.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Units\SIUnits\ISIUnit.cs" />
-    <Compile Include="Units\SIUnits\Joule.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Units\SIUnits\Newton.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Units\SIUnits\Pascal.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Units\SIUnits\Watt.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Units\Unit.cs" />
-    <Compile Include="Units\GlobalUnitSystem.cs" />
     <Compile Include="Units\IUnit.cs" />
-    <Compile Include="Units\SIUnits\BaseUnits\Gram.cs" />
-    <Compile Include="Units\Second.cs" />
     <Compile Include="Units\UnitSystem.cs" />
-    <Compile Include="Units\UnitSystems\EEUnitSystem.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Units\UnitSystems\SIPrefix.cs" />
-    <Compile Include="Units\SIUnits\SIUnit.cs" />
-    <Compile Include="Units\UnitSystems\SIPrefixException.cs" />
-    <Compile Include="Units\UnitSystems\SIUnitSystem.cs">
-      <SubType>Code</SubType>
-    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Notes\Dimensions Pattern.txt" />
     <Content Include="Notes\Lengths Description.txt" />
     <Content Include="Notes\SIUnit Multiplication.txt" />
+    <Content Include="Notes\Units Ladder.txt" />
     <Content Include="Notes\Units pattern.txt" />
     <Content Include="Notes\Units Patterns 2.txt" />
   </ItemGroup>

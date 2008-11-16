@@ -7,12 +7,28 @@ using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities
 {
-    public class Torque : DerivedQuantity
+    public class Torque<T> : DerivedQuantity<T>
     {
+        //public Torque()
+        //    : base(1, new Force<T>(), new Length<T>(1, LengthType.Radius))
+        //{
+
+        //}
         public Torque()
-            : base(1, new Force(), new Length(1, LengthType.Radius))
+            : base(1, new Force<T>(), new RadiusLength<T>())
         {
-            
+
         }
+
+
+        public static implicit operator Torque<T>(T value)
+        {
+            Torque<T> Q = new Torque<T>();
+
+            Q.Value = value;
+
+            return Q;
+        }
+
     }
 }

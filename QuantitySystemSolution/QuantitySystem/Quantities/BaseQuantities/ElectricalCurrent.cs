@@ -5,7 +5,7 @@ using System.Text;
 
 namespace QuantitySystem.Quantities.BaseQuantities
 {
-    public class ElectricalCurrent : AnyQuantity
+    public class ElectricalCurrent<T> : AnyQuantity<T>
     {
         public ElectricalCurrent() : base(1) { }
 
@@ -19,5 +19,14 @@ namespace QuantitySystem.Quantities.BaseQuantities
             }
         }
 
+
+        public static implicit operator ElectricalCurrent<T>(T value)
+        {
+            ElectricalCurrent<T> Q = new ElectricalCurrent<T>();
+
+            Q.Value = value;
+
+            return Q;
+        }
     }
 }
