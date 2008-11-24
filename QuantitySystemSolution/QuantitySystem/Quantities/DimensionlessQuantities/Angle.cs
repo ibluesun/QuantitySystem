@@ -10,25 +10,25 @@ namespace QuantitySystem.Quantities.DimensionlessQuantities
     public class Angle<T> : DerivedQuantity<T>
     {
 
-        //public Angle()
-        //    : base(1, new Length<T>(1, LengthType.Normal), new Length<T>(-1, LengthType.Radius))
-        //{
-        //}
-
-        //public Angle(int exponent)
-        //    : base(exponent, new Length<T>(1, LengthType.Normal), new Length<T>(-1, LengthType.Radius))
-        //{
-        //}
-
         public Angle()
-            : base(1, new Length<T>(), new RadiusLength<T>(-1))
+            : base(1, new Length<T>(1, LengthType.Normal), new Length<T>(-1, LengthType.Radius))
         {
         }
 
         public Angle(int exponent)
-            : base(exponent, new Length<T>(), new RadiusLength<T>(-1))
+            : base(exponent, new Length<T>(1, LengthType.Normal), new Length<T>(-1, LengthType.Radius))
         {
         }
+
+        //public Angle()
+        //    : base(1, new Length<T>(), new RadiusLength<T>(-1))
+        //{
+        //}
+
+        //public Angle(int exponent)
+        //    : base(exponent, new Length<T>(), new RadiusLength<T>(-1))
+        //{
+        //}
 
 
         public static implicit operator Angle<T>(T value)

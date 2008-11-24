@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Globalization;
 
-namespace QuantitySystem.Units.UnitSystems
+namespace QuantitySystem.Units
 {
 
     public struct SIPrefix
@@ -56,7 +56,7 @@ namespace QuantitySystem.Units.UnitSystems
 
         #endregion
 
-        public static SIPrefix Default { get { return new SIPrefix("", "", 0); } }
+        public static SIPrefix None { get { return new SIPrefix("", "", 0); } }
 
         #region Negative 
         public static SIPrefix Deci { get { return new SIPrefix("deci", "d", -1); } }
@@ -101,7 +101,7 @@ namespace QuantitySystem.Units.UnitSystems
                 case -1:
                     return Deci;
                 case 0:
-                    return Default;
+                    return None;
                 case 1:
                     return Deka;
                 case 2:
@@ -124,6 +124,59 @@ namespace QuantitySystem.Units.UnitSystems
                     return Yotta;
                 default:
                     throw new SIPrefixException("No SI Prefix found for exponent = " + exponent.ToString(CultureInfo.InvariantCulture));
+            }
+        }
+
+        public static SIPrefix FromPrefixName(string prefixName)
+        {
+            switch (prefixName.ToLower())
+            {
+
+                case "yocto":
+                    return Yocto;
+                case "zepto":
+                    return Zepto;
+                case "atto":
+                    return Atto;
+                case "femto":
+                    return Femto;
+                case "pico":
+                    return Pico;
+                case "nano":
+                    return Nano;
+                case "micro":
+                    return Micro;
+                case "milli":
+                    return Milli;
+                case "centi":
+                    return Centi;
+                case "deci":
+                    return Deci;
+                case "none":
+                    return None;
+                case "deka":
+                    return Deka;
+                case "hecto":
+                    return Hecto;
+                case "kilo":
+                    return Kilo;
+                case "mega":
+                    return Mega;
+                case "giga":
+                    return Giga;
+                case "tera":
+                    return Tera;
+                case "peta":
+                    return Peta;
+                case "exa":
+                    return Exa;
+                case "zetta":
+                    return Zetta;
+                case "yotta":
+                    return Yotta;
+                default:
+                    throw new SIPrefixException("No SI Prefix found for prefix = " + prefixName);
+
             }
         }
 

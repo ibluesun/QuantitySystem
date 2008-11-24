@@ -31,8 +31,8 @@ namespace QuantitySystem.Quantities.BaseQuantities
             set { QuantityValue = value; }
         }
 
-        private IUnit QuantityUnit;
-        public IUnit Unit
+        private Unit QuantityUnit;
+        public Unit Unit
         {
             get { return QuantityUnit; }
             set { QuantityUnit = value; }
@@ -72,10 +72,6 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
 
 
-        public static AnyQuantity<T> operator *(AnyQuantity<T> quantity, T value)
-        {
-            return Multiply(quantity, value);
-        }
 
 
         public static AnyQuantity<T> operator /(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
@@ -83,12 +79,19 @@ namespace QuantitySystem.Quantities.BaseQuantities
             return Divide(firstQuantity, secondQuantity);
         }
 
-
+        #region Quantity By Scalar Operators
+        /*
+        public static AnyQuantity<T> operator *(AnyQuantity<T> quantity, T value)
+        {
+            return Multiply(quantity, value);
+        }
 
         public static AnyQuantity<T> operator /(AnyQuantity<T> quantity, T value)
         {
             return Divide(quantity, value);
         }
+        */
+        #endregion
 
         #endregion
 
@@ -103,7 +106,5 @@ namespace QuantitySystem.Quantities.BaseQuantities
             return DQ;
         }
        #endregion
-
-        
     }
 }
