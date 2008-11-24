@@ -341,7 +341,7 @@ namespace QuantitySystem
 
 
         /// <summary>
-        /// Cash all quantities.
+        /// Cash all quantities with their Dimensions.
         /// </summary>
         static QuantityDimension()
         {
@@ -497,7 +497,7 @@ namespace QuantitySystem
 
 
 
-        public bool IsDimensionLess
+        public bool IsDimensionless
         {
             get
             {

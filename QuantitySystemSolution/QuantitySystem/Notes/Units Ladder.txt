@@ -1,24 +1,25 @@
-﻿expressing the unit in unit ladder
-or MeasuringLadder
+﻿Current format:
 
-its a ladder which have Default or ParkingUnit
-
-for example  of feet and inch
-
-this is the LengthUnitLadder in Imperial System
+Pressure<double> zz = SIUnit.Mega<Pascal>(800.30);
 
 
-or QuantityUnitsLadder
+the units creation is built over three layers of resolution
 
-which describe the Quantity
+1) Flat Units  (Base Quantities)
+when passing the QuantityType to the constructor
+the unit is created based on the dimensions of the quantity based on the base units
+        { which is analogous to the basic quantities }
+        
 
-also to not forget lets describe the whole line
+2) Quantity Units
+The passed argument is instance of the quantity
+based on the internal quantities of the quantity the default unit for each quantity
+will be used to create the unit
 
-Length<float> Bridge = SIUnit.Kilo<Meter>(30.23);
+for example Viscosity internal quantities   Pressure * Time
+Pressure: Pa
+Second: s
 
-Pressure<int> zz = SIUnit.Mega<Pascal>(800.30);
+then unit is <Pa.s>
 
-the Meter and or Pascal should be strongly typed so that the programmer can feel it intuitive
-
-Area<double> a1 = SIUnit.Kilo<Meter<2>>(30.21);
 

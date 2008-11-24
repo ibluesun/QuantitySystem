@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 
-namespace QuantitySystem.Units.UnitSystems
+namespace QuantitySystem.Units
 {
     [Serializable()]
     public class SIPrefixException : Exception

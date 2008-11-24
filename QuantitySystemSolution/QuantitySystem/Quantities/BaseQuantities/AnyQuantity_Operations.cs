@@ -68,7 +68,9 @@ namespace QuantitySystem.Quantities.BaseQuantities
         }
         */
 
+        #endregion
 
+        #region Quantity By Quantity Operators
 
         public static AnyQuantity<T> Add(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
         {
@@ -302,15 +304,6 @@ namespace QuantitySystem.Quantities.BaseQuantities
         }
 
 
-        public static AnyQuantity<T> Multiply(AnyQuantity<T> quantity, T value)
-        {
-            AnyQuantity<T> q = (AnyQuantity<T>)quantity.MemberwiseClone();
-
-            //q.Value *= value;
-
-            return q;
-
-        }
 
         public static AnyQuantity<T> Divide(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
         {
@@ -398,7 +391,20 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
             return qresult;
         }
+        
+        #endregion
 
+        #region Quantity By Scalar operators
+        /*
+        public static AnyQuantity<T> Multiply(AnyQuantity<T> quantity, T value)
+        {
+            AnyQuantity<T> q = (AnyQuantity<T>)quantity.MemberwiseClone();
+
+            //q.Value *= value;
+
+            return q;
+
+        }
         public static AnyQuantity<T> Divide(AnyQuantity<T> quantity, T value)
         {
             AnyQuantity<T> q = (AnyQuantity<T>)quantity.MemberwiseClone();
@@ -408,7 +414,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
             return q;
 
         }
-
+        */
         #endregion
 
     }

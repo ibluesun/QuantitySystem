@@ -9,16 +9,16 @@ namespace QuantitySystem.Quantities
 {
     public class Torque<T> : DerivedQuantity<T>
     {
-        //public Torque()
-        //    : base(1, new Force<T>(), new Length<T>(1, LengthType.Radius))
-        //{
-
-        //}
         public Torque()
-            : base(1, new Force<T>(), new RadiusLength<T>())
+            : base(1, new Force<T>(), new Length<T>(1, LengthType.Radius))
         {
 
         }
+        //public Torque()
+        //    : base(1, new Force<T>(), new RadiusLength<T>())
+        //{
+
+        //}
 
 
         public static implicit operator Torque<T>(T value)

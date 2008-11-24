@@ -80,7 +80,7 @@
     <Compile Include="Quantities\DerivedQuantity.cs" />
     <Compile Include="Quantities\Acceleration.cs" />
     <Compile Include="Quantities\Area.cs" />
-    <Compile Include="Quantities\BaseQuantities\Force.cs" />
+    <Compile Include="Quantities\Force.cs" />
     <Compile Include="Quantities\DimensionlessQuantities\DimensionlessQuantity.cs" />
     <Compile Include="Quantities\DimensionlessQuantities\Reynolds.cs" />
     <Compile Include="Quantities\KinematicViscosity.cs" />
@@ -96,10 +96,52 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuantityDimension.cs" />
     <Compile Include="QuantityNotFoundException.cs" />
+    <Compile Include="Units\Attributes\DefaultUnitAttribute.cs" />
+    <Compile Include="Units\Attributes\SIUnitAttribute.cs" />
+    <Compile Include="Units\Attributes\UnitAttribute.cs" />
+    <Compile Include="Units\Attributes\ReferenceUnitAttribute.cs" />
+    <Compile Include="Units\Imperial\LengthUnits.cs" />
+    <Compile Include="Units\SI\BaseUnits\Ampere.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\SI\BaseUnits\Candela.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\SI\BaseUnits\Gram.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\SI\BaseUnits\Kelvin.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\SI\BaseUnits\Metre.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\SI\BaseUnits\Mole.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\SI\BaseUnits\Second.cs" />
+    <Compile Include="Units\SIPrefixes.cs" />
+    <Compile Include="Units\SI\Joule.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\SI\Newton.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\SI\Pascal.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\SI\SIUnit.cs" />
+    <Compile Include="Units\SI\Watt.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\Unit.cs" />
+    <Compile Include="Units\UnitException.cs" />
     <Compile Include="Units\UnitNotFoundException.cs" />
     <Compile Include="Units\UnitsNotDimensionallyEqualException.cs" />
-    <Compile Include="Units\IUnit.cs" />
-    <Compile Include="Units\UnitSystem.cs" />
+    <Compile Include="Units\SIPrefix.cs" />
+    <Compile Include="Units\SIPrefixException.cs" />
+    <Compile Include="Units\SISystem.cs" />
+    <Compile Include="Units\Unit_Dynamic.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Notes\Dimensions Pattern.txt" />

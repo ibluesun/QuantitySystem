@@ -2,9 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using QuantitySystem.Quantities.BaseQuantities;
 
 
-namespace QuantitySystem.Quantities.BaseQuantities
+namespace QuantitySystem.Quantities
 {
     public class Force<T> : DerivedQuantity<T>
     {

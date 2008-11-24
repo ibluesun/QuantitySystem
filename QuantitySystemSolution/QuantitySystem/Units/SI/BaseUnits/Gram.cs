@@ -3,34 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
-using QuantitySystem.Units.UnitSystems;
 
-namespace QuantitySystem.Units.SIUnits.BaseUnits
+
+using QuantitySystem.Units.Attributes;
+
+namespace QuantitySystem.Units.SI
 {
-    public class Gram : SIUnit<Mass>
+    [SIUnit("g", typeof(Mass<>), SIPrefixes.Kilo)]
+    public class Gram : SIUnit
     {
 
-        public Gram() : base(SIPrefix.Kilo) { }
-
-        public override string Symbol
-        {
-            get
-            {
-                return base.Symbol + "g";
-            }
-        }
-
-        public override bool IsBaseUnit
-        {
-            get
-            {
-                return true;
-            }
-        }
 
 
-
-        public override double GetAbsoluteValue(double relativeValue)
+        /*
+        public override double ToSIUnit(double relativeValue)
         {
             //because this unit base is in KiloGram as SI standard
             // its absolute is always with kg
@@ -41,12 +27,14 @@ namespace QuantitySystem.Units.SIUnits.BaseUnits
             return relativeValue * factor;
         }
 
-        public override double GetRelativeValue(double absoluteValue)
+        public override double FromSIUnit(double absoluteValue)
         {
 
             double factor = Prefix.Factor / SIPrefix.Kilo.Factor;
 
             return absoluteValue / factor;
         }
+
+        */
     }
 }
