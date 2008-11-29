@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace QuantitySystem.Units
+namespace QuantitySystem.Units.Attributes
 {
     /// <summary>
     /// Make a relation between the attributed unit 

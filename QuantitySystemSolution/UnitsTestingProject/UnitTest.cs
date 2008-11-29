@@ -203,6 +203,10 @@ namespace UnitsTestingProject
         [TestMethod()]
         public void TestDynamicUnitCreationFlatUnits()
         {
+            //when conducting this test, 
+            // the type of quantity is sent to the Unit constructor
+            // the return value should be units in its base form which makes the unit
+
             Unit unit = new Unit(typeof(Area<>));
 
             Assert.AreEqual("<m^2>", unit.Symbol);
@@ -210,21 +214,40 @@ namespace UnitsTestingProject
 
             unit = new Unit(typeof(Force<>));
 
-            Assert.AreEqual("<kg.m/s^2>", unit.Symbol);
+            Assert.AreEqual("<N>", unit.Symbol);
 
 
             unit = new Unit(typeof(Pressure<>));
 
-            Assert.AreEqual("<kg/m.s^2>", unit.Symbol);
+            Assert.AreEqual("<Pa>", unit.Symbol);
 
 
-            unit = new Unit(typeof(Viscosity<>)); 
+            unit = new Unit(typeof(Viscosity<>));
 
             Assert.AreEqual("<kg/m.s>", unit.Symbol);
+
+            unit = new Unit(typeof(Density<>));
+
+            Assert.AreEqual("<kg/m^3>", unit.Symbol);
 
 
             unit = new Unit(typeof(Mass<>));
             Assert.AreEqual("<kg>", unit.Symbol);
+
+
+            unit = new Unit(typeof(Angle<Double>));
+            Assert.AreEqual("<1>", unit.Symbol);
+
+            unit = new Unit(typeof(Reynolds<>));
+            Assert.AreEqual("<1>", unit.Symbol);
+
+
+            unit = new Unit(typeof(Torque<>));
+            Assert.AreEqual("<kg.m^2/s^2>", unit.Symbol);
+
+            unit = new Unit(typeof(Energy<>));
+            Assert.AreEqual("<J>", unit.Symbol);
+
 
 
         }
@@ -234,6 +257,9 @@ namespace UnitsTestingProject
         [TestMethod()]
         public void TestDynamicUnitCreationQuantityUnits()
         {
+            // this test is extracting the units in its derived symbols from the running 
+            // instance of the quantity.
+
 
             Unit unit = new Unit(new Length<double>());
 
@@ -254,8 +280,7 @@ namespace UnitsTestingProject
 
             unit = new Unit(new Density<double>());
 
-            Assert.AreEqual("<kg.<1/m^3>>", unit.Symbol);
-
+            Assert.AreEqual("<kg/m^3>", unit.Symbol);
 
             unit = new Unit(new Pressure<double>());
 
@@ -273,10 +298,16 @@ namespace UnitsTestingProject
             unit = new Unit(new Angle<double>());
             Assert.AreEqual("<m/m>", unit.Symbol);
 
+            unit = new Unit(new Reynolds<double>());
+            Assert.AreEqual("<<kg/m^3>.<m/s>.m/Pa.s>", unit.Symbol);
+
+
             unit = new Unit(new Torque<double>());
             Assert.AreEqual("<N.m>", unit.Symbol);
 
-            Assert.Inconclusive("The test needs refinement and completion for Angle and Density");
+            unit = new Unit(new Energy<double>());
+            Assert.AreEqual("<J>", unit.Symbol);
+
 
         }
 

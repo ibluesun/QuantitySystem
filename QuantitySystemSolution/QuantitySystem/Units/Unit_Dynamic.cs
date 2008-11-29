@@ -7,6 +7,7 @@ using System.Globalization;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Quantities;
 using System.Reflection;
+using System.Text.RegularExpressions;
 
 namespace QuantitySystem.Units
 {
@@ -17,83 +18,103 @@ namespace QuantitySystem.Units
         private List<Unit> SubUnits { get; set; } //the list shouldn't been modified by sub classes
 
         /// <summary>
-        /// Construct a unit based on the quantity type in SI units.
+        /// Construct a unit based on the quantity type in SI Base units.
+        /// Any Dimensionless quantity will return <1> in its unit.
         /// </summary>
         /// <param name="quantityType"></param>
         public Unit(Type quantityType)
         {
 
-            QuantityDimension dimension = QuantityDimension.DimensionFrom(quantityType);
-
             SubUnits = new List<Unit>();
 
-            if (dimension.Mass.Exponent != 0)
+            //try direct mapping first to get the unit
+
+            Type InnerUnitType = Unit.GetSIUnitTypeOf(quantityType);
+
+            if (InnerUnitType == null)
             {
-                Unit u = new SI.Gram();
-                u.UnitExponent = dimension.Mass.Exponent;
-                SubUnits.Add(u);
+                QuantityDimension dimension = QuantityDimension.DimensionFrom(quantityType);
+
+
+                if (dimension.Mass.Exponent != 0)
+                {
+                    Unit u = new SI.Gram();
+                    u.UnitExponent = dimension.Mass.Exponent;
+                    SubUnits.Add(u);
+                }
+
+                if (dimension.Length.Exponent != 0)
+                {
+                    Unit u = new SI.Metre();
+                    u.UnitExponent = dimension.Length.Exponent;
+                    SubUnits.Add(u);
+                }
+
+                if (dimension.Time.Exponent != 0)
+                {
+                    Unit u = new SI.Second();
+                    u.UnitExponent = dimension.Time.Exponent;
+                    SubUnits.Add(u);
+                }
+
+                if (dimension.Temperature.Exponent != 0)
+                {
+                    Unit u = new SI.Kelvin();
+                    u.UnitExponent = dimension.Temperature.Exponent;
+                    SubUnits.Add(u);
+                }
+
+                if (dimension.LuminousIntensity.Exponent != 0)
+                {
+                    Unit u = new SI.Candela();
+                    u.UnitExponent = dimension.LuminousIntensity.Exponent;
+                    SubUnits.Add(u);
+                }
+
+                if (dimension.AmountOfSubstance.Exponent != 0)
+                {
+                    Unit u = new SI.Mole();
+                    u.UnitExponent = dimension.AmountOfSubstance.Exponent;
+                    SubUnits.Add(u);
+                }
+
+                if (dimension.ElectricCurrent.Exponent != 0)
+                {
+                    Unit u = new SI.Ampere();
+                    u.UnitExponent = dimension.ElectricCurrent.Exponent;
+                    SubUnits.Add(u);
+                }
+
             }
 
-            if (dimension.Length.Exponent != 0)
+            else
             {
-                Unit u = new SI.Metre();
-                u.UnitExponent = dimension.Length.Exponent;
-                SubUnits.Add(u);
-            }
+                //subclass of AnyQuantity
+                //use direct mapping with the exponent of the quantity
 
-            if (dimension.Time.Exponent != 0)
-            {
-                Unit u = new SI.Second();
-                u.UnitExponent = dimension.Time.Exponent;
-                SubUnits.Add(u);
-            }
+                Unit un = (Unit)Activator.CreateInstance(InnerUnitType);
 
-            if (dimension.Temperature.Exponent != 0)
-            {
-                Unit u = new SI.Kelvin();
-                u.UnitExponent = dimension.Temperature.Exponent;
-                SubUnits.Add(u);
-            }
+                SubUnits.Add(un);
 
-            if (dimension.LuminousIntensity.Exponent != 0)
-            {
-                Unit u = new SI.Candela();
-                u.UnitExponent = dimension.LuminousIntensity.Exponent;
-                SubUnits.Add(u);
             }
-
-            if (dimension.AmountOfSubstance.Exponent != 0)
-            {
-                Unit u = new SI.Mole();
-                u.UnitExponent = dimension.AmountOfSubstance.Exponent;
-                SubUnits.Add(u);
-            }
-
-            if (dimension.ElectricCurrent.Exponent != 0)
-            {
-                Unit u = new SI.Ampere();
-                u.UnitExponent = dimension.ElectricCurrent.Exponent;
-                SubUnits.Add(u);
-            }
-
 
             this.symbol = GenerateUnitSymbolFromSubBaseUnits();
 
 
-            this.isDefaultUnit = false;
+            this.isDefaultUnit = true;
+
             this.quantityType = quantityType;
 
-
-
             this.isBaseUnit = false;
-
-
 
         }
 
 
         /// <summary>
         /// Construct a unit based on the default units of the internal quantities of passed quantity instance.
+        /// Dimensionless quantity will return their native sub quantities units.
+        /// this connstructor is useful like when you pass torque quantity it will return <N.m>
+        /// but when you use Energy Quantity it will return J.
         /// </summary>
         /// <param name="quantity"></param>
         public Unit(BaseQuantity quantity)
@@ -161,7 +182,7 @@ namespace QuantitySystem.Units
 
             this.symbol = GenerateUnitSymbolFromSubBaseUnits();
 
-            this.isDefaultUnit = false;
+            this.isDefaultUnit = true;
 
             if (!m_QuantityType.IsGenericTypeDefinition)
             {
@@ -237,7 +258,23 @@ namespace QuantitySystem.Units
                 return UnitSymbol;
             };
 
-            return FormatUnitSymbol();
+            string PreFinalSymbol =  FormatUnitSymbol();
+
+            string FinalSymbol = PreFinalSymbol;
+
+
+            //remove .<1/.  to be 
+            string pattern = @"\.<1/(.+?)>";
+
+            Match m = Regex.Match(PreFinalSymbol, pattern);
+
+            while (m.Success)
+            {
+                FinalSymbol = FinalSymbol.Replace(m.Groups[0].Value, "/" + m.Groups[1].Value);
+                m = m.NextMatch();
+            }
+
+            return FinalSymbol;
 
         }
 

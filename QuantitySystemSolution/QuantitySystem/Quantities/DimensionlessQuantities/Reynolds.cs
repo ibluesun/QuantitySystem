@@ -8,7 +8,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities.DimensionlessQuantities
 {
-    public class Reynolds<T> : DimensionlessQuantity<T>
+    public sealed class Reynolds<T> : DimensionlessQuantity<T>
     {
         public Reynolds()
             :base (1, new Density<T>(), new Velocity<T>(), new Length<T>(), new Viscosity<T>(-1))

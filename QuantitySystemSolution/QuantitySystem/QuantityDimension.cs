@@ -423,15 +423,28 @@ namespace QuantitySystem
 
         public static QuantityDimension DimensionFrom(Type quantityType)
         {
+            if (!quantityType.IsGenericTypeDefinition)
+            {
+                //the passed type is AnyQuantity<object> for example
+                //I want to get the type without type parameters AnyQuantity<>
+                quantityType = quantityType.GetGenericTypeDefinition();
+            }
+
             try
             {
                 return CurrentDimensionsDictionary[quantityType];
             }
-            catch
+            catch (System.Collections.Generic.KeyNotFoundException ex)
             {
-                throw new DimensionNotFoundException("UnExpected Exception. TypeOf<" + quantityType.ToString() + "> have no dimension associate with it");
+                //if key not found and quantityType is really Quantity
+                //then return dimensionless Quantity
 
-            }
+                if (quantityType.BaseType.GetGenericTypeDefinition() == typeof(DimensionlessQuantity<>))
+                    return QuantityDimension.Dimensionless;
+                else
+                    throw new DimensionNotFoundException("UnExpected Exception. TypeOf<" + quantityType.ToString() + "> have no dimension associate with it", ex);
+
+            }          
         }
 
 
@@ -496,6 +509,13 @@ namespace QuantitySystem
         #endregion
 
 
+        public static QuantityDimension Dimensionless
+        {
+            get
+            {
+                return new QuantityDimension();
+            }
+        }
 
         public bool IsDimensionless
         {
