@@ -9,7 +9,7 @@ using QuantitySystem.Units.Attributes;
 namespace QuantitySystem.Units.SI
 {
     [SIUnit("K", typeof(Temperature<>), SIPrefixes.None)]
-    public class Kelvin : SIUnit
+    public sealed class Kelvin : SIUnit
     {
 
 

@@ -1,6 +1,8 @@
 ﻿using QuantitySystem.Quantities.BaseQuantities;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QuantitySystem;
+using QuantitySystem.Units;
+using QuantitySystem.Units.SI;
 namespace QuantitySystemTestingProject
 {
     /// <summary>
@@ -93,6 +95,23 @@ namespace QuantitySystemTestingProject
             var l = l1 + l2;
 
             Assert.AreEqual<double>(100, l.Value);
+
+        }
+
+        [TestMethod()]
+        public void UnitMassAddTest()
+        {
+            var l1 = SISystem.Kilo<Gram>(2);
+
+            var l2 = SISystem.None<Gram>(500);
+
+            var l = l1 + l2;
+
+            Assert.AreEqual<double>(2.5, l.Value);
+
+            var lr = l2 + l1;
+            Assert.AreEqual<double>(2500, lr.Value);
+
 
         }
 

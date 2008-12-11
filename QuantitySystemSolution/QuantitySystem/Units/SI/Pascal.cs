@@ -9,7 +9,7 @@ using QuantitySystem.Units.Attributes;
 namespace QuantitySystem.Units.SI
 {
     [SIUnit("Pa", typeof(Pressure<>), SIPrefixes.None)]
-    public class Pascal : SIUnit
+    public sealed class Pascal : SIUnit
     {
 
 

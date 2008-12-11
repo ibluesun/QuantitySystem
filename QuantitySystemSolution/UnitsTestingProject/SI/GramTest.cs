@@ -79,8 +79,8 @@ namespace UnitsTestingProject
             
 
             Assert.AreEqual(true, target.IsBaseUnit);
-            Assert.AreEqual(true, target.IsDefaultUnit);
-            Assert.AreEqual(null, target.ReferenceUnit);
+            Assert.AreEqual(true, target.DefaultUnit);
+
 
         }
 

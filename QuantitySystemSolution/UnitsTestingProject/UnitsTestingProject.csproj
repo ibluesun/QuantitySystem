@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="SISystemTest.cs" />
+    <Compile Include="SIUnitTest.cs" />
     <Compile Include="SI\AmpereTest.cs" />
     <Compile Include="SI\CandelaTest.cs" />
     <Compile Include="SI\GramTest.cs" />

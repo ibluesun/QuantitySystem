@@ -9,7 +9,7 @@ using QuantitySystem.Units.Attributes;
 namespace QuantitySystem.Units.SI
 {
     [SIUnit("W", typeof(Power<>), SIPrefixes.None)]
-    public class Watt : SIUnit
+    public sealed class Watt : SIUnit
     {
 
 

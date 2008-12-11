@@ -10,7 +10,7 @@ using QuantitySystem.Units.Attributes;
 namespace QuantitySystem.Units.SI
 {
     [SIUnit("s", typeof(Time<>), SIPrefixes.None)]
-    public class Second : SIUnit
+    public sealed class Second : SIUnit
     {
 
     }

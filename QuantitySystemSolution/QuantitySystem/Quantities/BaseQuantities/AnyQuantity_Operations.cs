@@ -15,6 +15,52 @@ namespace QuantitySystem.Quantities.BaseQuantities
     partial class AnyQuantity<T>
     {
 
+        #region Generic Helper Calculations
+        private static T GenericMultipliedScalar(T value, double factor)
+        {
+            DynamicMethod method = new DynamicMethod(
+                "Multiply_Method" + ":" + typeof(T).ToString(),
+                typeof(T),
+                new Type[] { typeof(T), typeof(double) });
+
+
+            //get generator to construct the function.
+
+            ILGenerator gen = method.GetILGenerator();
+
+
+            gen.Emit(OpCodes.Ldarg_0);  //load the first value
+            gen.Emit(OpCodes.Ldarg_1);  //load the second value
+
+
+            if (typeof(T).IsPrimitive)
+            {
+                gen.Emit(OpCodes.Mul);              //adding them if they were premitive
+            }
+            else
+            {
+                MethodInfo info = typeof(T).GetMethod
+                    (
+                    "op_Multiply",
+                    new Type[] { typeof(T), typeof(double) },
+                    null
+                    );
+
+                gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
+
+            }
+
+            gen.Emit(OpCodes.Ret);
+
+
+            T result = (T)method.Invoke(null, new object[] { value, factor });
+
+
+            return result;
+        }
+
+        #endregion
+
         #region Strongly Typed Operations
 
         /*
@@ -116,32 +162,35 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
                 AnyQuantity<T> AQ = QuantityDimension.QuantityFrom<T>(firstQuantity.Dimension);
 
-                ////convert values to Absolute values  {explicitly speaking SI values}
-
-
-                //double firstVal = firstQuantity.Unit.GetAbsoluteValue(firstQuantity.Value);                
                 T firstVal = (firstQuantity.Value);
 
-                //double secondVal = secondQuantity.Unit.GetAbsoluteValue(secondQuantity.Value);
                 T secondVal = (secondQuantity.Value);
+
+                //correct the values according to left unit or first unit.
+                //the resulted quantity has the values of the first unit.
+
+                if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                {
+                    //factor from second unit to first unit
+                    UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+                    secondVal = GenericMultipliedScalar(secondVal, stof.ConversionFactor);
+                }
+
 
 
                 ////sum the values
 
-                //double val = firstVal + secondVal;
                 T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
 
+                if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                {
+                    //assign the unit of first quantity to the result.
+                    AQ.Unit = firstQuantity.Unit;
+                }
 
-                ////assign the unit of first quantity to the result.
-                //AQ.Unit = firstQuantity.Unit;
 
-                ////get relative value based on first quantity unit
-
-
-                //AQ.Value = AQ.Unit.GetRelativeValue(val);
                 AQ.Value = result;
-
-
 
                 return AQ;
 

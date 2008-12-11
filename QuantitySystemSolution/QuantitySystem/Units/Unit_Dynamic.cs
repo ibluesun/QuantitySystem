@@ -19,7 +19,7 @@ namespace QuantitySystem.Units
 
         /// <summary>
         /// Construct a unit based on the quantity type in SI Base units.
-        /// Any Dimensionless quantity will return <1> in its unit.
+        /// Any Dimensionless quantity will return  in its unit.
         /// </summary>
         /// <param name="quantityType"></param>
         public Unit(Type quantityType)
@@ -113,7 +113,7 @@ namespace QuantitySystem.Units
         /// <summary>
         /// Construct a unit based on the default units of the internal quantities of passed quantity instance.
         /// Dimensionless quantity will return their native sub quantities units.
-        /// this connstructor is useful like when you pass torque quantity it will return <N.m>
+        /// this connstructor is useful like when you pass torque quantity it will return "N.m"
         /// but when you use Energy Quantity it will return J.
         /// </summary>
         /// <param name="quantity"></param>

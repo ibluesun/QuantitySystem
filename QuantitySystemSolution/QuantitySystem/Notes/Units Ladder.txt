@@ -7,8 +7,14 @@ the units creation is built over three layers of resolution
 
 1) Flat Units  (Base Quantities)
 when passing the QuantityType to the constructor
-the unit is created based on the dimensions of the quantity based on the base units
+the unit is created based on the passed type
+if the type is not having standard symbol 
+
+creation is done using the dimensions of the quantity based on the base units
         { which is analogous to the basic quantities }
+
+So that passing Force will result in <N>
+
         
 
 2) Quantity Units

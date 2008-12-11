@@ -3,15 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using QuantitySystem.Quantities.BaseQuantities;
+using QuantitySystem.Quantities;
 using QuantitySystem.Units.Attributes;
+
+using QuantitySystem.Quantities.DimensionlessQuantities;
 
 namespace QuantitySystem.Units.SI
 {
-    [SIUnit("mol", typeof(AmountOfSubstance<>), SIPrefixes.None)]
-    public sealed class Mole : SIUnit
+    [SIUnit("rad", typeof(Angle<>), SIPrefixes.None)]
+    public sealed class Radian : SIUnit
     {
-
 
     }
 }

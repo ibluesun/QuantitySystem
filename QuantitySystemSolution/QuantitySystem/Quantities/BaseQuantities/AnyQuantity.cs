@@ -48,8 +48,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
         #region Quantity Operations
 
 
-        #region Overloaded Operators        
-
+        #region Overloaded Operators
 
 
         public static AnyQuantity<T> operator +(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)

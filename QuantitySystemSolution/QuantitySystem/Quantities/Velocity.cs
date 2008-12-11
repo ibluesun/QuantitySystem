@@ -19,25 +19,6 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public static Velocity<double> LightSpeed
-        {
-            get
-            {
-                Velocity<double> v = new Velocity<double>();
-                v.Value = 299792458;
-
-                ////assign the unit here  m/s
-                //Units.SIUnits.BaseUnits.Metre m = new QuantitySystem.Units.SIUnits.BaseUnits.Metre();
-
-                //Units.Second s = new Units.Second();
-
-                //s = (Units.Second)s.Invert();
-
-                //v.Unit = new Units.SIUnits.DerivedSIUnit(m, s);
-                return v;
-            }
-        }
-
 
         public static implicit operator Velocity<T>(T value)
         {
