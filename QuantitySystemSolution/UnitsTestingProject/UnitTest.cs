@@ -7,6 +7,7 @@ using QuantitySystem.Units.SI;
 using QuantitySystem.Units.Imperial;
 using QuantitySystem.Quantities;
 using QuantitySystem.Quantities.DimensionlessQuantities;
+using QuantitySystem.Units.SIAccepted;
 
 namespace UnitsTestingProject
 {
@@ -173,6 +174,7 @@ namespace UnitsTestingProject
         ///</summary>
         public void GetThisUnitQuantityTestHelper<T>()
         {
+
             Unit target = new Yard(); // TODO: Initialize to an appropriate value
             AnyQuantity<T> expected = new Length<T>(); // TODO: Initialize to an appropriate value
             
@@ -180,6 +182,8 @@ namespace UnitsTestingProject
             actual = target.GetThisUnitQuantity<T>();
 
             Assert.AreEqual(expected, actual);
+
+
 
             target = new Kelvin();
 
@@ -205,7 +209,8 @@ namespace UnitsTestingProject
         {
             //when conducting this test, 
             // the type of quantity is sent to the Unit constructor
-            // the return value should be units in its base form which makes the unit
+            // the return value should be the direct units of the passed Type
+            //   otherwise the units will be expressed in the term of the base units.
 
             Unit unit = new Unit(typeof(Area<>));
 
@@ -236,7 +241,7 @@ namespace UnitsTestingProject
 
 
             unit = new Unit(typeof(Angle<Double>));
-            Assert.AreEqual("<1>", unit.Symbol);
+            Assert.AreEqual("<rad>", unit.Symbol);
 
             unit = new Unit(typeof(Reynolds<>));
             Assert.AreEqual("<1>", unit.Symbol);
@@ -286,9 +291,7 @@ namespace UnitsTestingProject
 
             Assert.AreEqual("<Pa>", unit.Symbol);
 
-
             unit = new Unit(new Viscosity<double>());
-
             Assert.AreEqual("<Pa.s>", unit.Symbol);
 
 
@@ -296,7 +299,7 @@ namespace UnitsTestingProject
             Assert.AreEqual("<kg>", unit.Symbol);
 
             unit = new Unit(new Angle<double>());
-            Assert.AreEqual("<m/m>", unit.Symbol);
+            Assert.AreEqual("<rad>", unit.Symbol);
 
             unit = new Unit(new Reynolds<double>());
             Assert.AreEqual("<<kg/m^3>.<m/s>.m/Pa.s>", unit.Symbol);
@@ -311,5 +314,163 @@ namespace UnitsTestingProject
 
         }
 
+
+        /// <summary>
+        ///A test for PathToDefaultUnit
+        ///</summary>
+        [TestMethod()]
+        public void PathToDefaultUnitTest()
+        {
+
+            //scenario 1: Mile To Foot
+
+            UnitPath expected = new UnitPath();
+
+            expected.Push(
+                new UnitPathItem
+                {
+                    Unit = new Mile(),
+                    Numerator = 1,
+                    Denumenator=1
+                }
+                );
+
+            expected.Push(
+                new UnitPathItem
+                {
+                    Unit = new Yard(),
+                    Numerator = 1760,
+                    Denumenator = 1
+                }
+                );
+
+            expected.Push(
+                new UnitPathItem
+                {
+                    Unit = new Foot(),
+                    Numerator = 3,
+                    Denumenator = 1
+                }
+                );
+
+
+            Mile mil = new Mile();
+
+            UnitPath actual = mil.PathToDefaultUnit();
+            
+
+            Assert.AreEqual(expected, actual);
+
+
+
+            Inch f = new Inch();
+            UnitPath up = f.PathToDefaultUnit();
+            Assert.AreEqual(1/12.0, up.ConversionFactor);
+
+
+        }
+
+
+
+
+        /// <summary>
+        ///A test for PathFromDefaultUnit
+        ///</summary>
+        [TestMethod()]
+        public void PathFromDefaultUnitTest()
+        {
+
+            //scenario 1: Mile To Foot
+
+            UnitPath expected = new UnitPath();
+
+            expected.Push(
+                new UnitPathItem
+                {
+                    Unit = new Foot(),
+                    Numerator = 1,
+                    Denumenator=1
+                }
+                );
+
+            expected.Push(
+                new UnitPathItem
+                {
+                    Unit = new Yard(),
+                    Numerator = 1, 
+                    Denumenator= 3
+                }
+                );
+
+            expected.Push(
+                new UnitPathItem
+                {
+                    Unit = new Mile(),
+                    Numerator = 1,
+                    Denumenator= 1760
+                }
+                );
+
+
+            Mile mil = new Mile();
+
+            UnitPath actual = mil.PathFromDefaultUnit();
+
+            Assert.AreEqual(expected, actual);
+
+        }
+
+
+
+        /// <summary>
+        ///A test for PathFromUnit
+        ///</summary>
+        [TestMethod()]
+        public void PathFromUnitTest()
+        {
+
+            double expected = 63360;
+
+            Mile mil = new Mile();
+            Inch i = new Inch();
+
+
+            UnitPath actual = i.PathFromUnit(mil);
+
+
+            Assert.AreEqual(expected, actual.ConversionFactor);
+
+        }
+
+
+        /// <summary>
+        ///A test for PathToUnit
+        ///</summary>
+        [TestMethod()]
+        public void PathToUnitTest()
+        {
+
+            double expected = 63360;
+
+            Mile mil = new Mile();
+            Inch i = new Inch();
+
+            UnitPath actual = mil.PathToUnit(i);
+
+            Assert.AreEqual(expected, actual.ConversionFactor);
+
+
+            Gram g = new Gram();
+            g.UnitPrefix = SIPrefix.None;
+
+            Gram Mg = new Gram();
+            Mg.UnitPrefix = SIPrefix.Mega;
+
+            actual = g.PathToUnit(Mg);
+
+            Assert.AreEqual(1e-6, actual.ConversionFactor);
+
+
+        }
     }
 }

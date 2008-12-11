@@ -8,7 +8,7 @@ using QuantitySystem.Units.Attributes;
 namespace QuantitySystem.Units.SI
 {
     [SIUnit("m", typeof(Length<>), SIPrefixes.None)]
-    public class Metre : SIUnit
+    public sealed class Metre : SIUnit
     {
 
 

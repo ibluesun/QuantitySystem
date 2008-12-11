@@ -10,7 +10,7 @@ namespace QuantitySystem.Units.SI
 {
 
     [SIUnit("N", typeof(Force<>), SIPrefixes.None)]
-    public class Newton : SIUnit
+    public sealed class Newton : SIUnit
     {
 
 

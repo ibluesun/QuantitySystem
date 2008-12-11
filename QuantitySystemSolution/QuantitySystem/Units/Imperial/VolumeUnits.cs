@@ -6,12 +6,9 @@ using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units.Attributes;
 
-namespace QuantitySystem.Units.SI
+
+namespace QuantitySystem.Units.Imperial
 {
-    [SIUnit("mol", typeof(AmountOfSubstance<>), SIPrefixes.None)]
-    public sealed class Mole : SIUnit
-    {
 
 
-    }
 }

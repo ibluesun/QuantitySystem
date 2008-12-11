@@ -9,7 +9,7 @@ using QuantitySystem.Units.Attributes;
 namespace QuantitySystem.Units.SI
 {
     [SIUnit("cd", typeof(LuminousIntensity<>), SIPrefixes.None)]
-    public class Candela : SIUnit
+    public sealed class Candela : SIUnit
     {
 
     }

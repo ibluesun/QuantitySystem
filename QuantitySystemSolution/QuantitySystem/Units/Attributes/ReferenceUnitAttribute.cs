@@ -14,24 +14,56 @@ namespace QuantitySystem.Units.Attributes
     [AttributeUsage(AttributeTargets.Class, AllowMultiple=false)]
     public sealed class ReferenceUnitAttribute : Attribute
     {
-        private readonly double times;
+        private readonly double numerator;
+        private readonly double denumerator;
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="times">Times of the reference unit.</param>
-        public ReferenceUnitAttribute(double times)
+        /// <param name="numerator"></param>
+        /// <param name="denominator"></param>
+        public ReferenceUnitAttribute(double numerator)
         {
-            this.times = times;
+            this.numerator = numerator;
+            this.denumerator = 1;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="numerator"></param>
+        /// <param name="denominator"></param>
+        public ReferenceUnitAttribute(double numerator, double denumerator)
+        {
+            this.numerator = numerator;
+            this.denumerator = denumerator;
+
+            
         }
        
         public Type UnitType { get; set; }
+
+        public double Numerator
+        {
+            get
+            {
+                return numerator;
+            }
+        }
+        public double Denumerator
+        {
+            get
+            {
+                return denumerator;
+            }
+        }
+
 
         public double Times
         {
             get
             {
-                return times;
+                return numerator / denumerator;
             }
         }
 

@@ -9,7 +9,7 @@ using QuantitySystem.Units.Attributes;
 namespace QuantitySystem.Units.SI
 {
     [SIUnit("J", typeof(Energy<>), SIPrefixes.None)]
-    public class Joule : SIUnit
+    public sealed class Joule : SIUnit
     {
     }
 }

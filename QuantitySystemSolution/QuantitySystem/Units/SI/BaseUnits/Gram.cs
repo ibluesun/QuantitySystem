@@ -10,7 +10,7 @@ using QuantitySystem.Units.Attributes;
 namespace QuantitySystem.Units.SI
 {
     [SIUnit("g", typeof(Mass<>), SIPrefixes.Kilo)]
-    public class Gram : SIUnit
+    public sealed class Gram : SIUnit
     {
 
 

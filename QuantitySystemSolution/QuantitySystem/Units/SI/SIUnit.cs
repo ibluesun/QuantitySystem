@@ -17,7 +17,6 @@ namespace QuantitySystem.Units.SI
 
         protected SIUnit()
         {
-            isDefaultUnit = true;  //SI units always default units because default is depending on the default prefix
 
             //access the SIUnitAttribute
             MemberInfo info = this.GetType();
@@ -29,7 +28,7 @@ namespace QuantitySystem.Units.SI
 
             if (siua != null)
             {
-
+                defaultUnitPrefix = SIPrefix.FromPrefixName(siua.DefaultPrefix.ToString());
                 unitPrefix = SIPrefix.FromPrefixName(siua.DefaultPrefix.ToString());
 
             }
@@ -37,14 +36,35 @@ namespace QuantitySystem.Units.SI
             {
                 throw new UnitException("SIUnitAttribute Not Found");
             }
+
+
+            //ReferenceUnit attribute may or may not appear
+            // if it appears then the unit is not a default SI unit
+            // but act as SI Unit {means take prefixes}.  and accepted by the SI poids
+            // however the code of reference unit is in the base class code.
+
+
         }
 
 
         #endregion
 
+        private readonly SIPrefix defaultUnitPrefix;
+
+        /// <summary>
+        /// Current unit default prefix.
+        /// </summary>
+        public SIPrefix DefaultUnitPrefix
+        {
+            get { return defaultUnitPrefix; }
+        } 
+
 
         private SIPrefix unitPrefix;
 
+        /// <summary>
+        /// Current instance unit prefix.
+        /// </summary>
         public SIPrefix UnitPrefix
         {
             get { return unitPrefix; }
@@ -60,31 +80,116 @@ namespace QuantitySystem.Units.SI
             }
         }
 
-        public override double ToSIUnit(double relativeValue)
+        /// <summary>
+        /// Tells if the current unit in default mode or not.
+        /// </summary>
+        public override bool DefaultUnit
         {
-            return relativeValue * UnitPrefix.Factor;
+            get
+            {
+                //return true only and if only the current prefix equal the default prefix.
+                if (referenceUnit == null)
+                {
+                    //means I am native SI unit.
+                    if (unitPrefix.Exponent == defaultUnitPrefix.Exponent)
+                        return true;
+                    else
+                        return false;
+                }
+                else
+                {
+                    //reference unit exist this is not native SI unit
+                    return false;
+                }
+            }
         }
 
-        public override double FromSIUnit(double absoluteValue)
+        public override Unit ReferenceUnit
         {
-            
-            return absoluteValue / UnitPrefix.Factor;            
+            get
+            {
+                if (referenceUnit == null)
+                {
+                    // I am native SI unit
+                    if (DefaultUnit)
+                    {
+                        //I am already default don't return extra parents.
+                        return null;
+                    }
+                    else
+                    {
+                        // native si not in the default mode.
+                        //put the default of this unit by creating it again
+                        SIUnit RefUnit = (SIUnit)this.MemberwiseClone();
+                        RefUnit.UnitPrefix = this.defaultUnitPrefix;
+
+                        return RefUnit;
+                    }
+                }
+                else
+                {
+                    //although it is inherited from SIUnit but the current instance
+                    // is most probably a unit accepted to be used in SIUnit
+                    // so it is not the default unit.
+                    // so we need the si reference unit.
+                    // the reference must be SI.
+                    return base.ReferenceUnit;
+                }
+            }
+        }
+
+        public override double ReferenceUnitDenumenator
+        {
+            get
+            {
+                if (referenceUnit == null)
+                {
+                    if (DefaultUnit)
+                        return 0;
+                    else
+                        return 1;
+                }
+                else
+                {
+                    return referenceUnitDenumenator;
+
+                }
+            }
+        }
+
+        public override double ReferenceUnitNumerator
+        {
+            get
+            {
+                
+                if (referenceUnit == null)
+                {
+                    if (DefaultUnit)
+                        return 0;
+                    else
+                        return this.defaultUnitPrefix.GetFactorForConvertTo(UnitPrefix);
+                }
+                else
+                {
+                    //convert me to default also if I had prefix over the default of me
+                    double CorrectToDefault = this.defaultUnitPrefix.GetFactorForConvertTo(UnitPrefix);
+
+                    return referenceUnitNumerator * CorrectToDefault;
+
+                }
+            }
         }
 
         
 
-        public double ToPrefix(SIPrefix prefix, double value)
-        {
-            double abs = ToSIUnit(value);
-            return abs * prefix.Factor;
-        }
+        
 
 
-        //public bool IsSpecialName { get { return true; } }
 
 
         /* exclude from code for now */
 
+        //public bool IsSpecialName { get { return true; } }
         //#region Unit Operations
         
          

@@ -76,8 +76,8 @@ namespace UnitsTestingProject
             Assert.AreEqual(typeof(Length<>), target.QuantityType);
             
             Assert.AreEqual(true, target.IsBaseUnit);
-            Assert.AreEqual(false, target.IsDefaultUnit);
-            Assert.AreEqual(typeof(Foot), target.ReferenceUnit.GetType());
+            Assert.AreEqual(false, target.DefaultUnit);
+            Assert.AreEqual(typeof(Yard), target.ReferenceUnit.GetType());
         }
     }
 }

@@ -68,10 +68,22 @@ namespace QuantitySystem.Units
                 else
                 {
                     //get the SI Unit Type for this quantity
-                    referenceUnit = (Unit)Activator.CreateInstance(GetSIUnitTypeOf(quantityType));
+                    //first search for direct mapping
+                    Type SIUnitType = GetSIUnitTypeOf(quantityType);
+                    if (SIUnitType != null)
+                    {
+                        referenceUnit = (Unit)Activator.CreateInstance(SIUnitType);
+                    }
+                    else
+                    {
+                        //try dynamic creation of the unit.
+                        referenceUnit = new Unit(quantityType);
+
+                    }
                     
                 }
-                referenceUnitTimes = dua.Times;
+                referenceUnitNumerator = dua.Numerator;
+                referenceUnitDenumenator = dua.Denumerator;
             }
 
         }
@@ -82,11 +94,15 @@ namespace QuantitySystem.Units
 
         private readonly string symbol;
         protected bool isDefaultUnit;
-        private readonly Type quantityType;
+        protected readonly Type quantityType;
         private readonly bool isBaseUnit;
 
-        private readonly Unit referenceUnit;
-        private readonly double referenceUnitTimes;
+        protected readonly Unit referenceUnit;
+        protected readonly double referenceUnitNumerator;
+
+        protected readonly double referenceUnitDenumenator;
+
+
 
 
         
@@ -102,7 +118,7 @@ namespace QuantitySystem.Units
         /// <summary>
         /// Determine if the unit is the default unit for the quantity type.
         /// </summary>
-        public bool IsDefaultUnit
+        public virtual bool DefaultUnit
         {
             get
             {
@@ -136,7 +152,7 @@ namespace QuantitySystem.Units
         /// <summary>
         /// The unit that serve a parent for this unit.
         /// </summary>
-        public Unit ReferenceUnit
+        public virtual Unit ReferenceUnit
         {
             get { return referenceUnit; }
         }
@@ -146,8 +162,20 @@ namespace QuantitySystem.Units
         /// </summary>
         public double ReferenceUnitTimes
         {
-            get { return referenceUnitTimes; }
+            get { return ReferenceUnitNumerator / ReferenceUnitDenumenator; }
+        }
+
+        public virtual double ReferenceUnitNumerator
+        {
+            get { return referenceUnitNumerator; }
+        }
+
+        public virtual double ReferenceUnitDenumenator
+        {
+            get { return referenceUnitDenumenator; }
         } 
+
+
 
         #endregion
 
@@ -181,46 +209,6 @@ namespace QuantitySystem.Units
             return Quantity;
         }
 
-        /// <summary>
-        /// Multilpy unit by another unit.
-        /// </summary>
-        /// <param name="unit"></param>
-        /// <returns></returns>
-        public virtual Unit Multiply(Unit unit)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Dividing unit by another unit.
-        /// </summary>
-        /// <param name="unit"></param>
-        /// <returns></returns>
-        public virtual Unit Divide(Unit unit)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Gets the SI absoulte value after conversion from this unit to SI.
-        /// </summary>
-        /// <param name="relativeValue"></param>
-        /// <returns></returns>
-        public virtual double ToSIUnit(double relativeValue)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Gets relative value of SI absolute value based on current unit.
-        /// </summary>
-        /// <param name="absoluteValue">SI absolute value.</param>
-        /// <returns></returns>
-        public virtual double FromSIUnit(double absoluteValue)
-        {
-            throw new NotImplementedException();
-        }
-
 
 
         #endregion
@@ -248,9 +236,12 @@ namespace QuantitySystem.Units
             { 
                 //based on the current namespace of the unit
                 //return the text of the namespace
+
                 
-                //return string.Empty; 
-                throw new NotImplementedException();
+                Type UnitType = this.GetType();
+
+                string ns = UnitType.Namespace.Substring(UnitType.Namespace.LastIndexOf('.') + 1);
+                return ns;
             } 
         }
 
@@ -388,7 +379,7 @@ namespace QuantitySystem.Units
             }
 
             var SIUnitTypes = from si in UnitTypes
-                              where si.BaseType == typeof(SI.SIUnit)
+                              where si.Namespace.ToLower().EndsWith("si")  //== typeof(SI.SIUnit)
                               select si;
 
 

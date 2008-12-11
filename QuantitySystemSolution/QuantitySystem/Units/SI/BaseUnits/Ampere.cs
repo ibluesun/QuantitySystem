@@ -9,7 +9,7 @@ using QuantitySystem.Units.Attributes;
 namespace QuantitySystem.Units.SI
 {
     [SIUnit("A", typeof(ElectricalCurrent<>), SIPrefixes.None)]
-    public class Ampere : SIUnit
+    public sealed class Ampere : SIUnit
     {
 
 

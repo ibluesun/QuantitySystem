@@ -34,7 +34,12 @@ namespace QuantitySystem.Units
             PrefixExponent = exponent;
         }
 
-        public double Transfer(SIPrefix prefix)
+        /// <summary>
+        /// Gets the factor to convert to the required prefix.
+        /// </summary>
+        /// <param name="prefix"></param>
+        /// <returns>Conversion factor</returns>
+        public double GetFactorForConvertTo(SIPrefix prefix)
         {
             return prefix.Factor / this.Factor;
         }
@@ -236,6 +241,7 @@ namespace QuantitySystem.Units
 
 
         #endregion
+
     }
 
 }
