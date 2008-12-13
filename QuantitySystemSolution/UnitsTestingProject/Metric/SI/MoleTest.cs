@@ -1,20 +1,17 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using QuantitySystem.Units.Metric.SI;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QuantitySystem.Quantities.BaseQuantities;
-
 using QuantitySystem.Units;
-using QuantitySystem.Units.Metric;
-using QuantitySystem.Units.Metric.SI;
-
 namespace UnitsTestingProject
 {
     
     
     /// <summary>
-    ///This is a test class for SISystemTest and is intended
-    ///to contain all SISystemTest Unit Tests
+    ///This is a test class for MoleTest and is intended
+    ///to contain all MoleTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class SISystemTest
+    public class MoleTest
     {
 
 
@@ -66,16 +63,23 @@ namespace UnitsTestingProject
         //
         #endregion
 
+
+        /// <summary>
+        ///A test for Mole Constructor
+        ///</summary>
         [TestMethod()]
-        public void GeneralSITest()
+        public void MoleConstructorTest()
         {
-            var actual = SISystem.Kilo<Metre>(100);
+            Mole target = new Mole();
 
-            var expected = new Length<double>();
+            Assert.AreEqual("mol", target.Symbol);
+            Assert.AreEqual(typeof(AmountOfSubstance<>), target.QuantityType);
+            Assert.AreEqual(MetricPrefix.None, target.UnitPrefix);
 
-
-            Assert.AreEqual(expected, actual);
-
+            Assert.AreEqual(true, target.IsBaseUnit);
+            Assert.AreEqual(true, target.DefaultUnit);
         }
+
+
     }
 }

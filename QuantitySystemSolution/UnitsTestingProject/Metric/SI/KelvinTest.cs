@@ -1,20 +1,17 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using QuantitySystem.Units.Metric.SI;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QuantitySystem.Quantities.BaseQuantities;
-
 using QuantitySystem.Units;
-using QuantitySystem.Units.Metric;
-using QuantitySystem.Units.Metric.SI;
-
 namespace UnitsTestingProject
 {
     
     
     /// <summary>
-    ///This is a test class for SISystemTest and is intended
-    ///to contain all SISystemTest Unit Tests
+    ///This is a test class for KelvinTest and is intended
+    ///to contain all KelvinTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class SISystemTest
+    public class KelvinTest
     {
 
 
@@ -66,16 +63,20 @@ namespace UnitsTestingProject
         //
         #endregion
 
+
+        /// <summary>
+        ///A test for Kelvin Constructor
+        ///</summary>
         [TestMethod()]
-        public void GeneralSITest()
+        public void KelvinConstructorTest()
         {
-            var actual = SISystem.Kilo<Metre>(100);
+            Kelvin target = new Kelvin();
+            Assert.AreEqual("K", target.Symbol);
+            Assert.AreEqual(typeof(Temperature<>), target.QuantityType);
+            Assert.AreEqual(MetricPrefix.None, target.UnitPrefix);
 
-            var expected = new Length<double>();
-
-
-            Assert.AreEqual(expected, actual);
-
+            Assert.AreEqual(true, target.IsBaseUnit);
+            Assert.AreEqual(true, target.DefaultUnit);
         }
     }
 }

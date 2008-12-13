@@ -1,20 +1,17 @@
-﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using QuantitySystem.Units.Metric.SI;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QuantitySystem.Quantities.BaseQuantities;
-
 using QuantitySystem.Units;
-using QuantitySystem.Units.Metric;
-using QuantitySystem.Units.Metric.SI;
-
 namespace UnitsTestingProject
 {
     
     
     /// <summary>
-    ///This is a test class for SISystemTest and is intended
-    ///to contain all SISystemTest Unit Tests
+    ///This is a test class for GramTest and is intended
+    ///to contain all GramTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class SISystemTest
+    public class GramTest
     {
 
 
@@ -66,16 +63,27 @@ namespace UnitsTestingProject
         //
         #endregion
 
+
+        /// <summary>
+        ///A test for Gram Constructor
+        ///</summary>
         [TestMethod()]
-        public void GeneralSITest()
+        public void GramConstructorTest()
         {
-            var actual = SISystem.Kilo<Metre>(100);
+            Gram target = new Gram();
 
-            var expected = new Length<double>();
+            Assert.AreEqual("kg", target.Symbol);
+            Assert.AreEqual(typeof(Mass<>), target.QuantityType);
+            Assert.AreEqual(MetricPrefix.Kilo, target.UnitPrefix);
 
+            
 
-            Assert.AreEqual(expected, actual);
+            Assert.AreEqual(true, target.IsBaseUnit);
+            Assert.AreEqual(true, target.DefaultUnit);
+
 
         }
+
+
     }
 }

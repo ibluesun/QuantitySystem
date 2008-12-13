@@ -5,7 +5,7 @@ using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 
 using System.Reflection;
-using QuantitySystem.Units.Attributes;
+using QuantitySystem.Attributes;
 
 namespace QuantitySystem.Units
 {
@@ -67,7 +67,7 @@ namespace QuantitySystem.Units
                         );
 
                     RefTimesNum = RefUnit.ReferenceUnitNumerator;  //get the value before changing the RefUnit
-                    RefTimesDen = RefUnit.ReferenceUnitDenumenator;
+                    RefTimesDen = RefUnit.ReferenceUnitDenominator;
 
                     RefUnit = RefUnit.ReferenceUnit;
                 }
@@ -106,7 +106,7 @@ namespace QuantitySystem.Units
                 }
                 else
                 {
-                    upi.Numerator = upi.Unit.ReferenceUnitDenumenator;  //invert the number
+                    upi.Numerator = upi.Unit.ReferenceUnitDenominator;  //invert the number
                     upi.Denumenator = upi.Unit.ReferenceUnitNumerator;
                 }
 

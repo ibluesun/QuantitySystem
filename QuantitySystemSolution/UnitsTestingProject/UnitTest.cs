@@ -3,11 +3,10 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using QuantitySystem.Quantities.BaseQuantities;
 
-using QuantitySystem.Units.SI;
+using QuantitySystem.Units.Metric.SI;
 using QuantitySystem.Units.Imperial;
 using QuantitySystem.Quantities;
 using QuantitySystem.Quantities.DimensionlessQuantities;
-using QuantitySystem.Units.SIAccepted;
 
 namespace UnitsTestingProject
 {
@@ -152,7 +151,7 @@ namespace UnitsTestingProject
 
 
             quantityType = typeof(Volume<>);
-            expected = null;
+            expected = typeof(Pint);
 
             actual = Unit.GetDefaultUnitTypeOf(quantityType, unitSystem);
             Assert.AreEqual(expected, actual);
@@ -461,10 +460,10 @@ namespace UnitsTestingProject
 
 
             Gram g = new Gram();
-            g.UnitPrefix = SIPrefix.None;
+            g.UnitPrefix = MetricPrefix.None;
 
             Gram Mg = new Gram();
-            Mg.UnitPrefix = SIPrefix.Mega;
+            Mg.UnitPrefix = MetricPrefix.Mega;
 
             actual = g.PathToUnit(Mg);
 

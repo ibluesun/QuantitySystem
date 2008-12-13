@@ -1,0 +1,13 @@
+﻿this is a note
+
+
+metric units have 3 sub systems
+
+SI
+CGS
+MTS
+
+
+
+if we tried to get the unit type of sub system and not found then we should
+search for it in SI 
