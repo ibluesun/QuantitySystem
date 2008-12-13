@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 
 using System.Linq.Expressions;
+using System.Globalization;
 
 
 
@@ -53,7 +54,7 @@ namespace QuantitySystem.Units
         public override string ToString()
         {
 
-            return Unit.Symbol + ": " + Times.ToString();
+            return Unit.Symbol + ": " + Times.ToString(CultureInfo.InvariantCulture);
         }
 
     }

@@ -5,7 +5,8 @@ using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 
 using System.Reflection;
-using QuantitySystem.Units.Attributes;
+using QuantitySystem.Attributes;
+using System.Globalization;
 
 namespace QuantitySystem.Units
 {
@@ -83,7 +84,7 @@ namespace QuantitySystem.Units
                     
                 }
                 referenceUnitNumerator = dua.Numerator;
-                referenceUnitDenumenator = dua.Denumerator;
+                referenceUnitDenominator = dua.Denominator;
             }
 
         }
@@ -100,7 +101,8 @@ namespace QuantitySystem.Units
         protected readonly Unit referenceUnit;
         protected readonly double referenceUnitNumerator;
 
-        protected readonly double referenceUnitDenumenator;
+        //Denominator
+        protected readonly double referenceUnitDenominator;
 
 
 
@@ -162,7 +164,7 @@ namespace QuantitySystem.Units
         /// </summary>
         public double ReferenceUnitTimes
         {
-            get { return ReferenceUnitNumerator / ReferenceUnitDenumenator; }
+            get { return ReferenceUnitNumerator / ReferenceUnitDenominator; }
         }
 
         public virtual double ReferenceUnitNumerator
@@ -170,9 +172,9 @@ namespace QuantitySystem.Units
             get { return referenceUnitNumerator; }
         }
 
-        public virtual double ReferenceUnitDenumenator
+        public virtual double ReferenceUnitDenominator
         {
-            get { return referenceUnitDenumenator; }
+            get { return referenceUnitDenominator; }
         } 
 
 
@@ -299,7 +301,9 @@ namespace QuantitySystem.Units
         /// <returns>Unit Type Based on the unit system</returns>
         public static Type GetDefaultUnitTypeOf(Type quantityType, string unitSystem)
         {
-            if (unitSystem.ToLower() == "si")
+            unitSystem = unitSystem.ToLower(CultureInfo.InvariantCulture);
+
+            if (unitSystem == "metric.si" || unitSystem == "si")
             {
                 return GetSIUnitTypeOf(quantityType);
             }
@@ -316,7 +320,7 @@ namespace QuantitySystem.Units
                 }
 
                 var SystemUnitTypes = from si in UnitTypes
-                                  where si.Namespace.ToLower().EndsWith(unitSystem)
+                                  where si.Namespace.ToLower(CultureInfo.InvariantCulture).EndsWith(unitSystem)
                                   select si;
 
 
@@ -335,8 +339,28 @@ namespace QuantitySystem.Units
                     {
                         if (ua.QuantityType == quantityType)
                         {
-                            if (ua is DefaultUnitAttribute) return true;
-                            else return false;
+                            if (ua is DefaultUnitAttribute)
+                            {
+                                //explicitly default unit.
+                                return true;
+                            }
+                            else if (ua is MetricUnitAttribute)
+                            {
+                                //check if the unit has SystemDefault flag true or not.
+                                MetricUnitAttribute mua = ua as MetricUnitAttribute;
+                                if (mua.SystemDefault)
+                                {
+                                    return true;
+                                }
+                                else
+                                {
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                return false;
+                            }
                         }
                         else
                             return false;
@@ -352,6 +376,10 @@ namespace QuantitySystem.Units
                 Type SystemUnitType = SystemUnitTypes.SingleOrDefault(
                     SearchForQuantityType
                     );
+
+                // for metric systems 
+                // if the result type is null
+                // try to get 
 
                 return SystemUnitType;
             }
@@ -378,8 +406,9 @@ namespace QuantitySystem.Units
 
             }
 
+            //don't forget to include second in si units it is shared between all metric systems
             var SIUnitTypes = from si in UnitTypes
-                              where si.Namespace.ToLower().EndsWith("si")  //== typeof(SI.SIUnit)
+                              where si.Namespace.ToLower(CultureInfo.InvariantCulture).EndsWith("si") || si==typeof(Metric.Second)  //== typeof(SI.SIUnit)
                               select si;
 
 

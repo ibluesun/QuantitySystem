@@ -99,56 +99,74 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuantityDimension.cs" />
     <Compile Include="QuantityNotFoundException.cs" />
-    <Compile Include="Units\CGS\KinematicViscosityUnits.cs" />
-    <Compile Include="Units\CGS\EnergyUnits.cs" />
-    <Compile Include="Units\CGS\ForceUnits.cs" />
-    <Compile Include="Units\CGS\ViscosityUnits.cs" />
-    <Compile Include="Units\SIAccepted\AreaUnits.cs" />
-    <Compile Include="Units\SIAccepted\EnergyUnits.cs" />
-    <Compile Include="Units\SIAccepted\LengthUnits.cs" />
-    <Compile Include="Units\SIAccepted\MassUnits.cs" />
-    <Compile Include="Units\SIAccepted\PressureUnits.cs" />
-    <Compile Include="Units\SIAccepted\VelocityUnits.cs" />
-    <Compile Include="Units\SIAccepted\VolumeUnits.cs" />
-    <Compile Include="Units\Attributes\DefaultUnitAttribute.cs" />
-    <Compile Include="Units\Attributes\SIUnitAttribute.cs" />
-    <Compile Include="Units\Attributes\UnitAttribute.cs" />
-    <Compile Include="Units\Attributes\ReferenceUnitAttribute.cs" />
+    <Compile Include="Units\English\MassUnits.cs" />
+    <Compile Include="Units\Imperial\AreaUnits.cs" />
+    <Compile Include="Units\Imperial\MassUnits.cs" />
+    <Compile Include="Units\Imperial\VelocityUnits.cs" />
+    <Compile Include="Units\MetricSystems.cs" />
+    <Compile Include="Units\Metric\AreaUnits.cs" />
+    <Compile Include="Units\Metric\Cgs\EnergyUnits.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\Metric\Cgs\ForceUnits.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\Metric\Cgs\KinematicViscosityUnits.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\Metric\Cgs\PressureUnits.cs" />
+    <Compile Include="Units\Metric\Cgs\ViscosityUnits.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\Metric\Mts\ForceUnits.cs" />
+    <Compile Include="Units\Metric\Mts\MassUnits.cs" />
+    <Compile Include="Units\Metric\Mts\PressureUnits.cs" />
+    <Compile Include="Units\Metric\Mts\VolumeUnits.cs" />
+    <Compile Include="Units\Metric\VolumeUnits.cs" />
+    <Compile Include="Units\Metric\EnergyUnits.cs" />
+    <Compile Include="Units\Metric\LengthUnits.cs" />
+    <Compile Include="Units\Metric\MassUnits.cs" />
+    <Compile Include="Units\Metric\PressureUnits.cs" />
+    <Compile Include="Units\Metric\VelocityUnits.cs" />
+    <Compile Include="Attributes\DefaultUnitAttribute.cs" />
+    <Compile Include="Attributes\MetricUnitAttribute.cs" />
+    <Compile Include="Attributes\UnitAttribute.cs" />
+    <Compile Include="Attributes\ReferenceUnitAttribute.cs" />
     <Compile Include="Units\Imperial\LengthUnits.cs" />
     <Compile Include="Units\Imperial\VolumeUnits.cs" />
-    <Compile Include="Units\SI\BaseUnits\Ampere.cs">
+    <Compile Include="Units\Metric\SI\BaseUnits\Ampere.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Units\SI\BaseUnits\Candela.cs">
+    <Compile Include="Units\Metric\SI\BaseUnits\Candela.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Units\SI\BaseUnits\Gram.cs">
+    <Compile Include="Units\Metric\SI\BaseUnits\Gram.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Units\SI\BaseUnits\Kelvin.cs">
+    <Compile Include="Units\Metric\SI\BaseUnits\Kelvin.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Units\SI\BaseUnits\Metre.cs">
+    <Compile Include="Units\Metric\SI\BaseUnits\Metre.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Units\SI\BaseUnits\Mole.cs">
+    <Compile Include="Units\Metric\SI\BaseUnits\Mole.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Units\SI\BaseUnits\Second.cs" />
-    <Compile Include="Units\SIPrefixes.cs" />
-    <Compile Include="Units\SI\Hertz.cs" />
-    <Compile Include="Units\SI\Joule.cs">
+    <Compile Include="Units\Metric\TimeUnits.cs" />
+    <Compile Include="Units\MetricPrefixes.cs" />
+    <Compile Include="Units\Metric\SI\Hertz.cs" />
+    <Compile Include="Units\Metric\SI\Joule.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Units\SI\Newton.cs">
+    <Compile Include="Units\Metric\SI\Newton.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Units\SI\Pascal.cs">
+    <Compile Include="Units\Metric\SI\Pascal.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Units\SI\Radian.cs" />
-    <Compile Include="Units\SI\SIUnit.cs" />
-    <Compile Include="Units\SI\Watt.cs">
+    <Compile Include="Units\Metric\SI\Radian.cs" />
+    <Compile Include="Units\MetricUnit.cs" />
+    <Compile Include="Units\Metric\SI\Watt.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Units\Unit.cs" />
@@ -156,8 +174,8 @@
     <Compile Include="Units\UnitNotFoundException.cs" />
     <Compile Include="Units\UnitPath.cs" />
     <Compile Include="Units\UnitsNotDimensionallyEqualException.cs" />
-    <Compile Include="Units\SIPrefix.cs" />
-    <Compile Include="Units\SIPrefixException.cs" />
+    <Compile Include="Units\MetricPrefix.cs" />
+    <Compile Include="Units\MetricPrefixException.cs" />
     <Compile Include="Units\SISystem.cs" />
     <Compile Include="Units\Unit_Dynamic.cs" />
     <Compile Include="Units\Unit_Operations.cs" />
@@ -165,6 +183,7 @@
   <ItemGroup>
     <Content Include="Notes\Dimensions Pattern.txt" />
     <Content Include="Notes\Lengths Description.txt" />
+    <Content Include="Notes\Metric Units.txt" />
     <Content Include="Notes\SIUnit Multiplication.txt" />
     <Content Include="Notes\Units Conversion.txt" />
     <Content Include="Notes\Units Ladder.txt" />
@@ -173,6 +192,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="QuantitySystem.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Units\Natural\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

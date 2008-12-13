@@ -1,4 +1,5 @@
-﻿using QuantitySystem.Units.SI;
+﻿using QuantitySystem.Units.Metric;
+using QuantitySystem.Units.Metric.SI;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QuantitySystem.Units;
 
@@ -75,7 +76,7 @@ namespace UnitsTestingProject
             //from pico Gram to default Kilo Gram
             Unit target = new Gram();
 
-            ((SIUnit)target).UnitPrefix = SIPrefix.None;
+            ((MetricUnit)target).UnitPrefix = MetricPrefix.None;
 
 
             UnitPath actual = target.PathToDefaultUnit();
@@ -85,7 +86,7 @@ namespace UnitsTestingProject
 
 
             target = new Metre();
-            ((SIUnit)target).UnitPrefix = SIPrefix.Tera;
+            ((MetricUnit)target).UnitPrefix = MetricPrefix.Tera;
             actual = target.PathToDefaultUnit();
             expected = System.Math.Pow(10, 12);
 
@@ -100,31 +101,27 @@ namespace UnitsTestingProject
 
 
 
-            target = new QuantitySystem.Units.SIAccepted.Litre();
+            target = new QuantitySystem.Units.Metric.Litre();
             //((SIUnit)target).UnitPrefix = SIPrefix.Kilo;
             actual = target.PathToDefaultUnit(); // from Litre to m^3
             expected = 1e-3;
             Assert.AreEqual(expected, actual.ConversionFactor);
 
-            target = new QuantitySystem.Units.SIAccepted.Litre();
-            ((SIUnit)target).UnitPrefix = SIPrefix.Kilo;
+            target = new QuantitySystem.Units.Metric.Litre();
+            ((MetricUnit)target).UnitPrefix = MetricPrefix.Kilo;
             actual = target.PathToDefaultUnit(); // from Litre to m^3
             expected = 1;
             Assert.AreEqual(expected, actual.ConversionFactor);
 
-            target = new QuantitySystem.Units.SIAccepted.Bar();
+            target = new QuantitySystem.Units.Metric.Bar();
             //((SIUnit)target).UnitPrefix = SIPrefix.Kilo;
             actual = target.PathToDefaultUnit(); // from Litre to m^3
             expected = 1e+5;
             Assert.AreEqual(expected, actual.ConversionFactor);
 
 
-            target = new QuantitySystem.Units.SIAccepted.Hectare();
-            actual = target.PathToDefaultUnit();
-            expected = 1e+4;
-            Assert.AreEqual(expected, actual.ConversionFactor);
 
-            target = new QuantitySystem.Units.CGS.Dyne();
+            target = new QuantitySystem.Units.Metric.Cgs.Dyne();
             actual = target.PathToDefaultUnit();
             expected = 1e-5;
             Assert.AreEqual(expected, actual.ConversionFactor);
@@ -140,9 +137,9 @@ namespace UnitsTestingProject
         [TestMethod()]
         public void PathFromDefaultUnitTest()
         {
-            SIUnit target = new Gram();
+            MetricUnit target = new Gram();
 
-            target.UnitPrefix = SIPrefix.Milli;
+            target.UnitPrefix = MetricPrefix.Milli;
 
 
             UnitPath actual = target.PathFromDefaultUnit();
@@ -152,7 +149,7 @@ namespace UnitsTestingProject
 
 
             target = new Metre();
-            target.UnitPrefix = SIPrefix.Tera;
+            target.UnitPrefix = MetricPrefix.Tera;
             actual = target.PathFromDefaultUnit();
             expected = System.Math.Pow(10, -12);
 

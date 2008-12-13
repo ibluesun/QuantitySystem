@@ -38,49 +38,49 @@ namespace QuantitySystem.Units
 
                 if (dimension.Mass.Exponent != 0)
                 {
-                    Unit u = new SI.Gram();
+                    Unit u = new Metric.SI.Gram();
                     u.UnitExponent = dimension.Mass.Exponent;
                     SubUnits.Add(u);
                 }
 
                 if (dimension.Length.Exponent != 0)
                 {
-                    Unit u = new SI.Metre();
+                    Unit u = new Metric.SI.Metre();
                     u.UnitExponent = dimension.Length.Exponent;
                     SubUnits.Add(u);
                 }
 
                 if (dimension.Time.Exponent != 0)
                 {
-                    Unit u = new SI.Second();
+                    Unit u = new Metric.Second();
                     u.UnitExponent = dimension.Time.Exponent;
                     SubUnits.Add(u);
                 }
 
                 if (dimension.Temperature.Exponent != 0)
                 {
-                    Unit u = new SI.Kelvin();
+                    Unit u = new Metric.SI.Kelvin();
                     u.UnitExponent = dimension.Temperature.Exponent;
                     SubUnits.Add(u);
                 }
 
                 if (dimension.LuminousIntensity.Exponent != 0)
                 {
-                    Unit u = new SI.Candela();
+                    Unit u = new Metric.SI.Candela();
                     u.UnitExponent = dimension.LuminousIntensity.Exponent;
                     SubUnits.Add(u);
                 }
 
                 if (dimension.AmountOfSubstance.Exponent != 0)
                 {
-                    Unit u = new SI.Mole();
+                    Unit u = new Metric.SI.Mole();
                     u.UnitExponent = dimension.AmountOfSubstance.Exponent;
                     SubUnits.Add(u);
                 }
 
                 if (dimension.ElectricCurrent.Exponent != 0)
                 {
-                    Unit u = new SI.Ampere();
+                    Unit u = new Metric.SI.Ampere();
                     u.UnitExponent = dimension.ElectricCurrent.Exponent;
                     SubUnits.Add(u);
                 }

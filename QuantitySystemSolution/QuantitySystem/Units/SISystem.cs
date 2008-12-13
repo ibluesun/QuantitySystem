@@ -11,14 +11,14 @@ using QuantitySystem.Units;
 
 using QuantitySystem.Quantities.DimensionlessQuantities;
 
-using QuantitySystem.Units.SI;
+using QuantitySystem.Units.Metric;
 
 namespace QuantitySystem.Units
 {
     public static class SISystem
     {
         #region Helper Methods
-        private static AnyQuantity<double> MakeQuantity(SIUnit unit, SIPrefix siPrefix, double value)
+        private static AnyQuantity<double> MakeQuantity(MetricUnit unit, MetricPrefix siPrefix, double value)
         {
             
             //assign its prefix
@@ -40,113 +40,113 @@ namespace QuantitySystem.Units
 
         #region Positive
 
-        public static AnyQuantity<double> Yotta<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Yotta<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Yotta, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Yotta, value);
         }
 
-        public static AnyQuantity<double> Zetta<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Zetta<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Zetta, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Zetta, value);
         }
 
-        public static AnyQuantity<double> Exa<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Exa<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Exa, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Exa, value);
         }
 
-        public static AnyQuantity<double> Peta<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Peta<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Peta, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Peta, value);
         }
 
-        public static AnyQuantity<double> Tera<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Tera<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Tera, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Tera, value);
         }
 
-        public static AnyQuantity<double> Giga<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Giga<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Giga, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Giga, value);
         }
 
-        public static AnyQuantity<double> Mega<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Mega<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Mega, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Mega, value);
         }
 
-        public static AnyQuantity<double> Kilo<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Kilo<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Kilo, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Kilo, value);
         }
 
-        public static AnyQuantity<double> Hecto<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Hecto<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Hecto, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Hecto, value);
         }
 
-        public static AnyQuantity<double> Deka<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Deka<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Deka, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Deka, value);
         }
 
         #endregion
 
-        public static AnyQuantity<double> None<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> None<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.None, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.None, value);
         }
 
         #region Negative
 
-        public static AnyQuantity<double> Deci<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Deci<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Deci, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Deci, value);
         }
 
-        public static AnyQuantity<double> Centi<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Centi<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Centi, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Centi, value);
         }
 
-        public static AnyQuantity<double> Milli<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Milli<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Milli, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Milli, value);
         }
 
-        public static AnyQuantity<double> Micro<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Micro<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Micro, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Micro, value);
         }
 
-        public static AnyQuantity<double> Nano<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Nano<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Nano, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Nano, value);
         }
 
-        public static AnyQuantity<double> Pico<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Pico<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Pico, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Pico, value);
         }
 
-        public static AnyQuantity<double> Femto<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Femto<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Femto, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Femto, value);
         }
 
-        public static AnyQuantity<double> Atto<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Atto<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Atto, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Atto, value);
         }
 
-        public static AnyQuantity<double> Zepto<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Zepto<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Zepto, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Zepto, value);
         }
 
-        public static AnyQuantity<double> Yocto<TUnit>(double value) where TUnit : SIUnit, new()
+        public static AnyQuantity<double> Yocto<TUnit>(double value) where TUnit : MetricUnit, new()
         {
-            return MakeQuantity(new TUnit(), SIPrefix.Yocto, value);
+            return MakeQuantity(new TUnit(), MetricPrefix.Yocto, value);
         }
 
 
@@ -161,11 +161,11 @@ namespace QuantitySystem.Units
         /// </summary>
         /// <typeparam name="TQuantity"></typeparam>
         /// <returns></returns>
-        public static SIUnit UnitOf<TQuantity>() where TQuantity : BaseQuantity, new()
+        public static MetricUnit UnitOf<TQuantity>() where TQuantity : BaseQuantity, new()
         {
 
             //try direct mapping
-            SIUnit unit = Activator.CreateInstance(Unit.GetSIUnitTypeOf(typeof(TQuantity))) as SIUnit;
+            MetricUnit unit = Activator.CreateInstance(Unit.GetSIUnitTypeOf(typeof(TQuantity))) as MetricUnit;
 
 
             if (unit != null)
@@ -217,7 +217,7 @@ namespace QuantitySystem.Units
 
         public static AnyQuantity<double> GetUnitizedQuantityOf<TQuantity>(double value) where TQuantity : BaseQuantity, new()
         {
-            SIUnit unit = UnitOf<TQuantity>();
+            MetricUnit unit = UnitOf<TQuantity>();
 
 
             AnyQuantity<double> aq = unit.GetThisUnitQuantity<double>();

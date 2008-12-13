@@ -10,11 +10,11 @@ namespace UnitsTestingProject
     
     
     /// <summary>
-    ///This is a test class for SISystemTest and is intended
-    ///to contain all SISystemTest Unit Tests
+    ///This is a test class for SecondTest and is intended
+    ///to contain all SecondTest Unit Tests
     ///</summary>
     [TestClass()]
-    public class SISystemTest
+    public class SecondTest
     {
 
 
@@ -66,16 +66,20 @@ namespace UnitsTestingProject
         //
         #endregion
 
+
+        /// <summary>
+        ///A test for Second Constructor
+        ///</summary>
         [TestMethod()]
-        public void GeneralSITest()
+        public void SecondConstructorTest()
         {
-            var actual = SISystem.Kilo<Metre>(100);
+            Second target = new Second();
+            Assert.AreEqual("s", target.Symbol);
+            Assert.AreEqual(typeof(Time<>), target.QuantityType);
+            Assert.AreEqual(MetricPrefix.None, target.UnitPrefix);
 
-            var expected = new Length<double>();
-
-
-            Assert.AreEqual(expected, actual);
-
+            Assert.AreEqual(true, target.IsBaseUnit);
+            Assert.AreEqual(true, target.DefaultUnit);
         }
     }
 }

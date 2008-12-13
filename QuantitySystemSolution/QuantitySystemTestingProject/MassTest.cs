@@ -2,7 +2,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QuantitySystem;
 using QuantitySystem.Units;
-using QuantitySystem.Units.SI;
+using QuantitySystem.Units.Metric.SI;
 namespace QuantitySystemTestingProject
 {
     /// <summary>

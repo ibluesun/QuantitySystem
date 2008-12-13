@@ -50,17 +50,18 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="MetricTests.cs" />
     <Compile Include="SISystemTest.cs" />
     <Compile Include="SIUnitTest.cs" />
-    <Compile Include="SI\AmpereTest.cs" />
-    <Compile Include="SI\CandelaTest.cs" />
-    <Compile Include="SI\GramTest.cs" />
-    <Compile Include="SI\KelvinTest.cs" />
-    <Compile Include="SI\MetreTest.cs" />
+    <Compile Include="Metric\SI\AmpereTest.cs" />
+    <Compile Include="Metric\SI\CandelaTest.cs" />
+    <Compile Include="Metric\SI\GramTest.cs" />
+    <Compile Include="Metric\SI\KelvinTest.cs" />
+    <Compile Include="Metric\SI\MetreTest.cs" />
     <Compile Include="Imperial\MileTest.cs" />
-    <Compile Include="SI\MoleTest.cs" />
+    <Compile Include="Metric\SI\MoleTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SI\SecondTest.cs" />
+    <Compile Include="Metric\SI\SecondTest.cs" />
     <Compile Include="UnitTest.cs" />
   </ItemGroup>
   <ItemGroup>
