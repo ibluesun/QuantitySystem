@@ -70,7 +70,7 @@ namespace QuantitySystem.Units
                 {
                     //get the SI Unit Type for this quantity
                     //first search for direct mapping
-                    Type SIUnitType = GetSIUnitTypeOf(quantityType);
+                    Type SIUnitType = GetDefaultSIUnitTypeOf(quantityType);
                     if (SIUnitType != null)
                     {
                         referenceUnit = (Unit)Activator.CreateInstance(SIUnitType);
@@ -303,9 +303,10 @@ namespace QuantitySystem.Units
         {
             unitSystem = unitSystem.ToLower(CultureInfo.InvariantCulture);
 
-            if (unitSystem == "metric.si" || unitSystem == "si")
+            if (unitSystem.Contains("metric.si"))
             {
-                return GetSIUnitTypeOf(quantityType);
+                Type oUnitType = GetDefaultSIUnitTypeOf(quantityType);
+                return oUnitType;
             }
             else
             {
@@ -377,9 +378,12 @@ namespace QuantitySystem.Units
                     SearchForQuantityType
                     );
 
-                // for metric systems 
-                // if the result type is null
-                // try to get 
+                if (SystemUnitType == null && unitSystem.Contains("metric"))
+                {
+                    //try another catch for SI unit for this quantity
+
+                    SystemUnitType = GetDefaultSIUnitTypeOf(quantityType);
+                }
 
                 return SystemUnitType;
             }
@@ -394,7 +398,7 @@ namespace QuantitySystem.Units
         /// </summary>
         /// <param name="quantityType">Type of Quantity</param>
         /// <returns>SI Unit Type</returns>
-        public static Type GetSIUnitTypeOf(Type quantityType)
+        public static Type GetDefaultSIUnitTypeOf(Type quantityType)
         {
             //getting the generic type
             if (!quantityType.IsGenericTypeDefinition)

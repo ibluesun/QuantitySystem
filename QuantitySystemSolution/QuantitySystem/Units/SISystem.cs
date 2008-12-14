@@ -165,7 +165,7 @@ namespace QuantitySystem.Units
         {
 
             //try direct mapping
-            MetricUnit unit = Activator.CreateInstance(Unit.GetSIUnitTypeOf(typeof(TQuantity))) as MetricUnit;
+            MetricUnit unit = Activator.CreateInstance(Unit.GetDefaultSIUnitTypeOf(typeof(TQuantity))) as MetricUnit;
 
 
             if (unit != null)

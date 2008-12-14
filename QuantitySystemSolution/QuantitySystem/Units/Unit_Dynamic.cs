@@ -18,6 +18,87 @@ namespace QuantitySystem.Units
         private List<Unit> SubUnits { get; set; } //the list shouldn't been modified by sub classes
 
         /// <summary>
+        /// Create the unit directly from the specfied dimension in its SI base units.
+        /// </summary>
+        /// <param name="dimension"></param>
+        public Unit(QuantityDimension dimension)
+        {
+            SubUnits = new List<Unit>();
+
+            if (dimension.Mass.Exponent != 0)
+            {
+                Unit u = new Metric.SI.Gram();
+                u.UnitExponent = dimension.Mass.Exponent;
+                SubUnits.Add(u);
+            }
+
+            if (dimension.Length.Exponent != 0)
+            {
+                Unit u = new Metric.SI.Metre();
+                u.UnitExponent = dimension.Length.Exponent;
+                SubUnits.Add(u);
+            }
+
+            if (dimension.Time.Exponent != 0)
+            {
+                Unit u = new Metric.Second();
+                u.UnitExponent = dimension.Time.Exponent;
+                SubUnits.Add(u);
+            }
+
+            if (dimension.Temperature.Exponent != 0)
+            {
+                Unit u = new Metric.SI.Kelvin();
+                u.UnitExponent = dimension.Temperature.Exponent;
+                SubUnits.Add(u);
+            }
+
+            if (dimension.LuminousIntensity.Exponent != 0)
+            {
+                Unit u = new Metric.SI.Candela();
+                u.UnitExponent = dimension.LuminousIntensity.Exponent;
+                SubUnits.Add(u);
+            }
+
+            if (dimension.AmountOfSubstance.Exponent != 0)
+            {
+                Unit u = new Metric.SI.Mole();
+                u.UnitExponent = dimension.AmountOfSubstance.Exponent;
+                SubUnits.Add(u);
+            }
+
+            if (dimension.ElectricCurrent.Exponent != 0)
+            {
+                Unit u = new Metric.SI.Ampere();
+                u.UnitExponent = dimension.ElectricCurrent.Exponent;
+                SubUnits.Add(u);
+            }
+
+
+
+            this.symbol = GenerateUnitSymbolFromSubBaseUnits();
+
+
+            this.isDefaultUnit = false;
+
+            try
+            {
+                Type qType = QuantityDimension.QuantityTypeFrom(dimension);
+                this.quantityType = qType;
+            }
+            catch(QuantityNotFoundException)
+            {
+                this.quantityType = typeof(AnyQuantity<>);
+
+            }
+            
+
+            this.isBaseUnit = false;
+
+        }
+
+
+        /// <summary>
         /// Construct a unit based on the quantity type in SI Base units.
         /// Any Dimensionless quantity will return  in its unit.
         /// </summary>
@@ -29,7 +110,7 @@ namespace QuantitySystem.Units
 
             //try direct mapping first to get the unit
 
-            Type InnerUnitType = Unit.GetSIUnitTypeOf(quantityType);
+            Type InnerUnitType = Unit.GetDefaultSIUnitTypeOf(quantityType);
 
             if (InnerUnitType == null)
             {
@@ -126,7 +207,7 @@ namespace QuantitySystem.Units
 
             //try direct mapping first to get the unit
 
-            Type InnerUnitType = Unit.GetSIUnitTypeOf(m_QuantityType);
+            Type InnerUnitType = Unit.GetDefaultSIUnitTypeOf(m_QuantityType);
 
 
 
@@ -143,7 +224,7 @@ namespace QuantitySystem.Units
                 foreach (var InnerQuantity in InternalQuantities)
                 {
                     //try to get the quantity direct unit
-                    Type l2_InnerUnitType = Unit.GetSIUnitTypeOf(InnerQuantity.GetType());
+                    Type l2_InnerUnitType = Unit.GetDefaultSIUnitTypeOf(InnerQuantity.GetType());
 
                     if (l2_InnerUnitType == null)
                     {

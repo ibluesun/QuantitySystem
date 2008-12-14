@@ -188,6 +188,14 @@ namespace QuantitySystem.Units
                 //get the default unit of target 
 
                 throw new NotImplementedException("Crossing boundary of unit system not yet supported.");
+
+                // to cross the boundary
+                //   1- Get SI Base unit times for MeDefaultUnit
+                //   2- Get SI Base unit times for target default unit
+                //   add UnitPathItem with the specified conversion 
+                
+
+                
             }
 
 
