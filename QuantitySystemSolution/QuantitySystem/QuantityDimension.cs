@@ -390,6 +390,23 @@ namespace QuantitySystem
 
         #region Quantity utilities
 
+        public static Type QuantityTypeFrom(QuantityDimension dimension)
+        {
+            try
+            {
+                Type QuantityType = CurrentQuantitiesDictionary[dimension];
+
+
+                return QuantityType;
+
+            }
+            catch (KeyNotFoundException ex)
+            {
+                QuantityNotFoundException qnfe = new QuantityNotFoundException("Couldn't Find the quantity dimension in the dimensions Hash Key", ex);
+
+                throw qnfe;
+            }
+        }
 
         /// <summary>
         /// Returns Any Quantity From the dimension
@@ -401,23 +418,15 @@ namespace QuantitySystem
         {
 
             
-            try
-            {
-                Type QuantityType = CurrentQuantitiesDictionary[dimension];
+            Type QuantityType = QuantityTypeFrom(dimension);
 
-                //the quantity type now is without container type we should generate it
+            //the quantity type now is without container type we should generate it
 
-                Type QuantityWithContainerType = QuantityType.MakeGenericType(typeof(T));
+            Type QuantityWithContainerType = QuantityType.MakeGenericType(typeof(T));
 
-                return (AnyQuantity<T>)Activator.CreateInstance(QuantityWithContainerType);
+            return (AnyQuantity<T>)Activator.CreateInstance(QuantityWithContainerType);
 
-            }
-            catch(KeyNotFoundException ex)
-            {
-                QuantityNotFoundException qnfe = new QuantityNotFoundException("Couldn't Find the quantity dimension in the dimensions Hash Key", ex);
-
-                throw qnfe;
-            }
+        
         }
 
 

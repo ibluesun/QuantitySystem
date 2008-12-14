@@ -97,13 +97,32 @@ namespace UnitsTestingProject
 
 
 
-            Type mt = Unit.GetDefaultUnitTypeOf(typeof(Mass<>), "Metric.MTS");
+            Type mt = Unit.GetDefaultUnitTypeOf(typeof(Mass<>), "Metric.Mts");
 
             Assert.AreEqual(typeof(MetricTonne), mt);
 
 
-            Type mm = Unit.GetDefaultUnitTypeOf(typeof(Length<>), "Metric.MTS");
+            Type mm = Unit.GetDefaultUnitTypeOf(typeof(Length<>), "Metric.mts");
             Assert.AreEqual(typeof(Metre), mm);
+
+            mm = Unit.GetDefaultUnitTypeOf(typeof(Length<>), "Metric.cgs");
+            Assert.AreEqual(typeof(Metre), mm);
+
+            mm = Unit.GetDefaultUnitTypeOf(typeof(Time<>), "Metric.cgs");
+            Assert.AreEqual(typeof(Second), mm);
+
+            mm = Unit.GetDefaultUnitTypeOf(typeof(Volume<>), "Metric.cgs");
+            Assert.AreEqual(null, mm);
+
+            mm = Unit.GetDefaultUnitTypeOf(typeof(Volume<>), "Metric.mts");
+            Assert.AreEqual(typeof(Stère), mm);
+
+            mm = Unit.GetDefaultUnitTypeOf(typeof(Frequency<>), "Metric.cgs");
+            Assert.AreEqual(typeof(Hertz), mm);
+
+
+
+
 
 
         }

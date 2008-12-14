@@ -81,14 +81,14 @@ namespace UnitsTestingProject
             Type expected = typeof(Metre); // TODO: Initialize to an appropriate value
 
             Type actual;
-            actual = Unit.GetSIUnitTypeOf(quantityType);
+            actual = Unit.GetDefaultSIUnitTypeOf(quantityType);
             
             Assert.AreEqual(expected, actual);
 
 
             quantityType = typeof(Mass<>);
             expected = typeof(Gram);
-            actual = Unit.GetSIUnitTypeOf(quantityType);
+            actual = Unit.GetDefaultSIUnitTypeOf(quantityType);
 
             Assert.AreEqual(expected, actual);
 
@@ -96,7 +96,7 @@ namespace UnitsTestingProject
 
             quantityType = typeof(Area<>);
             expected = null;
-            actual = Unit.GetSIUnitTypeOf(quantityType);
+            actual = Unit.GetDefaultSIUnitTypeOf(quantityType);
 
             Assert.AreEqual(expected, actual);
 
@@ -104,13 +104,13 @@ namespace UnitsTestingProject
 
             quantityType = typeof(Length<double>);
             expected = typeof(Metre);
-            actual = Unit.GetSIUnitTypeOf(quantityType);
+            actual = Unit.GetDefaultSIUnitTypeOf(quantityType);
 
             Assert.AreEqual(expected, actual);
 
             quantityType = typeof(Mass<int>);
             expected = typeof(Gram);
-            actual = Unit.GetSIUnitTypeOf(quantityType);
+            actual = Unit.GetDefaultSIUnitTypeOf(quantityType);
 
             Assert.AreEqual(expected, actual);
 
@@ -126,7 +126,7 @@ namespace UnitsTestingProject
         {
             Type quantityType = typeof(AmountOfSubstance<>); // TODO: Initialize to an appropriate value
             
-            string unitSystem = "SI"; // TODO: Initialize to an appropriate value
+            string unitSystem = "metric.si"; // TODO: Initialize to an appropriate value
 
             
             Type expected = typeof(Mole); // TODO: Initialize to an appropriate value
@@ -468,6 +468,13 @@ namespace UnitsTestingProject
             actual = g.PathToUnit(Mg);
 
             Assert.AreEqual(1e-6, actual.ConversionFactor);
+
+
+            Metre mr = new Metre();
+
+            actual = i.PathToUnit(mr);
+
+            Assert.AreEqual(0.0254, actual.ConversionFactor);
 
 
         }
