@@ -1,4 +1,4 @@
-﻿using QuantitySystem.Units.Imperial;
+﻿using QuantitySystem.Units.English.Imperial;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
