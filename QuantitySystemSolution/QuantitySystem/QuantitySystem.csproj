@@ -100,9 +100,21 @@
     <Compile Include="QuantityDimension.cs" />
     <Compile Include="QuantityNotFoundException.cs" />
     <Compile Include="Units\English\MassUnits.cs" />
-    <Compile Include="Units\Imperial\AreaUnits.cs" />
-    <Compile Include="Units\Imperial\MassUnits.cs" />
-    <Compile Include="Units\Imperial\VelocityUnits.cs" />
+    <Compile Include="Units\English\Imperial\AreaUnits.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\English\Imperial\LengthUnits.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\English\Imperial\MassUnits.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\English\Imperial\VelocityUnits.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Units\English\Imperial\VolumeUnits.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Units\MetricSystems.cs" />
     <Compile Include="Units\Metric\AreaUnits.cs" />
     <Compile Include="Units\Metric\Cgs\EnergyUnits.cs">
@@ -132,8 +144,6 @@
     <Compile Include="Attributes\MetricUnitAttribute.cs" />
     <Compile Include="Attributes\UnitAttribute.cs" />
     <Compile Include="Attributes\ReferenceUnitAttribute.cs" />
-    <Compile Include="Units\Imperial\LengthUnits.cs" />
-    <Compile Include="Units\Imperial\VolumeUnits.cs" />
     <Compile Include="Units\Metric\SI\BaseUnits\Ampere.cs">
       <SubType>Code</SubType>
     </Compile>

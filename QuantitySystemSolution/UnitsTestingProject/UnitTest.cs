@@ -4,7 +4,7 @@ using System;
 using QuantitySystem.Quantities.BaseQuantities;
 
 using QuantitySystem.Units.Metric.SI;
-using QuantitySystem.Units.Imperial;
+using QuantitySystem.Units.English.Imperial;
 using QuantitySystem.Quantities;
 using QuantitySystem.Quantities.DimensionlessQuantities;
 
@@ -474,9 +474,14 @@ namespace UnitsTestingProject
 
             actual = i.PathToUnit(mr);
 
-            Assert.AreEqual(0.0254, actual.ConversionFactor);
+            Assert.AreEqual(0.025400050800101596, actual.ConversionFactor);
 
+            //now the idea is to make any combination of units to go to any combination of units
+            Unit u = new Unit(QuantitySystem.QuantityDimension.ParseMLT("M1L0T-1"));
+            Assert.AreEqual("<kg/s>", u.Symbol);
 
+            
+            
         }
     }
 }

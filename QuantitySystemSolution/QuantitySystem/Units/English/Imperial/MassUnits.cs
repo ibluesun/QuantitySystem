@@ -3,7 +3,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Attributes;
 
 
-namespace QuantitySystem.Units.Imperial
+namespace QuantitySystem.Units.English.Imperial
 {
     [Unit("grain", typeof(Mass<>))]
     [ReferenceUnit(1, 7000, UnitType = typeof(Pound))]

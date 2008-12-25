@@ -3,7 +3,7 @@ using QuantitySystem.Attributes;
 using QuantitySystem.Quantities;
 
 
-namespace QuantitySystem.Units.Imperial
+namespace QuantitySystem.Units.English.Imperial
 {
 
     [Unit("fl_oz", typeof(Volume<>))]

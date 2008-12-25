@@ -36,7 +36,7 @@ namespace QuantitySystem.Units
 
 
         /// <summary>
-        /// Get the path to the default unit.
+        /// Creat units path from the current unit instance to the default unit of the current unit system in the current quantity dimension.
         /// </summary>
         /// <returns></returns>
         public UnitPath PathToDefaultUnit()
@@ -86,7 +86,7 @@ namespace QuantitySystem.Units
         }
 
         /// <summary>
-        /// Gets the Current unit path from default unit.
+        /// Create units path from default unit in the dimension of the current unit system to the running unit instance.
         /// </summary>
         /// <returns></returns>
         public UnitPath PathFromDefaultUnit()
@@ -117,6 +117,11 @@ namespace QuantitySystem.Units
         }
 
 
+        /// <summary>
+        /// Create units path from unit to unit.
+        /// </summary>
+        /// <param name="unit"></param>
+        /// <returns></returns>
         public UnitPath PathFromUnit(Unit unit)
         {
             // 1- Get Path of Current Unit From Default
@@ -187,13 +192,23 @@ namespace QuantitySystem.Units
 
                 //get the default unit of target 
 
-                throw new NotImplementedException("Crossing boundary of unit system not yet supported.");
+                // throw new NotImplementedException("Crossing boundary of unit system not yet supported.");
 
                 // to cross the boundary
-                //   1- Get SI Base unit times for MeDefaultUnit
-                //   2- Get SI Base unit times for target default unit
-                //   add UnitPathItem with the specified conversion 
-                
+                //   1- Get SI Base unit times for FromMeToDefaultUnit
+                //        FromMeToDefaultUnit -> SIDefaultUnit
+                SystemsPath = new UnitPath();
+                UnitPathItem DefaultPItem = FromMeToDefaultUnit.Peek();
+                SystemsPath.Push(
+                    new UnitPathItem
+                    {
+                        Numerator = DefaultPItem.Unit.ReferenceUnitNumerator,
+                        Denumenator = DefaultPItem.Unit.ReferenceUnitDenominator,
+                        Unit = DefaultPItem.Unit.ReferenceUnit
+                    }
+
+                    );
+
 
                 
             }
@@ -208,6 +223,13 @@ namespace QuantitySystem.Units
                 Total.Push(FromMeToDefaultUnit.Pop());
             }
 
+            if (SystemsPath != null)
+            {
+                while (SystemsPath.Count > 0)
+                {
+                    Total.Push(SystemsPath.Pop());
+                }
+            }
 
             while (FromDefaultUnitToTargetUnit.Count > 0)
             {
