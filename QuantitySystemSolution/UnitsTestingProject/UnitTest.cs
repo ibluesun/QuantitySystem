@@ -242,6 +242,9 @@ namespace UnitsTestingProject
             unit = new Unit(typeof(Angle<Double>));
             Assert.AreEqual("<rad>", unit.Symbol);
 
+            unit = new Unit(typeof(SolidAngle<Double>));
+            Assert.AreEqual("<sr>", unit.Symbol);
+
             unit = new Unit(typeof(Reynolds<>));
             Assert.AreEqual("<1>", unit.Symbol);
 
@@ -301,7 +304,7 @@ namespace UnitsTestingProject
             Assert.AreEqual("<rad>", unit.Symbol);
 
             unit = new Unit(new Reynolds<double>());
-            Assert.AreEqual("<<kg/m^3>.<m/s>.m/Pa.s>", unit.Symbol);
+            Assert.AreEqual("<kg.m/m^2.s.Pa.s>", unit.Symbol);
 
 
             unit = new Unit(new Torque<double>());
@@ -482,6 +485,26 @@ namespace UnitsTestingProject
 
             
             
+        }
+
+        [TestMethod]
+        public void RepetitiveUnits()
+        {
+            Time<double> t = 5;
+
+            var t1 = t;
+
+            var un = new Unit(t1);
+
+            Assert.AreEqual("<s>",un.Symbol);
+
+            var t2 = t * t * t * t * t * t;
+
+            un = new Unit(t2);
+            Assert.AreEqual("<s^6>", un.Symbol);
+
+
+
         }
     }
 }

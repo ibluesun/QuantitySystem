@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using QuantitySystem.Quantities.BaseQuantities;
-using QuantitySystem.DimensionDescriptors;
+﻿using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities.DimensionlessQuantities
 {
@@ -16,7 +11,7 @@ namespace QuantitySystem.Quantities.DimensionlessQuantities
         }
 
         public Angle(int exponent)
-            : base(exponent, new Length<T>(1, LengthType.Normal), new Length<T>(-1, LengthType.Radius))
+            : base(exponent, new Length<T>(exponent, LengthType.Normal), new Length<T>(-1 * exponent, LengthType.Radius))
         {
         }
 
