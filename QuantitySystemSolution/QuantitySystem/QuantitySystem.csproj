@@ -82,6 +82,7 @@
     <Compile Include="Quantities\DerivedQuantity.cs" />
     <Compile Include="Quantities\Acceleration.cs" />
     <Compile Include="Quantities\Area.cs" />
+    <Compile Include="Quantities\DimensionlessQuantities\SolidAngle.cs" />
     <Compile Include="Quantities\Force.cs" />
     <Compile Include="Quantities\DimensionlessQuantities\DimensionlessQuantity.cs" />
     <Compile Include="Quantities\DimensionlessQuantities\Reynolds.cs" />
@@ -89,6 +90,7 @@
     <Compile Include="Quantities\KinematicViscosity.cs" />
     <Compile Include="Quantities\Power.cs" />
     <Compile Include="Quantities\Pressure.cs" />
+    <Compile Include="Quantities\RadiantIntensity.cs" />
     <Compile Include="Quantities\Torque.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -134,6 +136,7 @@
     <Compile Include="Units\Metric\Mts\MassUnits.cs" />
     <Compile Include="Units\Metric\Mts\PressureUnits.cs" />
     <Compile Include="Units\Metric\Mts\VolumeUnits.cs" />
+    <Compile Include="Units\Metric\SI\Steradian.cs" />
     <Compile Include="Units\Metric\VolumeUnits.cs" />
     <Compile Include="Units\Metric\EnergyUnits.cs" />
     <Compile Include="Units\Metric\LengthUnits.cs" />

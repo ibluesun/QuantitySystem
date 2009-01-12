@@ -232,8 +232,14 @@ namespace QuantitySystem.Units
                         // so we should create unit for this quantity
 
                         Unit un = new Unit(InnerQuantity);
-
-                        SubUnits.Add(un);
+                        if (un.SubUnits.Count > 0)
+                        {
+                            SubUnits.AddRange(un.SubUnits);
+                        }
+                        else
+                        {
+                            SubUnits.Add(un);
+                        }
                     }
                     else
                     {
@@ -261,6 +267,8 @@ namespace QuantitySystem.Units
 
             }
 
+            SubUnits = GroupUnits(SubUnits); //group similar units
+
             this.symbol = GenerateUnitSymbolFromSubBaseUnits();
 
             this.isDefaultUnit = true;
@@ -287,6 +295,57 @@ namespace QuantitySystem.Units
 
 
         #endregion
+
+        
+        private List<Unit> GroupUnits(List<Unit> units)
+        {
+            if (units.Count == 1) return units;
+            List<Unit> GroupedUnits = new List<Unit>();
+
+            //i'll two indexes with two inner loops
+            // outer loop will put the unit in the Grouped Units
+            // inner loop will accumulate the equivalent repeated units.
+
+            int udx = 0; //sub units index
+            int idx = udx + 1;
+
+            while (udx < units.Count)
+            {
+                Unit CurrentUnit = (Unit)units[udx].MemberwiseClone(); //copy the object due to we don't want to alter the original list.
+
+                //inner loop
+                while (idx < units.Count)
+                {
+
+                    Unit PointedUnit = units[idx];
+
+                    //by pass the repeated units.
+                    if (CurrentUnit.GetType() != PointedUnit.GetType())
+                    {
+                        //the units are different.
+                        //so exit the loop and increase the index
+                        // this will make the next current unit is the new one.
+                                                
+                        break;
+                    }
+                    else
+                    {
+                        CurrentUnit.UnitExponent += PointedUnit.UnitExponent;
+                        idx++;
+                    }
+                }
+                //add the accumlated unit   //however the udx is pointing to the new point.
+                GroupedUnits.Add(CurrentUnit);
+                udx = idx;
+                idx++;
+
+               
+
+            }
+
+            return GroupedUnits;
+        }
+
 
         #region Unit Symbol processing
 
@@ -318,6 +377,7 @@ namespace QuantitySystem.Units
 
                 return null;
             };
+
 
             foreach (Unit unit in SubUnits)
             {

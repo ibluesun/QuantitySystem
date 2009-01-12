@@ -6,16 +6,46 @@ using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities.DimensionlessQuantities
 {
-    public abstract class DimensionlessQuantity<T> : DerivedQuantity<T>
+    public class DimensionlessQuantity<T> : AnyQuantity<T>
     {
-
-        public DimensionlessQuantity(int exponent, params AnyQuantity<T>[] internalDimensions)
-            : base(exponent, internalDimensions)
+        public DimensionlessQuantity()
+            : base(1)
         {
+        }
+
+        public override QuantityDimension Dimension
+        {
+            get
+            {
+                return QuantityDimension.Dimensionless;
+            }
+        }
+
+
+        private AnyQuantity<T>[] InternalQuantities;
+
+        public DimensionlessQuantity(int exponent, params AnyQuantity<T>[] internalQuantities)
+            : base(exponent)
+        {
+            this.InternalQuantities = internalQuantities;
 
         }
 
-        
+        public AnyQuantity<T>[] GetInternalQuantities()
+        {
+            return InternalQuantities;
+        }
+
+
+
+        public static implicit operator DimensionlessQuantity<T>(T value)
+        {
+            DimensionlessQuantity<T> Q = new DimensionlessQuantity<T>();
+
+            Q.Value = value;
+
+            return Q;
+        }
 
 
 
