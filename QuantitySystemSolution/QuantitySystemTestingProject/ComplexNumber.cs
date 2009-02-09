@@ -68,6 +68,16 @@ namespace QuantitySystemTestingProject
 
         }
 
+        public static ComplexNumber operator /(double f, ComplexNumber c)
+        {
+            ComplexNumber cplx = new ComplexNumber();
+
+            cplx.Real = f / c.Real;
+            cplx.Imaginary = f / c.Imaginary;
+
+            return cplx;
+        }
+
         public override bool Equals(object obj)
         {
             if (this.GetType() == obj.GetType())

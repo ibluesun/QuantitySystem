@@ -67,8 +67,16 @@ namespace QuantitySystem.Quantities
                 lq.Add((AnyQuantity<T>)qty.Invert());
             }
 
-            DerivedQuantity<T> dq = (DerivedQuantity<T>) base.Invert();
+            DerivedQuantity<T> dq = (DerivedQuantity<T>)this.Clone();
+
             dq.SetInternalQuantities(lq.ToArray());
+            dq.Value = AnyQuantity<T>.DivideScalarByGeneric(1.0, dq.Value);
+            if (this.Unit != null)
+            {
+                dq.Unit = this.Unit.Invert();
+
+            }
+
             return dq;
         }
         

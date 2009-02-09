@@ -133,5 +133,158 @@ namespace QuantitySystem.Quantities.BaseQuantities
             return DQ;
         }
        #endregion
+
+
+        #region Generic Helper Calculations
+        
+        protected static T MultiplyScalarByGeneric(double factor, T value)
+        {
+            //create the dynamic method here 
+
+            DynamicMethod method = new DynamicMethod(
+                "Multiply_Method" + ":" + typeof(T).ToString(),
+                typeof(T),
+                new Type[] { typeof(double), typeof(T) });
+
+
+            //get generator to construct the function.
+
+            ILGenerator gen = method.GetILGenerator();
+
+
+            gen.Emit(OpCodes.Ldarg_0);  //load the first value
+            gen.Emit(OpCodes.Ldarg_1);  //load the second value
+
+
+            if (typeof(T).IsPrimitive)
+            {
+                gen.Emit(OpCodes.Mul);              //adding them if they were premitive
+            }
+            else
+            {
+                MethodInfo info = typeof(T).GetMethod
+                    (
+                    "op_Multiply",
+                    new Type[] { typeof(double), typeof(T) },
+                    null
+                    );
+
+                gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
+
+            }
+
+            gen.Emit(OpCodes.Ret);
+
+
+            T result = (T)method.Invoke(null, new object[] { factor, value });
+
+
+            return result;
+        }
+
+        protected static T DivideScalarByGeneric(double factor, T value)
+        {
+            //create the dynamic method here 
+
+            DynamicMethod method = new DynamicMethod(
+                "Multiply_Method" + ":" + typeof(T).ToString(),
+                typeof(T),
+                new Type[] { typeof(double), typeof(T) });
+
+
+            //get generator to construct the function.
+
+            ILGenerator gen = method.GetILGenerator();
+
+
+            gen.Emit(OpCodes.Ldarg_0);  //load the first value
+            gen.Emit(OpCodes.Ldarg_1);  //load the second value
+
+
+            if (typeof(T).IsPrimitive)
+            {
+                gen.Emit(OpCodes.Div);              //adding them if they were premitive
+            }
+            else
+            {
+                MethodInfo info = typeof(T).GetMethod
+                    (
+                    "op_Division",
+                    new Type[] { typeof(double), typeof(T) },
+                    null
+                    );
+
+                gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
+
+            }
+
+            gen.Emit(OpCodes.Ret);
+
+
+            T result = (T)method.Invoke(null, new object[] { factor, value });
+
+
+            return result;
+        }
+
+        protected static T MultiplyGenericByGeneric(T firstVal, T secondVal)
+        {
+            DynamicMethod method = new DynamicMethod(
+                "Multiply_Method" + ":" + typeof(T).ToString(),
+                typeof(T),
+                new Type[] { typeof(T), typeof(T) });
+
+
+            //get generator to construct the function.
+
+            ILGenerator gen = method.GetILGenerator();
+
+
+            gen.Emit(OpCodes.Ldarg_0);  //load the first value
+            gen.Emit(OpCodes.Ldarg_1);  //load the second value
+
+
+            if (typeof(T).IsPrimitive)
+            {
+                gen.Emit(OpCodes.Mul);              //adding them if they were premitive
+            }
+            else
+            {
+                MethodInfo info = typeof(T).GetMethod
+                    (
+                    "op_Multiply",
+                    new Type[] { typeof(T), typeof(T) },
+                    null
+                    );
+
+                gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
+
+            }
+
+            gen.Emit(OpCodes.Ret);
+
+
+            T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
+
+            return result;
+        }
+
+        #endregion
+
+        public override QuantitySystem.Quantities.BaseQuantities.BaseQuantity Invert()
+        {
+            AnyQuantity<T> q = (AnyQuantity<T>)base.Invert();
+
+
+            q.Value = DivideScalarByGeneric(1.0, q.Value);
+            
+            if (q.Unit != null)
+            {
+                q.Unit = q.Unit.Invert();
+            }
+
+            return q;
+
+        }
     }
 }

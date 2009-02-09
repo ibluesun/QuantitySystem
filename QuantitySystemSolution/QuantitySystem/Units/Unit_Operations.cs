@@ -124,41 +124,9 @@ namespace QuantitySystem.Units
         /// <returns></returns>
         public UnitPath PathFromUnit(Unit unit)
         {
-            // 1- Get Path of Current Unit From Default
 
-            UnitPath FromDefaultUnitToMe = this.PathFromDefaultUnit();
+            return unit.PathToUnit(this);
 
-            // 2- Get Path of passed unit From Default unit
-
-            UnitPath FromTargetUnitToDefaultUnit = unit.PathToDefaultUnit();
-
-            // 3- check if the two units are in the same unit system
-
-            if (this.UnitSystem == unit.UnitSystem)
-            {
-            }
-            else
-            {
-                throw new NotImplementedException("Crossing boundary of unit system not yet supported.");
-            }
-
-
-            //combine the two paths
-            UnitPath Total = new UnitPath();
-
-            //begin from target unit
-            while (FromTargetUnitToDefaultUnit.Count > 0)
-            {
-                Total.Push(FromTargetUnitToDefaultUnit.Pop());
-            }
-
-
-            while (FromDefaultUnitToMe.Count > 0)
-            {
-                Total.Push(FromDefaultUnitToMe.Pop());
-            }
-
-            return Total;
         }
 
 
@@ -182,7 +150,7 @@ namespace QuantitySystem.Units
             UnitPath SystemsPath = null;
             if (this.UnitSystem == unit.UnitSystem)
             {
- 
+                //no boundary cross should occur
             }
             else
             {
@@ -195,20 +163,47 @@ namespace QuantitySystem.Units
                 // throw new NotImplementedException("Crossing boundary of unit system not yet supported.");
 
                 // to cross the boundary
-                //   1- Get SI Base unit times for FromMeToDefaultUnit
-                //        FromMeToDefaultUnit -> SIDefaultUnit
+                // we should know the non SI system that we will cross it
+                // we have two options
+
+                // 1- FromMeToDefaultUnit if (Me unit is another system (not SI)
+                //     in this case we will take the top unit to get its reference
+                // 2- FromDefaultUnitToTargetUnit (where default unit is not SI)
+                //     and in this case we will take the last bottom unit of stack and get its reference
+
+                
                 SystemsPath = new UnitPath();
-                UnitPathItem DefaultPItem = FromMeToDefaultUnit.Peek();
-                SystemsPath.Push(
-                    new UnitPathItem
+
+                UnitPathItem DefaultPItem;
+                UnitPathItem RefUPI;
+                if (FromMeToDefaultUnit.Peek().Unit.UnitSystem.ToUpper() != "SI")
+                {
+                    DefaultPItem = FromMeToDefaultUnit.Peek();
+                    RefUPI = new UnitPathItem
+                        {
+                            Numerator = DefaultPItem.Unit.ReferenceUnitNumerator,
+                            Denumenator = DefaultPItem.Unit.ReferenceUnitDenominator,
+                            Unit = DefaultPItem.Unit.ReferenceUnit
+                        };                
+                }
+                else
+                {
+                    DefaultPItem = FromDefaultUnitToTargetUnit.ElementAt(FromDefaultUnitToTargetUnit.Count - 1);
+                    RefUPI = new UnitPathItem
                     {
-                        Numerator = DefaultPItem.Unit.ReferenceUnitNumerator,
-                        Denumenator = DefaultPItem.Unit.ReferenceUnitDenominator,
+                        //note the difference here 
+                        //I made the opposite assignments because we are in reverse manner
+
+                        Numerator = DefaultPItem.Unit.ReferenceUnitDenominator,
+                        Denumenator = DefaultPItem.Unit.ReferenceUnitNumerator,
                         Unit = DefaultPItem.Unit.ReferenceUnit
-                    }
+                    };                
 
-                    );
+                }
 
+
+
+                SystemsPath.Push(RefUPI);
 
                 
             }
@@ -217,24 +212,32 @@ namespace QuantitySystem.Units
             //combine the two paths
             UnitPath Total = new UnitPath();
 
+            //we are building the conversion stairs
+            // will end like a stack
+
+
+
             //begin from me unit
-            while (FromMeToDefaultUnit.Count > 0)
+            for(int i=FromMeToDefaultUnit.Count-1;i>=0;i--)
             {
-                Total.Push(FromMeToDefaultUnit.Pop());
+                Total.Push(FromMeToDefaultUnit.ElementAt(i));
             }
 
             if (SystemsPath != null)
             {
-                while (SystemsPath.Count > 0)
+                for (int i = SystemsPath.Count - 1; i >= 0; i--)
                 {
-                    Total.Push(SystemsPath.Pop());
+                    Total.Push(SystemsPath.ElementAt(i));
                 }
             }
 
-            while (FromDefaultUnitToTargetUnit.Count > 0)
+            for (int i = FromDefaultUnitToTargetUnit.Count - 1; i >= 0; i--)
             {
-                Total.Push(FromDefaultUnitToTargetUnit.Pop());
+                Total.Push(FromDefaultUnitToTargetUnit.ElementAt(i));
             }
+
+
+
 
             return Total;
         }

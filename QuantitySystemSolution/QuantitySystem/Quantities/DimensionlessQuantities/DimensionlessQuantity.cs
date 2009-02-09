@@ -8,9 +8,23 @@ namespace QuantitySystem.Quantities.DimensionlessQuantities
 {
     public class DimensionlessQuantity<T> : AnyQuantity<T>
     {
+
         public DimensionlessQuantity()
             : base(1)
         {
+            this.Unit = new Units.Unit(QuantityDimension.Dimensionless);
+        }
+
+
+        private AnyQuantity<T>[] InternalQuantities;
+
+        public DimensionlessQuantity(int exponent, params AnyQuantity<T>[] internalQuantities)
+            : base(exponent)
+        {
+            this.InternalQuantities = internalQuantities;
+
+            this.Unit = new Units.Unit(QuantityDimension.Dimensionless);
+            
         }
 
         public override QuantityDimension Dimension
@@ -22,14 +36,7 @@ namespace QuantitySystem.Quantities.DimensionlessQuantities
         }
 
 
-        private AnyQuantity<T>[] InternalQuantities;
 
-        public DimensionlessQuantity(int exponent, params AnyQuantity<T>[] internalQuantities)
-            : base(exponent)
-        {
-            this.InternalQuantities = internalQuantities;
-
-        }
 
         public AnyQuantity<T>[] GetInternalQuantities()
         {
@@ -45,7 +52,12 @@ namespace QuantitySystem.Quantities.DimensionlessQuantities
             Q.Value = value;
 
             return Q;
+
+            
         }
+
+
+        
 
 
 

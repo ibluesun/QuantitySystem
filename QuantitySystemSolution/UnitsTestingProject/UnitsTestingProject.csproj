@@ -51,6 +51,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MetricTests.cs" />
+    <Compile Include="OperationsTest.cs" />
     <Compile Include="SISystemTest.cs" />
     <Compile Include="SIUnitTest.cs" />
     <Compile Include="Metric\SI\AmpereTest.cs" />

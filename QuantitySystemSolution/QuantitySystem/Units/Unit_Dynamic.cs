@@ -294,6 +294,40 @@ namespace QuantitySystem.Units
 
 
 
+
+        /// <summary>
+        /// This constructor creates a unit from several units.
+        /// </summary>
+        /// <param name="units"></param>
+        public Unit(Type quantityType, params Unit[] units)
+        {
+            SubUnits = new List<Unit>();
+
+            SubUnits.AddRange(units);
+
+            SubUnits = GroupUnits(SubUnits); //group similar units
+
+            this.symbol = GenerateUnitSymbolFromSubBaseUnits();
+
+            this.isDefaultUnit = true;
+
+            if (!quantityType.IsGenericTypeDefinition)
+            {
+                //the passed type is AnyQuantity<object> for example
+                //I want to get the type without type parameters AnyQuantity<>
+
+                this.quantityType = quantityType.GetGenericTypeDefinition();
+
+            }
+            else
+            {
+                this.quantityType = quantityType;
+            }
+
+            this.isBaseUnit = false;
+
+        }
+
         #endregion
 
         
