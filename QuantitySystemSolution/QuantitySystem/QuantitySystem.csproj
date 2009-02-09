@@ -190,6 +190,7 @@
     <Compile Include="Units\MetricPrefix.cs" />
     <Compile Include="Units\MetricPrefixException.cs" />
     <Compile Include="Units\SISystem.cs" />
+    <Compile Include="Units\UnitSystem.cs" />
     <Compile Include="Units\Unit_Dynamic.cs" />
     <Compile Include="Units\Unit_Operations.cs" />
   </ItemGroup>

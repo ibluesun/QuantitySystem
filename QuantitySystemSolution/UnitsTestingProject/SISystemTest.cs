@@ -69,7 +69,7 @@ namespace UnitsTestingProject
         [TestMethod()]
         public void GeneralSITest()
         {
-            var actual = SISystem.Kilo<Metre>(100);
+            var actual = UnitSystem.SISystem.Kilo<Metre>(100);
 
             var expected = new Length<double>();
 
