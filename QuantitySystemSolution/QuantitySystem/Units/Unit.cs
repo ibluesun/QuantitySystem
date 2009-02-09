@@ -18,6 +18,9 @@ namespace QuantitySystem.Units
         /// </summary>
         protected Unit()
         {
+            //only called on the strongly typed units
+
+            isStronglyTyped = true;
             
             //read the current attributes
 
@@ -93,7 +96,7 @@ namespace QuantitySystem.Units
 
         #region Characterisitics
 
-        private readonly string symbol;
+        protected readonly string symbol;
         protected bool isDefaultUnit;
         protected readonly Type quantityType;
         private readonly bool isBaseUnit;
@@ -105,6 +108,9 @@ namespace QuantitySystem.Units
         protected readonly double referenceUnitDenominator;
 
 
+        private readonly bool isStronglyTyped = false;
+
+
 
 
         
@@ -112,8 +118,25 @@ namespace QuantitySystem.Units
         {
             get
             {
-                //from the attribute get the symbol
-                return symbol;
+
+                //symbol in strong typed are fetched from the attributes
+
+                if (IsStronglyTyped)
+                {
+                    //if (IsInverted)
+                    //{
+                    //    return "<1/" + symbol + ">";
+                    //}
+                    //else
+                    {
+                        return symbol;
+                    }
+                }
+                else
+                {
+
+                    return symbol;
+                }
             }
         }
 
@@ -150,6 +173,8 @@ namespace QuantitySystem.Units
                 return isBaseUnit;
             }
         }
+
+
 
         /// <summary>
         /// The unit that serve a parent for this unit.
@@ -189,8 +214,30 @@ namespace QuantitySystem.Units
         /// <returns></returns>
         public Unit Invert()
         {
-            Unit unit = (Unit)this.MemberwiseClone();
-            unit.UnitExponent = 0 - UnitExponent;
+            Unit unit = null;
+            if (SubUnits != null)
+            {
+                //convert sub units if this were only a generated unit.
+
+                List<Unit> InvertedUnits = new List<Unit>();
+
+                foreach (Unit lun in SubUnits)
+                {
+                    InvertedUnits.Add(lun.Invert());
+
+                }
+
+                unit = new Unit(this.QuantityType, InvertedUnits.ToArray());
+                
+            }
+            else
+            {
+                //convert exponent because this is a strongly typed unit.
+
+                unit = (Unit)this.MemberwiseClone();
+                unit.UnitExponent = 0 - UnitExponent;
+                
+            }
             return unit;
         }
 
@@ -251,13 +298,21 @@ namespace QuantitySystem.Units
         /// <summary>
         /// Determine if the unit is inverted or not.
         /// </summary>
-        public bool IsNegative
+        public bool IsInverted
         {
             get
             {
                 if (UnitExponent < 0) return true;
                 else
                     return false;
+            }
+        }
+
+        public bool IsStronglyTyped
+        {
+            get
+            {
+                return isStronglyTyped;
             }
         }
         #endregion
@@ -453,6 +508,12 @@ namespace QuantitySystem.Units
         }
 
         #endregion
+
+
+        public override string ToString()
+        {
+            return this.Symbol;
+        }
 
 
     }

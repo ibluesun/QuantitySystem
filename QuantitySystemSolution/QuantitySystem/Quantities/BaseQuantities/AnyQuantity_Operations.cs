@@ -15,51 +15,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
     partial class AnyQuantity<T>
     {
 
-        #region Generic Helper Calculations
-        private static T GenericMultipliedScalar(T value, double factor)
-        {
-            DynamicMethod method = new DynamicMethod(
-                "Multiply_Method" + ":" + typeof(T).ToString(),
-                typeof(T),
-                new Type[] { typeof(T), typeof(double) });
 
-
-            //get generator to construct the function.
-
-            ILGenerator gen = method.GetILGenerator();
-
-
-            gen.Emit(OpCodes.Ldarg_0);  //load the first value
-            gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-            if (typeof(T).IsPrimitive)
-            {
-                gen.Emit(OpCodes.Mul);              //adding them if they were premitive
-            }
-            else
-            {
-                MethodInfo info = typeof(T).GetMethod
-                    (
-                    "op_Multiply",
-                    new Type[] { typeof(T), typeof(double) },
-                    null
-                    );
-
-                gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
-
-            }
-
-            gen.Emit(OpCodes.Ret);
-
-
-            T result = (T)method.Invoke(null, new object[] { value, factor });
-
-
-            return result;
-        }
-
-        #endregion
 
         #region Strongly Typed Operations
 
@@ -174,7 +130,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     //factor from second unit to first unit
                     UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
-                    secondVal = GenericMultipliedScalar(secondVal, stof.ConversionFactor);
+                    secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
                 }
 
 
@@ -246,25 +202,12 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
                 AnyQuantity<T> AQ = QuantityDimension.QuantityFrom<T>(firstQuantity.Dimension);
 
-                ////convert values to Absolute values
-                //double firstVal = firstQuantity.Unit.GetAbsoluteValue(firstQuantity.Value);
                 T firstVal = (firstQuantity.Value);
-
-
-                //double secondVal = secondQuantity.Unit.GetAbsoluteValue(secondQuantity.Value);
                 T secondVal = (secondQuantity.Value);
 
-                ////sum the values
-
-                //double val = firstVal - secondVal;
+                                
                 T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
 
-                ////assign the unit of first quantity to the result.
-                //AQ.Unit = firstQuantity.Unit;
-
-                ////get relative value based on first quantity unit
-
-                //AQ.Value = AQ.Unit.GetRelativeValue(val);
                 AQ.Value = result;
 
                 return AQ;
@@ -280,23 +223,11 @@ namespace QuantitySystem.Quantities.BaseQuantities
         {
             AnyQuantity<T> qresult = (AnyQuantity<T>)ConstructDerivedQuantity<T>(firstQuantity, secondQuantity);
 
-            ////deduce the unit from calculation.
-            //IUnit qunit = firstQuantity.Unit.Multiply(secondQuantity.Unit);
-            //qresult.Unit = qunit; //assign it to the quantity generated.
-
+            
             try
             {
                 //correct quantities and units
                 qresult = QuantityDimension.QuantityFrom<T>(qresult.Dimension);
-
-                ////get the pure unit of the quantity
-                //IUnit unit = GlobalUnitSystem.UnitOf(qresult, firstQuantity.Unit.UnitSystem);
-
-                ////take the prefix of calculated unit
-                //// and associate it to the prefix of predicted unit.
-
-
-                //qresult.Unit = unit.CorrectUnitBy(qunit);
 
             }
             catch (QuantityNotFoundException)
@@ -304,49 +235,17 @@ namespace QuantitySystem.Quantities.BaseQuantities
             }
 
 
-            //define the new dynamically created method
-            //with the return type and the input types
 
-            DynamicMethod method = new DynamicMethod(
-                "Multiply_Method" + ":" + typeof(T).ToString(),
-                typeof(T),
-                new Type[] { typeof(T), typeof(T) });
+            qresult.Value = MultiplyGenericByGeneric(firstQuantity.Value, secondQuantity.Value);
 
 
-            //get generator to construct the function.
+            //check if any of the two quantities have a valid unit 
+            // to be able to derive the current quantity
 
-            ILGenerator gen = method.GetILGenerator();
-
-
-            gen.Emit(OpCodes.Ldarg_0);  //load the first value
-            gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-            if (typeof(T).IsPrimitive)
+            if (firstQuantity.Unit != null && secondQuantity.Unit != null)
             {
-                gen.Emit(OpCodes.Mul);              //adding them if they were premitive
+                qresult.Unit = new Unit(qresult.GetType(), firstQuantity.Unit, secondQuantity.Unit);
             }
-            else
-            {
-                MethodInfo info = typeof(T).GetMethod
-                    (
-                    "op_Multiply",
-                    new Type[] { typeof(T), typeof(T) },
-                    null
-                    );
-
-                gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
-
-            }
-
-            gen.Emit(OpCodes.Ret);
-
-
-            //qresult.Value = firstQuantity.Value * secondQuantity.Value;
-
-            T result = (T)method.Invoke(null, new object[] { firstQuantity.Value, secondQuantity.Value });
-
-            qresult.Value = result;
 
 
             return qresult;
@@ -366,77 +265,28 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
             AnyQuantity<T> sec_qty = (AnyQuantity<T>)secondQuantity.Invert(); //this is a divide process we must make 1/exponenet :)
 
-            //QuantityDimension dim = firstQuantity.Dimension - secondQuantity.Dimension;
-            //AnyQuantity qresult = (AnyQuantity)QuantityDimension.QuantityFrom(dim);
 
             AnyQuantity<T> qresult = (AnyQuantity<T>)ConstructDerivedQuantity(firstQuantity, sec_qty);
 
 
-            //IUnit qunit = firstQuantity.Unit.Divide(secondQuantity.Unit);
-            //qresult.Unit = qunit;
-
             try
             {
                 qresult = QuantityDimension.QuantityFrom<T>(qresult.Dimension);
-
-
-                //IUnit unit = GlobalUnitSystem.UnitOf(qresult, firstQuantity.Unit.UnitSystem);
-
-                ////take the prefix of calculated unit
-                //// and associate it to the prefix of predicted unit.
-
-
-                //qresult.Unit = unit.CorrectUnitBy(qunit);
-
-
-
             }
             catch (QuantityNotFoundException)
             {
             }
 
-            //define the new dynamically created method
-            //with the return type and the input types
 
-            DynamicMethod method = new DynamicMethod(
-                "Divide_Method" + ":" + typeof(T).ToString(),
-                typeof(T),
-                new Type[] { typeof(T), typeof(T) });
+            qresult.Value = MultiplyGenericByGeneric(firstQuantity.Value, sec_qty.Value);
 
+            //check if any of the two quantities have a valid unit 
+            // to be able to derive the current quantity
 
-            //get generator to construct the function.
-
-            ILGenerator gen = method.GetILGenerator();
-
-
-            gen.Emit(OpCodes.Ldarg_0);  //load the first value
-            gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-            if (typeof(T).IsPrimitive)
+            if (firstQuantity.Unit != null && secondQuantity.Unit != null)
             {
-                gen.Emit(OpCodes.Div);              //adding them if they were premitive
+                qresult.Unit = new Unit(qresult.GetType(), firstQuantity.Unit, sec_qty.Unit);
             }
-            else
-            {
-                MethodInfo info = typeof(T).GetMethod
-                    (
-                    "op_Division",
-                    new Type[] { typeof(T), typeof(T) },
-                    null
-                    );
-
-                gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
-
-            }
-
-            gen.Emit(OpCodes.Ret);
-
-
-            //qresult.Value = firstQuantity.Value / secondQuantity.Value;
-            T result = (T)method.Invoke(null, new object[] { firstQuantity.Value, secondQuantity.Value });
-
-            qresult.Value = result;
 
             return qresult;
         }

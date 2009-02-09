@@ -76,7 +76,14 @@ namespace QuantitySystem.Units
         {
             get
             {
-                return unitPrefix.Symbol + base.Symbol;
+                //if (IsInverted)
+                //{
+                //    return "<1/" + unitPrefix.Symbol + symbol + ">";
+                //}
+                //else
+                {
+                    return unitPrefix.Symbol + base.Symbol;
+                }
             }
         }
 
