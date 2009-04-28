@@ -117,7 +117,7 @@
     <Compile Include="Units\English\Imperial\VolumeUnits.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Units\MetricSystems.cs" />
+    <Compile Include="Units\MetricUnit_Helper.cs" />
     <Compile Include="Units\Metric\AreaUnits.cs" />
     <Compile Include="Units\Metric\Cgs\EnergyUnits.cs">
       <SubType>Code</SubType>
@@ -189,9 +189,8 @@
     <Compile Include="Units\UnitsNotDimensionallyEqualException.cs" />
     <Compile Include="Units\MetricPrefix.cs" />
     <Compile Include="Units\MetricPrefixException.cs" />
-    <Compile Include="Units\SISystem.cs" />
-    <Compile Include="Units\UnitSystem.cs" />
     <Compile Include="Units\Unit_Dynamic.cs" />
+    <Compile Include="Units\Unit_Helper.cs" />
     <Compile Include="Units\Unit_Operations.cs" />
   </ItemGroup>
   <ItemGroup>
