@@ -101,7 +101,7 @@ namespace UnitsTestingProject
             on.Unit = new Ounce();
 
 
-            var l = UnitSystem.SISystem.None<Gram>(0);
+            var l = MetricUnit.None<Gram>(0);
 
 
             var g =  on + l;
