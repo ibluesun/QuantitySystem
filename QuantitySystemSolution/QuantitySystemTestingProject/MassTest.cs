@@ -101,9 +101,9 @@ namespace QuantitySystemTestingProject
         [TestMethod()]
         public void UnitMassAddTest()
         {
-            var l1 = UnitSystem.SISystem.Kilo<Gram>(2);
+            var l1 = MetricUnit.Kilo<Gram>(2);
 
-            var l2 = UnitSystem.SISystem.None<Gram>(500);
+            var l2 = MetricUnit.None<Gram>(500);
 
             var l = l1 + l2;
 
