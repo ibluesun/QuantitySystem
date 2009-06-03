@@ -205,8 +205,26 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 T firstVal = (firstQuantity.Value);
                 T secondVal = (secondQuantity.Value);
 
+                //correct the values according to left unit or first unit.
+                //the resulted quantity has the values of the first unit.
+
+                if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                {
+                    //factor from second unit to first unit
+                    UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+                    secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
+                }
+
                                 
                 T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
+
+
+                if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                {
+                    //assign the unit of first quantity to the result.
+                    AQ.Unit = firstQuantity.Unit;
+                }
 
                 AQ.Value = result;
 

@@ -6,6 +6,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 
 using System.Reflection;
 using QuantitySystem.Attributes;
+using QuantitySystem.Quantities.DimensionlessQuantities;
 
 namespace QuantitySystem.Units
 {
@@ -81,6 +82,22 @@ namespace QuantitySystem.Units
                     }
                     );
             }
+            else
+            {
+                // no referenceUnit so this is SI unit because all my units ends with SI
+                // and it is default unit because all si units have default units with the default prefix.
+                if (this.QuantityType != typeof(DimensionlessQuantity<>))
+                {
+                    path.Push(
+                        new UnitPathItem
+                        {
+                            Unit = this,
+                            Numerator = 1,
+                            Denumenator = 1
+                        }
+                        );
+                }
+            }
 
             return path;
         }
@@ -148,12 +165,18 @@ namespace QuantitySystem.Units
 
             // 3- check if the two units are in the same unit system
             UnitPath SystemsPath = null;
-            if (this.UnitSystem == unit.UnitSystem)
+            if (this.UnitSystem == unit.UnitSystem || 
+                (this.UnitSystem.StartsWith("Metric")&&unit.UnitSystem.StartsWith("Metric"))
+               )
             {
                 //no boundary cross should occur
+
+                //if the two units starts with Metric then no need to cross boundaries because
+                //they have common references in metric.
             }
             else
             {
+                
                 //then we must go out side the current unit system
                 //all default units are pointing to the SIUnit system this is a must and not option.
                 SystemsPath = new UnitPath();
@@ -176,7 +199,7 @@ namespace QuantitySystem.Units
 
                 UnitPathItem DefaultPItem;
                 UnitPathItem RefUPI;
-                if (FromMeToDefaultUnit.Peek().Unit.UnitSystem.ToUpper() != "SI")
+                if (FromMeToDefaultUnit.Peek().Unit.UnitSystem != "Metric.SI")
                 {
                     DefaultPItem = FromMeToDefaultUnit.Peek();
                     RefUPI = new UnitPathItem

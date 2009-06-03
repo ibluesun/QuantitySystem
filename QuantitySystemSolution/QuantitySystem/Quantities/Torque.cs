@@ -14,11 +14,6 @@ namespace QuantitySystem.Quantities
         {
 
         }
-        //public Torque()
-        //    : base(1, new Force<T>(), new RadiusLength<T>())
-        //{
-
-        //}
 
 
         public static implicit operator Torque<T>(T value)

@@ -11,13 +11,16 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 		QuantitySystemSolution.vsmdi = QuantitySystemSolution.vsmdi
+		RemarkNotes.txt = RemarkNotes.txt
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitsTestingProject", "UnitsTestingProject\UnitsTestingProject.csproj", "{2E1B9096-614C-405F-8587-1897F451F139}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantitySystemCalculator", "QuantitySystemCalculator\QuantitySystemCalculator.csproj", "{140E6C82-4B64-45AA-8FE1-91159322A29E}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 4
+		SccNumberOfProjects = 5
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
 		SccLocalPath0 = .
@@ -32,6 +35,9 @@ Global
 		SccProjectTopLevelParentUniqueName3 = QuantitySystemSolution.sln
 		SccProjectName3 = UnitsTestingProject
 		SccLocalPath3 = UnitsTestingProject
+		SccProjectUniqueName4 = QuantitySystemCalculator\\QuantitySystemCalculator.csproj
+		SccProjectName4 = QuantitySystemCalculator
+		SccLocalPath4 = QuantitySystemCalculator
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = QuantitySystemSolution.vsmdi
@@ -53,6 +59,10 @@ Global
 		{2E1B9096-614C-405F-8587-1897F451F139}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E1B9096-614C-405F-8587-1897F451F139}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E1B9096-614C-405F-8587-1897F451F139}.Release|Any CPU.Build.0 = Release|Any CPU
+		{140E6C82-4B64-45AA-8FE1-91159322A29E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{140E6C82-4B64-45AA-8FE1-91159322A29E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{140E6C82-4B64-45AA-8FE1-91159322A29E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{140E6C82-4B64-45AA-8FE1-91159322A29E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
