@@ -249,30 +249,79 @@ namespace QuantitySystem.Units
 
 
         /// <summary>
+        /// Find Strongly typed unit.
+        /// </summary>
+        /// <param name="unit"></param>
+        /// <returns></returns>
+        private static Unit FindUnit (string unit)
+        {
+            foreach (Type unitType in UnitTypes)
+            {
+                UnitAttribute ua = GetUnitAttribute(unitType);
+                if (ua != null)
+                {
+
+                    //units are case sensitive
+                    if (Regex.Match(ua.Symbol, "^" + unit + "$", RegexOptions.Singleline).Success)
+                    {
+                        Unit u = (Unit)Activator.CreateInstance(unitType);
+
+                        //test unit if it is metric so that we remove the default prefix that created with it
+                        if (u is MetricUnit)
+                        {
+                            ((MetricUnit)u).UnitPrefix = MetricPrefix.None;
+                        }
+
+                        return u;
+
+                    }
+                }
+
+            }
+
+            throw new UnitNotFoundException("Not found in strongly typed units");
+        }
+
+        /// <summary>
         /// Returns the unit corresponding to the passed string.
         /// </summary>
         /// <param name="unit"></param>
         /// <returns></returns>
         public static Unit Parse(string unit)
         {
-            //Phase 1: try direct mapping.
-            foreach (Type unitType in UnitTypes)
-            {
-                UnitAttribute ua = GetUnitAttribute(unitType);
-                if (ua != null)
-                {
-                    
-                    //units are case sensitive
-                    if (Regex.Match(ua.Symbol, "^"+unit+"$", RegexOptions.Singleline).Success)
-                    {
-                        return (Unit)Activator.CreateInstance(unitType);
+            
 
-                    }
+            //Phase 1: try direct mapping.
+            try
+            {
+                return FindUnit(unit);
+            }
+            catch(UnitNotFoundException)
+            {
+                //do nothing 
+            }
+
+            //try to find if it as a Metric unit with prefix
+            //loop through all prefixes.
+            for (int i = 10; i >= -10; i -= 1)
+            {
+                if (i == 0) i--; //skip the none prefix
+                if (unit.StartsWith(MetricPrefix.GetPrefix(i).Symbol, StringComparison.InvariantCulture))
+                {
+                    //found
+
+                    MetricPrefix mp = MetricPrefix.GetPrefix(i);
+                    string upart = unit.Substring(mp.Symbol.Length);
+
+                    //then it should be MetricUnit otherwise die :)
+
+                    MetricUnit u = (MetricUnit)FindUnit(upart);
+                    u.UnitPrefix = mp;
+                    return u;
                 }
             }
 
             throw new UnitNotFoundException("Not found in strongly typed units");
-
 
         }
 
@@ -284,7 +333,6 @@ namespace QuantitySystem.Units
         /// <returns></returns>
         public static UnitAttribute GetUnitAttribute(Type unitType)
         {
-
             object[] attributes = (object[])unitType.GetCustomAttributes(true);
 
             //get the UnitAttribute

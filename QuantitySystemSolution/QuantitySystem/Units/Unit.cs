@@ -323,7 +323,7 @@ namespace QuantitySystem.Units
 
         public override string ToString()
         {
-            return this.Symbol;
+            return this.GetType().Name + " " + this.Symbol;
         }
 
 

@@ -241,7 +241,6 @@ namespace QuantitySystem.Quantities.BaseQuantities
         {
             AnyQuantity<T> qresult = (AnyQuantity<T>)ConstructDerivedQuantity<T>(firstQuantity, secondQuantity);
 
-            
             try
             {
                 //correct quantities and units
@@ -252,17 +251,16 @@ namespace QuantitySystem.Quantities.BaseQuantities
             {
             }
 
-
-
             qresult.Value = MultiplyGenericByGeneric(firstQuantity.Value, secondQuantity.Value);
-
 
             //check if any of the two quantities have a valid unit 
             // to be able to derive the current quantity
 
             if (firstQuantity.Unit != null && secondQuantity.Unit != null)
             {
-                qresult.Unit = new Unit(qresult.GetType(), firstQuantity.Unit, secondQuantity.Unit);
+               
+               qresult.Unit = new Unit(qresult.GetType(), firstQuantity.Unit, secondQuantity.Unit);
+               
             }
 
 
@@ -304,6 +302,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
             if (firstQuantity.Unit != null && secondQuantity.Unit != null)
             {
                 qresult.Unit = new Unit(qresult.GetType(), firstQuantity.Unit, sec_qty.Unit);
+                
             }
 
             return qresult;
@@ -311,28 +310,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
         
         #endregion
 
-        #region Quantity By Scalar operators
-        /*
-        public static AnyQuantity<T> Multiply(AnyQuantity<T> quantity, T value)
-        {
-            AnyQuantity<T> q = (AnyQuantity<T>)quantity.MemberwiseClone();
 
-            //q.Value *= value;
-
-            return q;
-
-        }
-        public static AnyQuantity<T> Divide(AnyQuantity<T> quantity, T value)
-        {
-            AnyQuantity<T> q = (AnyQuantity<T>)quantity.MemberwiseClone();
-
-            //q.Value /= value;
-
-            return q;
-
-        }
-        */
-        #endregion
 
     }
 }

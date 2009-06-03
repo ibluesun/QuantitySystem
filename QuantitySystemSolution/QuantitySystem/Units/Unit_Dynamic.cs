@@ -8,6 +8,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Quantities;
 using System.Reflection;
 using System.Text.RegularExpressions;
+using QuantitySystem.Quantities.DimensionlessQuantities;
 
 namespace QuantitySystem.Units
 {
@@ -303,7 +304,15 @@ namespace QuantitySystem.Units
         {
             SubUnits = new List<Unit>();
 
-            SubUnits.AddRange(units);
+            foreach (Unit un in units)
+            {
+                //include only the units that isn't dimensionless
+                if (un.QuantityType != typeof(DimensionlessQuantity<>))
+                {
+                    SubUnits.Add(un);
+                }
+            }
+           
 
             SubUnits = GroupUnits(SubUnits); //group similar units
 
