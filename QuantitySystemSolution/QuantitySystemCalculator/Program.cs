@@ -12,7 +12,8 @@ namespace QuantitySystemCalculator
             string line = string.Empty;
             QsEvaluator qse = new QsEvaluator();
 
-            PrintDescription();
+            
+            StartConsole();
 
 
             while (line.ToLower()!= "quit" && line.ToLower()!="exit")
@@ -32,16 +33,17 @@ namespace QuantitySystemCalculator
         }
 
 
-        static void PrintDescription()
+        static void StartConsole()
         {
-            Console.WriteLine("Quantity System Calculator ver 0.1");
-            Console.WriteLine("Copyright Ahmed Sadek");
-            Console.WriteLine("----------------------");
+            Console.BackgroundColor = ConsoleColor.DarkGreen;
+            Console.ForegroundColor = ConsoleColor.White;
+            Console.Clear();
+
+            Console.WriteLine("Quantity System Calculator ver 1.0");
+            Console.WriteLine("Copyright 2009 By Ahmed Sadek");
             Console.WriteLine("http://QuantitySystem.CodePlex.com");
             Console.WriteLine();
             Console.WriteLine();
-            Console.WriteLine();
-
         }
 
 

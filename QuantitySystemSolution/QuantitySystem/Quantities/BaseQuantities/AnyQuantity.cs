@@ -80,20 +80,6 @@ namespace QuantitySystem.Quantities.BaseQuantities
             return Divide(firstQuantity, secondQuantity);
         }
 
-        #region Quantity By Scalar Operators
-        /*
-        public static AnyQuantity<T> operator *(AnyQuantity<T> quantity, T value)
-        {
-            return Multiply(quantity, value);
-        }
-
-        public static AnyQuantity<T> operator /(AnyQuantity<T> quantity, T value)
-        {
-            return Divide(quantity, value);
-        }
-        */
-        #endregion
-
         #endregion
 
 
@@ -258,6 +244,37 @@ namespace QuantitySystem.Quantities.BaseQuantities
             }
 
             return q;
+
+        }
+
+
+        /// <summary>
+        /// Parse the input name and return the quantity object from it.
+        /// </summary>
+        /// <typeparam name="T">container type of the value</typeparam>
+        /// <param name="quantityName"></param>
+        /// <returns></returns>
+        public static AnyQuantity<T> Parse(string quantityName)
+        {
+            //search in follwing name spaces :)
+            string QuantitiesNameSpace = "QuantitySystem.Quantities";
+            string BaseQuantitiesNameSpace = QuantitiesNameSpace + ".BaseQuantities";
+            string DimensionlessQuantitiesNameSpace = QuantitiesNameSpace + ".DimensionlessQuantities";
+
+            Type QuantityType = Type.GetType(QuantitiesNameSpace + "." + quantityName + "`1");
+            if (QuantityType == null) QuantityType = Type.GetType(BaseQuantitiesNameSpace + "." + quantityName + "`1");
+            if (QuantityType == null) QuantityType = Type.GetType(DimensionlessQuantitiesNameSpace + "." + quantityName + "`1");
+
+            if (QuantityType == null)
+            {
+                throw new QuantityNotFoundException();
+            }
+            else
+            {
+                QuantityType = QuantityType.MakeGenericType(typeof(T));
+                AnyQuantity<T> qty = (AnyQuantity<T>)Activator.CreateInstance(QuantityType);
+                return qty;
+            }
 
         }
     }

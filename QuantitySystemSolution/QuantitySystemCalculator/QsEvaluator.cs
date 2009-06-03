@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using QuantitySystem.Units;
 using QuantitySystem.Quantities.BaseQuantities;
+using QuantitySystem;
 
 namespace QuantitySystemCalculator
 {
@@ -16,14 +17,20 @@ namespace QuantitySystemCalculator
     {
 
         public const string UnitExpression = @"^<(.+)>$";
+
+
+
+        public const string VariableDimensionlessUnitExpression = @"^(\w+)\s*=\s*(\d+)\s*$";
         
-        
-        public const string VariableExpression = @"(\w+)\s*=\s*(\d+)\s*(<(.+)>)?";
+        public const string VariableUnitExpression = @"^(\w+)\s*=\s*(\d+)\s*(<(.+)>)$";
         //Match	           $1	$2	$3	$4
         //a= 5	            a	5		
         //a = 6<m>	        a	6	<m>	m
         //B= 900 <m/s>	    B	900	<m/s>	m/s
         //c = 5000 <ft/s>	c	5000	<ft/s>	ft/s
+
+        public const string VariableQuantityExpression = @"^(\w+)\s*=\s*(\d+)\s*(\[(.+)\])$";
+
 
 
         public const string VariableNameExpression = @"^\s*(\w+)\s*$";
@@ -60,14 +67,34 @@ namespace QuantitySystemCalculator
                 }
                 catch (UnitNotFoundException)
                 {
-                    Console.WriteLine("  Unit Not Found");
+                    Console.Error.WriteLine("Unit Not Found");
                 }
                 
                 return;
             }
 
+
+
+            m = Regex.Match(line, VariableDimensionlessUnitExpression);
+            if (m.Success)
+            {
+                //dimensionless quantity
+
+                string varName = m.Groups[1].Value;
+                double varVal = double.Parse(m.Groups[2].Value);
+
+                AnyQuantity<double> qty = null;
+                qty = new QuantitySystem.Quantities.DimensionlessQuantities.DimensionlessQuantity<double>();
+                qty.Value = varVal;
+
+                variables[varName] = qty;
+                PrintQuantity(qty);
+                return;
+
+            }
+
             //match variable assignation
-            m = Regex.Match(line, VariableExpression);
+            m = Regex.Match(line, VariableUnitExpression);
             if (m.Success)
             {
                 //get the variable name
@@ -88,18 +115,51 @@ namespace QuantitySystemCalculator
                     }
                     catch (UnitNotFoundException)
                     {
-                        Console.WriteLine("  Unit Not Found");
+                        Console.Error.WriteLine("Unit Not Found");
                         return;
-                    }                   
+                    }
 
                 }
-                else
+
+
+                qty.Value = varVal;
+
+                variables[varName] = qty;
+                PrintQuantity(qty);
+                return;
+            }
+
+            //match variable assignation with quantity
+            m = Regex.Match(line, VariableQuantityExpression);
+            if (m.Success)
+            {
+                //get the variable name
+                string varName = m.Groups[1].Value;
+                double varVal = double.Parse(m.Groups[2].Value);
+
+                AnyQuantity<double> qty = null;
+
+                if (!string.IsNullOrEmpty(m.Groups[3].Value))
                 {
-                    //dimensionless quantity
-                    qty = new QuantitySystem.Quantities.DimensionlessQuantities.DimensionlessQuantity<double>();
+                    try
+                    {
+                        //get the quantity
+ 
+                        qty = AnyQuantity<double>.Parse(m.Groups[4].Value);
+
+                        //get the quantity
+
+                        qty.Unit = new Unit(qty); 
+
+                    }
+                    catch (QuantityNotFoundException)
+                    {
+                        Console.Error.WriteLine("Quantityt Not Found");
+                        return;
+                    }
 
                 }
-                
+
                 qty.Value = varVal;
 
                 variables[varName] = qty;
@@ -126,8 +186,24 @@ namespace QuantitySystemCalculator
             if (m.Success)
             {
                 string op = m.Groups[3].Value;
-                var left = variables[m.Groups[2].Value];
-                var right = variables[m.Groups[4].Value];
+
+                AnyQuantity<double> left = null;
+                AnyQuantity<double> right = null;
+
+                try
+                {
+
+                    left = variables[m.Groups[2].Value];
+                    right = variables[m.Groups[4].Value];
+                }
+                catch (KeyNotFoundException)
+                {
+                    Console.Error.WriteLine("Variable Not Found");
+                    return;
+                }
+
+
+                //the new variable name
                 var varName = m.Groups[1].Value;
 
                 AnyQuantity<double> result = null;
@@ -144,7 +220,7 @@ namespace QuantitySystemCalculator
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("  {0}", ex.GetType().Name);
+                    Console.Error.WriteLine("  {0}", ex.GetType().Name);
                 }
                 return;
             }
@@ -154,8 +230,20 @@ namespace QuantitySystemCalculator
             if (m.Success)
             {
                 string op = m.Groups[2].Value;
-                var left = variables[m.Groups[1].Value];
-                var right = variables[m.Groups[3].Value];
+
+                AnyQuantity<double> left = null;
+                AnyQuantity<double> right = null;
+
+                try
+                {
+                    left = variables[m.Groups[1].Value];
+                    right = variables[m.Groups[3].Value];
+                }
+                catch (KeyNotFoundException)
+                {
+                    Console.Error.WriteLine("Variable Not Found");
+                    return;
+                }
 
                 AnyQuantity<double> result = null;
 
@@ -170,7 +258,7 @@ namespace QuantitySystemCalculator
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine("  {0}", ex.GetType().Name);
+                    Console.Error.WriteLine("  {0}", ex.GetType().Name);
                 }
                 return;
             }
@@ -179,7 +267,7 @@ namespace QuantitySystemCalculator
 
         public void PrintUnitInfo(Unit unit)
         {
-            Console.WriteLine("  Unit:        {0} {1}", unit.GetType().Name, unit.Symbol);
+            Console.WriteLine("  Unit:        {0}", unit.ToString());
             Console.WriteLine("  Quantity:    {0}", unit.QuantityType.Name);
             Console.WriteLine("  Unit System: {0}", unit.UnitSystem);
         }

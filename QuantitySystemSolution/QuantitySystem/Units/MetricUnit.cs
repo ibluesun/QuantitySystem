@@ -186,6 +186,11 @@ namespace QuantitySystem.Units
                 }
             }
         }
-    
+
+
+        public override string ToString()
+        {
+            return this.UnitPrefix.Prefix + this.GetType().Name + " " + this.Symbol;
+        }
     }
 }
