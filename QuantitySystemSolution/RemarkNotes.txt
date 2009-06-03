@@ -1,0 +1,56 @@
+Hello
+-----
+
+I discovered that I have a distracted thoughts so I am trying to collect my thoughts here sequentially
+the file will describe what I will make and what I already made because I didn't keep track of things last months
+
+
+Ideas:
+------
+
+1] DimensionlessQuantity is simply any variable that is have no dimensions
+  so that the current valuetypes of c# like int,float, and double are dimensionless
+  however in my implementation the you should declare DimensionlessQuantity explicitly
+  
+  by using DimensionlessQuantity you can multiply or divide it to any Quantity without dimension information
+  being loss
+  
+  Tasks:
+  - Create instance from DimensionlessQuantity    |  Done
+  - Multiplication and Division                   |  need Test
+  
+
+2] Make Console Calculator to evaulate Quantities
+  to illustrate the quantites calculations and other facilities to the library
+  
+ 
+  
+  Tasks:
+  - Console with Prompt Qs>
+  - Options
+	Qs> <m>
+	   Unit of Length
+	Accept variables
+    Qs> a=1<m>   
+    Qs> b=1<ft>   
+    
+    Simple operations 
+    + - / *
+    
+    a+b
+    c = a+ b
+    
+    
+    
+    
+    
+    
+    
+    
+    
+	
+	
+  
+  
+  
+  

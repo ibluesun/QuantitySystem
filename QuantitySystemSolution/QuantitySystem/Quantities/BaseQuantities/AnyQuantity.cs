@@ -25,32 +25,6 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
         #endregion
 
-        #region morfing  constructor for dimensions
-
-        //public AnyQuantity() : base(1) { }
-
-        //private readonly QuantityDimension dimension = QuantityDimension.Dimensionless;
-
-        //public override QuantityDimension Dimension
-        //{
-        //    get
-        //    {
-        //        return this.dimension;
-        //    }
-        //}
-
-        ///// <summary>
-        ///// Create Any Quantity with specified dimension.
-        ///// </summary>
-        ///// <param name="dimension"></param>
-        //public AnyQuantity(QuantityDimension dimension)
-        //    : base(1)
-        //{
-        //    this.dimension = dimension;
-        //}
-
-
-        #endregion
 
         #region Value & Unit
 
