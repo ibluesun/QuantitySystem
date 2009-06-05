@@ -98,7 +98,7 @@ namespace QuantitySystem.Units
 
             unitSystem = unitSystem.ToLower(CultureInfo.InvariantCulture);
 
-            if (unitSystem.Contains("metric.si"))
+            if (unitSystem.Contains("metric.si") || quantityType==typeof(Time<>)) //I included the time because its always second in all systems
             {
                 Type oUnitType = GetDefaultSIUnitTypeOf(quantityType);
                 return oUnitType;
@@ -422,7 +422,7 @@ namespace QuantitySystem.Units
 
                             //then create default units of the quantity of this system.
 
-                            Unit u = new Unit(qdim,UnitSystem);
+                            Unit u = new Unit(qdim, UnitSystem);
 
                             DefaultUnits.AddRange(u.SubUnits);
 
@@ -437,10 +437,6 @@ namespace QuantitySystem.Units
                     {
                         //although have a quantity type but there are sub units exists 
                         //    because it was created dynamically.
-
-
-
-
                     }
 
 

@@ -191,7 +191,7 @@ namespace QuantitySystem.Units
             }
             catch (QuantityNotFoundException)
             {
-                this.quantityType = typeof(AnyQuantity<>);
+                //this.quantityType = typeof(AnyQuantity<>);
 
             }
 

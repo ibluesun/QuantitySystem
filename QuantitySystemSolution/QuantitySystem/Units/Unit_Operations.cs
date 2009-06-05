@@ -164,10 +164,34 @@ namespace QuantitySystem.Units
             UnitPath FromDefaultUnitToTargetUnit = unit.PathFromDefaultUnit();
 
             // 3- check if the two units are in the same unit system
+            //  if the units share the same parent don't jump
+
             UnitPath SystemsPath = null;
-            if (this.UnitSystem == unit.UnitSystem || 
-                (this.UnitSystem.StartsWith("Metric")&&unit.UnitSystem.StartsWith("Metric"))
-               )
+
+            bool NoBoundaryCross = false;
+
+            //test for whole equality
+            if (this.UnitSystem == unit.UnitSystem)
+            {
+                NoBoundaryCross = true;
+            }
+            else
+            {
+                //test for that units parents are the same
+                if (this.UnitSystem.Length > unit.UnitSystem.Length)
+                {
+                    if(this.UnitSystem.Contains(unit.UnitSystem))
+                        NoBoundaryCross = true;
+                }
+                else
+                {
+                    if(unit.UnitSystem.Contains(this.UnitSystem))
+                        NoBoundaryCross = true;
+                }
+            }
+
+
+            if (NoBoundaryCross)
             {
                 //no boundary cross should occur
 

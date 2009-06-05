@@ -9,7 +9,7 @@ namespace QuantitySystem.Units.English
     /// <summary>
     /// Nautical Mile Per Hour
     /// </summary>
-    [Unit("kn", typeof(Velocity<>))]
+    [DefaultUnit("kn", typeof(Velocity<>))]
     [ReferenceUnit(1852, 3600)]
     public sealed class Knot : Unit
     {
