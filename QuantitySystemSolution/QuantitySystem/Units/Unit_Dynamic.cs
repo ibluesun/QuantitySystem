@@ -100,6 +100,108 @@ namespace QuantitySystem.Units
 
 
         /// <summary>
+        /// Create the unit directly from the specfied dimension based on the unit system given.
+        /// </summary>
+        /// <param name="dimension"></param>
+        public Unit(QuantityDimension dimension, string unitSystem)
+        {
+            SubUnits = new List<Unit>();
+
+            if (dimension.Mass.Exponent != 0)
+            {
+                Type UnitType = Unit.GetDefaultUnitTypeOf(typeof(Mass<>), unitSystem);
+
+                Unit u = (Unit)Activator.CreateInstance(UnitType);
+
+                u.UnitExponent = dimension.Mass.Exponent;
+                SubUnits.Add(u);
+            }
+
+            if (dimension.Length.Exponent != 0)
+            {
+                Type UnitType = Unit.GetDefaultUnitTypeOf(typeof(Length<>), unitSystem);
+
+                Unit u = (Unit)Activator.CreateInstance(UnitType);
+
+                u.UnitExponent = dimension.Length.Exponent;
+                SubUnits.Add(u);
+            }
+
+            if (dimension.Time.Exponent != 0)
+            {
+                Type UnitType = Unit.GetDefaultUnitTypeOf(typeof(Time<>), unitSystem);
+
+                Unit u = (Unit)Activator.CreateInstance(UnitType);
+
+                u.UnitExponent = dimension.Time.Exponent;
+                SubUnits.Add(u);
+            }
+
+            if (dimension.Temperature.Exponent != 0)
+            {
+                Type UnitType = Unit.GetDefaultUnitTypeOf(typeof(Temperature<>), unitSystem);
+
+                Unit u = (Unit)Activator.CreateInstance(UnitType);
+
+                u.UnitExponent = dimension.Temperature.Exponent;
+                SubUnits.Add(u);
+            }
+
+            if (dimension.LuminousIntensity.Exponent != 0)
+            {
+                Type UnitType = Unit.GetDefaultUnitTypeOf(typeof(LuminousIntensity<>), unitSystem);
+
+                Unit u = (Unit)Activator.CreateInstance(UnitType);
+
+                u.UnitExponent = dimension.LuminousIntensity.Exponent;
+                SubUnits.Add(u);
+            }
+
+            if (dimension.AmountOfSubstance.Exponent != 0)
+            {
+                Type UnitType = Unit.GetDefaultUnitTypeOf(typeof(AmountOfSubstance<>), unitSystem);
+
+                Unit u = (Unit)Activator.CreateInstance(UnitType);
+
+                u.UnitExponent = dimension.AmountOfSubstance.Exponent;
+                SubUnits.Add(u);
+            }
+
+            if (dimension.ElectricCurrent.Exponent != 0)
+            {
+                Type UnitType = Unit.GetDefaultUnitTypeOf(typeof(ElectricalCurrent<>), unitSystem);
+
+                Unit u = (Unit)Activator.CreateInstance(UnitType);
+
+                u.UnitExponent = dimension.ElectricCurrent.Exponent;
+                SubUnits.Add(u);
+            }
+
+
+
+            this.symbol = GenerateUnitSymbolFromSubBaseUnits();
+
+
+            this.isDefaultUnit = false;
+
+            try
+            {
+                Type qType = QuantityDimension.QuantityTypeFrom(dimension);
+                this.quantityType = qType;
+            }
+            catch (QuantityNotFoundException)
+            {
+                this.quantityType = typeof(AnyQuantity<>);
+
+            }
+
+
+            this.isBaseUnit = false;
+
+        }
+
+
+        /// <summary>
         /// Construct a unit based on the quantity type in SI Base units.
         /// Any Dimensionless quantity will return  in its unit.
         /// </summary>
@@ -361,23 +463,35 @@ namespace QuantitySystem.Units
                 //inner loop
                 while (idx < units.Count)
                 {
-
                     Unit PointedUnit = units[idx];
 
                     //by pass the repeated units.
-                    if (CurrentUnit.GetType() != PointedUnit.GetType())
+                    
+                    //  Make sure they are strongly typed not dynamically created.
+                    if (CurrentUnit.IsStronglyTyped == true && PointedUnit.IsStronglyTyped == true)
                     {
-                        //the units are different.
-                        //so exit the loop and increase the index
-                        // this will make the next current unit is the new one.
-                                                
-                        break;
+                        //by checking the unit type equality.
+                        if ((CurrentUnit.GetType() != PointedUnit.GetType()))
+                        {
+
+                            //the units are different in type.
+                            //  so exit the loop and increase the index
+                            //   this will make the next current unit is the new one.
+
+                            break;
+                        }
                     }
                     else
                     {
-                        CurrentUnit.UnitExponent += PointedUnit.UnitExponent;
-                        idx++;
+                        //check something I don't know.
+                        break;
+
                     }
+
+                    //this code is executed when the two units are identical.
+                    CurrentUnit.UnitExponent += PointedUnit.UnitExponent;
+                    idx++;
+
                 }
                 //add the accumlated unit   //however the udx is pointing to the new point.
                 GroupedUnits.Add(CurrentUnit);

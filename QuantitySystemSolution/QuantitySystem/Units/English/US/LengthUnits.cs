@@ -2,7 +2,7 @@
 using QuantitySystem.Attributes;
 
 
-namespace QuantitySystem.Units.English.Imperial
+namespace QuantitySystem.Units.English.US
 {
 
 }

@@ -4,9 +4,9 @@ using System;
 using QuantitySystem.Quantities.BaseQuantities;
 
 using QuantitySystem.Units.Metric.SI;
-using QuantitySystem.Units.English.Imperial;
 using QuantitySystem.Quantities;
 using QuantitySystem.Quantities.DimensionlessQuantities;
+using QuantitySystem.Units.English;
 
 namespace UnitsTestingProject
 {

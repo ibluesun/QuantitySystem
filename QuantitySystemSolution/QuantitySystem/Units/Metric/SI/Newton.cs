@@ -13,27 +13,5 @@ namespace QuantitySystem.Units.Metric.SI
     public sealed class Newton : MetricUnit
     {
 
-
-
-
-        //public override SIUnit GetUnitInBaseUnits()
-        //{
-        //    BaseUnits.Gram kg = new BaseUnits.Gram();
-        //    kg.Prefix += Prefix;
-            
-        //    SIUnit m = new BaseUnits.Metre();
-
-        //    SIUnit s = new Second();
-        //    s.Exponent = -2;
-
-        //    DerivedSIUnit dsi = new DerivedSIUnit(kg, m, s);
-
-        //    if (Exponent < 0) dsi = (DerivedSIUnit)dsi.Invert(); //invert the units because it may be inverted from the begining.
-
-
-        //    return dsi;
-
-        //}
-
     }
 }

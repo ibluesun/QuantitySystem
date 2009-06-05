@@ -1,7 +1,7 @@
-﻿using QuantitySystem.Units.English.Imperial;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
+using QuantitySystem.Units.English;
 namespace UnitsTestingProject
 {
     
@@ -76,7 +76,7 @@ namespace UnitsTestingProject
             Assert.AreEqual(typeof(Length<>), target.QuantityType);
             
             Assert.AreEqual(true, target.IsBaseUnit);
-            Assert.AreEqual(false, target.DefaultUnit);
+            Assert.AreEqual(false, target.IsDefaultUnit);
             Assert.AreEqual(typeof(Yard), target.ReferenceUnit.GetType());
         }
     }

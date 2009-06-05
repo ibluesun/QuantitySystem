@@ -4,9 +4,10 @@ using System;
 using QuantitySystem.Quantities.BaseQuantities;
 
 using QuantitySystem.Units.Metric.SI;
-using QuantitySystem.Units.English.Imperial;
 using QuantitySystem.Quantities;
 using QuantitySystem.Quantities.DimensionlessQuantities;
+using QuantitySystem.Units.Metric;
+using QuantitySystem.Units.English;
 
 namespace UnitsTestingProject
 {
@@ -143,7 +144,7 @@ namespace UnitsTestingProject
             Assert.AreEqual(expected, actual);
 
 
-            unitSystem = "imperial";
+            unitSystem = "english.imperial";
             expected = typeof(Foot);
 
             actual = Unit.GetDefaultUnitTypeOf(quantityType, unitSystem);
@@ -505,6 +506,39 @@ namespace UnitsTestingProject
 
 
 
+        }
+
+        /// <summary>
+        ///A test for ExpandUnit
+        ///</summary>
+        [TestMethod()]
+        public void ExpandUnitTest()
+        {
+            Unit unit = new Newton();
+
+            Unit[] expected = new Unit[]{
+                new Gram(){UnitPrefix= MetricPrefix.Kilo},
+                new Metre(),
+                new Second(){UnitExponent=-2}};
+
+
+            Unit[] actual;
+            actual = Unit.ExpandUnit(unit);
+
+            Assert.AreEqual(expected.Length, actual.Length);
+
+
+            unit = new Knot();
+
+            expected = new Unit[]{
+                new Foot(),
+                new Second(){UnitExponent=-1}};
+
+            actual = Unit.ExpandUnit(unit);
+
+            Assert.AreEqual(expected.Length, actual.Length);
+            
+            
         }
     }
 }
