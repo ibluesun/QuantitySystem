@@ -16,8 +16,10 @@ namespace QuantitySystemCalculator
     class QsEvaluator
     {
 
-        public const string UnitExpression = @"^<(.+)>$";
+        public const string UnitExpression = @"^\s*<(\w+)>\s*$";
 
+
+        public const string UnitToUnitExpression = @"\s*<(\w+)>\s*[tT][oO]\s*<(\w+)>\s*";
 
 
         public const string VariableDimensionlessUnitExpression = @"^(\w+)\s*=\s*(\d+)\s*$";
@@ -73,6 +75,31 @@ namespace QuantitySystemCalculator
                 return;
             }
 
+
+            //match unit to unit
+            m = Regex.Match(line, UnitToUnitExpression);
+            if (m.Success)
+            {
+                //evaluate unit
+
+                try
+                {
+                    Unit u1 = Unit.Parse(m.Groups[1].Value);
+                    Unit u2 = Unit.Parse(m.Groups[2].Value);
+                    //PrintUnitInfo(u);
+                    UnitPath up = u1.PathToUnit(u2);
+                    Console.WriteLine();
+                    Console.WriteLine("    Conversion Factor => {0}", up.ConversionFactor);
+                    Console.WriteLine("    ------------------------------", up.ConversionFactor);
+                    foreach (UnitPathItem upi in up) Console.WriteLine("    -> {0}", upi);
+                }
+                catch (UnitNotFoundException)
+                {
+                    Console.Error.WriteLine("Unit Not Found");
+                }
+
+                return;
+            }
 
 
             m = Regex.Match(line, VariableDimensionlessUnitExpression);

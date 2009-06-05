@@ -279,6 +279,8 @@ namespace QuantitySystem.Units
             }
         }
 
+        public const string MixedSystem = "MixedSystem";
+
         public string UnitSystem 
         { 
             get 
@@ -287,11 +289,37 @@ namespace QuantitySystem.Units
                 //return the text of the namespace 
                 // after Unit.
 
-                
-                Type UnitType = this.GetType();
+                if (IsStronglyTyped)
+                {
+                    Type UnitType = this.GetType();
 
-                string ns = UnitType.Namespace.Substring(UnitType.Namespace.LastIndexOf("Units.") + 6);
-                return ns;
+                    string ns = UnitType.Namespace.Substring(UnitType.Namespace.LastIndexOf("Units.") + 6);
+                    return ns;
+                }
+                else
+                {
+                    //mixed system
+                    // check all sub units if there unit system is the same then
+                    //  return it 
+                    
+                    
+                    string ns = SubUnits[0].UnitSystem;
+
+                    int suidx = 1;
+
+                    while (suidx < SubUnits.Count)
+                    {
+                        if (SubUnits[suidx].UnitSystem != ns)
+                        {
+                            ns = MixedSystem;
+                            break;
+                        }
+                        suidx++;
+                    }
+
+                    return ns;
+
+                }
             } 
         }
 
