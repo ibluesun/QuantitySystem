@@ -1,11 +1,8 @@
-﻿
-
-
-using QuantitySystem.Attributes;
+﻿using QuantitySystem.Attributes;
 using QuantitySystem.Quantities;
 
 
-namespace QuantitySystem.Units.English.Imperial
+namespace QuantitySystem.Units.English
 {
 
 
@@ -16,6 +13,7 @@ namespace QuantitySystem.Units.English.Imperial
     [ReferenceUnit(1852, 3600)]
     public sealed class Knot : Unit
     {
+
 
     }
 

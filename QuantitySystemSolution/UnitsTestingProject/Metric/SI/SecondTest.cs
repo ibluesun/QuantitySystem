@@ -79,7 +79,7 @@ namespace UnitsTestingProject
             Assert.AreEqual(MetricPrefix.None, target.UnitPrefix);
 
             Assert.AreEqual(true, target.IsBaseUnit);
-            Assert.AreEqual(true, target.DefaultUnit);
+            Assert.AreEqual(true, target.IsDefaultUnit);
         }
     }
 }

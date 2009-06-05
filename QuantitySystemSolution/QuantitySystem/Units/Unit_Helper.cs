@@ -94,6 +94,8 @@ namespace QuantitySystem.Units
         /// <returns>Unit Type Based on the unit system</returns>
         public static Type GetDefaultUnitTypeOf(Type quantityType, string unitSystem)
         {
+
+
             unitSystem = unitSystem.ToLower(CultureInfo.InvariantCulture);
 
             if (unitSystem.Contains("metric.si"))
@@ -113,12 +115,8 @@ namespace QuantitySystem.Units
 
                 }
 
-                var SystemUnitTypes = from si in UnitTypes
-                                      where si.Namespace.ToLower(CultureInfo.InvariantCulture).EndsWith(unitSystem)
-                                      select si;
 
-
-
+                //predictor of default unit.
                 Func<Type, bool> SearchForQuantityType = unitType =>
                 {
                     //search in the attributes of the unit type
@@ -167,13 +165,38 @@ namespace QuantitySystem.Units
                 };
 
 
-                Type SystemUnitType = SystemUnitTypes.SingleOrDefault(
-                    SearchForQuantityType
-                    );
+                string CurrentUnitSystem = unitSystem; //
+                Type SystemUnitType = null;
+
+                //search in upper namespaces also to get the default unit of the parent system.
+                while (string.IsNullOrEmpty(CurrentUnitSystem) == false && SystemUnitType == null)
+                {
+
+                    //prepare the query that we will search in
+                    var SystemUnitTypes = from ut in UnitTypes
+                                          where ut.Namespace.ToLower(CultureInfo.InvariantCulture).EndsWith(CurrentUnitSystem)
+                                          select ut;
+
+                    //select the default by predictor from the query
+                    SystemUnitType = SystemUnitTypes.SingleOrDefault(
+                        SearchForQuantityType
+                        );
+
+                    if (CurrentUnitSystem.LastIndexOf('.') < 0)
+                    {
+                        CurrentUnitSystem = "";
+                    }
+                    else
+                    {
+                        CurrentUnitSystem = CurrentUnitSystem.Substring(0, CurrentUnitSystem.LastIndexOf('.'));
+                    }
+
+                }
 
                 if (SystemUnitType == null && unitSystem.Contains("metric"))
                 {
                     //try another catch for SI unit for this quantity
+                    //   because second is always exist in all systems
 
                     SystemUnitType = GetDefaultSIUnitTypeOf(quantityType);
                 }
@@ -339,6 +362,98 @@ namespace QuantitySystem.Units
             UnitAttribute ua = (UnitAttribute)attributes.SingleOrDefault<object>(ut => ut is UnitAttribute);
 
             return ua;
+
+        }
+
+
+        /// <summary>
+        /// Expands unit into the base units.
+        /// </summary>
+        /// <param name="unit"></param>
+        /// <returns></returns>
+        public static Unit[] ExpandUnit(Unit unit)
+        {
+            //test the quantity type associated with the unit
+            //  if there is no quantity type then go through sub units
+
+            List<Unit> DefaultUnits = new List<Unit>();
+
+            if (unit.IsBaseUnit)
+            {
+                //if baseunit then why we would convert it
+                // put it immediately
+                DefaultUnits.Add(unit);
+            }
+            else
+            {
+                if (unit.QuantityType != null)
+                {
+                    //have a quantity type which is excellent 
+
+                    QuantityDimension qdim = QuantityDimension.DimensionFrom(unit.QuantityType);
+
+                    if (unit.IsStronglyTyped)
+                    {
+                        if (unit is MetricUnit)
+                        {
+                            //pure unit without sub units like Pa, N, and L
+
+                            Unit u = new Unit(qdim);
+
+                            List<Unit> baseUnits = u.SubUnits;
+
+                            //add prefix to the first unit in the array
+
+                            ((MetricUnit)baseUnits[0]).UnitPrefix += ((MetricUnit)unit).UnitPrefix;
+
+
+                            DefaultUnits.AddRange(baseUnits);
+                        }
+                        else
+                        {
+                            //not metric unit may be imperial unit like stone
+                            //     but stone is base unit and shouldn't fall into this block
+                            // however knot is NauticalMile per Hour it is not base
+                            // we need to create the base units of knot from the quantity 
+                            //    to produce ft/s
+
+                            //first we should know the unit system
+                            string UnitSystem = unit.UnitSystem;
+
+                            //then create default units of the quantity of this system.
+
+                            Unit u = new Unit(qdim,UnitSystem);
+
+                            DefaultUnits.AddRange(u.SubUnits);
+
+                            // if default unit then no changes 
+
+                            //may be not the default unit either
+
+                        }
+
+                    }
+                    else
+                    {
+                        //although have a quantity type but there are sub units exists 
+                        //    because it was created dynamically.
+
+
+
+
+                    }
+
+
+                }
+                else
+                {
+
+                }
+            }
+
+            return DefaultUnits.ToArray();
+
+            
 
         }
     }

@@ -143,7 +143,7 @@ namespace QuantitySystem.Units
         /// <summary>
         /// Determine if the unit is the default unit for the quantity type.
         /// </summary>
-        public virtual bool DefaultUnit
+        public virtual bool IsDefaultUnit
         {
             get
             {

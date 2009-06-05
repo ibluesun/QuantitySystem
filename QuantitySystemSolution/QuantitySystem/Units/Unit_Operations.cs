@@ -55,7 +55,7 @@ namespace QuantitySystem.Units
                 double RefTimesDen = 1;
 
                 // do the iteration until we reach the default unit.
-                while (RefUnit.DefaultUnit == false)
+                while (RefUnit.IsDefaultUnit == false)
                 {
 
                     path.Push(
@@ -116,7 +116,7 @@ namespace QuantitySystem.Units
             {
                 UnitPathItem upi = Forward.Pop();
 
-                if (upi.Unit.DefaultUnit)
+                if (upi.Unit.IsDefaultUnit)
                 {
                     upi.Numerator = 1;
                     upi.Denumenator = 1;

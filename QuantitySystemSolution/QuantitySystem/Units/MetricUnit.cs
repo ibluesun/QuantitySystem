@@ -90,7 +90,7 @@ namespace QuantitySystem.Units
         /// <summary>
         /// Tells if the current unit in default mode or not.
         /// </summary>
-        public override bool DefaultUnit
+        public override bool IsDefaultUnit
         {
             get
             {
@@ -118,7 +118,7 @@ namespace QuantitySystem.Units
                 if (referenceUnit == null)
                 {
                     // I am native SI unit
-                    if (DefaultUnit)
+                    if (IsDefaultUnit)
                     {
                         //I am already default don't return extra parents.
                         return null;
@@ -151,7 +151,7 @@ namespace QuantitySystem.Units
             {
                 if (referenceUnit == null)
                 {
-                    if (DefaultUnit)
+                    if (IsDefaultUnit)
                         return 0;
                     else
                         return 1;
@@ -171,7 +171,7 @@ namespace QuantitySystem.Units
                 
                 if (referenceUnit == null)
                 {
-                    if (DefaultUnit)
+                    if (IsDefaultUnit)
                         return 0;
                     else
                         return this.defaultUnitPrefix.GetFactorForConvertTo(UnitPrefix);
