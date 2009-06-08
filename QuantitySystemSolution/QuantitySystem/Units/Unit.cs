@@ -12,6 +12,32 @@ namespace QuantitySystem.Units
 {
     public partial class Unit
     {
+        #region Fields
+        
+        protected readonly string symbol;
+
+        protected bool isDefaultUnit;
+        private readonly bool isBaseUnit;
+
+
+        protected readonly Type quantityType;
+        internal QuantityDimension unitDimension;
+
+
+
+        
+        //the reference unit information.
+        protected readonly Unit referenceUnit;
+
+        protected readonly double referenceUnitNumerator;
+        protected readonly double referenceUnitDenominator;
+
+
+        private readonly bool isStronglyTyped = false;
+
+        #endregion
+
+
         /// <summary>
         /// Fill the instance of the unit with the attributes
         /// found on it.
@@ -35,6 +61,8 @@ namespace QuantitySystem.Units
             {
                 symbol = ua.Symbol;
                 quantityType = ua.QuantityType;
+                unitDimension = QuantityDimension.DimensionFrom(quantityType);
+
 
                 if (ua is DefaultUnitAttribute)
                 {
@@ -96,22 +124,6 @@ namespace QuantitySystem.Units
 
         #region Characterisitics
 
-        protected readonly string symbol;
-        protected bool isDefaultUnit;
-        protected readonly Type quantityType;
-        private readonly bool isBaseUnit;
-
-        protected readonly Unit referenceUnit;
-        protected readonly double referenceUnitNumerator;
-
-        //Denominator
-        protected readonly double referenceUnitDenominator;
-
-
-        private readonly bool isStronglyTyped = false;
-
-
-
 
         
         public virtual string Symbol
@@ -123,14 +135,7 @@ namespace QuantitySystem.Units
 
                 if (IsStronglyTyped)
                 {
-                    //if (IsInverted)
-                    //{
-                    //    return "<1/" + symbol + ">";
-                    //}
-                    //else
-                    {
-                        return symbol;
-                    }
+                    return symbol;
                 }
                 else
                 {
@@ -151,6 +156,15 @@ namespace QuantitySystem.Units
                 return isDefaultUnit;
             }
         }
+
+        /// <summary>
+        /// The dimension that this unit represents.
+        /// </summary>
+        public QuantityDimension UnitDimension
+        {
+            get { return unitDimension; }
+        } 
+
 
         /// <summary>
         /// The Type of the Quantity of this unit.
@@ -236,6 +250,7 @@ namespace QuantitySystem.Units
 
                 unit = (Unit)this.MemberwiseClone();
                 unit.UnitExponent = 0 - UnitExponent;
+                unit.unitDimension = QuantityDimension.Dimensionless - unit.unitDimension;
                 
             }
             return unit;
@@ -276,6 +291,7 @@ namespace QuantitySystem.Units
             set
             {
                 unitExponent = value;
+                unitDimension = unitDimension * value;
             }
         }
 

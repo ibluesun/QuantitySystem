@@ -43,7 +43,7 @@ Ideas:
 3] 	adding two dimensionless variable made an error 
 	reason: dimensionless unit is dervied unit without refernce unit that made the program add the same unit in
 			the unit path
-	Fixed:  don't execute the logic when the quantities are dimensional
+	(Fixed):  don't execute the logic when the quantities are dimensional
 	
 4]  Multiplieng two dimensionless units or dividing them make do logic on the units
 	suggestion: 
@@ -54,7 +54,7 @@ Ideas:
 			
 			so let the original behaviour and add exception if that if one of the two units quantity dimensionless.
 
-	Fixed	
+	(Fixed)
 		
 5]  Fix the unit formation from multiplication
     current behaviour for density*velocity    	
@@ -72,7 +72,8 @@ Ideas:
     the result was 
       DerivedQuantity`1: 1 <<kg/m^3>.<Pa.s>>
       
-    Partially Fixed
+    Partially (Fixed)
+    
     
 6]  When summing force of units <kg.<m/s^2>> + <N> 
 	error occured because conversion is not done correctly 
@@ -128,6 +129,9 @@ Ideas:
 			
 						but when expanding how can I preserve the conversion factors to the default units
 						I reached ???? 
+						
+						
+						
 
 7] gill to litre conversion was error
 	why? because pint which is the default unit of volume in imperial was pointing to litre which wasn't
@@ -149,11 +153,27 @@ Ideas:
 
 			}
 							
+	(Fixed)
 							
 		                    
-		                    
+8] Constructor of unit that takes dimension have a slight problem
+	if it was discovered that the unit is from base unit then it will return a unit with sub units
+	contain only one unit and the unit will be not base
+	
+	Proposed solution 
+	move the constructor to static creation function.
+	
+	(Fixed)
+	                  
  
-    
+9] Unit object didn't hold the dimension information so conversion to any unit is valid :S
+   proposed solution: add dimension information to the unit.    
+     error occured because I was instantiating unit from the DimensionLessQuantity 
+			hint: NEVER instantiate unit from Quantity because units depending on Quantities
+			      and if quantity is never cached then its corresponding unit will never find it
+			      
+   (Fixed)
+			 
     
     
     
