@@ -97,6 +97,10 @@ namespace QuantitySystemCalculator
                 {
                     Console.Error.WriteLine("Unit Not Found");
                 }
+                catch (UnitsNotDimensionallyEqualException)
+                {
+                    Console.Error.WriteLine("Units not dimensionally equal");
+                }
 
                 return;
             }
@@ -113,6 +117,8 @@ namespace QuantitySystemCalculator
                 AnyQuantity<double> qty = null;
                 qty = new QuantitySystem.Quantities.DimensionlessQuantities.DimensionlessQuantity<double>();
                 qty.Value = varVal;
+                qty.Unit = Unit.DiscoverUnit(qty);
+
 
                 variables[varName] = qty;
                 PrintQuantity(qty);
@@ -176,7 +182,7 @@ namespace QuantitySystemCalculator
 
                         //get the quantity
 
-                        qty.Unit = new Unit(qty); 
+                        qty.Unit = Unit.DiscoverUnit(qty); 
 
                     }
                     catch (QuantityNotFoundException)
@@ -296,6 +302,7 @@ namespace QuantitySystemCalculator
         {
             Console.WriteLine("  Unit:        {0}", unit.ToString());
             Console.WriteLine("  Quantity:    {0}", unit.QuantityType.Name);
+            Console.WriteLine("  Dimension:   {0}", unit.UnitDimension);
             Console.WriteLine("  Unit System: {0}", unit.UnitSystem);
         }
 

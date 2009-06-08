@@ -367,11 +367,11 @@ namespace QuantitySystem.Units
 
 
         /// <summary>
-        /// Expands unit into the base units.
+        /// Expands unit into the base units hosted in unit object.
         /// </summary>
         /// <param name="unit"></param>
         /// <returns></returns>
-        public static Unit[] ExpandUnit(Unit unit)
+        public static Unit ExpandUnit(Unit unit)
         {
             //test the quantity type associated with the unit
             //  if there is no quantity type then go through sub units
@@ -382,7 +382,7 @@ namespace QuantitySystem.Units
             {
                 //if baseunit then why we would convert it
                 // put it immediately
-                DefaultUnits.Add(unit);
+                return unit;
             }
             else
             {
@@ -398,7 +398,7 @@ namespace QuantitySystem.Units
                         {
                             //pure unit without sub units like Pa, N, and L
 
-                            Unit u = new Unit(qdim);
+                            Unit u = DiscoverUnit(qdim);
 
                             List<Unit> baseUnits = u.SubUnits;
 
@@ -422,7 +422,7 @@ namespace QuantitySystem.Units
 
                             //then create default units of the quantity of this system.
 
-                            Unit u = new Unit(qdim, UnitSystem);
+                            Unit u = DiscoverUnit(qdim, UnitSystem);
 
                             DefaultUnits.AddRange(u.SubUnits);
 
@@ -447,7 +447,7 @@ namespace QuantitySystem.Units
                 }
             }
 
-            return DefaultUnits.ToArray();
+            return new Unit(unit.quantityType, DefaultUnits.ToArray());
 
             
 

@@ -155,6 +155,8 @@ namespace QuantitySystem.Units
         /// <returns></returns>
         public UnitPath PathToUnit(Unit unit)
         {
+            if (this.UnitDimension != unit.UnitDimension) throw new UnitsNotDimensionallyEqualException();
+
             // 1- Get Path default unit to current unit.
 
             UnitPath FromMeToDefaultUnit = this.PathToDefaultUnit();
@@ -178,6 +180,18 @@ namespace QuantitySystem.Units
             else
             {
                 //test for that units parents are the same
+
+                string ThisParent = this.UnitSystem.IndexOf('.') > -1 ? 
+                    this.UnitSystem.Substring(0,this.UnitSystem.IndexOf('.')) :
+                    this.UnitSystem;
+
+                string TargetParent = unit.UnitSystem.IndexOf('.') > -1 ?
+                                    unit.UnitSystem.Substring(0, unit.UnitSystem.IndexOf('.')) :
+                                    unit.UnitSystem;
+
+
+                if (ThisParent == TargetParent) NoBoundaryCross = true;
+                /*
                 if (this.UnitSystem.Length > unit.UnitSystem.Length)
                 {
                     if(this.UnitSystem.Contains(unit.UnitSystem))
@@ -188,6 +202,7 @@ namespace QuantitySystem.Units
                     if(unit.UnitSystem.Contains(this.UnitSystem))
                         NoBoundaryCross = true;
                 }
+                */
             }
 
 

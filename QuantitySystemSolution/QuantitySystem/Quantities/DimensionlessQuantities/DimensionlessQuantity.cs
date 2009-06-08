@@ -12,7 +12,7 @@ namespace QuantitySystem.Quantities.DimensionlessQuantities
         public DimensionlessQuantity()
             : base(1)
         {
-            this.Unit = new Units.Unit(QuantityDimension.Dimensionless);
+            
         }
 
 
@@ -23,7 +23,7 @@ namespace QuantitySystem.Quantities.DimensionlessQuantities
         {
             this.InternalQuantities = internalQuantities;
 
-            this.Unit = new Units.Unit(QuantityDimension.Dimensionless);
+            
             
         }
 

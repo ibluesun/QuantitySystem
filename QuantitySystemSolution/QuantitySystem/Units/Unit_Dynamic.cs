@@ -22,80 +22,9 @@ namespace QuantitySystem.Units
         /// Create the unit directly from the specfied dimension in its SI base units.
         /// </summary>
         /// <param name="dimension"></param>
-        public Unit(QuantityDimension dimension)
+        public static Unit DiscoverUnit(QuantityDimension dimension)
         {
-            SubUnits = new List<Unit>();
-
-            if (dimension.Mass.Exponent != 0)
-            {
-                Unit u = new Metric.SI.Gram();
-                u.UnitExponent = dimension.Mass.Exponent;
-                SubUnits.Add(u);
-            }
-
-            if (dimension.Length.Exponent != 0)
-            {
-                Unit u = new Metric.SI.Metre();
-                u.UnitExponent = dimension.Length.Exponent;
-                SubUnits.Add(u);
-            }
-
-            if (dimension.Time.Exponent != 0)
-            {
-                Unit u = new Metric.Second();
-                u.UnitExponent = dimension.Time.Exponent;
-                SubUnits.Add(u);
-            }
-
-            if (dimension.Temperature.Exponent != 0)
-            {
-                Unit u = new Metric.SI.Kelvin();
-                u.UnitExponent = dimension.Temperature.Exponent;
-                SubUnits.Add(u);
-            }
-
-            if (dimension.LuminousIntensity.Exponent != 0)
-            {
-                Unit u = new Metric.SI.Candela();
-                u.UnitExponent = dimension.LuminousIntensity.Exponent;
-                SubUnits.Add(u);
-            }
-
-            if (dimension.AmountOfSubstance.Exponent != 0)
-            {
-                Unit u = new Metric.SI.Mole();
-                u.UnitExponent = dimension.AmountOfSubstance.Exponent;
-                SubUnits.Add(u);
-            }
-
-            if (dimension.ElectricCurrent.Exponent != 0)
-            {
-                Unit u = new Metric.SI.Ampere();
-                u.UnitExponent = dimension.ElectricCurrent.Exponent;
-                SubUnits.Add(u);
-            }
-
-
-
-            this.symbol = GenerateUnitSymbolFromSubBaseUnits();
-
-
-            this.isDefaultUnit = false;
-
-            try
-            {
-                Type qType = QuantityDimension.QuantityTypeFrom(dimension);
-                this.quantityType = qType;
-            }
-            catch(QuantityNotFoundException)
-            {
-                this.quantityType = typeof(AnyQuantity<>);
-
-            }
-            
-
-            this.isBaseUnit = false;
-
+            return DiscoverUnit(dimension, "Metric.SI");
         }
 
 
@@ -103,9 +32,9 @@ namespace QuantitySystem.Units
         /// Create the unit directly from the specfied dimension based on the unit system given.
         /// </summary>
         /// <param name="dimension"></param>
-        public Unit(QuantityDimension dimension, string unitSystem)
+        public static Unit DiscoverUnit(QuantityDimension dimension, string unitSystem)
         {
-            SubUnits = new List<Unit>();
+            List<Unit> SubUnits = new List<Unit>();
 
             if (dimension.Mass.Exponent != 0)
             {
@@ -114,6 +43,7 @@ namespace QuantitySystem.Units
                 Unit u = (Unit)Activator.CreateInstance(UnitType);
 
                 u.UnitExponent = dimension.Mass.Exponent;
+                
                 SubUnits.Add(u);
             }
 
@@ -124,6 +54,7 @@ namespace QuantitySystem.Units
                 Unit u = (Unit)Activator.CreateInstance(UnitType);
 
                 u.UnitExponent = dimension.Length.Exponent;
+
                 SubUnits.Add(u);
             }
 
@@ -134,6 +65,7 @@ namespace QuantitySystem.Units
                 Unit u = (Unit)Activator.CreateInstance(UnitType);
 
                 u.UnitExponent = dimension.Time.Exponent;
+
                 SubUnits.Add(u);
             }
 
@@ -144,6 +76,7 @@ namespace QuantitySystem.Units
                 Unit u = (Unit)Activator.CreateInstance(UnitType);
 
                 u.UnitExponent = dimension.Temperature.Exponent;
+
                 SubUnits.Add(u);
             }
 
@@ -154,6 +87,7 @@ namespace QuantitySystem.Units
                 Unit u = (Unit)Activator.CreateInstance(UnitType);
 
                 u.UnitExponent = dimension.LuminousIntensity.Exponent;
+
                 SubUnits.Add(u);
             }
 
@@ -164,6 +98,7 @@ namespace QuantitySystem.Units
                 Unit u = (Unit)Activator.CreateInstance(UnitType);
 
                 u.UnitExponent = dimension.AmountOfSubstance.Exponent;
+
                 SubUnits.Add(u);
             }
 
@@ -174,29 +109,25 @@ namespace QuantitySystem.Units
                 Unit u = (Unit)Activator.CreateInstance(UnitType);
 
                 u.UnitExponent = dimension.ElectricCurrent.Exponent;
+
                 SubUnits.Add(u);
             }
 
 
-
-            this.symbol = GenerateUnitSymbolFromSubBaseUnits();
-
-
-            this.isDefaultUnit = false;
+            Unit un = null;
 
             try
             {
                 Type qType = QuantityDimension.QuantityTypeFrom(dimension);
-                this.quantityType = qType;
+                un = new Unit(qType, SubUnits.ToArray());
             }
             catch (QuantityNotFoundException)
             {
-                //this.quantityType = typeof(AnyQuantity<>);
+                un = new Unit(null, SubUnits.ToArray());
 
             }
 
-
-            this.isBaseUnit = false;
+            return un;
 
         }
 
@@ -287,7 +218,11 @@ namespace QuantitySystem.Units
 
             this.isDefaultUnit = true;
 
+            //the quantity may be derived quantity which shouldn't be referenced :check here.
             this.quantityType = quantityType;
+
+            
+            unitDimension = QuantityDimension.DimensionFrom(this.quantityType);
 
             this.isBaseUnit = false;
 
@@ -301,17 +236,30 @@ namespace QuantitySystem.Units
         /// but when you use Energy Quantity it will return J.
         /// </summary>
         /// <param name="quantity"></param>
-        public Unit(BaseQuantity quantity)
+        public static Unit DiscoverUnit(BaseQuantity quantity)
         {
-            SubUnits = new List<Unit>();
 
             Type m_QuantityType = quantity.GetType();
 
+            if (quantity.Dimension.IsDimensionless)
+            {
+                if (!m_QuantityType.IsGenericTypeDefinition)
+                    m_QuantityType.GetGenericTypeDefinition();
+
+                if (m_QuantityType == typeof(DimensionlessQuantity<>))
+                {
+                    return DiscoverUnit(QuantityDimension.Dimensionless);
+                }
+
+            }
+
+
+
+            List<Unit> SubUnits = new List<Unit>();
 
             //try direct mapping first to get the unit
 
-            Type InnerUnitType = Unit.GetDefaultSIUnitTypeOf(m_QuantityType);
-
+            Type InnerUnitType = GetDefaultSIUnitTypeOf(m_QuantityType);
 
 
             if (InnerUnitType == null) //no direct mapping so get it from the inner quantities
@@ -327,14 +275,14 @@ namespace QuantitySystem.Units
                 foreach (var InnerQuantity in InternalQuantities)
                 {
                     //try to get the quantity direct unit
-                    Type l2_InnerUnitType = Unit.GetDefaultSIUnitTypeOf(InnerQuantity.GetType());
+                    Type l2_InnerUnitType = GetDefaultSIUnitTypeOf(InnerQuantity.GetType());
 
                     if (l2_InnerUnitType == null)
                     {
                         //this means for this quantity there is no direct mapping to SI Unit
                         // so we should create unit for this quantity
 
-                        Unit un = new Unit(InnerQuantity);
+                        Unit un = DiscoverUnit(InnerQuantity);
                         if (un.SubUnits.Count > 0)
                         {
                             SubUnits.AddRange(un.SubUnits);
@@ -354,7 +302,6 @@ namespace QuantitySystem.Units
                         SubUnits.Add(un);
                     }
 
-
                 }
 
             }
@@ -366,31 +313,15 @@ namespace QuantitySystem.Units
                 Unit un = (Unit)Activator.CreateInstance(InnerUnitType);
                 un.UnitExponent = quantity.Exponent;
 
-                SubUnits.Add(un);
+
+                return un;   
+
+
 
             }
 
-            SubUnits = GroupUnits(SubUnits); //group similar units
-
-            this.symbol = GenerateUnitSymbolFromSubBaseUnits();
-
-            this.isDefaultUnit = true;
-
-            if (!m_QuantityType.IsGenericTypeDefinition)
-            {
-                //the passed type is AnyQuantity<object> for example
-                //I want to get the type without type parameters AnyQuantity<>
-
-                this.quantityType = m_QuantityType.GetGenericTypeDefinition();
-
-            }
-            else
-            {
-
-                this.quantityType = m_QuantityType;
-            }
-
-            this.isBaseUnit = false;
+            
+            return new Unit(m_QuantityType, SubUnits.ToArray());
 
 
         }
@@ -402,7 +333,7 @@ namespace QuantitySystem.Units
         /// This constructor creates a unit from several units.
         /// </summary>
         /// <param name="units"></param>
-        public Unit(Type quantityType, params Unit[] units)
+        internal Unit(Type quantityType, params Unit[] units)
         {
             SubUnits = new List<Unit>();
 
@@ -420,20 +351,38 @@ namespace QuantitySystem.Units
 
             this.symbol = GenerateUnitSymbolFromSubBaseUnits();
 
-            this.isDefaultUnit = true;
-
-            if (!quantityType.IsGenericTypeDefinition)
+            // if the passed type is AnyQuantity<object> for example
+            //     then I want to get the type without type parameters AnyQuantity<>
+            if (quantityType != null)
             {
-                //the passed type is AnyQuantity<object> for example
-                //I want to get the type without type parameters AnyQuantity<>
+                if (!quantityType.IsGenericTypeDefinition)
+                    quantityType = quantityType.GetGenericTypeDefinition();
+            }
 
-                this.quantityType = quantityType.GetGenericTypeDefinition();
+
+            if (quantityType != typeof(DerivedQuantity<>) && quantityType != null)
+            {
+                this.isDefaultUnit = true;
+
+                this.quantityType = quantityType;
+
+                //get the unit dimension from the passed type.
+                unitDimension = QuantityDimension.DimensionFrom(quantityType);
 
             }
             else
             {
-                this.quantityType = quantityType;
+                //passed type is derivedQuantity which indicates that the units representing unknow derived quantity to the system
+                //so that quantityType should be null.
+                this.quantityType = null;
+
+
+                //get the unit dimension from the passed units.
+                this.unitDimension = QuantityDimension.Dimensionless;
+                foreach (Unit uu in SubUnits)
+                    this.unitDimension += uu.UnitDimension;
             }
+
 
             this.isBaseUnit = false;
 
@@ -490,6 +439,7 @@ namespace QuantitySystem.Units
 
                     //this code is executed when the two units are identical.
                     CurrentUnit.UnitExponent += PointedUnit.UnitExponent;
+                    CurrentUnit.unitDimension += PointedUnit.unitDimension;
                     idx++;
 
                 }

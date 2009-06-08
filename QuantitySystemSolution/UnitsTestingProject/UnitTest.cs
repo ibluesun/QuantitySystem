@@ -8,6 +8,7 @@ using QuantitySystem.Quantities;
 using QuantitySystem.Quantities.DimensionlessQuantities;
 using QuantitySystem.Units.Metric;
 using QuantitySystem.Units.English;
+using QuantitySystem;
 
 namespace UnitsTestingProject
 {
@@ -269,50 +270,50 @@ namespace UnitsTestingProject
             // instance of the quantity.
 
 
-            Unit unit = new Unit(new Length<double>());
+            Unit unit = Unit.DiscoverUnit(new Length<double>());
 
-            Assert.AreEqual("<m>", unit.Symbol);
+            Assert.AreEqual("m", unit.Symbol);
 
-            unit = new Unit(new Area<double>());
+            unit = Unit.DiscoverUnit(new Area<double>());
 
             Assert.AreEqual("<m^2>", unit.Symbol);
 
 
-            unit = new Unit(new Force<double>());
+            unit = Unit.DiscoverUnit(new Force<double>());
 
-            Assert.AreEqual("<N>", unit.Symbol);
+            Assert.AreEqual("N", unit.Symbol);
 
-            unit = new Unit(new Volume<double>());
+            unit = Unit.DiscoverUnit(new Volume<double>());
 
             Assert.AreEqual("<m^3>", unit.Symbol);
 
-            unit = new Unit(new Density<double>());
+            unit = Unit.DiscoverUnit(new Density<double>());
 
             Assert.AreEqual("<kg/m^3>", unit.Symbol);
 
-            unit = new Unit(new Pressure<double>());
+            unit = Unit.DiscoverUnit(new Pressure<double>());
 
-            Assert.AreEqual("<Pa>", unit.Symbol);
+            Assert.AreEqual("Pa", unit.Symbol);
 
-            unit = new Unit(new Viscosity<double>());
+            unit = Unit.DiscoverUnit(new Viscosity<double>());
             Assert.AreEqual("<Pa.s>", unit.Symbol);
 
 
-            unit = new Unit(new Mass<double>());
-            Assert.AreEqual("<kg>", unit.Symbol);
+            unit = Unit.DiscoverUnit(new Mass<double>());
+            Assert.AreEqual("kg", unit.Symbol);
 
-            unit = new Unit(new Angle<double>());
-            Assert.AreEqual("<rad>", unit.Symbol);
+            unit = Unit.DiscoverUnit(new Angle<double>());
+            Assert.AreEqual("rad", unit.Symbol);
 
-            unit = new Unit(new Reynolds<double>());
+            unit = Unit.DiscoverUnit(new Reynolds<double>());
             Assert.AreEqual("<kg.m/m^2.s.Pa.s>", unit.Symbol);
 
 
-            unit = new Unit(new Torque<double>());
+            unit = Unit.DiscoverUnit(new Torque<double>());
             Assert.AreEqual("<N.m>", unit.Symbol);
 
-            unit = new Unit(new Energy<double>());
-            Assert.AreEqual("<J>", unit.Symbol);
+            unit = Unit.DiscoverUnit(new Energy<double>());
+            Assert.AreEqual("J", unit.Symbol);
 
 
         }
@@ -481,8 +482,11 @@ namespace UnitsTestingProject
             Assert.AreEqual(0.025400050800101596, actual.ConversionFactor);
 
             //now the idea is to make any combination of units to go to any combination of units
-            Unit u = new Unit(QuantitySystem.QuantityDimension.ParseMLT("M1L0T-1"));
+            QuantityDimension qd = QuantityDimension.ParseMLT("M1L0T-1");
+            Unit u = Unit.DiscoverUnit(qd);
+
             Assert.AreEqual("<kg/s>", u.Symbol);
+            Assert.AreEqual(qd, u.UnitDimension);
 
             
             
@@ -495,15 +499,16 @@ namespace UnitsTestingProject
 
             var t1 = t;
 
-            var un = new Unit(t1);
+            var un = Unit.DiscoverUnit(t1);
 
-            Assert.AreEqual("<s>",un.Symbol);
+            Assert.AreEqual("s", un.Symbol);
+            Assert.AreEqual(un.QuantityType, typeof(Time<>));
 
             var t2 = t * t * t * t * t * t;
 
-            un = new Unit(t2);
+            un = Unit.DiscoverUnit(t2);
             Assert.AreEqual("<s^6>", un.Symbol);
-
+            
 
 
         }
@@ -516,27 +521,21 @@ namespace UnitsTestingProject
         {
             Unit unit = new Newton();
 
-            Unit[] expected = new Unit[]{
-                new Gram(){UnitPrefix= MetricPrefix.Kilo},
-                new Metre(),
-                new Second(){UnitExponent=-2}};
+            Unit expected = Unit.DiscoverUnit(new QuantityDimension(1, 1, -2));
 
+            Unit actual = Unit.ExpandUnit(unit);
 
-            Unit[] actual;
-            actual = Unit.ExpandUnit(unit);
-
-            Assert.AreEqual(expected.Length, actual.Length);
-
+            //Assert.AreEqual(expected, actual);
 
             unit = new Knot();
-
-            expected = new Unit[]{
-                new Foot(),
-                new Second(){UnitExponent=-1}};
-
             actual = Unit.ExpandUnit(unit);
 
-            Assert.AreEqual(expected.Length, actual.Length);
+            unit = new BTU();
+            actual = Unit.ExpandUnit(unit);
+
+            unit = new Joule();
+            ((MetricUnit)unit).UnitPrefix = MetricPrefix.Milli;
+            actual = Unit.ExpandUnit(unit);
             
             
         }
