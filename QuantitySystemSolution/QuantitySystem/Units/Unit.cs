@@ -251,6 +251,7 @@ namespace QuantitySystem.Units
                 unit = (Unit)this.MemberwiseClone();
                 unit.UnitExponent = 0 - UnitExponent;
                 
+                
             }
             return unit;
         }

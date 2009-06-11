@@ -51,7 +51,14 @@ namespace QuantitySystemCalculator
         //f=g/m	f	g	/	m
 
 
-        public Dictionary<string, AnyQuantity<double>> variables = new Dictionary<string, AnyQuantity<double>>();
+        private Dictionary<string, AnyQuantity<double>> variables = new Dictionary<string, AnyQuantity<double>>();
+        public Dictionary<string, AnyQuantity<double>> Variables
+        {
+            get
+            {
+                return variables;
+            }
+        }
 
 
         public void Evaluate(string line)
@@ -120,7 +127,7 @@ namespace QuantitySystemCalculator
                 AnyQuantity<double> qty = null;
                 qty = new QuantitySystem.Quantities.DimensionlessQuantities.DimensionlessQuantity<double>();
                 qty.Value = varVal;
-                qty.Unit = Unit.DiscoverUnit(qty);
+                qty.Unit = Unit.DiscoverUnit(QuantityDimension.Dimensionless);
 
 
                 variables[varName] = qty;
@@ -147,7 +154,7 @@ namespace QuantitySystemCalculator
                         Unit u = Unit.Parse(m.Groups[4].Value);
                         //get the quantity
                         qty = u.GetThisUnitQuantity<double>();
-                        qty.Unit = u;
+                        
                     }
                     catch (UnitNotFoundException)
                     {
@@ -217,7 +224,7 @@ namespace QuantitySystemCalculator
             }
 
 
-            //match simple operation {direct arithmatic operation}
+            //match simple operation {direct arithmatic operation} with assignment
             m = Regex.Match(line, SimpleOperationAssignmentExpression);
             if (m.Success)
             {
@@ -312,6 +319,12 @@ namespace QuantitySystemCalculator
         public void PrintQuantity(BaseQuantity qty)
         {
             Console.WriteLine("  {0}", qty.ToString());
+        }
+
+
+        public void New()
+        {
+            variables = new Dictionary<string, AnyQuantity<double>>();
         }
     }
 }

@@ -91,6 +91,7 @@
     <Compile Include="Quantities\Power.cs" />
     <Compile Include="Quantities\Pressure.cs" />
     <Compile Include="Quantities\RadiantIntensity.cs" />
+    <Compile Include="Quantities\SpecificHeat.cs" />
     <Compile Include="Quantities\Torque.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -105,6 +106,7 @@
     <Compile Include="Units\English\PowerUnits.cs" />
     <Compile Include="Units\English\EnergyUnits.cs" />
     <Compile Include="Units\English\ForceUnits.cs" />
+    <Compile Include="Units\English\Rankine.cs" />
     <Compile Include="Units\English\VelocityUnits.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -130,6 +132,7 @@
     <Compile Include="Units\English\VolumeUnits.cs" />
     <Compile Include="Units\MetricUnit_Helper.cs" />
     <Compile Include="Units\Metric\AreaUnits.cs" />
+    <Compile Include="Units\Metric\Celsius.cs" />
     <Compile Include="Units\Metric\Cgs\EnergyUnits.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -193,10 +196,13 @@
     <Compile Include="Units\Metric\SI\Watt.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Units\Natural\MassUnits.cs" />
+    <Compile Include="Units\Natural\VelocityUnits.cs" />
     <Compile Include="Units\Unit.cs" />
     <Compile Include="Units\UnitException.cs" />
     <Compile Include="Units\UnitNotFoundException.cs" />
     <Compile Include="Units\UnitPath.cs" />
+    <Compile Include="Units\UnitPathItem.cs" />
     <Compile Include="Units\UnitsNotDimensionallyEqualException.cs" />
     <Compile Include="Units\MetricPrefix.cs" />
     <Compile Include="Units\MetricPrefixException.cs" />
@@ -216,9 +222,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="QuantitySystem.snk" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Units\Natural\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

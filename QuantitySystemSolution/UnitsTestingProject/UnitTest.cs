@@ -513,32 +513,6 @@ namespace UnitsTestingProject
 
         }
 
-        /// <summary>
-        ///A test for ExpandUnit
-        ///</summary>
-        [TestMethod()]
-        public void ExpandUnitTest()
-        {
-            Unit unit = new Newton();
-
-            Unit expected = Unit.DiscoverUnit(new QuantityDimension(1, 1, -2));
-
-            Unit actual = Unit.ExpandUnit(unit);
-
-            //Assert.AreEqual(expected, actual);
-
-            unit = new Knot();
-            actual = Unit.ExpandUnit(unit);
-
-            unit = new BTU();
-            actual = Unit.ExpandUnit(unit);
-
-            unit = new Joule();
-            ((MetricUnit)unit).UnitPrefix = MetricPrefix.Milli;
-            actual = Unit.ExpandUnit(unit);
-
-            Assert.Inconclusive("Verify the correctness of this test method.");
-        }
 
         /// <summary>
         ///A test for PathToSIBaseUnits
