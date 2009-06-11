@@ -45,7 +45,10 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
         public override string ToString()
         {
-            return this.GetType().Name + ": " + Value.ToString() + " " + (Unit != null ? Unit.Symbol : "");
+            string qname = this.GetType().Name;
+            qname = qname.Substring(0, qname.Length - 2);
+
+            return qname + ": " + Value.ToString() + " " + (Unit != null ? Unit.Symbol : "");
         }
         #endregion
 

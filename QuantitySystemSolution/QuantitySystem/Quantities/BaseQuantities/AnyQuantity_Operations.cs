@@ -130,6 +130,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     //factor from second unit to first unit
                     UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
+
                     secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
                 }
 

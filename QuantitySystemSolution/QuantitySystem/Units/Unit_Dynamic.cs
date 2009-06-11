@@ -243,10 +243,14 @@ namespace QuantitySystem.Units
 
             if (quantity.Dimension.IsDimensionless)
             {
-                if (!m_QuantityType.IsGenericTypeDefinition)
-                    m_QuantityType.GetGenericTypeDefinition();
+                Type QtyType = m_QuantityType;
+                if (!QtyType.IsGenericTypeDefinition)
+                {
+                    QtyType = QtyType.GetGenericTypeDefinition();
 
-                if (m_QuantityType == typeof(DimensionlessQuantity<>))
+                }
+
+                if (QtyType == typeof(DimensionlessQuantity<>))
                 {
                     return DiscoverUnit(QuantityDimension.Dimensionless);
                 }
@@ -439,7 +443,6 @@ namespace QuantitySystem.Units
 
                     //this code is executed when the two units are identical.
                     CurrentUnit.UnitExponent += PointedUnit.UnitExponent;
-                    CurrentUnit.unitDimension += PointedUnit.unitDimension;
                     idx++;
 
                 }

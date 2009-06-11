@@ -13,28 +13,6 @@ namespace QuantitySystem.Units
     public partial class Unit
     {
 
-        /// <summary>
-        /// Multilpy unit by another unit.
-        /// </summary>
-        /// <param name="unit"></param>
-        /// <returns></returns>
-        public virtual Unit Multiply(Unit unit)
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <summary>
-        /// Dividing unit by another unit.
-        /// </summary>
-        /// <param name="unit"></param>
-        /// <returns></returns>
-        public virtual Unit Divide(Unit unit)
-        {
-            throw new NotImplementedException();
-        }
-
-
-
 
         /// <summary>
         /// Creat units path from the current unit instance to the default unit of the current 
@@ -65,6 +43,7 @@ namespace QuantitySystem.Units
                             Unit = RefUnit,
                             Numerator = RefTimesNum,
                             Denumenator = RefTimesDen
+                            
                         }
                         );
 
@@ -158,7 +137,31 @@ namespace QuantitySystem.Units
         /// <returns></returns>
         public UnitPath PathToUnit(Unit unit)
         {
-            if (this.UnitDimension.Equals(unit.UnitDimension) == false) throw new UnitsNotDimensionallyEqualException();
+            if (this.UnitDimension.Equals(unit.UnitDimension) == false)
+            {
+                throw new UnitsNotDimensionallyEqualException();
+            }
+
+            //test if one of the units are not strongly typed
+            //  because this needs special treatment. ;)
+            if (this.IsStronglyTyped == false || unit.IsStronglyTyped == false)
+            {
+                //the unit is not strongly typed so we need to make conversion to get its conversion
+                // Source unit ==> SI Base Units
+                // target unit ==> SI BaseUnits
+
+                UnitPath SourcePath = this.PathToSIBaseUnits();
+                UnitPath TargetPath = unit.PathToSIBaseUnits();
+
+                UnitPath Tito = new UnitPath();
+
+                while (SourcePath.Count > 0)
+                    Tito.Push(SourcePath.Pop());
+                while (TargetPath.Count > 0)
+                    Tito.Push(TargetPath.Pop());
+
+                return Tito;
+            }
 
             // 1- Get Path default unit to current unit.
 
@@ -307,6 +310,65 @@ namespace QuantitySystem.Units
             return Total;
         }
 
+
+
+        public UnitPath PathToSIBaseUnits()
+        {
+            if (this.IsStronglyTyped)
+            {
+                //get the corresponding unit in the SI System
+                Type InnerUnitType = Unit.GetDefaultSIUnitTypeOf(this.QuantityType);
+
+                Unit SIUnit = null;
+                if (InnerUnitType == null)
+                {
+                    //some quantities don't have strongly typed si units
+                    //so we will create it dynamically
+                    //SIUnit = new Unit(this.QuantityType);
+                    throw new NotImplementedException();
+                    
+                }
+                else
+                {
+
+                    SIUnit = (Unit)Activator.CreateInstance(InnerUnitType);
+                }
+
+                SIUnit.UnitExponent = this.UnitExponent;
+
+                UnitPath up = this.PathToUnit(SIUnit);
+
+                if (!SIUnit.IsBaseUnit)
+                {
+                    //expand the unit 
+                    Unit expandedUnit = ExpandMetricUnit((MetricUnit)SIUnit);
+                    UnitPath expath = expandedUnit.PathToSIBaseUnits();
+
+                    while (expath.Count > 0)
+                        up.Push(expath.Pop());
+
+                }
+
+                return up;
+
+
+            }
+            
+        
+            UnitPath Pathes = new UnitPath();
+            foreach (Unit un in this.SubUnits)
+            {
+                UnitPath up = null;
+
+                up = un.PathToSIBaseUnits();
+
+                while (up.Count > 0)
+                    Pathes.Push(up.Pop());
+
+            }
+            return Pathes;
+
+        }
 
         
     }

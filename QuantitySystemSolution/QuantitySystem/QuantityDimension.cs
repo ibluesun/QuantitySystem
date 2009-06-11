@@ -332,7 +332,7 @@ namespace QuantitySystem
         /// <summary>
         /// holding Dimension -> Quantity instance  to be clonned.
         /// </summary>
-        private static Dictionary<QuantityDimension, Type> CurrentQuantitiesDictionary = new Dictionary<QuantityDimension, Type>();
+        public static Dictionary<QuantityDimension, Type> CurrentQuantitiesDictionary = new Dictionary<QuantityDimension, Type>();
 
         /// <summary>
         /// 

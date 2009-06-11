@@ -40,8 +40,14 @@ namespace QuantitySystem.Attributes
 
             
         }
-       
+
         public Type UnitType { get; set; }
+
+
+        /// <summary>
+        /// Shift the conversion factor forward and backward.
+        /// </summary>
+        public double Shift { get; set; }
 
         public double Numerator
         {
@@ -63,7 +69,7 @@ namespace QuantitySystem.Attributes
         {
             get
             {
-                return numerator / denominator;
+                return (numerator / denominator) + Shift;
             }
         }
 

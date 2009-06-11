@@ -12,10 +12,5 @@ namespace QuantitySystem.Units.Metric
 
     }
 
-    [MetricUnit("me", typeof(Mass<>))]
-    [ReferenceUnit(9.109382616E-31)]
-    public sealed class ElectronMass : MetricUnit
-    {
-
-    }
+    
 }
