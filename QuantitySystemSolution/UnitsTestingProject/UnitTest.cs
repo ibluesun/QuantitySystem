@@ -536,7 +536,59 @@ namespace UnitsTestingProject
             unit = new Joule();
             ((MetricUnit)unit).UnitPrefix = MetricPrefix.Milli;
             actual = Unit.ExpandUnit(unit);
+
+            Assert.Inconclusive("Verify the correctness of this test method.");
+        }
+
+        /// <summary>
+        ///A test for PathToSIBaseUnits
+        ///</summary>
+        [TestMethod()]
+        public void PathToSIBaseUnitsTest()
+        {
+            var l = Unit.Parse("ft").GetThisUnitQuantity<double>(1);
+
+            var t = Unit.Parse("s").GetThisUnitQuantity<double>(1);
+
+            var v = l / t;
             
+            UnitPath actual;
+
+            actual = v.Unit.PathToSIBaseUnits();
+
+
+            Assert.AreEqual<double>(actual.ConversionFactor, 0.30480060960121921);
+
+
+            var a = v / t;   //acceleration
+
+            actual = a.Unit.PathToSIBaseUnits();
+
+            Assert.AreEqual<double>(actual.ConversionFactor, 0.30480060960121921);
+
+            var f = Unit.Parse("lbf").GetThisUnitQuantity<double>();
+
+            actual = f.Unit.PathToSIBaseUnits();
+
+            //now test for force mixed units.
+
+            var mslug = Unit.Parse("slug").GetThisUnitQuantity<double>(10);
+            var lyd = Unit.Parse("yd").GetThisUnitQuantity<double>(5);
+            var fs = mslug * (lyd / t / t);
+
+            actual = fs.Unit.PathToSIBaseUnits();
+
+            Assert.AreEqual<double>(actual.ConversionFactor, 13.344692133907696);
+
+            var pressure = Unit.Parse("mPa").GetThisUnitQuantity<double>(1);
+            var vis = pressure * t;
+            vis.Value = 1;
+
+            actual = vis.Unit.PathToSIBaseUnits();
+
+            Assert.AreEqual<double>(actual.ConversionFactor, 0.001);
+
+
             
         }
     }

@@ -32,6 +32,17 @@ namespace QuantitySystem.Units
         public double Denumenator { get; set; }
 
 
+        /// <summary>
+        /// Invert the item 
+        /// </summary>
+        public void Invert()
+        {
+            double num = Numerator;
+            Numerator = Denumenator;
+            Denumenator = num;
+        }
+
+
         public override bool Equals(object obj)
         {
             UnitPathItem upi = obj as UnitPathItem;
