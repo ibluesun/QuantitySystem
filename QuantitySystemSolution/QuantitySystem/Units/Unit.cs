@@ -250,7 +250,6 @@ namespace QuantitySystem.Units
 
                 unit = (Unit)this.MemberwiseClone();
                 unit.UnitExponent = 0 - UnitExponent;
-                unit.unitDimension = QuantityDimension.Dimensionless - unit.unitDimension;
                 
             }
             return unit;
@@ -265,9 +264,19 @@ namespace QuantitySystem.Units
         public AnyQuantity<T> GetThisUnitQuantity<T>()
         {
 
-            //from the attribute get the quantity.
+            AnyQuantity<T> Quantity = (AnyQuantity<T>)Activator.CreateInstance(QuantityType.MakeGenericType(typeof(T)));
+            Quantity.Unit = this;
+
+
+            return Quantity;
+        }
+
+        public AnyQuantity<T> GetThisUnitQuantity<T>(T value)
+        {
 
             AnyQuantity<T> Quantity = (AnyQuantity<T>)Activator.CreateInstance(QuantityType.MakeGenericType(typeof(T)));
+            Quantity.Unit = this;
+            Quantity.Value = value;
 
 
             return Quantity;

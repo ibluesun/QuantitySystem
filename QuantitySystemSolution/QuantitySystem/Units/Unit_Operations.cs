@@ -37,7 +37,8 @@ namespace QuantitySystem.Units
 
 
         /// <summary>
-        /// Creat units path from the current unit instance to the default unit of the current unit system in the current quantity dimension.
+        /// Creat units path from the current unit instance to the default unit of the current 
+        /// unit system in the current quantity dimension.
         /// </summary>
         /// <returns></returns>
         public UnitPath PathToDefaultUnit()
@@ -102,6 +103,8 @@ namespace QuantitySystem.Units
             return path;
         }
 
+
+
         /// <summary>
         /// Create units path from default unit in the dimension of the current unit system to the running unit instance.
         /// </summary>
@@ -155,7 +158,7 @@ namespace QuantitySystem.Units
         /// <returns></returns>
         public UnitPath PathToUnit(Unit unit)
         {
-            if (this.UnitDimension != unit.UnitDimension) throw new UnitsNotDimensionallyEqualException();
+            if (this.UnitDimension.Equals(unit.UnitDimension) == false) throw new UnitsNotDimensionallyEqualException();
 
             // 1- Get Path default unit to current unit.
 
@@ -191,19 +194,10 @@ namespace QuantitySystem.Units
 
 
                 if (ThisParent == TargetParent) NoBoundaryCross = true;
-                /*
-                if (this.UnitSystem.Length > unit.UnitSystem.Length)
-                {
-                    if(this.UnitSystem.Contains(unit.UnitSystem))
-                        NoBoundaryCross = true;
-                }
-                else
-                {
-                    if(unit.UnitSystem.Contains(this.UnitSystem))
-                        NoBoundaryCross = true;
-                }
-                */
+                
             }
+
+
 
 
             if (NoBoundaryCross)
@@ -238,6 +232,7 @@ namespace QuantitySystem.Units
 
                 UnitPathItem DefaultPItem;
                 UnitPathItem RefUPI;
+
                 if (FromMeToDefaultUnit.Peek().Unit.UnitSystem != "Metric.SI")
                 {
                     DefaultPItem = FromMeToDefaultUnit.Peek();
@@ -259,15 +254,12 @@ namespace QuantitySystem.Units
                         Numerator = DefaultPItem.Unit.ReferenceUnitDenominator,
                         Denumenator = DefaultPItem.Unit.ReferenceUnitNumerator,
                         Unit = DefaultPItem.Unit.ReferenceUnit
-                    };                
+                    };
+
 
                 }
 
-
-
                 SystemsPath.Push(RefUPI);
-
-                
             }
 
 
@@ -278,13 +270,13 @@ namespace QuantitySystem.Units
             // will end like a stack
 
 
-
-            //begin from me unit
+            //begin from me unit to default unit
             for(int i=FromMeToDefaultUnit.Count-1;i>=0;i--)
             {
                 Total.Push(FromMeToDefaultUnit.ElementAt(i));
             }
 
+            //cross the system if we need to .
             if (SystemsPath != null)
             {
                 for (int i = SystemsPath.Count - 1; i >= 0; i--)
@@ -292,7 +284,8 @@ namespace QuantitySystem.Units
                     Total.Push(SystemsPath.ElementAt(i));
                 }
             }
-
+            
+            // from default unit to target unit
             for (int i = FromDefaultUnitToTargetUnit.Count - 1; i >= 0; i--)
             {
                 Total.Push(FromDefaultUnitToTargetUnit.ElementAt(i));
@@ -301,8 +294,20 @@ namespace QuantitySystem.Units
 
 
 
+            //another check if the units are inverted then 
+            // go through all items in path and invert it also
+
+            if (this.IsInverted && unit.IsInverted)
+            {
+                foreach (UnitPathItem upi in Total)
+                    upi.Invert();
+            }
+
+
             return Total;
         }
 
+
+        
     }
 }

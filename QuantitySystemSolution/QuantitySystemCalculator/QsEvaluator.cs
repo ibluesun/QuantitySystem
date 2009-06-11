@@ -89,8 +89,11 @@ namespace QuantitySystemCalculator
                     //PrintUnitInfo(u);
                     UnitPath up = u1.PathToUnit(u2);
                     Console.WriteLine();
-                    Console.WriteLine("    Conversion Factor => {0}", up.ConversionFactor);
-                    Console.WriteLine("    ------------------------------", up.ConversionFactor);
+                    string cf = "    Conversion Factor => " + up.ConversionFactor.ToString();
+                    Console.WriteLine(cf);
+
+                    string dashes = "    ".PadRight(cf.Length, '-');
+                    Console.WriteLine(dashes);
                     foreach (UnitPathItem upi in up) Console.WriteLine("    -> {0}", upi);
                 }
                 catch (UnitNotFoundException)
