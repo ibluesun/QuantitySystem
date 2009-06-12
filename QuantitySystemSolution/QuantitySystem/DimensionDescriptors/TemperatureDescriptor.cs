@@ -46,6 +46,15 @@ namespace QuantitySystem.DimensionDescriptors
             return desc;
         }
 
+        public TemperatureDescriptor Invert()
+        {
+            TemperatureDescriptor l = new TemperatureDescriptor();
+            l.Exponent = 0 - Exponent;
+
+            return l;
+        }
+
+
         #endregion
     }
 }

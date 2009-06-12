@@ -21,17 +21,18 @@ namespace QuantitySystemCalculator
 
         public const string UnitToUnitExpression = @"\s*<(\w+)>\s*[tT][oO]\s*<(\w+)>\s*";
 
+        public const string DoubleNumber = @"[-+]?\d+(\.\d+)*([eE][-+]?\d+)*?";
 
-        public const string VariableDimensionlessUnitExpression = @"^(\w+)\s*=\s*(\d+)\s*$";
-        
-        public const string VariableUnitExpression = @"^(\w+)\s*=\s*(\d+)\s*(<(.+)>)$";
+        public const string VariableDimensionlessUnitExpression = @"^(\w+)\s*=\s*?(" + DoubleNumber + @")\s*$";
+
+        public const string VariableUnitExpression = @"^(\w+)\s*=\s*(" + DoubleNumber + @")\s*(<(.+)>)$";
         //Match	           $1	$2	$3	$4
         //a= 5	            a	5		
         //a = 6<m>	        a	6	<m>	m
         //B= 900 <m/s>	    B	900	<m/s>	m/s
         //c = 5000 <ft/s>	c	5000	<ft/s>	ft/s
 
-        public const string VariableQuantityExpression = @"^(\w+)\s*=\s*(\d+)\s*(\[(.+)\])$";
+        public const string VariableQuantityExpression = @"^(\w+)\s*=\s*(" + DoubleNumber + @")\s*(\[(.+)\])";
 
 
 
@@ -146,12 +147,12 @@ namespace QuantitySystemCalculator
 
                 AnyQuantity<double> qty = null;
 
-                if (!string.IsNullOrEmpty(m.Groups[3].Value))
+                if (!string.IsNullOrEmpty(m.Groups[5].Value))
                 {
                     try
                     {
                         //get the unit 
-                        Unit u = Unit.Parse(m.Groups[4].Value);
+                        Unit u = Unit.Parse(m.Groups[6].Value);
                         //get the quantity
                         qty = u.GetThisUnitQuantity<double>();
                         
@@ -182,13 +183,13 @@ namespace QuantitySystemCalculator
 
                 AnyQuantity<double> qty = null;
 
-                if (!string.IsNullOrEmpty(m.Groups[3].Value))
+                if (!string.IsNullOrEmpty(m.Groups[5].Value))
                 {
                     try
                     {
                         //get the quantity
  
-                        qty = AnyQuantity<double>.Parse(m.Groups[4].Value);
+                        qty = AnyQuantity<double>.Parse(m.Groups[6].Value);
 
                         //get the quantity
 

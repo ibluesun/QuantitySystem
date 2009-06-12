@@ -43,6 +43,16 @@ namespace QuantitySystem.DimensionDescriptors
             return desc;
         }
 
+        
+
+        public AmountOfSubstanceDescriptor Invert()
+        {
+            AmountOfSubstanceDescriptor l = new AmountOfSubstanceDescriptor();
+            l.Exponent = 0 - Exponent;
+            
+            return l;
+        }
+
         #endregion
     }
 }

@@ -43,6 +43,8 @@ namespace QuantitySystem.Quantities.BaseQuantities
         {
             BaseQuantity bq = (BaseQuantity)this.Clone();
             bq.SetExponent(0 - _Exponent);
+            
+
             return bq;
         }
 

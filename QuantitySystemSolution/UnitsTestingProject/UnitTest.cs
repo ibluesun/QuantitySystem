@@ -562,6 +562,14 @@ namespace UnitsTestingProject
 
             Assert.AreEqual<double>(actual.ConversionFactor, 0.001);
 
+            Unit knot = Unit.Parse("kn");
+
+            actual = knot.PathToSIBaseUnits();
+
+            Assert.AreEqual<double>(actual.ConversionFactor, 0.51444444444444448);
+
+
+
 
             
         }

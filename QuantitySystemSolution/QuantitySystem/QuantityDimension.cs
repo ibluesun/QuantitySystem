@@ -540,5 +540,19 @@ namespace QuantitySystem
                     return false;
             }
         }
+
+
+
+        public void Invert()
+        {
+            Mass = Mass.Invert();
+            Length = Length.Invert();
+            Time = Time.Invert();
+            ElectricCurrent = ElectricCurrent.Invert();
+            Temperature = Temperature.Invert();
+            AmountOfSubstance = AmountOfSubstance.Invert();
+            LuminousIntensity = LuminousIntensity.Invert();
+        }
+
     }
 }
