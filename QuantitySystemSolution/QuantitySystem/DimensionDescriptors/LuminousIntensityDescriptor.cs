@@ -47,6 +47,15 @@ namespace QuantitySystem.DimensionDescriptors
             return desc;
         }
 
+        public LuminousIntensityDescriptor Invert()
+        {
+            LuminousIntensityDescriptor l = new LuminousIntensityDescriptor();
+            l.Exponent = 0 - Exponent;
+
+            return l;
+        }
+
+
         #endregion
     }
 }

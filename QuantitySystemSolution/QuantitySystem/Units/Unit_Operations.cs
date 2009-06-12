@@ -155,10 +155,20 @@ namespace QuantitySystem.Units
 
                 UnitPath Tito = new UnitPath();
 
+                
                 while (SourcePath.Count > 0)
+                {
                     Tito.Push(SourcePath.Pop());
+                }
+                //we have to invert the target 
                 while (TargetPath.Count > 0)
-                    Tito.Push(TargetPath.Pop());
+                {
+                    UnitPathItem upi = TargetPath.Pop();
+                    upi.Invert();
+
+                    Tito.Push(upi);
+
+                }
 
                 return Tito;
             }
@@ -319,37 +329,69 @@ namespace QuantitySystem.Units
                 //get the corresponding unit in the SI System
                 Type InnerUnitType = Unit.GetDefaultSIUnitTypeOf(this.QuantityType);
 
-                Unit SIUnit = null;
                 if (InnerUnitType == null)
                 {
                     //some quantities don't have strongly typed si units
-                    //so we will create it dynamically
-                    //SIUnit = new Unit(this.QuantityType);
-                    throw new NotImplementedException();
+
+                    //like knot unit there are no corresponding velocity unit in SI
+                    //  we need to replace the knot unit with mixed unit to be able to do the conversion
+
+                    // first we should reach default unit
+                    UnitPath path = this.PathToDefaultUnit();
+
+                    //then test the system of the current unit if it was other than Metric.SI
+                    //    then we must jump to SI otherwise we are already in default SI
+                    if (this.UnitSystem == "Metric.SI")
+                    {
+
+                        throw new NotImplementedException("Impossible reach by logic");
+
+                    }
+                    else
+                    {
+                        // We should cross the system boundary 
+                        UnitPathItem DefaultPItem;
+                        UnitPathItem RefUPI;
+
+                        DefaultPItem = path.Peek();
+                        RefUPI = new UnitPathItem
+                            {
+                                Numerator = DefaultPItem.Unit.ReferenceUnitNumerator,
+                                Denumenator = DefaultPItem.Unit.ReferenceUnitDenominator,
+                                Unit = DefaultPItem.Unit.ReferenceUnit
+                            };
+
+                        path.Push(RefUPI);
+                    }
+
+                    
+                    return path;
                     
                 }
                 else
                 {
 
-                    SIUnit = (Unit)Activator.CreateInstance(InnerUnitType);
+                    Unit SIUnit = (Unit)Activator.CreateInstance(InnerUnitType);
+                    SIUnit.UnitExponent = this.UnitExponent;
+                    SIUnit.UnitDimension = this.UnitDimension;
+
+                    UnitPath up = this.PathToUnit(SIUnit);
+
+                    if (!SIUnit.IsBaseUnit)
+                    {
+                        //expand the unit 
+                        Unit expandedUnit = ExpandMetricUnit((MetricUnit)SIUnit);
+                        UnitPath expath = expandedUnit.PathToSIBaseUnits();
+
+                        while (expath.Count > 0)
+                            up.Push(expath.Pop());
+
+                    }
+
+                    return up;
+
                 }
 
-                SIUnit.UnitExponent = this.UnitExponent;
-
-                UnitPath up = this.PathToUnit(SIUnit);
-
-                if (!SIUnit.IsBaseUnit)
-                {
-                    //expand the unit 
-                    Unit expandedUnit = ExpandMetricUnit((MetricUnit)SIUnit);
-                    UnitPath expath = expandedUnit.PathToSIBaseUnits();
-
-                    while (expath.Count > 0)
-                        up.Push(expath.Pop());
-
-                }
-
-                return up;
 
 
             }

@@ -89,6 +89,15 @@ namespace QuantitySystem.DimensionDescriptors
             return l;
         }
 
+        public LengthDescriptor Invert()
+        {
+            LengthDescriptor l = new LengthDescriptor();
+            l.NormalExponent = 0 - NormalExponent;
+            l.RadiusExponent = 0 - RadiusExponent;
+            return l;
+        }
+
+
         #endregion
 
 

@@ -43,6 +43,7 @@ namespace QuantitySystem.Units
                 Unit u = (Unit)Activator.CreateInstance(UnitType);
 
                 u.UnitExponent = dimension.Mass.Exponent;
+                u.UnitDimension = new QuantityDimension(dimension.Mass.Exponent, 0, 0);
                 
                 SubUnits.Add(u);
             }
@@ -54,6 +55,7 @@ namespace QuantitySystem.Units
                 Unit u = (Unit)Activator.CreateInstance(UnitType);
 
                 u.UnitExponent = dimension.Length.Exponent;
+                u.UnitDimension = new QuantityDimension() { Length = dimension.Length };
 
                 SubUnits.Add(u);
             }
@@ -65,6 +67,7 @@ namespace QuantitySystem.Units
                 Unit u = (Unit)Activator.CreateInstance(UnitType);
 
                 u.UnitExponent = dimension.Time.Exponent;
+                u.UnitDimension = new QuantityDimension() { Time = dimension.Time };
 
                 SubUnits.Add(u);
             }
@@ -76,6 +79,7 @@ namespace QuantitySystem.Units
                 Unit u = (Unit)Activator.CreateInstance(UnitType);
 
                 u.UnitExponent = dimension.Temperature.Exponent;
+                u.UnitDimension = new QuantityDimension() { Temperature = dimension.Temperature };
 
                 SubUnits.Add(u);
             }
@@ -87,6 +91,7 @@ namespace QuantitySystem.Units
                 Unit u = (Unit)Activator.CreateInstance(UnitType);
 
                 u.UnitExponent = dimension.LuminousIntensity.Exponent;
+                u.UnitDimension = new QuantityDimension() { LuminousIntensity = dimension.LuminousIntensity };
 
                 SubUnits.Add(u);
             }
@@ -98,6 +103,7 @@ namespace QuantitySystem.Units
                 Unit u = (Unit)Activator.CreateInstance(UnitType);
 
                 u.UnitExponent = dimension.AmountOfSubstance.Exponent;
+                u.UnitDimension = new QuantityDimension(0, 0, 0, 0, 0, dimension.AmountOfSubstance.Exponent, 0);
 
                 SubUnits.Add(u);
             }
@@ -109,6 +115,8 @@ namespace QuantitySystem.Units
                 Unit u = (Unit)Activator.CreateInstance(UnitType);
 
                 u.UnitExponent = dimension.ElectricCurrent.Exponent;
+                u.UnitDimension = new QuantityDimension() { ElectricCurrent = dimension.ElectricCurrent };
+
 
                 SubUnits.Add(u);
             }
@@ -155,6 +163,8 @@ namespace QuantitySystem.Units
                 {
                     Unit u = new Metric.SI.Gram();
                     u.UnitExponent = dimension.Mass.Exponent;
+                    u.UnitDimension = u.UnitDimension * dimension.Mass.Exponent;
+
                     SubUnits.Add(u);
                 }
 
@@ -162,6 +172,8 @@ namespace QuantitySystem.Units
                 {
                     Unit u = new Metric.SI.Metre();
                     u.UnitExponent = dimension.Length.Exponent;
+                    u.UnitDimension = u.UnitDimension * dimension.Length.Exponent;
+
                     SubUnits.Add(u);
                 }
 
@@ -169,6 +181,8 @@ namespace QuantitySystem.Units
                 {
                     Unit u = new Metric.Second();
                     u.UnitExponent = dimension.Time.Exponent;
+                    u.UnitDimension = u.UnitDimension * dimension.Time.Exponent;
+
                     SubUnits.Add(u);
                 }
 
@@ -176,6 +190,8 @@ namespace QuantitySystem.Units
                 {
                     Unit u = new Metric.SI.Kelvin();
                     u.UnitExponent = dimension.Temperature.Exponent;
+                    u.UnitDimension = u.UnitDimension * dimension.Temperature.Exponent;
+
                     SubUnits.Add(u);
                 }
 
@@ -183,6 +199,8 @@ namespace QuantitySystem.Units
                 {
                     Unit u = new Metric.SI.Candela();
                     u.UnitExponent = dimension.LuminousIntensity.Exponent;
+                    u.UnitDimension = u.UnitDimension * dimension.LuminousIntensity.Exponent;
+
                     SubUnits.Add(u);
                 }
 
@@ -190,6 +208,8 @@ namespace QuantitySystem.Units
                 {
                     Unit u = new Metric.SI.Mole();
                     u.UnitExponent = dimension.AmountOfSubstance.Exponent;
+                    u.UnitDimension = u.UnitDimension * dimension.AmountOfSubstance.Exponent;
+
                     SubUnits.Add(u);
                 }
 
@@ -197,6 +217,8 @@ namespace QuantitySystem.Units
                 {
                     Unit u = new Metric.SI.Ampere();
                     u.UnitExponent = dimension.ElectricCurrent.Exponent;
+                    u.UnitDimension = u.UnitDimension * dimension.ElectricCurrent.Exponent;
+
                     SubUnits.Add(u);
                 }
 
@@ -302,6 +324,7 @@ namespace QuantitySystem.Units
 
                         Unit un = (Unit)Activator.CreateInstance(l2_InnerUnitType);
                         un.UnitExponent = InnerQuantity.Exponent;
+                        un.UnitDimension = InnerQuantity.Dimension;
 
                         SubUnits.Add(un);
                     }
@@ -316,11 +339,9 @@ namespace QuantitySystem.Units
 
                 Unit un = (Unit)Activator.CreateInstance(InnerUnitType);
                 un.UnitExponent = quantity.Exponent;
-
+                un.UnitDimension = quantity.Dimension;
 
                 return un;   
-
-
 
             }
 
@@ -443,6 +464,8 @@ namespace QuantitySystem.Units
 
                     //this code is executed when the two units are identical.
                     CurrentUnit.UnitExponent += PointedUnit.UnitExponent;
+                    CurrentUnit.UnitDimension += PointedUnit.UnitDimension;
+
                     idx++;
 
                 }

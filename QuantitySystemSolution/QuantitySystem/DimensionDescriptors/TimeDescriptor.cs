@@ -42,6 +42,14 @@ namespace QuantitySystem.DimensionDescriptors
             return desc;
         }
 
+        public TimeDescriptor Invert()
+        {
+            TimeDescriptor l = new TimeDescriptor();
+            l.Exponent = 0 - Exponent;
+
+            return l;
+        }
+
         #endregion
     }
 }

@@ -45,6 +45,14 @@ namespace QuantitySystem.DimensionDescriptors
             return desc;
         }
 
+        public MassDescriptor Invert()
+        {
+            MassDescriptor l = new MassDescriptor();
+            l.Exponent = 0 - Exponent;
+
+            return l;
+        }
+
         #endregion
     }
 }

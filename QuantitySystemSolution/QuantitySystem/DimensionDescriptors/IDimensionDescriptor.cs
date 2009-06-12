@@ -11,6 +11,8 @@
 
         TDimensionDescriptor Multiply(int exponent);
 
+        TDimensionDescriptor Invert();
+
     }
 
 

@@ -163,6 +163,7 @@ namespace QuantitySystem.Units
         public QuantityDimension UnitDimension
         {
             get { return unitDimension; }
+            set { unitDimension = value; }
         } 
 
 
@@ -250,6 +251,7 @@ namespace QuantitySystem.Units
 
                 unit = (Unit)this.MemberwiseClone();
                 unit.UnitExponent = 0 - UnitExponent;
+                unit.UnitDimension.Invert();
                 
                 
             }
@@ -301,7 +303,7 @@ namespace QuantitySystem.Units
             set
             {
                 unitExponent = value;
-                unitDimension = unitDimension * value;
+                
             }
         }
 

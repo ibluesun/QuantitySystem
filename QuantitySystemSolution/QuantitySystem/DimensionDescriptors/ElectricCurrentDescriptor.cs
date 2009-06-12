@@ -41,6 +41,13 @@ namespace QuantitySystem.DimensionDescriptors
             return desc;
         }
 
+        public ElectricCurrentDescriptor Invert()
+        {
+            ElectricCurrentDescriptor l = new ElectricCurrentDescriptor();
+            l.Exponent = 0 - Exponent;
+
+            return l;
+        }
         #endregion
     }
 }
