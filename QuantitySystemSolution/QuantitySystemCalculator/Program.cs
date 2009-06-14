@@ -110,9 +110,11 @@ namespace QuantitySystemCalculator
             Console.WriteLine("    Type \"      Quantities\" for list of current variables");
             Console.WriteLine("    Type \"      Units\" for list of current variables");
             Console.WriteLine();
-            Console.WriteLine("    Type \"New\" to clear all variables");
+            Console.WriteLine("    Type \"New\" to clear all variables.");
             Console.WriteLine();
-            Console.WriteLine("    Type \"Cls\" to clear the screen");
+            Console.WriteLine("    Type \"Cls\" to clear the screen.");
+            Console.WriteLine();
+            Console.WriteLine("    Type \"Exit\" to terminate the console.");
 
 
         }

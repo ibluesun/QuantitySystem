@@ -243,7 +243,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
             
             if (q.Unit != null)
             {
-                q.Unit = q.Unit.Invert();
+                q.Unit = this.Unit.Invert();
             }
 
             return q;
