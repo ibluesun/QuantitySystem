@@ -382,12 +382,21 @@ namespace QuantitySystem.Units
 
                     if (!SIUnit.IsBaseUnit)
                     {
-                        //expand the unit 
-                        Unit expandedUnit = ExpandMetricUnit((MetricUnit)SIUnit);
-                        UnitPath expath = expandedUnit.PathToSIBaseUnits();
+                        if (SIUnit.UnitDimension.IsDimensionless && SIUnit.IsStronglyTyped)
+                        {
+                            //for dimensionless units like radian, stradian
+                            //do nothing.
+                        }
+                        else
+                        {
 
-                        while (expath.Count > 0)
-                            up.Push(expath.Pop());
+                            //expand the unit 
+                            Unit expandedUnit = ExpandMetricUnit((MetricUnit)SIUnit);
+                            UnitPath expath = expandedUnit.PathToSIBaseUnits();
+
+                            while (expath.Count > 0)
+                                up.Push(expath.Pop());
+                        }
 
                     }
 

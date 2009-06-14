@@ -379,7 +379,7 @@ namespace QuantitySystem.Units
             }
             else
             {
-                
+
                 QuantityDimension qdim = QuantityDimension.DimensionFrom(unit.QuantityType);
 
                 if (unit is MetricUnit)
@@ -398,7 +398,7 @@ namespace QuantitySystem.Units
                 }
 
                 return new Unit(unit.quantityType, DefaultUnits.ToArray());
-        
+
             }
         }
 
