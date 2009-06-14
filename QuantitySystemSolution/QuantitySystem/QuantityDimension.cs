@@ -543,15 +543,19 @@ namespace QuantitySystem
 
 
 
-        public void Invert()
+        public QuantityDimension Invert()
         {
-            Mass = Mass.Invert();
-            Length = Length.Invert();
-            Time = Time.Invert();
-            ElectricCurrent = ElectricCurrent.Invert();
-            Temperature = Temperature.Invert();
-            AmountOfSubstance = AmountOfSubstance.Invert();
-            LuminousIntensity = LuminousIntensity.Invert();
+            QuantityDimension qd = new QuantityDimension();
+
+            qd.Mass = Mass.Invert();
+            qd.Length = Length.Invert();
+            qd.Time = Time.Invert();
+            qd.ElectricCurrent = ElectricCurrent.Invert();
+            qd.Temperature = Temperature.Invert();
+            qd.AmountOfSubstance = AmountOfSubstance.Invert();
+            qd.LuminousIntensity = LuminousIntensity.Invert();
+            return qd;
+
         }
 
     }

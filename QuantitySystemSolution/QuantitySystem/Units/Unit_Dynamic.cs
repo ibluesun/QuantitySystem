@@ -365,7 +365,7 @@ namespace QuantitySystem.Units
             foreach (Unit un in units)
             {
                 //include only the units that isn't dimensionless
-                if (un.QuantityType != typeof(DimensionlessQuantity<>))
+                //if (un.QuantityType != typeof(DimensionlessQuantity<>))
                 {
                     SubUnits.Add(un);
                 }
@@ -387,7 +387,7 @@ namespace QuantitySystem.Units
 
             if (quantityType != typeof(DerivedQuantity<>) && quantityType != null)
             {
-                this.isDefaultUnit = true;
+                if (quantityType != typeof(DimensionlessQuantity<>)) this.isDefaultUnit = true;
 
                 this.quantityType = quantityType;
 
@@ -417,12 +417,31 @@ namespace QuantitySystem.Units
 
         #endregion
 
-        
-        private List<Unit> GroupUnits(List<Unit> units)
+        private List<Unit> FlattenUnits(List<Unit> units)
         {
+            List<Unit> all = new List<Unit>();
+            foreach (Unit un in units)
+            {
+                if (un.IsStronglyTyped)
+                    all.Add(un);
+                else
+                    all.AddRange(un.SubUnits);
+            }
+            return all;
+        }
+        
+        private List<Unit> GroupUnits(List<Unit> bulk_units)
+        {
+            List<Unit> units = FlattenUnits(bulk_units);
+
             if (units.Count == 1) return units;
+
+            
+
             List<Unit> GroupedUnits = new List<Unit>();
 
+            #region old code
+            /*
             //i'll two indexes with two inner loops
             // outer loop will put the unit in the Grouped Units
             // inner loop will accumulate the equivalent repeated units.
@@ -437,7 +456,10 @@ namespace QuantitySystem.Units
                 //inner loop
                 while (idx < units.Count)
                 {
-                    Unit PointedUnit = units[idx];
+                    Unit PointedUnit;
+                    
+                    PointedUnit = units[idx];
+                    
 
                     //by pass the repeated units.
                     
@@ -452,32 +474,54 @@ namespace QuantitySystem.Units
                             //  so exit the loop and increase the index
                             //   this will make the next current unit is the new one.
 
-                            break;
+                            goto skip;
                         }
                     }
                     else
                     {
-                        //check something I don't know.
-                        break;
+                        //not strongly typed then not equal from the start. (I assume that)
+                        goto skip;
 
                     }
 
                     //this code is executed when the two units are identical.
                     CurrentUnit.UnitExponent += PointedUnit.UnitExponent;
                     CurrentUnit.UnitDimension += PointedUnit.UnitDimension;
-
+                skip:
                     idx++;
 
                 }
+                
+
                 //add the accumlated unit   //however the udx is pointing to the new point.
                 GroupedUnits.Add(CurrentUnit);
-                udx = idx;
-                idx++;
+                udx++;  //proceed with next unit
+                idx = udx + 1;
 
-               
+
 
             }
+            
+             */
+            #endregion
 
+
+            Dictionary<Type, Unit> us = new Dictionary<Type, Unit>();
+            foreach (Unit un in units)
+            {
+                if (us.ContainsKey(un.GetType()))
+                {
+                    us[un.GetType()].UnitExponent += un.UnitExponent;
+                    us[un.GetType()].UnitDimension += un.UnitDimension;
+                }
+                else
+                {
+                    us[un.GetType()] = (Unit)un.MemberwiseClone();
+                }
+            }
+            foreach (Unit un in us.Values)
+                if (un.UnitExponent != 0) GroupedUnits.Add(un);
+            
             return GroupedUnits;
         }
 

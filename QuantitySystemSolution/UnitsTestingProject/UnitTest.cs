@@ -306,7 +306,7 @@ namespace UnitsTestingProject
             Assert.AreEqual("rad", unit.Symbol);
 
             unit = Unit.DiscoverUnit(new Reynolds<double>());
-            Assert.AreEqual("<kg.m/m^2.s.Pa.s>", unit.Symbol);
+            Assert.AreEqual("<kg/m.s^2.Pa>", unit.Symbol);
 
 
             unit = Unit.DiscoverUnit(new Torque<double>());
