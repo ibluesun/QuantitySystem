@@ -354,14 +354,17 @@ namespace QuantitySystem.Units
                         UnitPathItem RefUPI;
 
                         DefaultPItem = path.Peek();
-                        RefUPI = new UnitPathItem
-                            {
-                                Numerator = DefaultPItem.Unit.ReferenceUnitNumerator,
-                                Denumenator = DefaultPItem.Unit.ReferenceUnitDenominator,
-                                Unit = DefaultPItem.Unit.ReferenceUnit
-                            };
+                        if (DefaultPItem.Unit.ReferenceUnit != null)
+                        {
+                            RefUPI = new UnitPathItem
+                                {
+                                    Numerator = DefaultPItem.Unit.ReferenceUnitNumerator,
+                                    Denumenator = DefaultPItem.Unit.ReferenceUnitDenominator,
+                                    Unit = DefaultPItem.Unit.ReferenceUnit
+                                };
 
-                        path.Push(RefUPI);
+                            path.Push(RefUPI);
+                        }
                     }
 
                     
