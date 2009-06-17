@@ -6,6 +6,8 @@ using System.Text.RegularExpressions;
 using QuantitySystem.Units;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem;
+using QuantitySystem.Quantities.DimensionlessQuantities;
+using System.Linq.Expressions;
 
 namespace QuantitySystemCalculator
 {
@@ -13,7 +15,7 @@ namespace QuantitySystemCalculator
     /// <summary>
     /// used to evaluate the quantity system expressions.
     /// </summary>
-    class QsEvaluator
+    public class QsEvaluator
     {
 
         public const string UnitExpression = @"^\s*<(\w+)>\s*$";
@@ -23,33 +25,10 @@ namespace QuantitySystemCalculator
 
         public const string DoubleNumber = @"[-+]?\d+(\.\d+)*([eE][-+]?\d+)*?";
 
-        public const string VariableDimensionlessUnitExpression = @"^(\w+)\s*=\s*?(" + DoubleNumber + @")\s*$";
-
-        public const string VariableUnitExpression = @"^(\w+)\s*=\s*(" + DoubleNumber + @")\s*(<(.+)>)$";
-        //Match	           $1	$2	$3	$4
-        //a= 5	            a	5		
-        //a = 6<m>	        a	6	<m>	m
-        //B= 900 <m/s>	    B	900	<m/s>	m/s
-        //c = 5000 <ft/s>	c	5000	<ft/s>	ft/s
-
         public const string VariableQuantityExpression = @"^(\w+)\s*=\s*(" + DoubleNumber + @")\s*(\[(.+)\])";
 
 
 
-        public const string VariableNameExpression = @"^\s*(\w+)\s*$";
-
-        public const string SimpleOperationsExpression = @"(\w+)\s*([\+\-\/\*])\s*(\w+)";
-        //Match	$1	$2	$3
-        //a + b	a	+	b
-        //a -b	a	-	b
-        //a/d	a	/	d
-        //g* d	g	*	d
-
-
-        public const string SimpleOperationAssignmentExpression = @"(\w+)\s*=\s*(\w+)\s*([\+\-\/\*])\s*(\w+)";
-        //Match	    $1	$2	$3	$4
-        //c= a + b	c	a	+	b
-        //f=g/m	f	g	/	m
 
 
         private Dictionary<string, AnyQuantity<double>> variables = new Dictionary<string, AnyQuantity<double>>();
@@ -62,10 +41,12 @@ namespace QuantitySystemCalculator
         }
 
 
-        public void Evaluate(string line)
+        public void Evaluate(string expr)
         {
+
+            #region Match Unit "<kn>" 
             //match unit first
-            Match m = Regex.Match(line, UnitExpression);
+            Match m = Regex.Match(expr, UnitExpression);
             if (m.Success)
             {
                 //evaluate unit
@@ -82,10 +63,12 @@ namespace QuantitySystemCalculator
                 
                 return;
             }
+            #endregion
 
+            #region Match <unit> to <unit>
 
             //match unit to unit
-            m = Regex.Match(line, UnitToUnitExpression);
+            m = Regex.Match(expr, UnitToUnitExpression);
             if (m.Success)
             {
                 //evaluate unit
@@ -115,70 +98,17 @@ namespace QuantitySystemCalculator
 
                 return;
             }
+            #endregion
 
+            string varName = string.Empty;
 
-            m = Regex.Match(line, VariableDimensionlessUnitExpression);
-            if (m.Success)
-            {
-                //dimensionless quantity
-
-                string varName = m.Groups[1].Value;
-                double varVal = double.Parse(m.Groups[2].Value);
-
-                AnyQuantity<double> qty = null;
-                qty = new QuantitySystem.Quantities.DimensionlessQuantities.DimensionlessQuantity<double>();
-                qty.Value = varVal;
-                qty.Unit = Unit.DiscoverUnit(QuantityDimension.Dimensionless);
-
-
-                variables[varName] = qty;
-                PrintQuantity(qty);
-                return;
-
-            }
-
-            //match variable assignation
-            m = Regex.Match(line, VariableUnitExpression);
-            if (m.Success)
-            {
-                //get the variable name
-                string varName = m.Groups[1].Value;
-                double varVal = double.Parse(m.Groups[2].Value);
-
-                AnyQuantity<double> qty = null;
-
-                if (!string.IsNullOrEmpty(m.Groups[5].Value))
-                {
-                    try
-                    {
-                        //get the unit 
-                        Unit u = Unit.Parse(m.Groups[6].Value);
-                        //get the quantity
-                        qty = u.GetThisUnitQuantity<double>();
-                        
-                    }
-                    catch (UnitNotFoundException)
-                    {
-                        Console.Error.WriteLine("Unit Not Found");
-                        return;
-                    }
-
-                }
-
-
-                qty.Value = varVal;
-
-                variables[varName] = qty;
-                PrintQuantity(qty);
-                return;
-            }
-
+            #region Match variable Assignation with quantity "a=40[Acceleration]"
             //match variable assignation with quantity
-            m = Regex.Match(line, VariableQuantityExpression);
+            m = Regex.Match(expr, VariableQuantityExpression);
             if (m.Success)
             {
                 //get the variable name
-                string varName = m.Groups[1].Value;
+                varName = m.Groups[1].Value;
                 double varVal = double.Parse(m.Groups[2].Value);
 
                 AnyQuantity<double> qty = null;
@@ -210,104 +140,68 @@ namespace QuantitySystemCalculator
                 PrintQuantity(qty);
                 return;
             }
+            #endregion
 
-            //match variable name
-            m = Regex.Match(line, VariableNameExpression);
-            if (m.Success)
+
+            #region expression
+            //check if the line has '='
+            string line = expr;
+            
+
+            if (expr.IndexOf('=') > -1)
             {
-                string varName = m.Groups[1].Value;
-                if (variables.ContainsKey(varName))
+                string[] ls = expr.Split('=');
+                line = ls[1];
+                varName = ls[0].Trim();
+
+                if (char.IsNumber(varName[0]))
                 {
-                    var qty = variables[varName];
-                    PrintQuantity(qty);
-                }
-                return;
-            }
-
-
-            //match simple operation {direct arithmatic operation} with assignment
-            m = Regex.Match(line, SimpleOperationAssignmentExpression);
-            if (m.Success)
-            {
-                string op = m.Groups[3].Value;
-
-                AnyQuantity<double> left = null;
-                AnyQuantity<double> right = null;
-
-                try
-                {
-
-                    left = variables[m.Groups[2].Value];
-                    right = variables[m.Groups[4].Value];
-                }
-                catch (KeyNotFoundException)
-                {
-                    Console.Error.WriteLine("Variable Not Found");
+                    Console.Error.WriteLine("Variable must start with letter");
                     return;
                 }
-
-
-                //the new variable name
-                var varName = m.Groups[1].Value;
-
-                AnyQuantity<double> result = null;
-
-                try
-                {
-                    if (op == "+") result = left + right;
-                    if (op == "-") result = left - right;
-                    if (op == "*") result = left * right;
-                    if (op == "/") result = left / right;
-
-                    variables[varName] = result;
-                    PrintQuantity(result);
-                }
-                catch (Exception ex)
-                {
-                    Console.Error.WriteLine("  {0}", ex.GetType().Name);
-                }
-                return;
             }
 
-            //match simple operation {direct arithmatic operation}
-            m = Regex.Match(line, SimpleOperationsExpression);
-            if (m.Success)
+            if (QsVar.IsMatch(line))
             {
-                string op = m.Groups[2].Value;
-
-                AnyQuantity<double> left = null;
-                AnyQuantity<double> right = null;
-
                 try
                 {
-                    left = variables[m.Groups[1].Value];
-                    right = variables[m.Groups[3].Value];
-                }
-                catch (KeyNotFoundException)
-                {
-                    Console.Error.WriteLine("Variable Not Found");
-                    return;
-                }
 
-                AnyQuantity<double> result = null;
+                    QsVar qv = new QsVar(this, line);
+                    if (!string.IsNullOrEmpty(varName))
+                    {
+                        //assign the variable
+                        variables[varName] = qv.Execute();
+                        PrintQuantity(variables[varName]);
+                    }
+                    else
+                    {
+                        //only print the result.
+                        PrintQuantity(qv.Execute());
+                    }
 
-                try
-                {
-                    if (op == "+") result = left + right;
-                    if (op == "-") result = left - right;
-                    if (op == "*") result = left * right;
-                    if (op == "/") result = left / right;
-
-                    PrintQuantity(result);
                 }
-                catch (Exception ex)
+                catch (NullReferenceException nre)
                 {
-                    Console.Error.WriteLine("  {0}", ex.GetType().Name);
+                    Console.Error.WriteLine(nre.Message);
                 }
-                return;
+                catch (QuantitiesNotDimensionallyEqualException)
+                {
+                    Console.Error.WriteLine("Quantities Not Dimensionally Equal");
+                }
+                catch (UnitNotFoundException)
+                {
+                    Console.Error.WriteLine("Unit Not Found");
+                }
+                catch (OverflowException)
+                {
+                    Console.Error.WriteLine("Overflow");
+                }
             }
+
+            #endregion
 
         }
+
 
         public void PrintUnitInfo(Unit unit)
         {
@@ -328,4 +222,5 @@ namespace QuantitySystemCalculator
             variables = new Dictionary<string, AnyQuantity<double>>();
         }
     }
+
 }
