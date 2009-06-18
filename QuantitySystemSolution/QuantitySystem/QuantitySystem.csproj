@@ -69,6 +69,8 @@
     <Compile Include="Quantities\AngularVelocity.cs" />
     <Compile Include="Quantities\BaseQuantities\AmountOfSubstance.cs" />
     <Compile Include="Quantities\BaseQuantities\AnyQuantity_Operations.cs" />
+    <Compile Include="Quantities\Capacitance.cs" />
+    <Compile Include="Quantities\CatalyticActivity.cs" />
     <Compile Include="Quantities\DimensionlessQuantities\Angle.cs" />
     <Compile Include="Quantities\BaseQuantities\AnyQuantity.cs" />
     <Compile Include="Quantities\BaseQuantities\BaseQuantity.cs" />
@@ -83,11 +85,20 @@
     <Compile Include="Quantities\Acceleration.cs" />
     <Compile Include="Quantities\Area.cs" />
     <Compile Include="Quantities\DimensionlessQuantities\SolidAngle.cs" />
+    <Compile Include="Quantities\ElectricCharge.cs" />
+    <Compile Include="Quantities\ElectricConductance.cs" />
+    <Compile Include="Quantities\ElectricResistance.cs" />
+    <Compile Include="Quantities\ElectromotiveForce.cs" />
     <Compile Include="Quantities\Force.cs" />
     <Compile Include="Quantities\DimensionlessQuantities\DimensionlessQuantity.cs" />
     <Compile Include="Quantities\DimensionlessQuantities\Reynolds.cs" />
     <Compile Include="Quantities\Frequency.cs" />
+    <Compile Include="Quantities\Illuminance.cs" />
+    <Compile Include="Quantities\Inductance.cs" />
     <Compile Include="Quantities\KinematicViscosity.cs" />
+    <Compile Include="Quantities\LuminousFlux.cs" />
+    <Compile Include="Quantities\MagneticFlux.cs" />
+    <Compile Include="Quantities\MagneticFluxDensity.cs" />
     <Compile Include="Quantities\Power.cs" />
     <Compile Include="Quantities\Pressure.cs" />
     <Compile Include="Quantities\RadiantIntensity.cs" />
@@ -102,6 +113,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QuantityDimension.cs" />
     <Compile Include="QuantityNotFoundException.cs" />
+    <Compile Include="Units\Astronomical\EnergyUnits.cs" />
+    <Compile Include="Units\Astronomical\LengthUnits.cs" />
+    <Compile Include="Units\Astronomical\MassUnits.cs" />
+    <Compile Include="Units\Astronomical\TimeUnits.cs" />
     <Compile Include="Units\English\AreaUnits.cs" />
     <Compile Include="Units\English\PowerUnits.cs" />
     <Compile Include="Units\English\EnergyUnits.cs" />
@@ -168,7 +183,19 @@
     <Compile Include="Units\Metric\SI\BaseUnits\Mole.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Units\Metric\SI\Coulomb.cs" />
+    <Compile Include="Units\Misc\VolumeUnits.cs" />
+    <Compile Include="Units\Metric\SI\Farad.cs" />
+    <Compile Include="Units\Metric\SI\Henry.cs" />
+    <Compile Include="Units\Metric\SI\Katal.cs" />
+    <Compile Include="Units\Metric\SI\Lumen.cs" />
+    <Compile Include="Units\Metric\SI\Lux.cs" />
+    <Compile Include="Units\Metric\SI\Ohm.cs" />
+    <Compile Include="Units\Metric\SI\Siemens.cs" />
     <Compile Include="Units\Metric\SI\Steradian.cs" />
+    <Compile Include="Units\Metric\SI\Tesla.cs" />
+    <Compile Include="Units\Metric\SI\Volt.cs" />
+    <Compile Include="Units\Metric\SI\Weber.cs" />
     <Compile Include="Units\Metric\VolumeUnits.cs" />
     <Compile Include="Units\Metric\EnergyUnits.cs" />
     <Compile Include="Units\Metric\LengthUnits.cs" />
@@ -196,8 +223,14 @@
     <Compile Include="Units\Metric\SI\Watt.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Units\Misc\AngleUnits.cs" />
+    <Compile Include="Units\Misc\AngularVelocityUnits.cs" />
+    <Compile Include="Units\Misc\LengthUnits.cs" />
+    <Compile Include="Units\Misc\TimeUnits.cs" />
+    <Compile Include="Units\Natural\EnergyUnits.cs" />
     <Compile Include="Units\Natural\MassUnits.cs" />
     <Compile Include="Units\Natural\VelocityUnits.cs" />
+    <Compile Include="Units\Shared\Second.cs" />
     <Compile Include="Units\Unit.cs" />
     <Compile Include="Units\UnitException.cs" />
     <Compile Include="Units\UnitNotFoundException.cs" />
@@ -219,6 +252,7 @@
     <Content Include="Notes\Units Ladder.txt" />
     <Content Include="Notes\Units pattern.txt" />
     <Content Include="Notes\Units Patterns 2.txt" />
+    <Content Include="Units\Shared\Shared System.txt" />
   </ItemGroup>
   <ItemGroup>
     <None Include="QuantitySystem.snk" />

@@ -1,0 +1,79 @@
+[Quantity System Framework 1.0.6]
+
+* New Quantities
+	- Electric Charge
+	- Electromotive Force
+	- Capacitance
+	- Electric Conductance
+	- Electric Resistance
+	- Magnetic Flux
+	- Magnetic Flux Density
+	- Inductance
+	- Luminous Flux
+	- Illuminance
+	- Catalytic Activity  
+	
+* New Units
+	- Coulomb 'C'
+	- Farad   'F'
+	- Volt    'V'
+	- Siemens  'S'
+	- Ohm      'ohm'
+	- Weber    'Wb'
+	- Teslq    'T'
+	- Henry    'H'
+	- Lumen    'lm'
+	- Lux      'lx'
+	- Katal    'kat'  => mol/s
+	
+	
+	* Astronomical Units:
+		-	AstronomicalUnit symbol changed from 'AU' to 'au'
+		-   Light Year Length added                      'ly'
+		-   Parsec unit  length                          'pc'  with metric support
+		-   Solar Mass unit                              'Mo'
+		-   Julian Year unit							 'a'
+		
+		
+	
+	-Are unit of area       symnol changed from 'a' to 'are'
+	
+	-u unified mass of atom  added 'u' = 'Da'
+	-Dalton transfered to Natural Units
+	
+	* Shared Unit System added 
+		The shared system contains units that exists in all unit systems
+		-Second 's'  transfered to Shared unit system 
+		
+	* Misc Unit System added
+		the system is for units that don't have exact unit system and needs to be there untill we know its unit systems
+
+		+ Angle units
+			- Arc Degree unit added  'deg'  ==>this is simple the angle degrees
+			- Arc Minute unit        'arcmin'
+			- Arc Second unit        'arcsec'
+			- Milli Arc Second       'mas'
+			- Gradian  unit          'grad'
+			- Revolution  unit       'r'   whole one cycle = 360<deg>
+			
+		- Angstrom Transfered to Misc namespace
+		
+		+ Time units
+			- Minute unit            'min'
+			- Hour   unit            'h'
+			- Day    unit            'd'	
+		
+		+ Volume units
+			- Cubit Centimetre       'cc'	
+	
+	
+	
+* Units Logic
+	Two ways in defining Quantity System of Units
+		a) Make a default unit and others to reference it.
+		b) Make all units reference SI units directly.	
+	Either ways are acceptable but not mixed or a conversion errors occur {please refer to the code}
+	
+	Note: units symbols are unique and case sensitive
+	
+	

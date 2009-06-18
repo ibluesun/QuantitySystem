@@ -14,6 +14,7 @@ using QuantitySystem.Units.Metric.Cgs;
 using QuantitySystem.Units.Metric.Mts;
 
 using QuantitySystem.Quantities.BaseQuantities;
+using QuantitySystem.Units.Shared;
 
 
 namespace UnitsTestingProject

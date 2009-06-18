@@ -129,6 +129,7 @@ Ideas:
 			
 						but when expanding how can I preserve the conversion factors to the default units
 						I reached ???? 
+						(Done)
 						
 						
 						
@@ -176,7 +177,28 @@ Ideas:
 			 
     
     
-    
+10] now we are version 1.0.3 in library
+	-summing or subtracting two derived quantities result in exception.
+	[Fixed]
+	
+11] when multiplying or dividing SI units the result combined unit is not aware of the prefix.
+
+	    d1 = 2 <ft/km>
+		d2 = 3 <rod/Mm>
+
+		d2/d1  =   3/2 = 1.5 = 0.0015 <rod/ft>
+
+		rod       km
+		---   *   ---   difference of expontent will give 10^-3    
+		Mm         ft
+		
+		[Fixed]
+		
+		also what if we multiplied Yotta * Yotta  the result will be overflow [not fixed yet]
+		
+		
+		
+
     
     
 	

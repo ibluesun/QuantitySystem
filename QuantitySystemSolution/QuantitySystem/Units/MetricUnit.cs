@@ -72,15 +72,13 @@ namespace QuantitySystem.Units
         }
 
 
+        /// <summary>
+        /// unit symbol with prefix.
+        /// </summary>
         public override string Symbol
         {
             get
             {
-                //if (IsInverted)
-                //{
-                //    return "<1/" + unitPrefix.Symbol + symbol + ">";
-                //}
-                //else
                 {
                     return unitPrefix.Symbol + base.Symbol;
                 }

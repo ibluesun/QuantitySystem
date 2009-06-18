@@ -12,7 +12,7 @@ namespace QuantitySystem.Units.Metric
     /// Hectare: by adding Hecto to Are
     /// Decare: by addin Deka to Are
     /// </summary>
-    [MetricUnit("a", typeof(Area<>))]
+    [MetricUnit("are", typeof(Area<>))]
     [ReferenceUnit(100)]
     public sealed class Are : MetricUnit
     {

@@ -116,7 +116,18 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
                 gen.Emit(OpCodes.Ret);
 
-                AnyQuantity<T> AQ = QuantityDimension.QuantityFrom<T>(firstQuantity.Dimension);
+                AnyQuantity<T> AQ = null;
+                try
+                {
+                    AQ = QuantityDimension.QuantityFrom<T>(firstQuantity.Dimension);
+
+                    //exception happen when adding two derived quantities together
+                }
+                catch (QuantityNotFoundException)
+                {
+                    //keep the first quantity configuration.
+                    AQ = (AnyQuantity<T>)firstQuantity.Clone();
+                }
 
                 T firstVal = (firstQuantity.Value);
 
@@ -201,7 +212,18 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 gen.Emit(OpCodes.Ret);
 
 
-                AnyQuantity<T> AQ = QuantityDimension.QuantityFrom<T>(firstQuantity.Dimension);
+                AnyQuantity<T> AQ = null;
+                try
+                {
+                    AQ = QuantityDimension.QuantityFrom<T>(firstQuantity.Dimension);
+
+                    //exception happen when adding two derived quantities together
+                }
+                catch (QuantityNotFoundException)
+                {
+                    //keep the first quantity configuration.
+                    AQ = (AnyQuantity<T>)firstQuantity.Clone();
+                }
 
                 T firstVal = (firstQuantity.Value);
                 T secondVal = (secondQuantity.Value);
@@ -260,7 +282,10 @@ namespace QuantitySystem.Quantities.BaseQuantities
             if (firstQuantity.Unit != null && secondQuantity.Unit != null)
             {
                
-               qresult.Unit = new Unit(qresult.GetType(), firstQuantity.Unit, secondQuantity.Unit);
+                Unit un = new Unit(qresult.GetType(), firstQuantity.Unit, secondQuantity.Unit);
+                qresult.Unit = un;
+                if (un.IsOverflowed) qresult.Value = MultiplyScalarByGeneric(un.GetUnitOverflow(), qresult.Value);
+
                
             }
 
@@ -302,7 +327,10 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
             if (firstQuantity.Unit != null && secondQuantity.Unit != null)
             {
-                qresult.Unit = new Unit(qresult.GetType(), firstQuantity.Unit, sec_qty.Unit);
+                
+                Unit un = new Unit(qresult.GetType(), firstQuantity.Unit, sec_qty.Unit);
+                qresult.Unit = un;
+                if (un.IsOverflowed) qresult.Value = MultiplyScalarByGeneric(un.GetUnitOverflow(), qresult.Value);
                 
             }
 
