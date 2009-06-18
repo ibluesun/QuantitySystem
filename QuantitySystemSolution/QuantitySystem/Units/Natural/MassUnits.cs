@@ -16,4 +16,28 @@ namespace QuantitySystem.Units.Natural
     {
 
     }
+
+
+
+    [MetricUnit("Da", typeof(Mass<>))]
+    [ReferenceUnit(1.6605388628E-27)]
+    public sealed class Dalton : MetricUnit
+    {
+
+    }
+
+
+    /// <summary>
+    /// Same as Dalton
+    /// </summary>
+    [Unit("u", typeof(Mass<>))]
+    [ReferenceUnit(1, UnitType = typeof(Dalton))]
+    public sealed class UnifiedAtomicMass : Unit
+    {
+
+    }
+
+
+
+
 }

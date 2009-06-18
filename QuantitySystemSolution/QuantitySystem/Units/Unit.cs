@@ -114,6 +114,7 @@ namespace QuantitySystem.Units
                     }
                     
                 }
+
                 referenceUnitNumerator = dua.Numerator;
                 referenceUnitDenominator = dua.Denominator;
             }

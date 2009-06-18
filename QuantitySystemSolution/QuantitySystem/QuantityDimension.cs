@@ -409,7 +409,9 @@ namespace QuantitySystem
         }
 
         /// <summary>
-        /// Returns Any Quantity From the dimension
+        /// Returns Strongly typed Any Quantity From the dimension based on the discovered quantities discovered when 
+        /// framework initiated.
+        /// Throws <see cref="QuantityNotFoundException"/> when quantity is not found.
         /// </summary>
         /// <typeparam name="T">The value container of the Quantity</typeparam>
         /// <param name="dimension"></param>

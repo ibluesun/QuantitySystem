@@ -179,7 +179,7 @@ namespace QuantitySystem.Units
 
                 if (dimension.Time.Exponent != 0)
                 {
-                    Unit u = new Metric.Second();
+                    Unit u = new Shared.Second();
                     u.UnitExponent = dimension.Time.Exponent;
                     u.UnitDimension = u.UnitDimension * dimension.Time.Exponent;
 
@@ -440,77 +440,31 @@ namespace QuantitySystem.Units
 
             List<Unit> GroupedUnits = new List<Unit>();
 
-            #region old code
-            /*
-            //i'll two indexes with two inner loops
-            // outer loop will put the unit in the Grouped Units
-            // inner loop will accumulate the equivalent repeated units.
-
-            int udx = 0; //sub units index
-            int idx = udx + 1;
-
-            while (udx < units.Count)
-            {
-                Unit CurrentUnit = (Unit)units[udx].MemberwiseClone(); //copy the object due to we don't want to alter the original list.
-
-                //inner loop
-                while (idx < units.Count)
-                {
-                    Unit PointedUnit;
-                    
-                    PointedUnit = units[idx];
-                    
-
-                    //by pass the repeated units.
-                    
-                    //  Make sure they are strongly typed not dynamically created.
-                    if (CurrentUnit.IsStronglyTyped == true && PointedUnit.IsStronglyTyped == true)
-                    {
-                        //by checking the unit type equality.
-                        if ((CurrentUnit.GetType() != PointedUnit.GetType()))
-                        {
-
-                            //the units are different in type.
-                            //  so exit the loop and increase the index
-                            //   this will make the next current unit is the new one.
-
-                            goto skip;
-                        }
-                    }
-                    else
-                    {
-                        //not strongly typed then not equal from the start. (I assume that)
-                        goto skip;
-
-                    }
-
-                    //this code is executed when the two units are identical.
-                    CurrentUnit.UnitExponent += PointedUnit.UnitExponent;
-                    CurrentUnit.UnitDimension += PointedUnit.UnitDimension;
-                skip:
-                    idx++;
-
-                }
-                
-
-                //add the accumlated unit   //however the udx is pointing to the new point.
-                GroupedUnits.Add(CurrentUnit);
-                udx++;  //proceed with next unit
-                idx = udx + 1;
-
-
-
-            }
-            
-             */
-            #endregion
-
 
             Dictionary<Type, Unit> us = new Dictionary<Type, Unit>();
             foreach (Unit un in units)
             {
+                
                 if (us.ContainsKey(un.GetType()))
                 {
+                    //check for prefixes before accumulating units
+                    //   otherwise I'll lose the UnitExponent value.
+                    if (un is MetricUnit)
+                    {
+                        //check prefixes to consider milli+Mega for example for overflow
+
+                        MetricPrefix accumPrefix = ((MetricUnit)us[un.GetType()]).UnitPrefix;
+                        MetricPrefix sourcePrefix = ((MetricUnit)un).UnitPrefix;
+
+                        //because prefixes in metric are alwayis postitive regardless of the state of the unit
+                        //   when we sum them we must consider the unit state
+                        //   so I invert them if the units is inverted for the sake of computation.
+                        if (us[un.GetType()].IsInverted) accumPrefix = ((MetricUnit)us[un.GetType()]).UnitPrefix.Invert();
+                        if (un.IsInverted) sourcePrefix = ((MetricUnit)un).UnitPrefix.Invert();
+
+                        ((MetricUnit)us[un.GetType()]).UnitPrefix = sourcePrefix + accumPrefix;
+
+                    }
                     us[un.GetType()].UnitExponent += un.UnitExponent;
                     us[un.GetType()].UnitDimension += un.UnitDimension;
                 }
@@ -520,9 +474,51 @@ namespace QuantitySystem.Units
                 }
             }
             foreach (Unit un in us.Values)
-                if (un.UnitExponent != 0) GroupedUnits.Add(un);
+            {
+                if (un.UnitExponent != 0)
+                {
+                    GroupedUnits.Add(un);
+                }
+                else
+                {
+                    //zero means units should be skipped
+                    // however we are testing for prefix if the unit is metric
+                    if (un is MetricUnit)
+                    {
+                        MetricUnit mu = (MetricUnit)un;
+                        if (mu.UnitPrefix.Exponent != 0)
+                        {
+                            isOverflowed = true;
+                            unitOverflow += Math.Pow(10, mu.UnitPrefix.Exponent);
+                        }
+                    }
+                }
+            }
             
             return GroupedUnits;
+        }
+
+        protected bool isOverflowed = false;
+
+        /// <summary>
+        /// Overflow flag.
+        /// </summary>
+        public bool IsOverflowed { get { return isOverflowed; } }
+
+        protected double unitOverflow=0.0;
+        /// <summary>
+        /// This method get the overflow from multiplying/divding metric units with different 
+        /// prefixes and then the unit exponent goes to ZERO
+        ///     or when result prefix is over the 
+        /// the value should be used to be multiplied by the quantity that units were associated to.
+        /// after the execution of this method the overflow flag is reset again.
+        /// </summary>
+        public double GetUnitOverflow()
+        {    
+            double u =  unitOverflow;
+            unitOverflow = 0.0;
+            isOverflowed = false;
+            return u;
         }
 
 

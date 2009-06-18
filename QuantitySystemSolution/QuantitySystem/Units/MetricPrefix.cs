@@ -24,10 +24,10 @@ namespace QuantitySystem.Units
         } 
 
 
-        private double PrefixExponent;
+        private int PrefixExponent;
 
 
-        public MetricPrefix(string prefix, string symbol, double exponent)
+        public MetricPrefix(string prefix, string symbol, int exponent)
         {
             _Prefix = prefix;
             _Symbol = symbol;
@@ -113,7 +113,7 @@ namespace QuantitySystem.Units
             throw new MetricPrefixException("Index out of range");
         }
 
-        public static MetricPrefix FromExponent(double exponent)
+        public static MetricPrefix FromExponent(int exponent)
         {
             int exp = (int)exponent; 
             switch (exp)
@@ -161,7 +161,8 @@ namespace QuantitySystem.Units
                 case 24:
                     return Yotta;
                 default:
-                    throw new MetricPrefixException("No SI Prefix found for exponent = " + exponent.ToString(CultureInfo.InvariantCulture));
+                    throw new MetricPrefixException("No SI Prefix found.") { Exponent = (int)exponent };
+
             }
         }
 
@@ -221,7 +222,7 @@ namespace QuantitySystem.Units
         #endregion
 
         #region Properties
-        public double Exponent
+        public int Exponent
         {
             get
             {
@@ -248,7 +249,7 @@ namespace QuantitySystem.Units
 
         public static MetricPrefix Add(MetricPrefix firstPrefix, MetricPrefix secondPrefix)
         {
-            double exp = firstPrefix.Exponent + secondPrefix.Exponent;
+            int exp = firstPrefix.Exponent + secondPrefix.Exponent;
             
             MetricPrefix prefix = MetricPrefix.FromExponent(exp);
             return prefix;
@@ -256,7 +257,7 @@ namespace QuantitySystem.Units
 
         public static MetricPrefix Subtract(MetricPrefix firstPrefix, MetricPrefix secondPrefix)
         {
-            double exp = firstPrefix.Exponent - secondPrefix.Exponent;
+            int exp = firstPrefix.Exponent - secondPrefix.Exponent;
 
             MetricPrefix prefix = MetricPrefix.FromExponent(exp);
             return prefix;

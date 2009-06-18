@@ -220,7 +220,7 @@ namespace QuantitySystemCalculator
                     string uname = utype.Name.PadRight(16);
                     string symbol = "<" + ua.Symbol + ">";
                     symbol = symbol.PadRight(10);
-                    string system =  utype.Namespace.Substring("QuantitySystem.Units".Length + 1).PadRight(12);
+                    string system =  utype.Namespace.Substring("QuantitySystem.Units".Length + 1).PadRight(16);
 
                     string qtype = ua.QuantityType.ToString().Substring(ua.QuantityType.Namespace.Length + 1).TrimEnd("`1[T]".ToCharArray());
 

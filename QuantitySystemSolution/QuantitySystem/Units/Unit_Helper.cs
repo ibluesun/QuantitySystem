@@ -98,7 +98,7 @@ namespace QuantitySystem.Units
 
             unitSystem = unitSystem.ToLower(CultureInfo.InvariantCulture);
 
-            if (unitSystem.Contains("metric.si") || quantityType==typeof(Time<>)) //I included the time because its always second in all systems
+            if (unitSystem.Contains("metric.si"))
             {
                 Type oUnitType = GetDefaultSIUnitTypeOf(quantityType);
                 return oUnitType;
@@ -175,6 +175,7 @@ namespace QuantitySystem.Units
                     //prepare the query that we will search in
                     var SystemUnitTypes = from ut in UnitTypes
                                           where ut.Namespace.ToLower(CultureInfo.InvariantCulture).EndsWith(CurrentUnitSystem)
+                                                || ut.Namespace.ToLower(CultureInfo.InvariantCulture).EndsWith("shared")
                                           select ut;
 
                     //select the default by predictor from the query
@@ -196,7 +197,8 @@ namespace QuantitySystem.Units
                 if (SystemUnitType == null && unitSystem.Contains("metric"))
                 {
                     //try another catch for SI unit for this quantity
-                    //   because second is always exist in all systems
+                    //   because SI and metric units are disordered for now
+                    // so if the search of unit in parent metric doesn't exist then search for it in SI units.
 
                     SystemUnitType = GetDefaultSIUnitTypeOf(quantityType);
                 }
@@ -228,7 +230,7 @@ namespace QuantitySystem.Units
 
             //don't forget to include second in si units it is shared between all metric systems
             var SIUnitTypes = from si in UnitTypes
-                              where si.Namespace.ToLower(CultureInfo.InvariantCulture).EndsWith("si") || si == typeof(Metric.Second)  //== typeof(SI.SIUnit)
+                              where si.Namespace.ToLower(CultureInfo.InvariantCulture).EndsWith("si") || si.Namespace.ToLower(CultureInfo.InvariantCulture).EndsWith("shared")
                               select si;
 
 
@@ -338,12 +340,16 @@ namespace QuantitySystem.Units
 
                     //then it should be MetricUnit otherwise die :)
 
-                    MetricUnit u = (MetricUnit)FindUnit(upart);
+                    MetricUnit u = FindUnit(upart) as MetricUnit;
+
+                    if (u == null) goto nounit;
+                    
                     u.UnitPrefix = mp;
                     return u;
                 }
             }
 
+            nounit:
             throw new UnitNotFoundException("Not found in strongly typed units");
 
         }

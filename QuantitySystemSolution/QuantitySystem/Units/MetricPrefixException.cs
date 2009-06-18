@@ -27,6 +27,8 @@ namespace QuantitySystem.Units
          StreamingContext context) : base(info, context)
       {
          // Implement type-specific serialization constructor logic.
-      }  
+      }
+
+      public int Exponent { get; set; }
     }
 }

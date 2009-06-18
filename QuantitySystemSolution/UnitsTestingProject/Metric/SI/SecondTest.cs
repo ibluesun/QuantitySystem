@@ -4,6 +4,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
 using QuantitySystem.Units.Metric;
 using QuantitySystem.Units.Metric.SI;
+using QuantitySystem.Units.Shared;
 
 namespace UnitsTestingProject
 {

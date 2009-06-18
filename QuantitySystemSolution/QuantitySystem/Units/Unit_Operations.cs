@@ -17,6 +17,8 @@ namespace QuantitySystem.Units
         /// <summary>
         /// Creat units path from the current unit instance to the default unit of the current 
         /// unit system in the current quantity dimension.
+        /// if the unit in the current system have no default unit and direct reference to SI
+        /// then the path is stopped on the unit itself and shouldn't bypass it.
         /// </summary>
         /// <returns></returns>
         public UnitPath PathToDefaultUnit()
@@ -188,7 +190,8 @@ namespace QuantitySystem.Units
 
             bool NoBoundaryCross = false;
 
-            //test for whole equality
+
+
             if (this.UnitSystem == unit.UnitSystem)
             {
                 NoBoundaryCross = true;
@@ -229,7 +232,6 @@ namespace QuantitySystem.Units
 
                 //get the default unit of target 
 
-                // throw new NotImplementedException("Crossing boundary of unit system not yet supported.");
 
                 // to cross the boundary
                 // we should know the non SI system that we will cross it
@@ -246,8 +248,14 @@ namespace QuantitySystem.Units
                 UnitPathItem DefaultPItem;
                 UnitPathItem RefUPI;
 
-                if (FromMeToDefaultUnit.Peek().Unit.UnitSystem != "Metric.SI")
+                Unit SourceDefaultUnit = FromMeToDefaultUnit.Peek().Unit;
+                Unit TargetDefaultUnit = FromDefaultUnitToTargetUnit.ElementAt(FromDefaultUnitToTargetUnit.Count - 1).Unit;
+
+                if (SourceDefaultUnit.UnitSystem != "Metric.SI"
+                    && SourceDefaultUnit.GetType() != typeof(Shared.Second)
+                    )
                 {
+                    //from source default unit to the si
                     DefaultPItem = FromMeToDefaultUnit.Peek();
                     RefUPI = new UnitPathItem
                         {
@@ -258,21 +266,35 @@ namespace QuantitySystem.Units
                 }
                 else
                 {
+                    // from target default unit to si
                     DefaultPItem = FromDefaultUnitToTargetUnit.ElementAt(FromDefaultUnitToTargetUnit.Count - 1);
                     RefUPI = new UnitPathItem
                     {
                         //note the difference here 
                         //I made the opposite assignments because we are in reverse manner
 
-                        Numerator = DefaultPItem.Unit.ReferenceUnitDenominator,
-                        Denumenator = DefaultPItem.Unit.ReferenceUnitNumerator,
+                        Numerator = DefaultPItem.Unit.ReferenceUnitDenominator, // <=== opposite
+                        Denumenator = DefaultPItem.Unit.ReferenceUnitNumerator, // <===
                         Unit = DefaultPItem.Unit.ReferenceUnit
                     };
 
 
                 }
 
-                SystemsPath.Push(RefUPI);
+
+                if (RefUPI.Unit != null)  
+                {
+                    SystemsPath.Push(RefUPI);
+                }
+                else
+                {
+                    //both default units were SI units without references
+
+                    //note:
+                    // when define units in unit cloud for quantity
+                    //  either make all units reference SI units without default unit
+                    // or make one default unit and make the rest of units reference it.
+                }
             }
 
 
