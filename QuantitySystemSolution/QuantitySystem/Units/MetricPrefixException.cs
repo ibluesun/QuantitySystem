@@ -29,6 +29,8 @@ namespace QuantitySystem.Units
          // Implement type-specific serialization constructor logic.
       }
 
-      public int Exponent { get; set; }
+      public int WrongExponent { get; set; }
+      public MetricPrefix CorrectPrefix { get; set; }
+      public int OverflowExponent { get; set; }
     }
 }

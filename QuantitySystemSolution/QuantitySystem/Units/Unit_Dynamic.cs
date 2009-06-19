@@ -462,7 +462,16 @@ namespace QuantitySystem.Units
                         if (us[un.GetType()].IsInverted) accumPrefix = ((MetricUnit)us[un.GetType()]).UnitPrefix.Invert();
                         if (un.IsInverted) sourcePrefix = ((MetricUnit)un).UnitPrefix.Invert();
 
-                        ((MetricUnit)us[un.GetType()]).UnitPrefix = sourcePrefix + accumPrefix;
+                        try
+                        {
+                            ((MetricUnit)us[un.GetType()]).UnitPrefix = sourcePrefix + accumPrefix;
+                        }
+                        catch(MetricPrefixException mpe)
+                        {
+                            ((MetricUnit)us[un.GetType()]).UnitPrefix = mpe.CorrectPrefix;
+                            unitOverflow += Math.Pow(10, mpe.OverflowExponent);
+                            isOverflowed = true;
+                        }
 
                     }
                     us[un.GetType()].UnitExponent += un.UnitExponent;
