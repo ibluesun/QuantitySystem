@@ -194,8 +194,12 @@ Ideas:
 		
 		[Fixed]
 		
-		also what if we multiplied Yotta * Yotta  the result will be overflow [not fixed yet]
 		
+12]		
+		also what if we multiplied Yotta * Yotta  the result will be overflow 
+		and if exponent lie in wrong direction
+		[Fixed]   
+		     in   1.0.6.2
 		
 		
 

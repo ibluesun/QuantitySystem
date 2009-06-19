@@ -161,7 +161,7 @@ namespace QuantitySystem.Units
                 case 24:
                     return Yotta;
                 default:
-                    throw new MetricPrefixException("No SI Prefix found.") { Exponent = (int)exponent };
+                    throw new MetricPrefixException("No SI Prefix found.") { WrongExponent = (int)exponent };
 
             }
         }
@@ -250,14 +250,19 @@ namespace QuantitySystem.Units
         public static MetricPrefix Add(MetricPrefix firstPrefix, MetricPrefix secondPrefix)
         {
             int exp = firstPrefix.Exponent + secondPrefix.Exponent;
-            
+
+            CheckExponent(exp);
+
             MetricPrefix prefix = MetricPrefix.FromExponent(exp);
             return prefix;
+        
         }
 
         public static MetricPrefix Subtract(MetricPrefix firstPrefix, MetricPrefix secondPrefix)
         {
             int exp = firstPrefix.Exponent - secondPrefix.Exponent;
+
+            CheckExponent(exp);
 
             MetricPrefix prefix = MetricPrefix.FromExponent(exp);
             return prefix;
@@ -274,8 +279,54 @@ namespace QuantitySystem.Units
         }
 
 
+
         #endregion
 
+
+
+        public static void CheckExponent(int exp)
+        {
+
+            if (exp > 24) throw new MetricPrefixException("Exponent Exceed 24")
+            {
+                WrongExponent = exp,
+                CorrectPrefix = MetricPrefix.FromExponent(24),
+                OverflowExponent = exp - 24
+
+            };
+
+            if (exp < -24) throw new MetricPrefixException("Exponent Precede -24")
+            {
+                WrongExponent = exp,
+                CorrectPrefix = MetricPrefix.FromExponent(-24),
+                OverflowExponent = exp + 24
+
+            };
+
+            int[] wrongexp = { 4, 5, 7, 8, 10, 11, 13, 14, 16, 17, 19, 20, 22, 23 };
+            int[] correctexp = { 3, 3, 6, 6, 9, 9, 12, 12, 15, 15, 18, 18, 21, 21 };
+
+            for (int i = 0; i < wrongexp.Length; i++)
+            {
+                //find if exponent in wrong powers
+                if (Math.Abs(exp) == wrongexp[i])
+                {
+                    int cexp = 0;
+                    if (exp > 0) cexp = correctexp[i];
+                    if (exp < 0) cexp = -1 * correctexp[i];
+                    
+
+                    throw new MetricPrefixException("Exponent not aligned")
+                    {
+                        WrongExponent = exp,
+                        CorrectPrefix = MetricPrefix.FromExponent(cexp),
+                        OverflowExponent = exp - cexp           //5-3 = 2  ,  -5--3 =-2
+
+                    };
+                }
+            }
+
+        }
     }
 
 }
