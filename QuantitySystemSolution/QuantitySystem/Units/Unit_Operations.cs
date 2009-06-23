@@ -363,10 +363,12 @@ namespace QuantitySystem.Units
 
                     //then test the system of the current unit if it was other than Metric.SI
                     //    then we must jump to SI otherwise we are already in default SI
-                    if (this.UnitSystem == "Metric.SI")
+                    if (this.UnitSystem == "Metric.SI" && this.UnitExponent == 1)
                     {
-
+                        
+                        //because no unit in SI with exponent = 1 don't have direct unit type
                         throw new NotImplementedException("Impossible reach by logic");
+                    
 
                     }
                     else

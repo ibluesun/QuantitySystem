@@ -306,6 +306,7 @@ namespace QuantitySystem.Units
         }
 
 
+
         /// <summary>
         /// Parse units with exponent and one division '/' with many '.'
         /// i.e. m/s m/s^2 kg.m/s^2
@@ -337,9 +338,17 @@ namespace QuantitySystem.Units
                 string[] dena = uny[1].Split('.');
                 foreach (string den in dena)
                 {
-                    dunits.Add(ParseUnit(den).Invert());
+                    var uu = ParseUnit(den);
+                    if (uu.SubUnits != null)
+                    {
+                        //then it is unit with sub units in it
+                        if (uu.SubUnits.Count == 1) uu = uu.SubUnits[0];
+                    }
+                    dunits.Add(uu.Invert());
                 }
             }
+
+            if (dunits.Count == 1) return dunits[0];
 
             //get the dimension of all units
             QuantityDimension ud = QuantityDimension.Dimensionless;
@@ -362,10 +371,7 @@ namespace QuantitySystem.Units
 
             Unit FinalUnit = new Unit(uQType, dunits.ToArray());
 
-            if (FinalUnit.SubUnits.Count == 1) 
-                return FinalUnit.SubUnits[0];
-            else
-                return FinalUnit;
+            return FinalUnit;
 
         }
 
@@ -430,6 +436,7 @@ namespace QuantitySystem.Units
             if (power > 1)
             {
 
+
                 //discover the new type
                 QuantityDimension ud = FinalUnit.UnitDimension * power;
 
@@ -449,8 +456,12 @@ namespace QuantitySystem.Units
                     uQType = typeof(DerivedQuantity<>);
                 }
 
-                FinalUnit = new Unit(uQType, chobits);
+                //FinalUnit.UnitDimension *= power;
+                //FinalUnit.UnitExponent = power;
+                //FinalUnit.QuantityType = uQType;
 
+                FinalUnit = new Unit(uQType, chobits);
+                //FinalUnit = FinalUnit.SubUnits[0];
 
             }
 
