@@ -7,6 +7,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 using System.Reflection;
 using QuantitySystem.Attributes;
 using System.Globalization;
+using QuantitySystem.Quantities;
 
 namespace QuantitySystem.Units
 {
@@ -194,10 +195,20 @@ namespace QuantitySystem.Units
 
         /// <summary>
         /// The unit that serve a parent for this unit.
+        /// and should take the same exponent of the unit.
         /// </summary>
         public virtual Unit ReferenceUnit
         {
-            get { return referenceUnit; }
+            get 
+            {
+                if (referenceUnit != null)
+                {
+                    if (referenceUnit.UnitExponent != this.UnitExponent)
+                        referenceUnit.UnitExponent = this.UnitExponent;
+                }
+
+                return referenceUnit; 
+            }
         }
 
         /// <summary>
@@ -210,12 +221,19 @@ namespace QuantitySystem.Units
 
         public virtual double ReferenceUnitNumerator
         {
-            get { return referenceUnitNumerator; }
+            get 
+            {
+
+                return Math.Pow(referenceUnitNumerator, unitExponent);
+            }
         }
 
         public virtual double ReferenceUnitDenominator
         {
-            get { return referenceUnitDenominator; }
+            get
+            {
+                return Math.Pow(referenceUnitDenominator, unitExponent);
+            }
         } 
 
 
@@ -278,7 +296,17 @@ namespace QuantitySystem.Units
         public AnyQuantity<T> GetThisUnitQuantity<T>(T value)
         {
 
-            AnyQuantity<T> Quantity = (AnyQuantity<T>)Activator.CreateInstance(QuantityType.MakeGenericType(typeof(T)));
+            AnyQuantity<T> Quantity = null;
+            if (QuantityType != typeof(DerivedQuantity<>) && QuantityType != null)
+            {
+                Quantity = (AnyQuantity<T>)Activator.CreateInstance(QuantityType.MakeGenericType(typeof(T)));
+            }
+            else
+            {
+                //create it from the unit dimension
+                Quantity = new DerivedQuantity<T>(UnitDimension);
+
+            }
             Quantity.Unit = this;
             Quantity.Value = value;
 
@@ -330,23 +358,28 @@ namespace QuantitySystem.Units
                     //mixed system
                     // check all sub units if there unit system is the same then
                     //  return it 
-                    
-                    
-                    string ns = SubUnits[0].UnitSystem;
 
-                    int suidx = 1;
 
-                    while (suidx < SubUnits.Count)
+                    if (SubUnits.Count > 0)
                     {
-                        if (SubUnits[suidx].UnitSystem != ns)
-                        {
-                            ns = MixedSystem;
-                            break;
-                        }
-                        suidx++;
-                    }
+                        string ns = SubUnits[0].UnitSystem;
 
-                    return ns;
+                        int suidx = 1;
+
+                        while (suidx < SubUnits.Count)
+                        {
+                            if (SubUnits[suidx].UnitSystem != ns && SubUnits[suidx].UnitSystem!="Shared")
+                            {
+                                ns = MixedSystem;
+                                break;
+                            }
+                            suidx++;
+                        }
+
+                        return ns;
+                    }
+                    else
+                        return "Unknown";
 
                 }
             } 

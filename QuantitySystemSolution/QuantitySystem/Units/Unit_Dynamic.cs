@@ -398,8 +398,8 @@ namespace QuantitySystem.Units
             else
             {
                 //passed type is derivedQuantity which indicates that the units representing unknow derived quantity to the system
-                //so that quantityType should be null.
-                this.quantityType = null;
+                //so that quantityType should be kept as derived quantity type.
+                this.quantityType = quantityType;
 
 
                 //get the unit dimension from the passed units.
@@ -417,6 +417,11 @@ namespace QuantitySystem.Units
 
         #endregion
 
+        /// <summary>
+        /// Take the sub units recursively and return all of in a flat list.
+        /// </summary>
+        /// <param name="units"></param>
+        /// <returns></returns>
         private List<Unit> FlattenUnits(List<Unit> units)
         {
             List<Unit> all = new List<Unit>();
@@ -430,6 +435,13 @@ namespace QuantitySystem.Units
             return all;
         }
         
+
+        /// <summary>
+        /// Group all similar units so it remove units that reached exponent zero
+        /// also keep track of prefixes of metric units.
+        /// </summary>
+        /// <param name="bulk_units"></param>
+        /// <returns></returns>
         private List<Unit> GroupUnits(List<Unit> bulk_units)
         {
             List<Unit> units = FlattenUnits(bulk_units);
@@ -457,14 +469,73 @@ namespace QuantitySystem.Units
                         MetricPrefix sourcePrefix = ((MetricUnit)un).UnitPrefix;
 
                         //because prefixes in metric are alwayis postitive regardless of the state of the unit
-                        //   when we sum them we must consider the unit state
-                        //   so I invert them if the units is inverted for the sake of computation.
+                        //  when we sum them we must consider the unit state
+                        //   so I invert them if the host unit is inverted for the sake of computation.
                         if (us[un.GetType()].IsInverted) accumPrefix = ((MetricUnit)us[un.GetType()]).UnitPrefix.Invert();
                         if (un.IsInverted) sourcePrefix = ((MetricUnit)un).UnitPrefix.Invert();
 
                         try
                         {
-                            ((MetricUnit)us[un.GetType()]).UnitPrefix = sourcePrefix + accumPrefix;
+                            //Word about MetricPrefix
+                            //   The prefix takes the unit exponent as another exponent to it
+                            //  so if we are talking about cm^2 actually it is c^2*m^2
+                            //  suppose we multiply cm*cm this will give cm^2
+                            //     so no need to alter the prefix value
+                            // however remain a problem of different prefixes
+                            // for example km * cm = ?m^2
+                            //  k*c = ?^2
+                            //    so ? = (k+c)/2  ;)
+                            //  if there is a fraction remove the prefixes totally and substitute them 
+                            //  in the overflow flag.
+
+                            // about division
+                            // km / cm = ?<1>
+                            // k/c = ?   or in exponent k-c=?
+
+                           
+                            double sourceExponent = sourcePrefix.Exponent;
+                            double accumExponent = accumPrefix.Exponent;
+
+                            double resultExponent = (accumExponent + sourceExponent);
+
+                            if (!(us[un.GetType()].IsInverted ^ un.IsInverted))
+                            {
+                                //multiplication
+                                
+
+                                if (resultExponent % 2 == 0)
+                                {
+                                    //we can get the symbol of the sqrt of this
+                                    double unknown = resultExponent / 2;
+
+                                    ((MetricUnit)us[un.GetType()]).UnitPrefix = MetricPrefix.FromExponent(unknown);
+                                }
+                                else
+                                {
+                                    //we can't get the approriate symbol because we have a fraction
+                                    // like  kilo * centi = 3-2=1    1/2=0.5   or 1%2=1 
+                                    // so we will take the whole fraction and make an overflow
+
+                                    ((MetricUnit)us[un.GetType()]).UnitPrefix = MetricPrefix.None;
+                                    unitOverflow += Math.Pow(10, resultExponent);
+                                    isOverflowed = true;
+
+                                }
+                            }
+                            else
+                            {
+                                //division
+                                //resultExponent = (accumExponent - sourceExponent);
+
+                                ((MetricUnit)us[un.GetType()]).UnitPrefix = MetricPrefix.None;
+                                unitOverflow += Math.Pow(10, resultExponent);
+                                isOverflowed = true;
+
+                            }
+
+                             
+
+
                         }
                         catch(MetricPrefixException mpe)
                         {
@@ -492,6 +563,7 @@ namespace QuantitySystem.Units
                 {
                     //zero means units should be skipped
                     // however we are testing for prefix if the unit is metric
+                    //  if the unit is metric and deprecated the prefix should be taken into consideration
                     if (un is MetricUnit)
                     {
                         MetricUnit mu = (MetricUnit)un;
@@ -507,6 +579,7 @@ namespace QuantitySystem.Units
             return GroupedUnits;
         }
 
+        #region overflow code
         protected bool isOverflowed = false;
 
         /// <summary>
@@ -529,7 +602,7 @@ namespace QuantitySystem.Units
             isOverflowed = false;
             return u;
         }
-
+        #endregion
 
         #region Unit Symbol processing
 

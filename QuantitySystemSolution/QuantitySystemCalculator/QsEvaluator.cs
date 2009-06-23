@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using QuantitySystem.Units;
-using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem;
-using QuantitySystem.Quantities.DimensionlessQuantities;
-using System.Linq.Expressions;
+using QuantitySystem.Quantities.BaseQuantities;
+using QuantitySystem.Units;
 
 namespace QuantitySystemCalculator
 {
@@ -18,18 +14,13 @@ namespace QuantitySystemCalculator
     public class QsEvaluator
     {
 
-        public const string UnitExpression = @"^\s*<(\w+)>\s*$";
+        public const string UnitExpression = @"^\s*<(.+?)>\s*$";
 
-
-        public const string UnitToUnitExpression = @"\s*<(\w+)>\s*[tT][oO]\s*<(\w+)>\s*";
+        public const string UnitToUnitExpression = @"^\s*<(.+)>\s*[tT][oO]\s*<(.+)>\s*$";
 
         public const string DoubleNumber = @"[-+]?\d+(\.\d+)*([eE][-+]?\d+)*?";
 
         public const string VariableQuantityExpression = @"^(\w+)\s*=\s*(" + DoubleNumber + @")\s*(\[(.+)\])";
-
-
-
-
 
         private Dictionary<string, AnyQuantity<double>> variables = new Dictionary<string, AnyQuantity<double>>();
         public Dictionary<string, AnyQuantity<double>> Variables
@@ -44,26 +35,7 @@ namespace QuantitySystemCalculator
         public void Evaluate(string expr)
         {
 
-            #region Match Unit "<kn>" 
-            //match unit first
-            Match m = Regex.Match(expr, UnitExpression);
-            if (m.Success)
-            {
-                //evaluate unit
-
-                try
-                {
-                    Unit u = Unit.Parse(m.Groups[1].Value);
-                    PrintUnitInfo(u);
-                }
-                catch (UnitNotFoundException)
-                {
-                    Console.Error.WriteLine("Unit Not Found");
-                }
-                
-                return;
-            }
-            #endregion
+            Match m = null;
 
             #region Match <unit> to <unit>
 
@@ -96,6 +68,27 @@ namespace QuantitySystemCalculator
                     Console.Error.WriteLine("Units not dimensionally equal");
                 }
 
+                return;
+            }
+            #endregion
+
+            #region Match Unit "<kn>" 
+            //match one unit first
+            m = Regex.Match(expr, UnitExpression);
+            if (m.Success)
+            {
+                //evaluate unit
+
+                try
+                {
+                    Unit u = Unit.Parse(m.Groups[1].Value);
+                    PrintUnitInfo(u);
+                }
+                catch (UnitNotFoundException)
+                {
+                    Console.Error.WriteLine("Unit Not Found");
+                }
+                
                 return;
             }
             #endregion
@@ -160,6 +153,9 @@ namespace QuantitySystemCalculator
                     return;
                 }
             }
+
+            //check if the line has '(' ')'
+
 
             if (QsVar.IsMatch(line))
             {

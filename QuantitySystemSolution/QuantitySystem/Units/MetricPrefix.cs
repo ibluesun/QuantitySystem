@@ -113,8 +113,9 @@ namespace QuantitySystem.Units
             throw new MetricPrefixException("Index out of range");
         }
 
-        public static MetricPrefix FromExponent(int exponent)
+        public static MetricPrefix FromExponent(double exponent)
         {
+            CheckExponent(exponent);
             int exp = (int)exponent; 
             switch (exp)
             {
@@ -258,6 +259,11 @@ namespace QuantitySystem.Units
         
         }
 
+        public static MetricPrefix operator +(MetricPrefix firstPrefix, MetricPrefix secondPrefix)
+        {
+            return Add(firstPrefix, secondPrefix);
+        }        
+        
         public static MetricPrefix Subtract(MetricPrefix firstPrefix, MetricPrefix secondPrefix)
         {
             int exp = firstPrefix.Exponent - secondPrefix.Exponent;
@@ -268,30 +274,66 @@ namespace QuantitySystem.Units
             return prefix;
         }
 
-        public static MetricPrefix operator +(MetricPrefix firstPrefix, MetricPrefix secondPrefix)
-        {
-            return Add(firstPrefix, secondPrefix);
-        }
-
         public static MetricPrefix operator -(MetricPrefix firstPrefix, MetricPrefix secondPrefix)
         {
             return Subtract(firstPrefix, secondPrefix);
         }
 
 
+        public static MetricPrefix Multiply(MetricPrefix firstPrefix, MetricPrefix secondPrefix)
+        {
+            int exp = firstPrefix.Exponent * secondPrefix.Exponent;
+
+            CheckExponent(exp);
+
+            MetricPrefix prefix = MetricPrefix.FromExponent(exp);
+            return prefix;
+
+        }
+
+        public static MetricPrefix operator *(MetricPrefix firstPrefix, MetricPrefix secondPrefix)
+        {
+            return Multiply(firstPrefix, secondPrefix);
+        }
+
+
+        public static MetricPrefix Divide(MetricPrefix firstPrefix, MetricPrefix secondPrefix)
+        {
+            int exp = firstPrefix.Exponent / secondPrefix.Exponent;
+
+            CheckExponent(exp);
+
+            MetricPrefix prefix = MetricPrefix.FromExponent(exp);
+            return prefix;
+
+        }
+
+        public static MetricPrefix operator /(MetricPrefix firstPrefix, MetricPrefix secondPrefix)
+        {
+            return Divide(firstPrefix, secondPrefix);
+        }
+
 
         #endregion
 
 
-
-        public static void CheckExponent(int exp)
+        /// <summary>
+        /// Check the exponent if it can found or
+        /// if it exceeds 24 or precedes -25 <see cref="MetricPrefixException"/> occur with the closest 
+        /// <see cref="MetricPrefix"/> and overflow the rest of it.
+        /// </summary>
+        /// <param name="exp"></param>
+        public static void CheckExponent(double expo)
         {
+            int exp = (int)Math.Floor(expo);
+
+            double ov = expo - exp;
 
             if (exp > 24) throw new MetricPrefixException("Exponent Exceed 24")
             {
                 WrongExponent = exp,
                 CorrectPrefix = MetricPrefix.FromExponent(24),
-                OverflowExponent = exp - 24
+                OverflowExponent = (exp - 24) + ov
 
             };
 
@@ -299,7 +341,7 @@ namespace QuantitySystem.Units
             {
                 WrongExponent = exp,
                 CorrectPrefix = MetricPrefix.FromExponent(-24),
-                OverflowExponent = exp + 24
+                OverflowExponent = (exp + 24) + ov
 
             };
 
@@ -320,13 +362,29 @@ namespace QuantitySystem.Units
                     {
                         WrongExponent = exp,
                         CorrectPrefix = MetricPrefix.FromExponent(cexp),
-                        OverflowExponent = exp - cexp           //5-3 = 2  ,  -5--3 =-2
+                        OverflowExponent = (exp - cexp) + ov           //5-3 = 2  ,  -5--3 =-2
 
                     };
                 }
             }
 
+
+            if (ov != 0)
+            {
+                //then the exponent must be 0.5
+                throw new MetricPrefixException("Exponent not aligned")
+                {
+                    WrongExponent = exp,
+                    CorrectPrefix = MetricPrefix.FromExponent(0),
+                    OverflowExponent = ov           //5-3 = 2  ,  -5--3 =-2
+
+                };
+            }
+
         }
+
+
+
     }
 
 }

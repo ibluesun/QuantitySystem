@@ -1,7 +1,4 @@
-﻿
-
-
-using QuantitySystem.Attributes;
+﻿using QuantitySystem.Attributes;
 using QuantitySystem.Quantities;
 
 

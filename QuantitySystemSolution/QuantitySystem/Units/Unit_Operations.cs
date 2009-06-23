@@ -439,7 +439,15 @@ namespace QuantitySystem.Units
                 up = un.PathToSIBaseUnits();
 
                 while (up.Count > 0)
-                    Pathes.Push(up.Pop());
+                {
+
+
+                    UnitPathItem upi = up.Pop();
+
+                    if (un.IsInverted) upi.Invert();
+
+                    Pathes.Push(upi);
+                }
 
             }
             return Pathes;
