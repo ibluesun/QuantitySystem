@@ -7,6 +7,7 @@ using QuantitySystem.Attributes;
 using System.Reflection;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using QuantitySystem.Quantities;
 
 namespace QuantitySystem.Units
 {
@@ -265,9 +266,6 @@ namespace QuantitySystem.Units
                 );
 
             return SIUnitType;
-
-
-
         }
 
         #endregion
@@ -307,47 +305,158 @@ namespace QuantitySystem.Units
             throw new UnitNotFoundException("Not found in strongly typed units");
         }
 
+
+        /// <summary>
+        /// Parse units with exponent and one division '/' with many '.'
+        /// i.e. m/s m/s^2 kg.m/s^2
+        /// </summary>
+        /// <param name="units"></param>
+        /// <returns></returns>
+        public static Unit Parse(string units)
+        {
+            
+            //  if found  treat store its value.
+            //  m/s^2   m.K/m.s
+            //  kg^2/in^2.s
+
+            // sea
+            //search for '/'
+
+            string[] uny = units.Split('/');
+
+            string[] numa = uny[0].Split('.');
+
+            List<Unit> dunits = new List<Unit>();
+            foreach (string num in numa)
+            {
+                dunits.Add(ParseUnit(num));
+            }
+
+            if (uny.Length > 1)
+            {
+                string[] dena = uny[1].Split('.');
+                foreach (string den in dena)
+                {
+                    dunits.Add(ParseUnit(den).Invert());
+                }
+            }
+
+            //get the dimension of all units
+            QuantityDimension ud = QuantityDimension.Dimensionless;
+
+            foreach (Unit un in dunits)
+            {
+                ud += un.UnitDimension;
+            }
+
+
+            Type uQType = null;
+            try
+            {
+                uQType = QuantityDimension.QuantityTypeFrom(ud);
+            }
+            catch (QuantityNotFoundException)
+            {
+                uQType = typeof(DerivedQuantity<>);
+            }
+
+            Unit FinalUnit = new Unit(uQType, dunits.ToArray());
+
+            if (FinalUnit.SubUnits.Count == 1) 
+                return FinalUnit.SubUnits[0];
+            else
+                return FinalUnit;
+
+        }
+
+
         /// <summary>
         /// Returns the unit corresponding to the passed string.
+        /// Suppors units with exponent.
         /// </summary>
         /// <param name="unit"></param>
         /// <returns></returns>
-        public static Unit Parse(string unit)
+        internal static Unit ParseUnit(string un)
         {
-            
+
+            //find '^'
+
+            string[] upower = un.Split('^');
+
+            string unit = upower[0];
+            int power = 1;
+
+            if (upower.Length > 1) power = int.Parse(upower[1]);
+
+            Unit FinalUnit=null;
 
             //Phase 1: try direct mapping.
             try
             {
-                return FindUnit(unit);
+                FinalUnit = FindUnit(unit);
             }
             catch(UnitNotFoundException)
             {
-                //do nothing 
-            }
-
-            //try to find if it as a Metric unit with prefix
-            //loop through all prefixes.
-            for (int i = 10; i >= -10; i -= 1)
-            {
-                if (i == 0) i--; //skip the none prefix
-                if (unit.StartsWith(MetricPrefix.GetPrefix(i).Symbol, StringComparison.InvariantCulture))
+                //try to find if it as a Metric unit with prefix
+                //loop through all prefixes.
+                for (int i = 10; i >= -10; i -= 1)
                 {
-                    //found
+                    if (i == 0) i--; //skip the None prefix
+                    if (unit.StartsWith(MetricPrefix.GetPrefix(i).Symbol, StringComparison.InvariantCulture))
+                    {
+                        //found
 
-                    MetricPrefix mp = MetricPrefix.GetPrefix(i);
-                    string upart = unit.Substring(mp.Symbol.Length);
+                        MetricPrefix mp = MetricPrefix.GetPrefix(i);
+                        string upart = unit.Substring(mp.Symbol.Length);
 
-                    //then it should be MetricUnit otherwise die :)
+                        //then it should be MetricUnit otherwise die :)
 
-                    MetricUnit u = FindUnit(upart) as MetricUnit;
+                        MetricUnit u = FindUnit(upart) as MetricUnit;
 
-                    if (u == null) goto nounit;
-                    
-                    u.UnitPrefix = mp;
-                    return u;
-                }
+                        if (u == null) goto nounit;
+                        
+                        u.UnitPrefix = mp;
+
+                        FinalUnit = u;
+                        break;
+                    }
+
+                } 
             }
+
+
+            if (FinalUnit == null) goto nounit;
+
+            if (power > 1)
+            {
+
+                //discover the new type
+                QuantityDimension ud = FinalUnit.UnitDimension * power;
+
+                Unit[] chobits = new Unit[power];  //what is chobits any way :O
+
+                for(int iy=0;iy<power;iy++) 
+                    chobits[iy] = (Unit)FinalUnit.MemberwiseClone();
+
+
+                Type uQType = null;
+                try
+                {
+                    uQType = QuantityDimension.QuantityTypeFrom(ud);
+                }
+                catch (QuantityNotFoundException)
+                {
+                    uQType = typeof(DerivedQuantity<>);
+                }
+
+                FinalUnit = new Unit(uQType, chobits);
+
+
+            }
+
+            return FinalUnit;
+
+
 
             nounit:
             throw new UnitNotFoundException("Not found in strongly typed units");

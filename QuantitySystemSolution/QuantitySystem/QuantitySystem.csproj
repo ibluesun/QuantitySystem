@@ -121,6 +121,7 @@
     <Compile Include="Units\English\PowerUnits.cs" />
     <Compile Include="Units\English\EnergyUnits.cs" />
     <Compile Include="Units\English\ForceUnits.cs" />
+    <Compile Include="Units\English\PressureUnits.cs" />
     <Compile Include="Units\English\Rankine.cs" />
     <Compile Include="Units\English\VelocityUnits.cs">
       <SubType>Code</SubType>

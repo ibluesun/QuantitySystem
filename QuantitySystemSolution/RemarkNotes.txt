@@ -200,6 +200,8 @@ Ideas:
 		and if exponent lie in wrong direction
 		[Fixed]   
 		     in   1.0.6.2
+		     
+13] The whole prefix thing have been revised again.		     
 		
 		
 

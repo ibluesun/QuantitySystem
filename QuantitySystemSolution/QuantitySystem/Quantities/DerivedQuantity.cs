@@ -19,6 +19,49 @@ namespace QuantitySystem.Quantities
         #region class instantiation
         private AnyQuantity<T>[] InternalQuantities;
 
+        public DerivedQuantity(QuantityDimension dimension)
+        {
+            //create quantity for each sub quantity
+            List<AnyQuantity<T>> quantities = new List<AnyQuantity<T>>();
+
+            if (dimension.Mass.Exponent != 0)
+            {
+                quantities.Add(new Mass<T>(dimension.Mass.Exponent));
+
+            }
+
+            if (dimension.Length.Exponent != 0)
+            {
+                quantities.Add(new Length<T>(dimension.Length.Exponent));
+            }
+
+            if (dimension.Time.Exponent != 0)
+            {
+                quantities.Add(new Time<T>(dimension.Time.Exponent));
+            }
+
+            if (dimension.Temperature.Exponent != 0)
+            {
+                quantities.Add(new Temperature<T>(dimension.Temperature.Exponent));
+            }
+
+            if (dimension.LuminousIntensity.Exponent != 0)
+            {
+                quantities.Add(new LuminousIntensity<T>(dimension.LuminousIntensity.Exponent));
+            }
+
+            if (dimension.AmountOfSubstance.Exponent != 0)
+            {
+                quantities.Add(new AmountOfSubstance<T>(dimension.AmountOfSubstance.Exponent));
+            }
+
+            if (dimension.ElectricCurrent.Exponent != 0)
+            {
+                quantities.Add(new ElectricalCurrent<T>(dimension.ElectricCurrent.Exponent));
+            }
+
+            InternalQuantities = quantities.ToArray();
+        }
 
         public DerivedQuantity(int exponent, params AnyQuantity<T>[] internalQuantities)
             : base(exponent)

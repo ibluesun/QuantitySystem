@@ -127,6 +127,7 @@ namespace QuantitySystem.Units
                         //put the default of this unit by creating it again
                         MetricUnit RefUnit = (MetricUnit)this.MemberwiseClone();
                         RefUnit.UnitPrefix = this.defaultUnitPrefix;
+                        RefUnit.UnitExponent = this.UnitExponent;
 
                         return RefUnit;
                     }
@@ -162,6 +163,13 @@ namespace QuantitySystem.Units
             }
         }
 
+
+        /// <summary>
+        /// Reference unit is generated according to the state of the unit
+        /// if the metric unit is not in the default prefix mode
+        ///    the reference numerator is calculated based on difference between current prefix and default prefix
+        ///    raised to the unit exponent.
+        /// </summary>
         public override double ReferenceUnitNumerator
         {
             get
@@ -172,12 +180,12 @@ namespace QuantitySystem.Units
                     if (IsDefaultUnit)
                         return 0;
                     else
-                        return this.defaultUnitPrefix.GetFactorForConvertTo(UnitPrefix);
+                        return Math.Pow(this.defaultUnitPrefix.GetFactorForConvertTo(UnitPrefix), UnitExponent);
                 }
                 else
                 {
                     //convert me to default also if I had prefix over the default of me
-                    double CorrectToDefault = this.defaultUnitPrefix.GetFactorForConvertTo(UnitPrefix);
+                    double CorrectToDefault = Math.Pow(this.defaultUnitPrefix.GetFactorForConvertTo(UnitPrefix), UnitExponent);
 
                     return referenceUnitNumerator * CorrectToDefault;
 

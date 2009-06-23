@@ -17,14 +17,10 @@ namespace QuantitySystemCalculator
     class Program
     {
 
-
         static void Main(string[] args)
         {
             Run();
         }
-
-
-
 
 
         #region evaluator console
@@ -146,7 +142,11 @@ namespace QuantitySystemCalculator
             
             if(command == "exit") return false;
 
-            if (command == "help") PrintHelp();
+            if (command == "help")
+            {
+                PrintHelp();
+                CommandProcessed = true;
+            }
 
             if (command.StartsWith("list"))
             {

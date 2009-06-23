@@ -1,3 +1,21 @@
+[Quantity System Framework 1.0.7]
+
+* New Features
+	- Add support for parsing units with exponent like <cm^2>
+	- Add support for simple mixed units with one '/' division charachter 
+		<kg.m/s^2> gives Force Quantity
+	- The first use the DLR Expressions instead of Linq Expressions 
+		{this is a strategic transfer to support more features in the future}	
+		{also because built in linq expressions make errors in mono under linux :( }
+			
+	
+* New Units
+	-psi  for pound per square inch  for pressure
+	
+* Many Fixes
+	- Fixing of Metric Prefix multiplication and division  (although need testing).
+	- conversion from metric units had an error because exponent wasn't taken in consideration.
+	
 [Quantity System Framework 1.0.6]
 
 * New Quantities

@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Linq.Expressions;
-using QuantitySystem.Quantities.BaseQuantities;
-using QuantitySystem.Units;
 using System.Text.RegularExpressions;
-using QuantitySystem.Quantities.DimensionlessQuantities;
 using QuantitySystem;
+using QuantitySystem.Quantities.BaseQuantities;
+using QuantitySystem.Quantities.DimensionlessQuantities;
+using QuantitySystem.Units;
+using Microsoft.Linq.Expressions;
 
 namespace QuantitySystemCalculator
 {
@@ -42,8 +40,6 @@ namespace QuantitySystemCalculator
             Match c4 = Regex.Match(line, VariableNameExpression);
 
             return c1.Success | c2.Success | c3.Success;
-
-            
 
         }
 
@@ -192,7 +188,7 @@ namespace QuantitySystemCalculator
 
         public static Expression QuantityExpression(string expr)
         {
-            // I qas naieve 
+            // I was naieve 
             // why should I use expression 
             //   when I want to represent code formation in memory
             //   however all I want is AnyQuantity<> object and it doesn't need all of this hassle about dynamically creation
