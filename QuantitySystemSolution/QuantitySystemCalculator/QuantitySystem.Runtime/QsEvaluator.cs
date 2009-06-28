@@ -5,7 +5,7 @@ using QuantitySystem;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
 
-namespace QuantitySystemCalculator
+namespace QuantitySystem.Runtime
 {
 
     /// <summary>
@@ -51,21 +51,29 @@ namespace QuantitySystemCalculator
                     Unit u2 = Unit.Parse(m.Groups[2].Value);
                     //PrintUnitInfo(u);
                     UnitPath up = u1.PathToUnit(u2);
+
+                    Console.ForegroundColor = ConsoleColor.Gray;
+
                     Console.WriteLine();
+
                     string cf = "    Conversion Factor => " + up.ConversionFactor.ToString();
-                    Console.WriteLine(cf);
+
+                    foreach (UnitPathItem upi in up) Console.WriteLine("    -> {0}", upi);
 
                     string dashes = "    ".PadRight(cf.Length, '-');
+
                     Console.WriteLine(dashes);
-                    foreach (UnitPathItem upi in up) Console.WriteLine("    -> {0}", upi);
+                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.WriteLine(cf);
+                    Console.ForegroundColor = ConsoleColor.White;
                 }
                 catch (UnitNotFoundException)
                 {
-                    Console.Error.WriteLine("Unit Not Found");
+                    PrintError("Unit Not Found");
                 }
                 catch (UnitsNotDimensionallyEqualException)
                 {
-                    Console.Error.WriteLine("Units not dimensionally equal");
+                    PrintError("Units not dimensionally equal");
                 }
 
                 return;
@@ -86,7 +94,7 @@ namespace QuantitySystemCalculator
                 }
                 catch (UnitNotFoundException)
                 {
-                    Console.Error.WriteLine("Unit Not Found");
+                    PrintError("Unit Not Found");
                 }
                 
                 return;
@@ -149,7 +157,7 @@ namespace QuantitySystemCalculator
 
                 if (char.IsNumber(varName[0]))
                 {
-                    Console.Error.WriteLine("Variable must start with letter");
+                    PrintError("Variable must start with letter");
                     return;
                 }
             }
@@ -178,19 +186,19 @@ namespace QuantitySystemCalculator
                 }
                 catch (NullReferenceException nre)
                 {
-                    Console.Error.WriteLine(nre.Message);
+                    PrintError(nre.Message);
                 }
                 catch (QuantitiesNotDimensionallyEqualException)
                 {
-                    Console.Error.WriteLine("Quantities Not Dimensionally Equal");
+                    PrintError("Quantities Not Dimensionally Equal");
                 }
                 catch (UnitNotFoundException)
                 {
-                    Console.Error.WriteLine("Unit Not Found");
+                    PrintError("Unit Not Found");
                 }
                 catch (OverflowException)
                 {
-                    Console.Error.WriteLine("Overflow");
+                    PrintError("Overflow");
                 }
             }
 
@@ -199,17 +207,37 @@ namespace QuantitySystemCalculator
         }
 
 
+        public void PrintError(string str)
+        {
+            ConsoleColor cc = Console.ForegroundColor;
+
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.Error.WriteLine(str);
+
+            Console.ForegroundColor = ConsoleColor.White;
+        }
+
         public void PrintUnitInfo(Unit unit)
         {
-            Console.WriteLine("  Unit:        {0}", unit.ToString());
-            Console.WriteLine("  Quantity:    {0}", unit.QuantityType.Name);
-            Console.WriteLine("  Dimension:   {0}", unit.UnitDimension);
-            Console.WriteLine("  Unit System: {0}", unit.UnitSystem);
+            
+
+            Console.ForegroundColor = ConsoleColor.Gray;
+
+            Console.WriteLine("    Unit:        {0}", unit.ToString());
+            Console.WriteLine("    Quantity:    {0}", unit.QuantityType.Name);
+            Console.WriteLine("    Dimension:   {0}", unit.UnitDimension);
+            Console.WriteLine("    Unit System: {0}", unit.UnitSystem);
+
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
         public void PrintQuantity(BaseQuantity qty)
         {
-            Console.WriteLine("  {0}", qty.ToString());
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            
+            Console.WriteLine("    {0}", qty.ToString());
+
+            Console.ForegroundColor = ConsoleColor.White;
         }
 
 

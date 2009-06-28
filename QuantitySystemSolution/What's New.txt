@@ -1,3 +1,9 @@
+[Quantity System Framework 1.0.8]
+
+- Colors changed :)
+- SpecificVolume Quantity Added
+- Calculations of operators priority fixed and Parrenthesis support added.
+
 [Quantity System Framework 1.0.7]
 
 * New Features
