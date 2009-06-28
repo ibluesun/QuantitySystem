@@ -91,7 +91,6 @@
     <Compile Include="Quantities\ElectromotiveForce.cs" />
     <Compile Include="Quantities\Force.cs" />
     <Compile Include="Quantities\DimensionlessQuantities\DimensionlessQuantity.cs" />
-    <Compile Include="Quantities\DimensionlessQuantities\Reynolds.cs" />
     <Compile Include="Quantities\Frequency.cs" />
     <Compile Include="Quantities\Illuminance.cs" />
     <Compile Include="Quantities\Inductance.cs" />
@@ -103,6 +102,7 @@
     <Compile Include="Quantities\Pressure.cs" />
     <Compile Include="Quantities\RadiantIntensity.cs" />
     <Compile Include="Quantities\SpecificHeat.cs" />
+    <Compile Include="Quantities\SpecificVolume.cs" />
     <Compile Include="Quantities\Torque.cs">
       <SubType>Code</SubType>
     </Compile>

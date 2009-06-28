@@ -262,6 +262,11 @@ namespace QuantitySystem.Units
         {
 
             Type m_QuantityType = quantity.GetType();
+            if (m_QuantityType.GetGenericTypeDefinition() == typeof(RadiusLength<>))
+            {
+                //because all length units associated with the Length<> Type
+                m_QuantityType = typeof(Length<>).MakeGenericType(m_QuantityType.GetGenericArguments()[0]);
+            }
 
             if (quantity.Dimension.IsDimensionless)
             {

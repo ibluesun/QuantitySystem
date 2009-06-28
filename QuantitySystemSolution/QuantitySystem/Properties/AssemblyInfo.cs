@@ -11,8 +11,8 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Lost Particles")]
 [assembly: AssemblyProduct("Quantity System")]
-[assembly: AssemblyCopyright("Copyright © Lost Particles 2007")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCopyright("Copyright (c) Lost Particles 2007")]
+[assembly: AssemblyTrademark("Lost Particles Network")]
 [assembly: AssemblyCulture("")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
@@ -33,8 +33,8 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.7.3")]
-[assembly: AssemblyFileVersion("1.0.7.3")]
+[assembly: AssemblyVersion("1.0.8.0")]
+[assembly: AssemblyFileVersion("1.0.8.0")]
 
 [assembly: CLSCompliant(true)]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("UnitsTestingProject PublicKey=f94eebe93061cf28")]

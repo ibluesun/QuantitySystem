@@ -4,7 +4,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 namespace QuantitySystem.Units.Misc
 {
 
-    [MetricUnit("Å", typeof(Length<>))]
+    [MetricUnit("an", typeof(Length<>))]
     [ReferenceUnit(1E-10)]
     public sealed class Angstrom : MetricUnit
     {
