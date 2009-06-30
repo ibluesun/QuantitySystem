@@ -1,3 +1,12 @@
+[Quantity System Framework 1.0.8.1]
+- New Quantities
+	Molar Mass       g/mol
+	Heat Capacity    J/K
+- New units
+	lbmol  pound mol
+	
+- made feet = 0.3048 m to adjust nautical mile to be 1852m
+		
 [Quantity System Framework 1.0.8]
 
 - Colors changed :)
