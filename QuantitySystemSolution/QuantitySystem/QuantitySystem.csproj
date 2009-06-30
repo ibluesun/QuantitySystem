@@ -92,12 +92,14 @@
     <Compile Include="Quantities\Force.cs" />
     <Compile Include="Quantities\DimensionlessQuantities\DimensionlessQuantity.cs" />
     <Compile Include="Quantities\Frequency.cs" />
+    <Compile Include="Quantities\HeatCapacity.cs" />
     <Compile Include="Quantities\Illuminance.cs" />
     <Compile Include="Quantities\Inductance.cs" />
     <Compile Include="Quantities\KinematicViscosity.cs" />
     <Compile Include="Quantities\LuminousFlux.cs" />
     <Compile Include="Quantities\MagneticFlux.cs" />
     <Compile Include="Quantities\MagneticFluxDensity.cs" />
+    <Compile Include="Quantities\MolarMass.cs" />
     <Compile Include="Quantities\Power.cs" />
     <Compile Include="Quantities\Pressure.cs" />
     <Compile Include="Quantities\RadiantIntensity.cs" />
@@ -118,6 +120,7 @@
     <Compile Include="Units\Astronomical\MassUnits.cs" />
     <Compile Include="Units\Astronomical\TimeUnits.cs" />
     <Compile Include="Units\English\AreaUnits.cs" />
+    <Compile Include="Units\English\PoundMole.cs" />
     <Compile Include="Units\English\PowerUnits.cs" />
     <Compile Include="Units\English\EnergyUnits.cs" />
     <Compile Include="Units\English\ForceUnits.cs" />
