@@ -12,24 +12,17 @@ public class QsCommandLine : CommandLine
     {
         get
         {
-
             return "Qs> ";
         }
     }
 
 
-    protected override ICommandDispatcher CreateCommandDispatcher()
+    public static string LastLine { get; set; }
+
+    protected override string ReadLine(int autoIndentSize)
     {
-        Console.WriteLine("Command Dispatcher", Style.Prompt);
-
-        return base.CreateCommandDispatcher();
-    }
-
-    protected override int RunCommand(string command)
-    {
-        Console.WriteLine(command, Style.Prompt);
-
-        return base.RunCommand(command);
+        LastLine =  base.ReadLine(autoIndentSize);
+        return LastLine;
     }
     
 }

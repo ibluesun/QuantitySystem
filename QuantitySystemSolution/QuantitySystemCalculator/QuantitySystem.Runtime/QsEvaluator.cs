@@ -4,6 +4,15 @@ using System.Text.RegularExpressions;
 using QuantitySystem;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
+using Microsoft.Scripting.Runtime;
+using Microsoft.Scripting;
+
+using System.Linq;
+using ParticleLexer;
+using ParticleLexer.TokenTypes;
+using Microsoft.Scripting.Ast;
+using Microsoft.Linq.Expressions;
+
 
 namespace QuantitySystem.Runtime
 {
@@ -22,19 +31,90 @@ namespace QuantitySystem.Runtime
 
         public const string VariableQuantityExpression = @"^(\w+)\s*=\s*(" + DoubleNumber + @")\s*(\[(.+)\])";
 
-        private Dictionary<string, AnyQuantity<double>> variables = new Dictionary<string, AnyQuantity<double>>();
-        public Dictionary<string, AnyQuantity<double>> Variables
+
+
+
+
+        Dictionary<string, AnyQuantity<double>> _Variables;
+
+        public IEnumerable<string> VariablesKeys
         {
             get
             {
-                return variables;
+                if (Scope != null)
+                {
+                    var varo = from item in Scope.Items
+                               select SymbolTable.IdToString(item.Key);
+                    return varo;
+                }
+                else
+                {
+                    var varo = from item in _Variables.Keys
+                               select item;
+                    return varo;
+                }
+            }
+        }
+
+
+        public Scope Scope { get; set; }
+
+        public void New()
+        {
+            _Variables = new Dictionary<string, AnyQuantity<double>>();
+
+            if (Scope != null)
+            {
+                Scope.Clear();
+            }
+        }
+
+        public object GetVariable(string varName)
+        {
+            if (Scope != null)
+            {
+                object q;
+                Scope.TryGetName(SymbolTable.StringToId(varName), out q);
+                return q;
+            }
+            else
+            {
+                throw new NotImplementedException("you should be running in DLR");
+
+            }
+
+        }
+
+        public AnyQuantity<double> GetQuantity(string varName)
+        {
+            if (Scope != null)
+            {
+                object q;
+                Scope.TryGetName(SymbolTable.StringToId(varName), out q);
+                return (AnyQuantity<double>)q;
+            }
+            else
+            {
+                return _Variables[varName];
+            }
+        }
+
+        public void SetVariable(string varName, AnyQuantity<double> varValue)
+        {
+            if (Scope != null)
+            {
+                Scope.SetName(SymbolTable.StringToId(varName), varValue);
+            }
+            else
+            {
+                _Variables[varName] = varValue;
             }
         }
 
 
         public void Evaluate(string expr)
         {
-
+            if (string.IsNullOrEmpty(expr)) return;
             Match m = null;
 
             #region Match <unit> to <unit>
@@ -80,7 +160,7 @@ namespace QuantitySystem.Runtime
             }
             #endregion
 
-            #region Match Unit "<kn>" 
+            #region Match Unit <unit> like  <kn>, <m>, <kW> etc.
             //match one unit first
             m = Regex.Match(expr, UnitExpression);
             if (m.Success)
@@ -137,7 +217,8 @@ namespace QuantitySystem.Runtime
 
                 qty.Value = varVal;
 
-                variables[varName] = qty;
+                SetVariable(varName, qty);
+                
                 PrintQuantity(qty);
                 return;
             }
@@ -145,68 +226,92 @@ namespace QuantitySystem.Runtime
 
 
             #region expression
+
             //check if the line has '='
-            string line = expr;
-            
+            ExtraEvaluate(expr);
 
-            if (expr.IndexOf('=') > -1)
-            {
-                string[] ls = expr.Split('=');
-                line = ls[1];
-                varName = ls[0].Trim();
-
-                if (char.IsNumber(varName[0]))
-                {
-                    PrintError("Variable must start with letter");
-                    return;
-                }
-            }
-
-            //check if the line has '(' ')'
-
-
-            if (QsVar.IsMatch(line))
-            {
-                try
-                {
-
-                    QsVar qv = new QsVar(this, line);
-                    if (!string.IsNullOrEmpty(varName))
-                    {
-                        //assign the variable
-                        variables[varName] = qv.Execute();
-                        PrintQuantity(variables[varName]);
-                    }
-                    else
-                    {
-                        //only print the result.
-                        PrintQuantity(qv.Execute());
-                    }
-
-                }
-                catch (NullReferenceException nre)
-                {
-                    PrintError(nre.Message);
-                }
-                catch (QuantitiesNotDimensionallyEqualException)
-                {
-                    PrintError("Quantities Not Dimensionally Equal");
-                }
-                catch (UnitNotFoundException)
-                {
-                    PrintError("Unit Not Found");
-                }
-                catch (OverflowException)
-                {
-                    PrintError("Overflow");
-                }
-            }
 
             #endregion
 
         }
 
 
+        internal void ExtraEvaluate(string line)
+        {
+            //test for lambda expression 
+            // f(x,y,z)=> x + y + (z/2.04 * 32<kg>)
+
+            QsFunction func = QsFunction.ParseFunction(this, line);
+            if(func!=null)
+            {
+                //store the expression for later use 
+                Scope.SetName(SymbolTable.StringToId(func.FunctionName), func);
+            }
+            else
+            {
+                string varName = string.Empty;
+
+                if (line.IndexOf('=') > -1)
+                {
+                    string[] ls = line.Split('=');
+                    line = ls[1];
+                    varName = ls[0].Trim();
+
+                    if (char.IsNumber(varName[0]))
+                    {
+                        PrintError("Variable must start with letter");
+                        return;
+                    }
+                }
+
+                if (QsVar.IsMatch(line))
+                {
+                    try
+                    {
+                        QsVar qv = new QsVar(this, line);
+                        if (!string.IsNullOrEmpty(varName))
+                        {
+                            //assign the variable
+                            SetVariable(varName, qv.Execute());
+
+                            PrintQuantity(GetQuantity(varName));
+                        }
+                        else
+                        {
+                            //only print the result.
+                            PrintQuantity(qv.Execute());
+                        }
+                    }
+                    catch (NullReferenceException nre)
+                    {
+                        PrintError(nre.Message);
+                    }
+                    catch (QuantitiesNotDimensionallyEqualException)
+                    {
+                        PrintError("Quantities Not Dimensionally Equal");
+                    }
+                    catch (QuantityException qe)
+                    {
+                        PrintError(qe.Message);
+                    }
+                    catch (UnitNotFoundException)
+                    {
+                        PrintError("Unit Not Found");
+                    }
+                    catch (OverflowException)
+                    {
+                        PrintError("Overflow");
+                    }
+                    catch (QsException qse)
+                    {
+                        PrintError(qse.Message);
+                    }
+                }
+            }
+        }
+
+
+        #region print information helpers
         public void PrintError(string str)
         {
             ConsoleColor cc = Console.ForegroundColor;
@@ -240,11 +345,7 @@ namespace QuantitySystem.Runtime
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-
-        public void New()
-        {
-            variables = new Dictionary<string, AnyQuantity<double>>();
-        }
+        #endregion
     }
 
 }

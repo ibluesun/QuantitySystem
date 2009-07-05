@@ -1,4 +1,36 @@
+[Quantity System Framework 1.0.9]
+
+*New Features
+	- Power operator has been add  x^2   -- Cautious {you only can raise to dimensionless numbers}
+	- More toward DLR support: the program is entirely run under QsHost which subclass DLR ConsoleHost
+	- Functions appear for the first time
+		Declaration is normal like ordinary math 
+			Qs> f(x) = x^2+64
+			Qs> f(x,y) = x/y
+		Called
+			Qs> 10 - f(f(40,20))  + 20
+				DimensionlessQuantity: -38 <1>	
+				
+*Fixes
+   - Correct the <1> unit in parsing which affected <1/kg> and all units
+   - Calculating numbers that start with sign - or +   (fixed)  
+			so this is valid  a=-2 ++324--392 +50<m/ft> 
+   - Adding Angle Quantity to Dimensionless Quantities is valid now
+		-----------------------------------------
+		Qs> 1 + 10 <rad>
+			DimensionlessQuantity: 11 <1>
+		Qs> 1 + 10 <deg>
+			DimensionlessQuantity: 1.17453292519943 <1>
+		Qs> 10<deg> + 1
+			Angle: 67.2957795130823 deg
+		Qs> 10<rad> + 1
+			Angle: 11 rad   
+		-------------------------------------------------
+		
+		and with units taken into consideration also.
+
 [Quantity System Framework 1.0.8.1]
+
 - New Quantities
 	Molar Mass       g/mol
 	Heat Capacity    J/K

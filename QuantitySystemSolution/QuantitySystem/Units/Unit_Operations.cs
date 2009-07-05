@@ -139,9 +139,17 @@ namespace QuantitySystem.Units
         /// <returns></returns>
         public UnitPath PathToUnit(Unit unit)
         {
-            if (this.UnitDimension.Equals(unit.UnitDimension) == false)
+
+            if (!(this.UnitDimension.IsDimensionless | unit.UnitDimension.IsDimensionless))
             {
-                throw new UnitsNotDimensionallyEqualException();
+                //why I've tested dimensioless in begining??
+                //   because I want special dimensionless quantities like angle and solid angle to be treated
+                //   as normal dimensionless values
+
+                if (this.UnitDimension.Equals(unit.UnitDimension) == false)
+                {
+                    throw new UnitsNotDimensionallyEqualException();
+                }
             }
 
             //test if one of the units are not strongly typed

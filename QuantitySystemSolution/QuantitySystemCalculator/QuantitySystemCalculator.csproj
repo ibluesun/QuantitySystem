@@ -53,17 +53,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ParticleLexer\Token.cs" />
+    <Compile Include="ParticleLexer\TokenPatternAttribute.cs" />
+    <Compile Include="ParticleLexer\TokenType.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QsHost.cs" />
     <Compile Include="QsCommandLine.cs" />
     <Compile Include="QsOptionsParser.cs" />
     <Compile Include="QuantitySystem.Runtime\QsEvaluator.cs" />
+    <Compile Include="QuantitySystem.Runtime\QsException.cs" />
+    <Compile Include="QuantitySystem.Runtime\QsFunction.cs" />
     <Compile Include="QuantitySystem.Runtime\QsScriptCode.cs" />
     <Compile Include="QuantitySystem.Runtime\QsVar.cs" />
     <Compile Include="QuantitySystem.Runtime\QsContext.cs" />
-    <Compile Include="QuantitySystem.Runtime\Token.cs" />
-    <Compile Include="QuantitySystem.Runtime\TokenClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QuantitySystem\QuantitySystem.csproj">

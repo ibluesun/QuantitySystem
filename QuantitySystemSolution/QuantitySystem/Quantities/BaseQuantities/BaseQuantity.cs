@@ -79,6 +79,16 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
             if(bd!=null)
             {
+
+                if (this.Dimension.IsDimensionless & bd.Dimension.IsDimensionless)
+                {
+                    //why I've tested dimensioless in begining??
+                    //   because I want special dimensionless quantities like angle and solid angle to be treated
+                    //   as normal dimensionless values
+
+                    return true;
+                }
+
                 return this.Dimension.Equals(bd.Dimension);
             }
             else

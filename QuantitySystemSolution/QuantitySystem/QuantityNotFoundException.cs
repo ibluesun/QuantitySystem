@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
 
 namespace QuantitySystem
 {
     [Serializable()]
-    public class QuantityNotFoundException : Exception
+    public class QuantityNotFoundException : QuantityException
     {
       public QuantityNotFoundException()
       {

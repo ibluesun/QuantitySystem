@@ -83,6 +83,12 @@ namespace QuantitySystem.Quantities.BaseQuantities
             return Divide(firstQuantity, secondQuantity);
         }
 
+        public static AnyQuantity<T> operator ^(AnyQuantity<T> quantity, AnyQuantity<double> exponent)
+        {
+            return Power(quantity, exponent);
+        }
+
+
         #endregion
 
 
