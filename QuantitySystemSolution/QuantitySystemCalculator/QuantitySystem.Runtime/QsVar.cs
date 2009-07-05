@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
-using QuantitySystem;
+using Microsoft.Linq.Expressions;
+using Microsoft.Scripting;
+using Microsoft.Scripting.Ast;
+using ParticleLexer;
+using ParticleLexer.TokenTypes;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Quantities.DimensionlessQuantities;
 using QuantitySystem.Units;
-using Microsoft.Linq.Expressions;
-using System.Linq;
 
 
 namespace QuantitySystem.Runtime
@@ -46,11 +49,31 @@ namespace QuantitySystem.Runtime
         }
 
 
+        LambdaBuilder lambdaBuilder = null;
+
+        /// <summary>
+        /// Evaluate the function body taking into considerations
+        /// the parameters of the lambda function.
+        /// </summary>
+        /// <param name="evaluator"></param>
+        /// <param name="line"></param>
+        /// <param name="lb"></param>
+        public QsVar(QsEvaluator evaluator, string line, LambdaBuilder lb)
+        {
+            this.evaluator = evaluator;
+            lambdaBuilder = lb;
+
+            ResultExpression = ParseArithmatic(line);
+
+        }
+
         public QsVar(QsEvaluator evaluator, string line)
         {
             this.evaluator = evaluator;
 
-            CalcExpression = ParseArithmatic(line);
+            ResultExpression = ParseArithmatic(line);
+
+
         }
 
 
@@ -59,11 +82,13 @@ namespace QuantitySystem.Runtime
             var tokens = Token.ParseText(line);
 
             tokens = tokens.RemoveSpaceTokens();                                            //remove all spaces
-            tokens = tokens.MergeTokens("\\w+", TokenClass.Word);                           //discover words
-            tokens = tokens.MergeTokens(Token.Number, TokenClass.Number);                   //discover the numbers
-            tokens = tokens.MergeTokens(Token.UnitizedNumber, TokenClass.UnitizedNumber);   //discover the unitized numbers
+            tokens = tokens.MergeTokens(new WordToken());                           //discover words
+            tokens = tokens.MergeTokens(new NumberToken());                   //discover the numbers
+            tokens = tokens.MergeTokens(new UnitizedNumberToken());   //discover the unitized numbers
 
             tokens = tokens.GroupParenthesis();                             // group (--()-) parenthesis
+            tokens = tokens.DiscoverFunctionCalls();
+
 
             Expression quantityExpression = null;
             ExprOp eop = null;
@@ -74,20 +99,34 @@ namespace QuantitySystem.Runtime
             while (ix < tokens.Count)
             {
                 string q = tokens[ix].TokenValue;
+                if (q == "+" || q == "-")
+                {
+                    //consume another token for number
+                    ix++;
+                    q = q + tokens[ix].TokenValue;
+                }
+
                 string op = ix + 1 < tokens.Count ? tokens[ix + 1].TokenValue : string.Empty;
 
 
-                if (tokens[ix].TokenClass == TokenClass.Group)
+                if (tokens[ix].TokenType == typeof(FunctionCallToken))
+                {
+                    quantityExpression = FunctionCallExpression(
+                        tokens[ix][0].TokenValue,
+                        tokens[ix][1]
+                        );
+                }
+                else if (tokens[ix].TokenType == typeof(GroupToken))
                 {
                     quantityExpression = ParseArithmatic(q.Substring(1, q.Length - 2));
                 }
-                else if (tokens[ix].TokenClass == TokenClass.UnitizedNumber)
+                else if (tokens[ix].TokenType == typeof(UnitizedNumberToken))
                 {
                     //unitized number
                     quantityExpression = QuantityExpression(q);
 
                 }
-                else if (tokens[ix].TokenClass == TokenClass.Number)
+                else if (tokens[ix].TokenType == typeof(NumberToken))
                 {
                     //ordinary number
                     quantityExpression = DimensionlessQuantityExpression(double.Parse(q));
@@ -95,17 +134,23 @@ namespace QuantitySystem.Runtime
                 }
                 else
                 {
-                    try
+                    if (lambdaBuilder != null)
                     {
-                        //quantity variable  //get it from hash
-                        quantityExpression = Expression.Constant(evaluator.Variables[q], typeof(AnyQuantity<double>));
+                        //get it from the parameters of the lambda
+                        //  :) if it is found here then it will not be obtained from the global heap :)
+                        //      now I understand how variable scopes occur :D
+
+                        quantityExpression = lambdaBuilder.Parameters.Single(c => c.Name == q);
+                                             
                     }
-                    catch (KeyNotFoundException)
+                    else
                     {
-                        throw new NullReferenceException("Variable Not Found");
 
+                        //quantity variable  //get it from evaluator  global heap
+                        quantityExpression = Expression.Constant(evaluator.GetVariable(q), typeof(AnyQuantity<double>));
                     }
-
+                
+                    
                 }
                 
 
@@ -115,8 +160,6 @@ namespace QuantitySystem.Runtime
                     FirstEop = new ExprOp();
 
                     eop = FirstEop;
-
-
                 }
                 else
                 {
@@ -135,15 +178,14 @@ namespace QuantitySystem.Runtime
 
             //then form the calculation expression
 
-
-            return  CalculateExpression(FirstEop);
+            return  ConstructExpression(FirstEop);
 
         }
 
         public AnyQuantity<double> Execute()
         {
             Expression<Func<AnyQuantity<double>>> cq = Expression.Lambda<Func<AnyQuantity<double>>>
-                (this.CalcExpression);
+                (this.ResultExpression);
 
             Func<AnyQuantity<double>> aqf = cq.Compile();
 
@@ -176,6 +218,44 @@ namespace QuantitySystem.Runtime
         #endregion
 
         #region Expressions Generators
+        public Expression FunctionCallExpression(string functionName, Token args)
+        {
+            //fn(x,y,ff(y/x,e+fr(d)))     <== sample form :D
+
+
+            string fn = functionName;
+            object QsFunc;
+
+            List<Expression> parameters = new List<Expression>();
+
+            //now parameters separated
+
+            for (int ai = 1; ai < args.Count - 1; ai++ )
+            {
+                if (args[ai].TokenValue != ",")
+                    parameters.Add(ParseArithmatic(args[ai].TokenValue));
+            }
+
+            string fnr = fn + "#" + parameters.Count; //to call the right function 
+
+            //find the function
+            if (this.Evaluator.Scope.TryGetName(SymbolTable.StringToId(fnr), out QsFunc))
+            {
+
+                return Expression.Invoke(((QsFunction)QsFunc).FunctionExpression, parameters);
+                
+
+            }
+            else
+            {
+                throw new QsException(fn + " function with " + parameters.Count.ToString() + " parameter(s) not found.");
+            }
+
+
+            
+            
+        }
+
         public static Expression DimensionlessQuantityExpression(double val)
         {
             DimensionlessQuantity<double> qty = new DimensionlessQuantity<double>();
@@ -195,35 +275,28 @@ namespace QuantitySystem.Runtime
             //   however all I want is AnyQuantity<> object and it doesn't need all of this hassle about dynamically creation
             // I was stupid :)
 
-            Match um = Regex.Match(expr, UnitizedNumber);
-            if (um.Success)
-            {
-                string varUnit = um.Groups["unit"].Value;
-                double val = double.Parse(um.Groups["num"].Value);
-
-                Unit un = Unit.Parse(varUnit);
-                AnyQuantity<double> qty = un.GetThisUnitQuantity<double>(val);
-
-                return Expression.Constant(qty, typeof(AnyQuantity<double>)); //you have to explicitly tell expression the type because it searches for the operators and can't find them
-            }
-            else
-            {
-                throw new NotSupportedException();
-            }
+            
+            return Expression.Constant(Unit.ParseQuantity(expr), typeof(AnyQuantity<double>)); //you have to explicitly tell expression the type because it searches for the operators and can't find them
+           
+            
         }
 
 
         private Expression ArithExpression(Expression left, string op, Expression right)
         {
+            Type aqType = typeof(AnyQuantity<double>);
+            
+            if (op == "^") return Expression.Power(left, right, aqType.GetMethod("Power"));
             if (op == "*") return Expression.Multiply(left, right);
             if (op == "/") return Expression.Divide(left, right);
             if (op == "%") return Expression.Modulo(left, right);
             if (op == "+") return Expression.Add(left, right);
             if (op == "-") return Expression.Subtract(left, right);
+
             throw new NotSupportedException("not supported operator");
         }
 
-        private Expression CalculateExpression(ExprOp FirstEop)
+        private Expression ConstructExpression(ExprOp FirstEop)
         {
             //Treat operators as groups
             //  means * and /  are in the same pass
@@ -280,7 +353,7 @@ namespace QuantitySystem.Runtime
         }
 
 
-        public Expression CalcExpression
+        public Expression ResultExpression
         {
             get;
             set;

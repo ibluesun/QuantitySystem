@@ -1,29 +1,29 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace QuantitySystem
+namespace QuantitySystem.Runtime
 {
     [Serializable()]
-    public class QuantitiesNotDimensionallyEqualException : QuantityException
+    public class QsException : Exception
     {
-      public QuantitiesNotDimensionallyEqualException()
+      public QsException()
       {
          // Add any type-specific logic, and supply the default message.
       }
 
-      public QuantitiesNotDimensionallyEqualException(string message): base(message) 
+      public QsException(string message): base(message) 
       {
          // Add any type-specific logic.
       }
-      public QuantitiesNotDimensionallyEqualException(string message, Exception innerException): 
+      public QsException(string message, Exception innerException): 
          base (message, innerException)
       {
          // Add any type-specific logic for inner exceptions.
       }
-      protected QuantitiesNotDimensionallyEqualException(SerializationInfo info, 
+      protected QsException(SerializationInfo info, 
          StreamingContext context) : base(info, context)
       {
          // Implement type-specific serialization constructor logic.
-      }        
+      }    
     }
 }

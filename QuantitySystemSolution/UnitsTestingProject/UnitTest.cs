@@ -247,9 +247,6 @@ namespace UnitsTestingProject
             unit = new Unit(typeof(SolidAngle<Double>));
             Assert.AreEqual("<sr>", unit.Symbol);
 
-            unit = new Unit(typeof(Reynolds<>));
-            Assert.AreEqual("<1>", unit.Symbol);
-
 
             unit = new Unit(typeof(Torque<>));
             Assert.AreEqual("<kg.m^2/s^2>", unit.Symbol);
@@ -304,9 +301,6 @@ namespace UnitsTestingProject
 
             unit = Unit.DiscoverUnit(new Angle<double>());
             Assert.AreEqual("rad", unit.Symbol);
-
-            unit = Unit.DiscoverUnit(new Reynolds<double>());
-            Assert.AreEqual("<kg/m.s^2.Pa>", unit.Symbol);
 
 
             unit = Unit.DiscoverUnit(new Torque<double>());
@@ -479,7 +473,7 @@ namespace UnitsTestingProject
 
             actual = i.PathToUnit(mr);
 
-            Assert.AreEqual(0.025400050800101596, actual.ConversionFactor);
+            Assert.AreEqual(0.0254, actual.ConversionFactor);
 
             //now the idea is to make any combination of units to go to any combination of units
             QuantityDimension qd = QuantityDimension.ParseMLT("M1L0T-1");
@@ -531,14 +525,14 @@ namespace UnitsTestingProject
             actual = v.Unit.PathToSIBaseUnits();
 
 
-            Assert.AreEqual<double>(actual.ConversionFactor, 0.30480060960121921);
+            Assert.AreEqual<double>(actual.ConversionFactor, 0.3048);
 
 
             var a = v / t;   //acceleration
 
             actual = a.Unit.PathToSIBaseUnits();
 
-            Assert.AreEqual<double>(actual.ConversionFactor, 0.30480060960121921);
+            Assert.AreEqual<double>(actual.ConversionFactor, 0.3048);
 
             var f = Unit.Parse("lbf").GetThisUnitQuantity<double>();
 
@@ -552,7 +546,7 @@ namespace UnitsTestingProject
 
             actual = fs.Unit.PathToSIBaseUnits();
 
-            Assert.AreEqual<double>(actual.ConversionFactor, 13.344692133907696);
+            Assert.AreEqual<double>(actual.ConversionFactor, 13.344665444523431);
 
             var pressure = Unit.Parse("mPa").GetThisUnitQuantity<double>(1);
             var vis = pressure * t;

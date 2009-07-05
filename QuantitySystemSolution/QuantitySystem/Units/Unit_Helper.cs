@@ -385,6 +385,12 @@ namespace QuantitySystem.Units
         internal static Unit ParseUnit(string un)
         {
 
+            if (un == "1")
+            {
+                //this is dimensionless value
+                return new Unit(typeof(Quantities.DimensionlessQuantities.DimensionlessQuantity<>));
+            }
+
             //find '^'
 
             string[] upower = un.Split('^');
@@ -492,7 +498,12 @@ namespace QuantitySystem.Units
         }
 
 
-
+        /// <summary>
+        /// Returns the unit of strongly typed metric unit to unit with sub units as base units
+        /// and add the prefix to the expanded base units.
+        /// </summary>
+        /// <param name="unit"></param>
+        /// <returns></returns>
         public static Unit ExpandMetricUnit(MetricUnit unit)
         {
             List<Unit> DefaultUnits = new List<Unit>();
@@ -528,6 +539,46 @@ namespace QuantitySystem.Units
             }
         }
 
+
+
+
+        /// <summary>
+        /// Takes string of the form number and unit i.e. "50.34 kg>"
+        /// and returns Quantity of the discovered unit.
+        /// </summary>
+        /// <param name="quantity"></param>
+        /// <returns></returns>
+        public static AnyQuantity<double> ParseQuantity(string quantity)
+        {
+            string DoubleNumber = @"[-+]?\d+(\.\d+)*([eE][-+]?\d+)*";
+
+            string UnitizedNumber = "(?<num>" + DoubleNumber + ")\\s*<(?<unit>.+?)>";
+
+            double val;
+            Match um = Regex.Match(quantity, UnitizedNumber);
+            if (um.Success)
+            {
+                string varUnit = um.Groups["unit"].Value;
+                val = double.Parse(um.Groups["num"].Value);
+
+                Unit un = Unit.Parse(varUnit);
+                AnyQuantity<double> qty = un.GetThisUnitQuantity<double>(val);
+
+                return qty;
+            }
+            else if (double.TryParse(quantity, out val))
+            {
+                Quantities.DimensionlessQuantities.DimensionlessQuantity<double> qty = val;
+                qty.Unit = DiscoverUnit(qty);
+                return (AnyQuantity<double>)qty;
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+
+
+        }
 
     }
 }

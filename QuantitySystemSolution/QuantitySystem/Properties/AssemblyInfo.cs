@@ -9,9 +9,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Quantity System")]
 [assembly: AssemblyDescription("Quantity System Framework")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Lost Particles")]
+[assembly: AssemblyCompany("Lost Particles Network (http://www.lostparticles.net)")]
 [assembly: AssemblyProduct("Quantity System")]
-[assembly: AssemblyCopyright("Copyright (c) Lost Particles 2007")]
+[assembly: AssemblyCopyright("Copyright (c) 2007-2009 at Lost Particles by Ahmed Sadek")]
 [assembly: AssemblyTrademark("Lost Particles Network")]
 [assembly: AssemblyCulture("")]
 
@@ -33,8 +33,8 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.8.1")]
-[assembly: AssemblyFileVersion("1.0.8.1")]
+[assembly: AssemblyVersion("1.0.9.0")]
+[assembly: AssemblyFileVersion("1.0.9.0")]
 
 [assembly: CLSCompliant(true)]
 [assembly: System.Runtime.CompilerServices.InternalsVisibleTo("UnitsTestingProject PublicKey=f94eebe93061cf28")]

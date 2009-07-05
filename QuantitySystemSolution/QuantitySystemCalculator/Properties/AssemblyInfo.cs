@@ -8,9 +8,9 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle("Quantity System Calculator")]
 [assembly: AssemblyDescription("Calculator to illustrate the power of the quantity system framework")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Lost Particles (http://www.lostparticles.net)")]
+[assembly: AssemblyCompany("Lost Particles Network (http://www.lostparticles.net)")]
 [assembly: AssemblyProduct("Quantity System Calculator")]
-[assembly: AssemblyCopyright("Copyright (c) 2009 by Lost Particles Network")]
+[assembly: AssemblyCopyright("Copyright (c) 2009 at Lost Particles Network by Ahmed Sadek")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.0.8.0")]
-[assembly: AssemblyFileVersion("1.0.8.0")]
+[assembly: AssemblyVersion("1.0.9.0")]
+[assembly: AssemblyFileVersion("1.0.9.0")]

@@ -204,7 +204,9 @@ Ideas:
 13] The whole prefix thing have been revised again.		     
 		
 		
-
+14] Functions to be added {added}
+	this leads to more integration into DLR  now the the console is based on DLR
+	
     
     
 	

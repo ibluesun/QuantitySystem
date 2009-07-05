@@ -336,7 +336,54 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
             return qresult;
         }
-        
+
+        public static AnyQuantity<T> Power(AnyQuantity<T> quantity, AnyQuantity<double> exponent)
+        {
+            if (!exponent.Dimension.IsDimensionless)
+            {
+                throw new QuantityException("Raising Quantity to a non dimensionless quantity are not implemented");
+
+            }
+
+            //for now I am casting the double to integer 
+            int ex = (int)Math.Abs(exponent.Value);
+            
+            // and I am ignoring the units conversion also 
+
+            AnyQuantity<T> result = null;
+            AnyQuantity<T> q = null;
+
+            if (exponent.Value < 0) //then the number is 1/
+                q = (AnyQuantity<T>)quantity.Invert();
+            else
+                q = quantity;
+
+
+            if (exponent.Value == 0)
+            {
+                result = q / q;
+            }
+            else
+            {
+                result = q;
+
+
+
+                ex--;
+
+
+                while (ex > 0)
+                {
+                    result = result * q;
+                    ex--;
+                }
+            }
+
+
+            return result;
+
+        }
+
         #endregion
 
 
