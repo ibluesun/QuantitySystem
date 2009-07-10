@@ -25,9 +25,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DLR", "DLR", "{BD2784D3-94C
 		DLR\Microsoft.Scripting.dll = DLR\Microsoft.Scripting.dll
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qs", "QuantitySystem.Runtime\Qs.csproj", "{615A100B-4890-434E-8869-2A9B3200D664}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
+		SccNumberOfProjects = 6
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
 		SccLocalPath0 = .
@@ -45,6 +47,9 @@ Global
 		SccProjectUniqueName4 = QuantitySystemCalculator\\QuantitySystemCalculator.csproj
 		SccProjectName4 = QuantitySystemCalculator
 		SccLocalPath4 = QuantitySystemCalculator
+		SccProjectUniqueName5 = QuantitySystem.Runtime\\Qs.csproj
+		SccProjectName5 = QuantitySystem.Runtime
+		SccLocalPath5 = QuantitySystem.Runtime
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = QuantitySystemSolution.vsmdi
@@ -70,6 +75,10 @@ Global
 		{140E6C82-4B64-45AA-8FE1-91159322A29E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{140E6C82-4B64-45AA-8FE1-91159322A29E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{140E6C82-4B64-45AA-8FE1-91159322A29E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{615A100B-4890-434E-8869-2A9B3200D664}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{615A100B-4890-434E-8869-2A9B3200D664}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{615A100B-4890-434E-8869-2A9B3200D664}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{615A100B-4890-434E-8869-2A9B3200D664}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

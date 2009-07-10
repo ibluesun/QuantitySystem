@@ -5,11 +5,11 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>9.0.30729</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{140E6C82-4B64-45AA-8FE1-91159322A29E}</ProjectGuid>
-    <OutputType>Exe</OutputType>
+    <ProjectGuid>{615A100B-4890-434E-8869-2A9B3200D664}</ProjectGuid>
+    <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>QuantitySystemCalculator</RootNamespace>
-    <AssemblyName>QuantitySystemCalculator</AssemblyName>
+    <RootNamespace>Qs</RootNamespace>
+    <AssemblyName>QuantitySystem.Runtime</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -17,7 +17,6 @@
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
     <TargetFrameworkSubset>Client</TargetFrameworkSubset>
-    <ApplicationIcon>Qs.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,26 +48,34 @@
     <Reference Include="System.Core">
       <RequiredTargetFramework>3.5</RequiredTargetFramework>
     </Reference>
+    <Reference Include="System.Xml.Linq">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="System.Data.DataSetExtensions">
+      <RequiredTargetFramework>3.5</RequiredTargetFramework>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ParticleLexer\Token.cs" />
+    <Compile Include="ParticleLexer\TokenPatternAttribute.cs" />
+    <Compile Include="ParticleLexer\TokenType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="QsHost.cs" />
-    <Compile Include="QsCommandLine.cs" />
-    <Compile Include="QsOptionsParser.cs" />
+    <Compile Include="QsCommands.cs" />
+    <Compile Include="Runtime\QsContext.cs" />
+    <Compile Include="Runtime\QsEvaluator.cs" />
+    <Compile Include="Runtime\QsException.cs" />
+    <Compile Include="Runtime\QsFunction.cs" />
+    <Compile Include="Runtime\QsFunctionCallSiteBinder.cs" />
+    <Compile Include="Runtime\QsScriptCode.cs" />
+    <Compile Include="Runtime\QsVar.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QuantitySystem.Runtime\Qs.csproj">
-      <Project>{615A100B-4890-434E-8869-2A9B3200D664}</Project>
-      <Name>Qs</Name>
+    <ProjectReference Include="..\QuantitySystem\QuantitySystem.csproj">
+      <Project>{78909C0B-AA53-48F9-8AC9-F3937383629C}</Project>
+      <Name>QuantitySystem</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="app.config" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Qs.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

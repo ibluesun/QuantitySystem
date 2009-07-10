@@ -1,14 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Microsoft.Linq.Expressions;
+using Microsoft.Scripting.Ast;
 using ParticleLexer;
 using ParticleLexer.TokenTypes;
 using QuantitySystem.Quantities.BaseQuantities;
-using Microsoft.Scripting.Ast;
+using Microsoft.Scripting;
+using Microsoft.Scripting.Runtime;
 
-namespace QuantitySystem.Runtime
+namespace Qs.Runtime
 {
     public class QsFunction
     {
@@ -28,7 +28,16 @@ namespace QuantitySystem.Runtime
             }
         }
 
-        public Expression FunctionExpression { get; private set; }
+        public LambdaExpression FunctionExpression { get; private set; }
+
+        public QsFunctionCallSiteBinder FunctionCallSiteBinder
+        {
+            get
+            {
+                return new QsFunctionCallSiteBinder(FunctionExpression);
+            }
+        }
+
 
         public string Function { get; private set; }
 
@@ -123,7 +132,28 @@ namespace QuantitySystem.Runtime
                 return null;
             }
         }
+
+
+        public static QsFunction GetFunction(Scope scope, string fnName)
+        {
+            object q;
+
+
+            scope.TryGetName(SymbolTable.StringToId(fnName), out q);
+
+
+            return (QsFunction)q;
+
+        }
+
+        public static LambdaExpression GetFunctionExpression(Scope scope, string fnName)
+        {
+            return GetFunction(scope, fnName).FunctionExpression;
+        }
+
         #endregion
+
+
 
     }
 }

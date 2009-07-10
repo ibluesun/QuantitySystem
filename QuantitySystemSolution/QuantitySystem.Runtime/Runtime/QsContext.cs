@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting;
-using Microsoft.Linq.Expressions;
+using Microsoft.Scripting.Runtime;
 
-namespace QuantitySystem.Runtime
+namespace Qs.Runtime
 {
     public sealed class QsContext : LanguageContext
     {

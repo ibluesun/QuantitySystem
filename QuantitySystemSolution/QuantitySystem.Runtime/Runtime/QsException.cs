@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace QuantitySystem.Runtime
+namespace Qs.Runtime
 {
     [Serializable()]
     public class QsException : Exception

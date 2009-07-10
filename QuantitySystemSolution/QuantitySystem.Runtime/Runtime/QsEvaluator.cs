@@ -1,20 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
+using Microsoft.Scripting;
+using Microsoft.Scripting.Runtime;
 using QuantitySystem;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
-using Microsoft.Scripting.Runtime;
-using Microsoft.Scripting;
-
-using System.Linq;
-using ParticleLexer;
-using ParticleLexer.TokenTypes;
-using Microsoft.Scripting.Ast;
 using Microsoft.Linq.Expressions;
 
 
-namespace QuantitySystem.Runtime
+namespace Qs.Runtime
 {
 
     /// <summary>
@@ -68,6 +64,8 @@ namespace QuantitySystem.Runtime
                 Scope.Clear();
             }
         }
+
+
 
         public object GetVariable(string varName)
         {
