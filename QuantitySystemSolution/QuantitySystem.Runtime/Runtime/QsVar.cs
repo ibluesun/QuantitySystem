@@ -4,15 +4,18 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Linq.Expressions;
 using Microsoft.Scripting;
+
 using Microsoft.Scripting.Ast;
+
 using ParticleLexer;
 using ParticleLexer.TokenTypes;
+using QuantitySystem;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Quantities.DimensionlessQuantities;
 using QuantitySystem.Units;
 
 
-namespace QuantitySystem.Runtime
+namespace Qs.Runtime
 {
     public class QsVar
     {
@@ -224,7 +227,6 @@ namespace QuantitySystem.Runtime
 
 
             string fn = functionName;
-            object QsFunc;
 
             List<Expression> parameters = new List<Expression>();
 
@@ -238,11 +240,42 @@ namespace QuantitySystem.Runtime
 
             string fnr = fn + "#" + parameters.Count; //to call the right function 
 
+            object QsFunc;
+
             //find the function
             if (this.Evaluator.Scope.TryGetName(SymbolTable.StringToId(fnr), out QsFunc))
             {
 
-                return Expression.Invoke(((QsFunction)QsFunc).FunctionExpression, parameters);
+                //I need to call the function by its reference
+                //  which means get the function reference and make an expression which call it 
+                //    how can I make this here?????
+                
+                /*
+                Type ScopeType = this.Evaluator.Scope.GetType();
+
+                //store the scope
+                var ScopeExp = Expression.Constant(Evaluator.Scope, ScopeType);
+
+                
+                var fe = Expression.Call(
+                    typeof(QsFunction).GetMethod("GetFunctionExpression"), 
+                    ScopeExp, Expression.Constant(fnr));
+
+
+                var proc = Expression.Assign(Expression.Variable(typeof(Expression)),
+    Expression.Call(
+    typeof(QsFunction).GetMethod("GetFunctionExpression"),
+    ScopeExp, Expression.Constant(fnr)));
+
+                */
+
+                var procExpression = QsFunction.GetFunctionExpression(this.Evaluator.Scope, fnr);
+                
+
+                
+                
+                return Expression.Invoke(procExpression, parameters);
+
                 
 
             }
