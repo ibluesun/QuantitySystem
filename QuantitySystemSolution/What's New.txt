@@ -1,3 +1,24 @@
+[Quantity System Framework 1.1]
+- unit modifier '!'
+	the modifier will modify the lenght units to produce radius length quantities
+	
+	so now you can say a = 10<N.m!>  which will produce Torque
+
+- separation between DLR and quantity system framwork
+
+- functions are called by delegates not hard coded expressions.
+
+- functions can refer to variables declared in global scope 
+	but local parameters with the same name is habing the higher priority	
+
+- Raise to power enhanced 
+	now fractions are included so 1<kg>^0.5 = 1<kg^0.5>
+	however you can't generate quantities with fraction values.
+	 only by raising to power.
+
+	
+	
+
 [Quantity System Framework 1.0.9]
 
 *New Features

@@ -11,7 +11,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public LuminousFlux(int exponent)
+        public LuminousFlux(float exponent)
             : base(exponent, new LuminousIntensity<T>(exponent), new SolidAngle<T>(exponent))
         {
         }

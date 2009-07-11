@@ -18,7 +18,7 @@ namespace QuantitySystem.Quantities.DimensionlessQuantities
 
         private AnyQuantity<T>[] InternalQuantities;
 
-        public DimensionlessQuantity(int exponent, params AnyQuantity<T>[] internalQuantities)
+        public DimensionlessQuantity(float exponent, params AnyQuantity<T>[] internalQuantities)
             : base(exponent)
         {
             this.InternalQuantities = internalQuantities;

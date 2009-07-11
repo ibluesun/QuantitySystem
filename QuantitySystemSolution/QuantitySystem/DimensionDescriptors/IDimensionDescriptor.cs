@@ -3,13 +3,13 @@
 
     public interface IDimensionDescriptor<TDimensionDescriptor>
     {
-        int Exponent { get; set; }
+        float Exponent { get; set; }
 
         TDimensionDescriptor Add(TDimensionDescriptor dimensionDescriptor);
         
         TDimensionDescriptor Subtract(TDimensionDescriptor dimensionDescriptor);
 
-        TDimensionDescriptor Multiply(int exponent);
+        TDimensionDescriptor Multiply(float exponent);
 
         TDimensionDescriptor Invert();
 

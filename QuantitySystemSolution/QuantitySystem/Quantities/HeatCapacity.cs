@@ -11,7 +11,7 @@ namespace QuantitySystem.Quantities
         }
 
 
-        public HeatCapacity(int exponent)
+        public HeatCapacity(float exponent)
             : base(exponent, new Energy<T>(exponent), new Temperature<T>(-1 * exponent))
         {
         }

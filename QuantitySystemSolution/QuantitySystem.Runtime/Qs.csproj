@@ -9,7 +9,7 @@
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Qs</RootNamespace>
-    <AssemblyName>QuantitySystem.Runtime</AssemblyName>
+    <AssemblyName>Qs</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
@@ -67,7 +67,6 @@
     <Compile Include="Runtime\QsEvaluator.cs" />
     <Compile Include="Runtime\QsException.cs" />
     <Compile Include="Runtime\QsFunction.cs" />
-    <Compile Include="Runtime\QsFunctionCallSiteBinder.cs" />
     <Compile Include="Runtime\QsScriptCode.cs" />
     <Compile Include="Runtime\QsVar.cs" />
   </ItemGroup>

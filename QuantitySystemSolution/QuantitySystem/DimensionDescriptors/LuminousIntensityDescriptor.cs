@@ -8,7 +8,7 @@ namespace QuantitySystem.DimensionDescriptors
     public struct LuminousIntensityDescriptor : IDimensionDescriptor<LuminousIntensityDescriptor>
     {
 
-        public LuminousIntensityDescriptor(int exponent):this()
+        public LuminousIntensityDescriptor(float exponent):this()
         {
             this.Exponent = exponent;
         }
@@ -17,7 +17,7 @@ namespace QuantitySystem.DimensionDescriptors
         #region IDimensionDescriptor<LuminousIntensityDescriptor> Members
 
 
-        public int Exponent
+        public float Exponent
         {
             get;
             set;
@@ -40,7 +40,7 @@ namespace QuantitySystem.DimensionDescriptors
             return desc;
         }
 
-        public LuminousIntensityDescriptor Multiply(int exponent)
+        public LuminousIntensityDescriptor Multiply(float exponent)
         {
             LuminousIntensityDescriptor desc = new LuminousIntensityDescriptor();
             desc.Exponent = this.Exponent * exponent;

@@ -9,7 +9,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
     {
         public Temperature() : base(1) { }
 
-        public Temperature(int exponent) : base(exponent) { }
+        public Temperature(float exponent) : base(exponent) { }
 
         public override QuantityDimension Dimension
         {

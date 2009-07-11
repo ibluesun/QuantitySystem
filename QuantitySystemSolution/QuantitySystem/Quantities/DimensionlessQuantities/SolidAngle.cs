@@ -9,7 +9,7 @@ namespace QuantitySystem.Quantities.DimensionlessQuantities
         {
         }
 
-        public SolidAngle(int exponent)
+        public SolidAngle(float exponent)
             : base(exponent, new Angle<T>(2 * exponent))
         {
         }

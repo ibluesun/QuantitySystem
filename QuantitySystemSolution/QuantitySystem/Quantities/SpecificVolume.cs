@@ -14,7 +14,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public SpecificVolume(int exponent)
+        public SpecificVolume(float exponent)
             : base(exponent, new Volume<T>(exponent), new Mass<T>(-1 * exponent))
         {
         }

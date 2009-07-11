@@ -10,7 +10,7 @@ namespace QuantitySystem.Quantities.DimensionlessQuantities
         {
         }
 
-        public Angle(int exponent)
+        public Angle(float exponent)
             : base(exponent, new Length<T>(exponent, LengthType.Normal), new Length<T>(-1 * exponent, LengthType.Radius))
         {
         }

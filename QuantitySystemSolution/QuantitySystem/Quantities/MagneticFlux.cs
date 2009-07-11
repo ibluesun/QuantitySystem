@@ -9,7 +9,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public MagneticFlux(int exponent)
+        public MagneticFlux(float exponent)
             : base(exponent, new ElectromotiveForce<T>(exponent), new Time<T>(exponent))
         {
         }

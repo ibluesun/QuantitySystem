@@ -17,7 +17,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public RadiantIntensity(int exponent)
+        public RadiantIntensity(float exponent)
             : base(1, new Power<T>(exponent), new SolidAngle<T>(-1 * exponent))
         {
         }

@@ -14,7 +14,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public Force(int exponent)
+        public Force(float exponent)
             : base(exponent, new Mass<T>(exponent), new Acceleration<T>(exponent))
         {
         }

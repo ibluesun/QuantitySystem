@@ -9,7 +9,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public Inductance(int exponent)
+        public Inductance(float exponent)
             : base(exponent, new MagneticFlux<T>(exponent), new ElectricalCurrent<T>(-1 * exponent))
         {
         }

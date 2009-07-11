@@ -8,14 +8,14 @@ namespace QuantitySystem.DimensionDescriptors
     public struct MassDescriptor : IDimensionDescriptor<MassDescriptor>
     {
 
-        public MassDescriptor(int exponent):this()
+        public MassDescriptor(float exponent):this()
         {
             this.Exponent = exponent;
         }
 
 
         #region IDimensionDescriptor<MassDescriptor> Members
-        public int Exponent
+        public float Exponent
         {
             get;
             set;
@@ -38,7 +38,7 @@ namespace QuantitySystem.DimensionDescriptors
             return desc;
         }
 
-        public MassDescriptor Multiply(int exponent)
+        public MassDescriptor Multiply(float exponent)
         {
             MassDescriptor desc = new MassDescriptor();
             desc.Exponent = this.Exponent * exponent;

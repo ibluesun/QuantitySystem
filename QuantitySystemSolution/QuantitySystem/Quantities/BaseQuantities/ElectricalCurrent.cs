@@ -9,7 +9,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
     {
         public ElectricalCurrent() : base(1) { }
 
-        public ElectricalCurrent(int exponent) : base(exponent) { }
+        public ElectricalCurrent(float exponent) : base(exponent) { }
 
         public override QuantityDimension Dimension
         {

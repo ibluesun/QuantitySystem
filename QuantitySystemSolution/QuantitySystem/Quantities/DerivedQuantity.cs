@@ -30,9 +30,14 @@ namespace QuantitySystem.Quantities
 
             }
 
-            if (dimension.Length.Exponent != 0)
+            
             {
-                quantities.Add(new Length<T>(dimension.Length.Exponent));
+                if (dimension.Length.NormalExponent != 0)
+                    quantities.Add(new Length<T>(dimension.Length.NormalExponent));
+
+                if (dimension.Length.RadiusExponent != 0)
+                    quantities.Add(new RadiusLength<T>(dimension.Length.RadiusExponent));
+
             }
 
             if (dimension.Time.Exponent != 0)
@@ -63,7 +68,7 @@ namespace QuantitySystem.Quantities
             InternalQuantities = quantities.ToArray();
         }
 
-        public DerivedQuantity(int exponent, params AnyQuantity<T>[] internalQuantities)
+        public DerivedQuantity(float exponent, params AnyQuantity<T>[] internalQuantities)
             : base(exponent)
         {
             InternalQuantities = internalQuantities;

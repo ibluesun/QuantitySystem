@@ -9,13 +9,13 @@ namespace QuantitySystem.DimensionDescriptors
     {
 
 
-        public TimeDescriptor(int exponent):this()
+        public TimeDescriptor(float exponent):this()
         {
             this.Exponent = exponent;
         }
 
         #region IDimensionDescriptor<TimeDescriptor> Members
-        public int Exponent
+        public float Exponent
         {
             get;
             set;
@@ -35,7 +35,7 @@ namespace QuantitySystem.DimensionDescriptors
             return desc;
         }
 
-        public TimeDescriptor Multiply(int exponent)
+        public TimeDescriptor Multiply(float exponent)
         {
             TimeDescriptor desc = new TimeDescriptor();
             desc.Exponent = this.Exponent * exponent;

@@ -10,7 +10,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public Illuminance(int exponent)
+        public Illuminance(float exponent)
             : base(exponent, new LuminousFlux<T>(exponent), new Area<T>(-1 * exponent))
         {
         }

@@ -20,7 +20,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
         #region constructors
 
         protected AnyQuantity() : base(1) { }
-        protected AnyQuantity(int exponent) : base(exponent) { }
+        protected AnyQuantity(float exponent) : base(exponent) { }
 
 
         #endregion
@@ -234,6 +234,61 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
 
             T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
+
+            return result;
+        }
+
+
+        protected static T RaiseGenericByScalar(T value, double factor)
+        {
+            //create the dynamic method here 
+
+            DynamicMethod method = new DynamicMethod(
+                "Power_Method" + ":" + typeof(T).ToString(),
+                typeof(T),
+                new Type[] { typeof(double), typeof(T) });
+
+
+            //get generator to construct the function.
+
+            ILGenerator gen = method.GetILGenerator();
+
+
+            gen.Emit(OpCodes.Ldarg_0);  //load the first value
+            gen.Emit(OpCodes.Ldarg_1);  //load the second value
+
+
+            if (typeof(T).IsPrimitive)
+            {
+
+                MethodInfo info = typeof(Math).GetMethod
+                    (
+                    "Pow",
+                    new Type[] { typeof(double), typeof(double) },
+                    null
+                    );
+
+                gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
+
+            }
+            else
+            {
+                MethodInfo info = typeof(T).GetMethod
+                    (
+                    "Power",
+                    new Type[] { typeof(T), typeof(double)},
+                    null
+                    );
+
+                gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
+
+            }
+
+            gen.Emit(OpCodes.Ret);
+
+
+            T result = (T)method.Invoke(null, new object[] { value, factor });
+
 
             return result;
         }

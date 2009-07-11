@@ -14,7 +14,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public Velocity(int exponent)
+        public Velocity(float exponent)
             : base(exponent, new Length<T>(exponent), new Time<T>(-1 * exponent))
         {
         }

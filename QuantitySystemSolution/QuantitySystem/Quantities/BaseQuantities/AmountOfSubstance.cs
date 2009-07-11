@@ -9,7 +9,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
     {
         public AmountOfSubstance() : base(1) { }
 
-        public AmountOfSubstance(int exponent) : base(exponent) { }
+        public AmountOfSubstance(float exponent) : base(exponent) { }
 
         public override QuantityDimension Dimension
         {

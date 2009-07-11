@@ -14,7 +14,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public Power(int exponent)
+        public Power(float exponent)
             : base(exponent, new Energy<T>(exponent), new Time<T>(-1 * exponent))
         {
         }

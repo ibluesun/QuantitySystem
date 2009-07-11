@@ -109,6 +109,18 @@ namespace Qs.Runtime
             }
         }
 
+        public static AnyQuantity<double> GetScopeQuantity(Scope scope, string name)
+        {
+            object q;
+
+
+            scope.TryGetName(SymbolTable.StringToId(name), out q);
+
+
+            return (AnyQuantity<double>)q;
+
+        }
+
 
         public void Evaluate(string expr)
         {

@@ -9,7 +9,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public ElectromotiveForce(int exponent)
+        public ElectromotiveForce(float exponent)
             : base(exponent, new Power<T>(exponent), new ElectricalCurrent<T>(-1 * exponent))
         {
         }

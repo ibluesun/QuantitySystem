@@ -15,7 +15,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public Area(int exponent)
+        public Area(float exponent)
             : base(exponent, new Length<T>(2 * exponent))
         {
         }

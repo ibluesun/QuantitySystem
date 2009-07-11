@@ -18,7 +18,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public Viscosity(int exponent)
+        public Viscosity(float exponent)
             : base (exponent, new Pressure<T>(exponent), new Time<T>(exponent))
         {
         }

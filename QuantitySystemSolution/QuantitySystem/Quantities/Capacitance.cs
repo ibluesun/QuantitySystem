@@ -13,7 +13,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public Capacitance(int exponent)
+        public Capacitance(float exponent)
             : base(exponent, new ElectricCharge<T>(exponent), new ElectromotiveForce<T>(-1 * exponent))
         {
         }
