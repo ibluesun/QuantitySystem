@@ -12,7 +12,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public KinematicViscosity(int exponent)
+        public KinematicViscosity(float exponent)
             : base(exponent, new Viscosity<T>(exponent), new Density<T>(-1 * exponent))
         {
         }

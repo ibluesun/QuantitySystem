@@ -7,6 +7,7 @@ using ParticleLexer.TokenTypes;
 using QuantitySystem.Quantities.BaseQuantities;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Runtime;
+using Microsoft;
 
 namespace Qs.Runtime
 {
@@ -28,15 +29,126 @@ namespace Qs.Runtime
             }
         }
 
-        public LambdaExpression FunctionExpression { get; private set; }
 
-        public QsFunctionCallSiteBinder FunctionCallSiteBinder
+        private LambdaExpression _FunctionExpression;
+
+        public LambdaExpression FunctionExpression
         {
             get
             {
-                return new QsFunctionCallSiteBinder(FunctionExpression);
+                return _FunctionExpression;
+            }
+            private set
+            {
+                _FunctionExpression = value;
+                _FunctionDelegate = value.Compile();
+
             }
         }
+
+        #region public delegate properties for the function with its number of parameters
+        private object _FunctionDelegate;
+
+        public Func<AnyQuantity<double>> FunctionDelegate_0
+        {
+            get
+            {
+                return (Func<AnyQuantity<double>>)_FunctionDelegate;
+            }
+        }
+
+        public Func<AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_1
+        {
+            get
+            {
+                return (Func<AnyQuantity<double>, AnyQuantity<double>>)_FunctionDelegate;
+            }
+        }
+
+        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_2
+        {
+            get
+            {
+                return (Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)_FunctionDelegate;
+            }
+        }
+
+
+        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_3
+        {
+            get
+            {
+                return (Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)_FunctionDelegate;
+            }
+        }
+
+        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_4
+        {
+            get
+            {
+                return (Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)_FunctionDelegate;
+            }
+        }
+
+        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_5
+        {
+            get
+            {
+                return (Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)_FunctionDelegate;
+            }
+        }
+
+        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_6
+        {
+            get
+            {
+                return (Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)_FunctionDelegate;
+            }
+        }
+
+        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_8
+        {
+            get
+            {
+                return (Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)_FunctionDelegate;
+            }
+        }
+
+        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_9
+        {
+            get
+            {
+                return (Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)_FunctionDelegate;
+            }
+        }
+
+        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_10
+        {
+            get
+            {
+                return (Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)_FunctionDelegate;
+            }
+        }
+
+        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_11
+        {
+            get
+            {
+                return (Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)_FunctionDelegate;
+            }
+        }
+
+        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_12
+        {
+            get
+            {
+                return (Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)_FunctionDelegate;
+            }
+        }
+
+
+        #endregion
+
 
 
         public string Function { get; private set; }
@@ -45,7 +157,7 @@ namespace Qs.Runtime
 
         public QsFunction(string function)
         {
-            Function = function;
+            Function = function;            
         }
 
         public override string ToString()
@@ -115,6 +227,7 @@ namespace Qs.Runtime
                 lb.Body = Expression.Block(statements);
 
                 LambdaExpression lbe = lb.MakeLambda();
+                
 
                 QsFunction qf = new QsFunction(function)
                 {
@@ -144,11 +257,6 @@ namespace Qs.Runtime
 
             return (QsFunction)q;
 
-        }
-
-        public static LambdaExpression GetFunctionExpression(Scope scope, string fnName)
-        {
-            return GetFunction(scope, fnName).FunctionExpression;
         }
 
         #endregion

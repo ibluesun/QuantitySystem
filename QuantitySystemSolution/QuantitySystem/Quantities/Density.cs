@@ -15,7 +15,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public Density(int exponent)
+        public Density(float exponent)
             : base(exponent, new Mass<T>(exponent), new Volume<T>(-1 * exponent))
         {
         }

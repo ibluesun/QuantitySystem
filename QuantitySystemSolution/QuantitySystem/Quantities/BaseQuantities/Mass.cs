@@ -19,7 +19,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
         /// Create Mass object with the desired dimension.
         /// </summary>
         /// <param name="exponent">exponent of created Quantity</param>
-        public Mass(int exponent) : base(exponent) { }
+        public Mass(float exponent) : base(exponent) { }
 
 
 

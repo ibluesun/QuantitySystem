@@ -9,7 +9,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
     {
         public LuminousIntensity() : base(1) { }
 
-        public LuminousIntensity(int exponent) : base(exponent) { }
+        public LuminousIntensity(float exponent) : base(exponent) { }
 
         public override QuantityDimension Dimension
         {

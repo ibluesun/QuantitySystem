@@ -276,8 +276,19 @@ namespace QuantitySystem.Units
         /// </summary>
         /// <param name="unit"></param>
         /// <returns></returns>
-        private static Unit FindUnit (string unit)
-        {
+        private static Unit FindUnit (string un)
+        {            
+            string unit = un;
+
+            bool UnitModifier = false;
+
+            if (unit.EndsWith("!")) 
+            {
+                //it is intended of Radius length
+                unit = unit.TrimEnd('!');
+                UnitModifier = true; //unit modifier have one use for now is to convert the Length Quantity into Length Quantity into RadiusLength quantity
+            }
+
             foreach (Type unitType in UnitTypes)
             {
                 UnitAttribute ua = GetUnitAttribute(unitType);
@@ -293,6 +304,17 @@ namespace QuantitySystem.Units
                         if (u is MetricUnit)
                         {
                             ((MetricUnit)u).UnitPrefix = MetricPrefix.None;
+                        }
+
+
+                        if (UnitModifier)
+                        {
+                            //test if the dimension is length and modify it to be radius length
+                            if (u.QuantityType == typeof(Length<>))
+                            {
+                                u.QuantityType = typeof(RadiusLength<>);
+
+                            }
                         }
 
                         return u;
@@ -395,7 +417,9 @@ namespace QuantitySystem.Units
 
             string[] upower = un.Split('^');
 
+
             string unit = upower[0];
+
             int power = 1;
 
             if (upower.Length > 1) power = int.Parse(upower[1]);
@@ -432,7 +456,6 @@ namespace QuantitySystem.Units
                         FinalUnit = u;
                         break;
                     }
-
                 } 
             }
 
@@ -462,12 +485,7 @@ namespace QuantitySystem.Units
                     uQType = typeof(DerivedQuantity<>);
                 }
 
-                //FinalUnit.UnitDimension *= power;
-                //FinalUnit.UnitExponent = power;
-                //FinalUnit.QuantityType = uQType;
-
                 FinalUnit = new Unit(uQType, chobits);
-                //FinalUnit = FinalUnit.SubUnits[0];
 
             }
 
@@ -578,6 +596,61 @@ namespace QuantitySystem.Units
             }
 
 
+        }
+
+
+        public Unit RaiseUnitPower(float power)
+        {
+            Unit u = (Unit)this.MemberwiseClone();
+
+            if (SubUnits!=null)
+            {
+                u.SubUnits = new List<Unit>(SubUnits.Count);
+
+                for(int i=0; i<SubUnits.Count;i++)
+                {
+                    u.SubUnits.Add(SubUnits[i].RaiseUnitPower(power));
+                }
+            }
+            else
+            {
+                u.unitExponent *= power;   //the exponent is changing in strongly typed units
+
+
+            }
+
+
+            u.unitDimension = this.unitDimension * power; //must change the unit dimension of the unit
+            // however because the unit is having sub units we don't have to modify the exponent of it
+            //  note: unit that depend on sub units is completly unaware of its exponent
+            //    or I should say it is always equal = 1
+
+            try
+            {
+                u.quantityType = QuantityDimension.QuantityTypeFrom(u.unitDimension);
+            }
+            catch (QuantityNotFoundException)
+            {
+                u.quantityType = typeof(DerivedQuantity<>);
+            }
+
+
+            if (u.SubUnits == null && u.unitExponent == 1)
+            {
+                //no sub units and exponent ==1  then no need to processing
+                return u;
+            }
+            else if (u.SubUnits == null)
+            {
+                //exponent != 1  like ^5 ^0.3  we need processing
+                return new Unit(u.quantityType, u);
+            }
+            else
+            {
+                //consist of sub units definitly we need processing.
+                return new Unit(u.quantityType, u.SubUnits.ToArray());
+            }
+            
         }
 
     }

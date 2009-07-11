@@ -23,12 +23,13 @@ namespace QuantitySystem.Quantities.BaseQuantities
             LengthType = LengthType.Normal;
         }
 
-        public Length(int exponent) : base(exponent) 
+        public Length(float exponent)
+            : base(exponent) 
         {
             LengthType = LengthType.Normal;
         }
 
-        public Length(int exponent, LengthType lengthType)
+        public Length(float exponent, LengthType lengthType)
             : base(exponent)
         {
             LengthType = lengthType;
@@ -79,7 +80,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
             LengthType = LengthType.Radius;
         }
 
-        public RadiusLength(int exponent) : base(exponent) 
+        public RadiusLength(float exponent) : base(exponent) 
         {
             LengthType = LengthType.Radius;
         }

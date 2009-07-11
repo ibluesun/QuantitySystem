@@ -17,12 +17,10 @@ public class QsCommandLine : CommandLine
     }
 
 
-    public static string LastLine { get; set; }
-
     protected override string ReadLine(int autoIndentSize)
     {
-        LastLine =  base.ReadLine(autoIndentSize);
-        return LastLine;
+        Qs.Runtime.QsScriptCode.LastLine =  base.ReadLine(autoIndentSize);
+        return Qs.Runtime.QsScriptCode.LastLine;
     }
     
 }

@@ -10,7 +10,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
         public Time() : base(1) { }
 
-        public Time(int dimension) : base(dimension) { }
+        public Time(float dimension) : base(dimension) { }
 
         public override QuantityDimension Dimension
         {

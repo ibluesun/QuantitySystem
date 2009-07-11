@@ -63,7 +63,7 @@ namespace ParticleLexer.TokenTypes
 
     [TokenPattern(
         RegexPattern = @"\d+(\.|\.\d+)?([eE][-+]?\d+)?" 
-        + "\\s*<(\\w+(\\^\\d+)?\\.?)+(/(\\w+(\\^\\d+)?\\.?)+)?>"
+        + "\\s*<(\\w+!?(\\^\\d+)?\\.?)+(/(\\w+!?(\\^\\d+)?\\.?)+)?>"
         )
     ]
     public class UnitizedNumberToken : TokenType
@@ -95,6 +95,16 @@ namespace ParticleLexer.TokenTypes
     }
 
     public class FunctionParameterToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = "..>")]
+    public class ForwardSeries : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = "<..")]
+    public class BackwardSeries : TokenType
     {
     }
 

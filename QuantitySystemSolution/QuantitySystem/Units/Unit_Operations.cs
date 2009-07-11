@@ -140,7 +140,11 @@ namespace QuantitySystem.Units
         public UnitPath PathToUnit(Unit unit)
         {
 
-            if (!(this.UnitDimension.IsDimensionless | unit.UnitDimension.IsDimensionless))
+            if (this.UnitDimension.IsDimensionless == true && unit.UnitDimension.IsDimensionless == true)
+            {
+                
+            }
+            else
             {
                 //why I've tested dimensioless in begining??
                 //   because I want special dimensionless quantities like angle and solid angle to be treated
@@ -358,6 +362,9 @@ namespace QuantitySystem.Units
             {
                 //get the corresponding unit in the SI System
                 Type InnerUnitType = Unit.GetDefaultSIUnitTypeOf(this.QuantityType);
+
+                if (InnerUnitType == null && this.QuantityType == typeof(RadiusLength<>))
+                    InnerUnitType = Unit.GetDefaultSIUnitTypeOf(typeof(Length<>));
 
                 if (InnerUnitType == null)
                 {

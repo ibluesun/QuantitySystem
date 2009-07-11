@@ -620,21 +620,30 @@ namespace QuantitySystem.Units
             string UnitNumerator="";
             string UnitDenominator="";
 
-            Func<string, int, Object> ConcatenateUnit = delegate(string symbol, int exponent)
+            Func<string, float, Object> ConcatenateUnit = delegate(string symbol, float exponent)
             {
 
                 if (exponent > 0)
                 {
                     if (UnitNumerator.Length > 0) UnitNumerator += ".";
+
                     UnitNumerator += symbol;
+
                     if (exponent > 1) UnitNumerator += "^" + exponent.ToString(CultureInfo.InvariantCulture);
+                    if (exponent < 1 && exponent > 0) UnitNumerator += "^" + exponent.ToString(CultureInfo.InvariantCulture);
                 }
 
                 if (exponent < 0)
                 {
                     if (UnitDenominator.Length > 0) UnitDenominator += ".";
+
                     UnitDenominator += symbol;
+
+                    //validate less than -1 
                     if (exponent < -1) UnitDenominator += "^" + Math.Abs(exponent).ToString(CultureInfo.InvariantCulture);
+
+                    //validate between -1 and 0
+                    if (exponent > -1 && exponent <0) UnitDenominator += "^" + Math.Abs(exponent).ToString(CultureInfo.InvariantCulture);
                 }
 
                 return null;

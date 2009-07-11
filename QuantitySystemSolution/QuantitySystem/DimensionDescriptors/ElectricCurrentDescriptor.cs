@@ -8,13 +8,13 @@ namespace QuantitySystem.DimensionDescriptors
     public struct ElectricCurrentDescriptor : IDimensionDescriptor<ElectricCurrentDescriptor>
     {
 
-        public ElectricCurrentDescriptor(int exponent):this()
+        public ElectricCurrentDescriptor(float exponent):this()
         {
             this.Exponent = exponent;
         }
 
         #region IDimensionDescriptor<ElectricCurrentDescriptor> Members
-        public int Exponent
+        public float Exponent
         {
             get;
             set;
@@ -34,7 +34,7 @@ namespace QuantitySystem.DimensionDescriptors
             return desc;
         }
 
-        public ElectricCurrentDescriptor Multiply(int exponent)
+        public ElectricCurrentDescriptor Multiply(float exponent)
         {
             ElectricCurrentDescriptor desc = new ElectricCurrentDescriptor();
             desc.Exponent = this.Exponent * exponent;

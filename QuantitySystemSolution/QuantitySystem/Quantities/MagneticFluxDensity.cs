@@ -9,7 +9,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public MagneticFluxDensity(int exponent)
+        public MagneticFluxDensity(float exponent)
             : base(exponent, new MagneticFlux<T>(exponent), new Area<T>(-1 * exponent))
         {
         }

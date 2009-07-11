@@ -17,7 +17,7 @@ namespace QuantitySystem.Quantities
         }
 
 
-        public Frequency(int exponent)
+        public Frequency(float exponent)
             : base(exponent, new Time<T>(-1 * exponent))
         {
         }

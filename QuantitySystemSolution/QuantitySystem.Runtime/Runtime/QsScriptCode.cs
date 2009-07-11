@@ -22,12 +22,20 @@ namespace Qs.Runtime
             return Run(new Scope());
         }
 
+        public static string LastLine { get; set; }
+
         public override object Run(Scope scope)
         {
 
-            string code = SourceUnit.GetReader().ReadToEnd();
-            
-            //string code = QsCommandLine.LastLine;   //workaround because Host have something weird in SourceTextReader that don't work linux mono
+            string code = string.Empty;
+            try
+            {
+                code = SourceUnit.GetReader().ReadToEnd();
+            }
+            catch
+            {
+                code = LastLine;   //workaround because Host have something weird in SourceTextReader that don't work linux mono
+            } 
 
 
             string[] lines = code.Split(Environment.NewLine.ToCharArray());

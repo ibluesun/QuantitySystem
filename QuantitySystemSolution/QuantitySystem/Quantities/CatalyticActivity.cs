@@ -11,7 +11,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public CatalyticActivity(int exponent)
+        public CatalyticActivity(float exponent)
             : base(exponent, new AmountOfSubstance<T>(exponent), new Time<T>(-1 * exponent))
         {
         }

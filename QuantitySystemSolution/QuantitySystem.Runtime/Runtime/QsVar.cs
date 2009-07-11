@@ -13,6 +13,7 @@ using QuantitySystem;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Quantities.DimensionlessQuantities;
 using QuantitySystem.Units;
+using System.Globalization;
 
 
 namespace Qs.Runtime
@@ -143,16 +144,21 @@ namespace Qs.Runtime
                         //  :) if it is found here then it will not be obtained from the global heap :)
                         //      now I understand how variable scopes occur :D
 
-                        quantityExpression = lambdaBuilder.Parameters.Single(c => c.Name == q);
-                                             
+                        try
+                        {
+                            quantityExpression = lambdaBuilder.Parameters.Single(c => c.Name == q);
+                        }
+                        catch
+                        {
+                            //quantity variable  //get it from evaluator  global heap
+                            quantityExpression = GetVariable(q);
+                        }
                     }
                     else
                     {
-
                         //quantity variable  //get it from evaluator  global heap
-                        quantityExpression = Expression.Constant(evaluator.GetVariable(q), typeof(AnyQuantity<double>));
-                    }
-                
+                        quantityExpression = GetVariable(q);
+                    }                
                     
                 }
                 
@@ -183,6 +189,22 @@ namespace Qs.Runtime
 
             return  ConstructExpression(FirstEop);
 
+        }
+
+        public Expression GetVariable(string name)
+        {
+
+            Type ScopeType = this.Evaluator.Scope.GetType();
+
+            //store the scope
+            var ScopeExp = Expression.Constant(Evaluator.Scope, ScopeType);
+
+            var fe = Expression.Call(
+                typeof(QsEvaluator).GetMethod("GetScopeQuantity"),
+                ScopeExp, Expression.Constant(name));
+
+
+            return fe;
         }
 
         public AnyQuantity<double> Execute()
@@ -250,7 +272,7 @@ namespace Qs.Runtime
                 //  which means get the function reference and make an expression which call it 
                 //    how can I make this here?????
                 
-                /*
+                
                 Type ScopeType = this.Evaluator.Scope.GetType();
 
                 //store the scope
@@ -258,23 +280,15 @@ namespace Qs.Runtime
 
                 
                 var fe = Expression.Call(
-                    typeof(QsFunction).GetMethod("GetFunctionExpression"), 
+                    typeof(QsFunction).GetMethod("GetFunction"), 
                     ScopeExp, Expression.Constant(fnr));
 
 
-                var proc = Expression.Assign(Expression.Variable(typeof(Expression)),
-    Expression.Call(
-    typeof(QsFunction).GetMethod("GetFunctionExpression"),
-    ScopeExp, Expression.Constant(fnr)));
 
-                */
+                string param_count = parameters.Count.ToString(CultureInfo.InvariantCulture);
 
-                var procExpression = QsFunction.GetFunctionExpression(this.Evaluator.Scope, fnr);
-                
 
-                
-                
-                return Expression.Invoke(procExpression, parameters);
+                return Expression.Invoke(Expression.Property(fe, "FunctionDelegate_" + param_count), parameters);
 
                 
 

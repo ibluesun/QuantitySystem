@@ -41,7 +41,7 @@ namespace QuantitySystem
         /// <param name="mass"></param>
         /// <param name="length"></param>
         /// <param name="time"></param>
-        public QuantityDimension(int mass, int length, int time)
+        public QuantityDimension(float mass, float length, float time)
         {
             Mass = new MassDescriptor(mass);
             Length = new LengthDescriptor(length, 0);
@@ -50,7 +50,7 @@ namespace QuantitySystem
         }
 
 
-        public QuantityDimension(int mass, int length, int time, int temperature)
+        public QuantityDimension(float mass, float length, float time, float temperature)
         {
             Mass = new MassDescriptor(mass);
             Length = new LengthDescriptor(length, 0);
@@ -60,7 +60,7 @@ namespace QuantitySystem
         }
 
 
-        public QuantityDimension(int mass, int length, int time, int temperature, int electricalCurrent, int amountOfSubstance, int luminousIntensity)
+        public QuantityDimension(float mass, float length, float time, float temperature, float electricalCurrent, float amountOfSubstance, float luminousIntensity)
         {
             Mass = new MassDescriptor(mass);
             Length = new LengthDescriptor(length, 0);
@@ -101,17 +101,17 @@ namespace QuantitySystem
         /// <summary>
         /// returns the power of Force.
         /// </summary>
-        public int ForceExponent
+        public float ForceExponent
         {
             get
             {
                 //M1L1T-2
                 //take from MLT untill the M==0
 
-                int TargetM = Mass.Exponent;
+                float TargetM = Mass.Exponent;
 
 
-                int TargetF = 0;
+                float TargetF = 0;
 
 
                 while (TargetM > 0)
@@ -135,13 +135,13 @@ namespace QuantitySystem
                 //M1L1T-2
                 //take from MLT untill the M==0
 
-                int TargetM = Mass.Exponent;
+                float TargetM = Mass.Exponent;
 
-                int TargetL = Length.Exponent;
+                float TargetL = Length.Exponent;
 
-                int TargetT = Time.Exponent;
+                float TargetT = Time.Exponent;
 
-                int TargetF = 0;
+                float TargetF = 0;
 
 
                 while (TargetM > 0)
@@ -300,12 +300,12 @@ namespace QuantitySystem
             return QD;
         }
 
-        public static QuantityDimension operator *(QuantityDimension dimension, int exponent)
+        public static QuantityDimension operator *(QuantityDimension dimension, float exponent)
         {
             return Multiply(dimension, exponent);
         }
 
-        public static QuantityDimension Multiply(QuantityDimension dimension, int exponent)
+        public static QuantityDimension Multiply(QuantityDimension dimension, float exponent)
         {
             QuantityDimension QD = new QuantityDimension();
 

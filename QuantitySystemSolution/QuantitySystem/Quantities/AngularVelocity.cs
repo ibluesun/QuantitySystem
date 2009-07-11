@@ -16,7 +16,7 @@ namespace QuantitySystem.Quantities
         }
 
 
-        public AngularVelocity(int exponent)
+        public AngularVelocity(float exponent)
             : base(exponent, new Angle<T>(exponent), new Time<T>(-1 * exponent))
         {
         }

@@ -14,7 +14,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public Pressure(int exponent)
+        public Pressure(float exponent)
             : base(exponent, new Force<T>(exponent), new Area<T>(-1 * exponent))
         {
         }

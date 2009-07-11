@@ -9,14 +9,14 @@ namespace QuantitySystem.DimensionDescriptors
     {
 
 
-        public TemperatureDescriptor(int exponent):this()
+        public TemperatureDescriptor(float exponent):this()
         {
             this.Exponent = exponent;
         }
 
         #region IDimensionDescriptor<TemperatureDescriptor> Members
 
-        public int Exponent
+        public float Exponent
         {
             get;
             set;
@@ -39,7 +39,7 @@ namespace QuantitySystem.DimensionDescriptors
             return desc;
         }
 
-        public TemperatureDescriptor Multiply(int exponent)
+        public TemperatureDescriptor Multiply(float exponent)
         {
             TemperatureDescriptor desc = new TemperatureDescriptor();
             desc.Exponent = this.Exponent * exponent;

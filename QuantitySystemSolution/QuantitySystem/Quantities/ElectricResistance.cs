@@ -13,7 +13,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public ElectricResistance(int exponent)
+        public ElectricResistance(float exponent)
             : base(exponent, new ElectromotiveForce<T>(exponent), new ElectricalCurrent<T>(-1 * exponent))
         {
         }

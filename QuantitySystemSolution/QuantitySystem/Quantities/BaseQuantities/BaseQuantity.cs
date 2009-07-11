@@ -16,14 +16,14 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
         #region Construction
 
-        private int _Exponent;
+        private float _Exponent;
 
-        protected BaseQuantity(int exponent)
+        protected BaseQuantity(float exponent)
         {
             _Exponent = exponent;
         }
 
-        public int Exponent
+        public float Exponent
         {
             get
             {
@@ -31,7 +31,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
             }
         }
 
-        internal void SetExponent(int exp)
+        internal void SetExponent(float exp)
         {
             _Exponent = exp;
         }

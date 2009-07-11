@@ -8,7 +8,7 @@ namespace QuantitySystem.DimensionDescriptors
     public struct LengthDescriptor : IDimensionDescriptor<LengthDescriptor>
     {
 
-        public LengthDescriptor(int normalExponent, int radiusExponent):this()
+        public LengthDescriptor(float normalExponent, float radiusExponent):this()
         {
             this.NormalExponent = normalExponent;
             this.RadiusExponent = radiusExponent;
@@ -16,13 +16,13 @@ namespace QuantitySystem.DimensionDescriptors
 
         #region Length Properties Types
 
-        public int NormalExponent
+        public float NormalExponent
         {
             get;
             set;
         }
 
-        public int RadiusExponent
+        public float RadiusExponent
         {
             get;
             set;
@@ -54,7 +54,7 @@ namespace QuantitySystem.DimensionDescriptors
         #region IDimensionDescriptor<LengthDescriptor> Members
 
 
-        public int Exponent
+        public float Exponent
         {
             get { return NormalExponent + RadiusExponent; }
             set { }
@@ -80,7 +80,7 @@ namespace QuantitySystem.DimensionDescriptors
             return l;
         }
 
-        public LengthDescriptor Multiply(int exponent)
+        public LengthDescriptor Multiply(float exponent)
         {
             LengthDescriptor l = new LengthDescriptor();
             l.NormalExponent = this.NormalExponent * exponent;

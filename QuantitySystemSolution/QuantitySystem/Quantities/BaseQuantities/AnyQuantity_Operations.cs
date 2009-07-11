@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Globalization;
 
 using QuantitySystem.Units;
+using System.Diagnostics;
 
 namespace QuantitySystem.Quantities.BaseQuantities
 {
@@ -342,17 +343,38 @@ namespace QuantitySystem.Quantities.BaseQuantities
             if (!exponent.Dimension.IsDimensionless)
             {
                 throw new QuantityException("Raising Quantity to a non dimensionless quantity are not implemented");
-
             }
 
-            //for now I am casting the double to integer 
-            int ex = (int)Math.Abs(exponent.Value);
             
             // and I am ignoring the units conversion also 
 
-            AnyQuantity<T> result = null;
-            AnyQuantity<T> q = null;
+            
 
+            
+            Unit unit = quantity.Unit.RaiseUnitPower((float)exponent.Value);
+
+
+
+            AnyQuantity<T> result = null;
+
+            if (unit.QuantityType != typeof(DerivedQuantity<>))
+                result = unit.MakeQuantity<T>(RaiseGenericByScalar(quantity.Value, exponent.Value));
+            else
+            {
+                result = new DerivedQuantity<T>(unit.UnitDimension);
+                result.Value = RaiseGenericByScalar(quantity.Value, exponent.Value);
+                result.Unit = unit;
+            }
+            
+
+
+            /*
+             * Old code
+            
+            //for now I am casting the double to integer 
+            int ex = (int)Math.Abs(exponent.Value);
+
+            AnyQuantity<T> q = null;
             if (exponent.Value < 0) //then the number is 1/
                 q = (AnyQuantity<T>)quantity.Invert();
             else
@@ -378,8 +400,9 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     ex--;
                 }
             }
+            */
 
-
+            Debug.Assert(result.Dimension.Equals(result.Unit.UnitDimension), "Dimensions are not equal after power");
             return result;
 
         }

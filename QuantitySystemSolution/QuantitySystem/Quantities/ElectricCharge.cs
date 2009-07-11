@@ -9,7 +9,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public ElectricCharge(int exponent)
+        public ElectricCharge(float exponent)
             : base(exponent, new ElectricalCurrent<T>(exponent), new Time<T>(exponent))
         {
         }

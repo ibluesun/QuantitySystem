@@ -8,14 +8,14 @@ namespace QuantitySystem.DimensionDescriptors
     public struct AmountOfSubstanceDescriptor : IDimensionDescriptor<AmountOfSubstanceDescriptor>
     {
 
-        public AmountOfSubstanceDescriptor(int exponent):this()
+        public AmountOfSubstanceDescriptor(float exponent):this()
         {
             this.Exponent = exponent;
         }
 
         #region IDimensionDescriptor<AmountOfSubstanceDescriptor> Members
 
-        public int Exponent
+        public float Exponent
         {
             get;
             set;
@@ -36,7 +36,7 @@ namespace QuantitySystem.DimensionDescriptors
             return desc;
         }
 
-        public AmountOfSubstanceDescriptor Multiply(int exponent)
+        public AmountOfSubstanceDescriptor Multiply(float exponent)
         {
             AmountOfSubstanceDescriptor desc = new AmountOfSubstanceDescriptor();
             desc.Exponent = this.Exponent * exponent;

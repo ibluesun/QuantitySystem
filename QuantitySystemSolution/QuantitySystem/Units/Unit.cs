@@ -15,14 +15,14 @@ namespace QuantitySystem.Units
     {
         #region Fields
         
-        protected readonly string symbol;
+        protected string symbol;
 
         protected bool isDefaultUnit;
         private readonly bool isBaseUnit;
 
 
-        protected readonly Type quantityType;
-        internal QuantityDimension unitDimension;
+        protected Type quantityType;
+        protected QuantityDimension unitDimension;
 
 
 
@@ -165,7 +165,7 @@ namespace QuantitySystem.Units
         public QuantityDimension UnitDimension
         {
             get { return unitDimension; }
-            set { unitDimension = value; }
+            internal set { unitDimension = value; }
         } 
 
 
@@ -177,6 +177,11 @@ namespace QuantitySystem.Units
             get
             {
                 return quantityType;
+            }
+            internal set
+            {
+                quantityType = value;
+                unitDimension = QuantityDimension.DimensionFrom(value);
             }
         }
 
@@ -321,9 +326,9 @@ namespace QuantitySystem.Units
 
         #region Properties
 
-        private int unitExponent = 1;
+        private float unitExponent = 1;
 
-        public int UnitExponent
+        public float UnitExponent
         {
             get
             {

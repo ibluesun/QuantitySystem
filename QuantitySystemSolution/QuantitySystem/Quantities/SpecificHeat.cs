@@ -15,7 +15,7 @@ namespace QuantitySystem.Quantities
         }
 
 
-        public SpecificHeat(int exponent)
+        public SpecificHeat(float exponent)
             : base(exponent, new Energy<T>(exponent), new Mass<T>(-1 * exponent), new Temperature<T>(-1 * exponent))
         {
         }

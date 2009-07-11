@@ -9,7 +9,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public ElectricConductance(int exponent)
+        public ElectricConductance(float exponent)
             : base(exponent, new ElectricalCurrent<T>(exponent), new ElectromotiveForce<T>(-1 * exponent))
         {
         }

@@ -9,7 +9,7 @@ namespace QuantitySystem.Quantities
         {
         }
 
-        public MolarMass(int exponent)
+        public MolarMass(float exponent)
             : base(exponent, new Mass<T>(exponent), new AmountOfSubstance<T>(-1 * exponent))
         {
         }
