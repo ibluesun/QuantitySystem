@@ -68,12 +68,12 @@ namespace QuantitySystemTestingProject
         [TestMethod()]
         public void LengthDescriptorConstructorTest()
         {
-            int normalExponent = 1; // TODO: Initialize to an appropriate value
-            int radiusExponent = -1; // TODO: Initialize to an appropriate value
+            float normalExponent = 1; // TODO: Initialize to an appropriate value
+            float radiusExponent = -1; // TODO: Initialize to an appropriate value
 
             LengthDescriptor target = new LengthDescriptor(normalExponent, radiusExponent);
 
-            Assert.AreEqual<int>(0, target.Exponent);
+            Assert.AreEqual<float>(0, target.Exponent);
         }
 
         /// <summary>

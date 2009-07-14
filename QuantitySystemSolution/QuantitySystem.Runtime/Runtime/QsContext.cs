@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Runtime;
+using Microsoft.Scripting.Actions;
 
 namespace Qs.Runtime
 {
@@ -13,16 +14,16 @@ namespace Qs.Runtime
             : base(manager)
         {
 
-            
+            this.Binder = new QsBinder(manager);
+
         }
 
 
         protected override ScriptCode CompileSourceCode(SourceUnit sourceUnit, CompilerOptions options, ErrorSink errorSink)
         {
             
-            
             var sc = new QsScriptCode(sourceUnit);
-
+            
             return sc;
         }
 

@@ -113,6 +113,7 @@
     <Compile Include="Quantities\Volume.cs" />
     <Compile Include="Quantities\Energy.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Quantities\VolumeFlowRate.cs" />
     <Compile Include="QuantityDimension.cs" />
     <Compile Include="QuantityException.cs" />
     <Compile Include="QuantityNotFoundException.cs" />
@@ -121,6 +122,7 @@
     <Compile Include="Units\Astronomical\MassUnits.cs" />
     <Compile Include="Units\Astronomical\TimeUnits.cs" />
     <Compile Include="Units\English\AreaUnits.cs" />
+    <Compile Include="Units\English\VolumeFlowRateUnits.cs" />
     <Compile Include="Units\English\PoundMole.cs" />
     <Compile Include="Units\English\PowerUnits.cs" />
     <Compile Include="Units\English\EnergyUnits.cs" />
@@ -252,6 +254,7 @@
     <Content Include="Notes\Dimensions Pattern.txt" />
     <Content Include="Notes\Lengths Description.txt" />
     <Content Include="Notes\Metric Units.txt" />
+    <Content Include="Notes\RemarkNotes.txt" />
     <Content Include="Notes\SIUnit Multiplication.txt" />
     <Content Include="Notes\Units Conversion.txt" />
     <Content Include="Notes\Units Ladder.txt" />

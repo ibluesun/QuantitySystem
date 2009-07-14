@@ -11,7 +11,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 		QuantitySystemSolution.vsmdi = QuantitySystemSolution.vsmdi
-		RemarkNotes.txt = RemarkNotes.txt
 		What's New.txt = What's New.txt
 	EndProjectSection
 EndProject
@@ -27,9 +26,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DLR", "DLR", "{BD2784D3-94C
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qs", "QuantitySystem.Runtime\Qs.csproj", "{615A100B-4890-434E-8869-2A9B3200D664}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QsTestProject", "QsTestProject\QsTestProject.csproj", "{70D4A4DF-115F-440E-B97F-E76974A8AC14}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 6
+		SccNumberOfProjects = 7
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs06.codeplex.com/
 		SccLocalPath0 = .
@@ -50,6 +51,10 @@ Global
 		SccProjectUniqueName5 = QuantitySystem.Runtime\\Qs.csproj
 		SccProjectName5 = QuantitySystem.Runtime
 		SccLocalPath5 = QuantitySystem.Runtime
+		SccProjectUniqueName6 = QsTestProject\\QsTestProject.csproj
+		SccProjectTopLevelParentUniqueName6 = QuantitySystemSolution.sln
+		SccProjectName6 = QsTestProject
+		SccLocalPath6 = QsTestProject
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = QuantitySystemSolution.vsmdi
@@ -79,6 +84,10 @@ Global
 		{615A100B-4890-434E-8869-2A9B3200D664}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{615A100B-4890-434E-8869-2A9B3200D664}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{615A100B-4890-434E-8869-2A9B3200D664}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70D4A4DF-115F-440E-B97F-E76974A8AC14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{70D4A4DF-115F-440E-B97F-E76974A8AC14}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{70D4A4DF-115F-440E-B97F-E76974A8AC14}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{70D4A4DF-115F-440E-B97F-E76974A8AC14}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -86,5 +95,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{6B22C63C-7927-4CB2-87A8-2BA3428570DC} = {11635727-736E-4C7D-93FE-CD36FE61917E}
 		{2E1B9096-614C-405F-8587-1897F451F139} = {11635727-736E-4C7D-93FE-CD36FE61917E}
+		{70D4A4DF-115F-440E-B97F-E76974A8AC14} = {11635727-736E-4C7D-93FE-CD36FE61917E}
 	EndGlobalSection
 EndGlobal

@@ -1,3 +1,17 @@
+[Quantity System Framework 1.1.1]
+
+- Whole optimization for the library. in all 4 basic operations
+- Parsing optmization in the DLR part.
+- factorial operator added '!' {calculation only occur for the integer part}
+
+
+- fixed the exponent in metric units  10<m>+100<are>^0.5  produced error in calculations.
+
+- Volume Flow Rate  quantity added
+- cfm unit added  (cubic feet per minute)
+- gpm unit added 
+
+
 [Quantity System Framework 1.1]
 - unit modifier '!'
 	the modifier will modify the lenght units to produce radius length quantities
@@ -13,6 +27,9 @@
 
 - Raise to power enhanced 
 	now fractions are included so 1<kg>^0.5 = 1<kg^0.5>
+	also this is a valid operation
+		10<m> + 100<ha>^0.5
+		
 	however you can't generate quantities with fraction values.
 	 only by raising to power.
 

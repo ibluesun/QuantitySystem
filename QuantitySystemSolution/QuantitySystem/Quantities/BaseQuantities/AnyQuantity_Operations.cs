@@ -13,7 +13,7 @@ using System.Diagnostics;
 namespace QuantitySystem.Quantities.BaseQuantities
 {
 
-    partial class AnyQuantity<T>
+    public abstract partial class AnyQuantity<T> : BaseQuantity, ICloneable
     {
 
 
@@ -80,43 +80,6 @@ namespace QuantitySystem.Quantities.BaseQuantities
             if (firstQuantity.Equals(secondQuantity))
             {
 
-                //define the new dynamically created method
-                //with the return type and the input types
-
-                DynamicMethod method = new DynamicMethod(
-                    "Add_Method" + ":" + typeof(T).ToString(),
-                    typeof(T),
-                    new Type[] { typeof(T), typeof(T) });
-
-
-                //get generator to construct the function.
-
-                ILGenerator gen = method.GetILGenerator();
-
-
-                gen.Emit(OpCodes.Ldarg_0);  //load the first value
-                gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-                if (typeof(T).IsPrimitive)
-                {
-                    gen.Emit(OpCodes.Add);              //adding them if they were premitive
-                }
-                else
-                {
-                    MethodInfo info = typeof(T).GetMethod
-                        (
-                        "op_Addition",
-                        new Type[] { typeof(T), typeof(T) },
-                        null
-                        );
-
-                    gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
-
-                }
-
-                gen.Emit(OpCodes.Ret);
-
                 AnyQuantity<T> AQ = null;
                 try
                 {
@@ -130,38 +93,118 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     AQ = (AnyQuantity<T>)firstQuantity.Clone();
                 }
 
-                T firstVal = (firstQuantity.Value);
-
-                T secondVal = (secondQuantity.Value);
-
-                //correct the values according to left unit or first unit.
-                //the resulted quantity has the values of the first unit.
-
-                if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                if (typeof(T) == typeof(decimal) || typeof(T) == typeof(double) || typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(short))
                 {
-                    //factor from second unit to first unit
-                    UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                    //use direct calculations
+
+                    double firstVal = (double)(object)firstQuantity.Value;
+
+                    double secondVal = (double)(object)secondQuantity.Value;
+
+                    //correct the values according to left unit or first unit.
+                    //the resulted quantity has the values of the first unit.
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //factor from second unit to first unit
+                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+                        secondVal =  stof.ConversionFactor * secondVal;
+                    }
 
 
-                    secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
+
+                    ////sum the values
+
+                    double result = firstVal + secondVal;
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //assign the unit of first quantity to the result.
+                        AQ.Unit = (Unit)firstQuantity.Unit.Clone();
+                    }
+
+
+                    AQ.Value = (T)(object)result;
+
+                    return AQ;
+
                 }
-
-
-
-                ////sum the values
-
-                T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
-
-                if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                else
                 {
-                    //assign the unit of first quantity to the result.
-                    AQ.Unit = firstQuantity.Unit;
+
+                    //define the new dynamically created method
+                    //with the return type and the input types
+
+                    DynamicMethod method = new DynamicMethod(
+                        "Add_Method" + ":" + typeof(T).ToString(),
+                        typeof(T),
+                        new Type[] { typeof(T), typeof(T) });
+
+
+                    //get generator to construct the function.
+
+                    ILGenerator gen = method.GetILGenerator();
+
+
+                    gen.Emit(OpCodes.Ldarg_0);  //load the first value
+                    gen.Emit(OpCodes.Ldarg_1);  //load the second value
+
+
+                    if (typeof(T).IsPrimitive)
+                    {
+                        gen.Emit(OpCodes.Add);              //adding them if they were premitive
+                    }
+                    else
+                    {
+                        MethodInfo info = typeof(T).GetMethod
+                            (
+                            "op_Addition",
+                            new Type[] { typeof(T), typeof(T) },
+                            null
+                            );
+
+                        gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
+
+                    }
+
+                    gen.Emit(OpCodes.Ret);
+
+
+
+                    T firstVal = (firstQuantity.Value);
+
+                    T secondVal = (secondQuantity.Value);
+
+                    //correct the values according to left unit or first unit.
+                    //the resulted quantity has the values of the first unit.
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //factor from second unit to first unit
+                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+
+                        secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
+                    }
+
+
+
+                    ////sum the values
+
+                    T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //assign the unit of first quantity to the result.
+                        AQ.Unit = firstQuantity.Unit;
+                    }
+
+
+                    AQ.Value = result;
+
+                    return AQ;
                 }
-
-
-                AQ.Value = result;
-
-                return AQ;
 
             }
             else
@@ -175,44 +218,6 @@ namespace QuantitySystem.Quantities.BaseQuantities
         {
             if (firstQuantity.Equals(secondQuantity))
             {
-                //define the new dynamically created method
-                //with the return type and the input types
-
-                DynamicMethod method = new DynamicMethod(
-                    "Subtract_Method" + ":" + typeof(T).ToString(),
-                    typeof(T),
-                    new Type[] { typeof(T), typeof(T) });
-
-
-                //get generator to construct the function.
-
-                ILGenerator gen = method.GetILGenerator();
-
-
-                gen.Emit(OpCodes.Ldarg_0);  //load the first value
-                gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-                if (typeof(T).IsPrimitive)
-                {
-                    gen.Emit(OpCodes.Sub);              //adding them if they were premitive
-                }
-                else
-                {
-                    MethodInfo info = typeof(T).GetMethod
-                        (
-                        "op_Subtraction",
-                        new Type[] { typeof(T), typeof(T) },
-                        null
-                        );
-
-                    gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
-
-                }
-
-                gen.Emit(OpCodes.Ret);
-
-
                 AnyQuantity<T> AQ = null;
                 try
                 {
@@ -226,33 +231,112 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     AQ = (AnyQuantity<T>)firstQuantity.Clone();
                 }
 
-                T firstVal = (firstQuantity.Value);
-                T secondVal = (secondQuantity.Value);
 
-                //correct the values according to left unit or first unit.
-                //the resulted quantity has the values of the first unit.
-
-                if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                if (typeof(T) == typeof(decimal) || typeof(T) == typeof(double) || typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(short))
                 {
-                    //factor from second unit to first unit
-                    UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                    //use direct calculations
 
-                    secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
+                    double firstVal = (double)(object)firstQuantity.Value;
+
+                    double secondVal = (double)(object)secondQuantity.Value;
+
+                    //correct the values according to left unit or first unit.
+                    //the resulted quantity has the values of the first unit.
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //factor from second unit to first unit
+                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+                        secondVal = stof.ConversionFactor * secondVal;
+                    }
+
+
+
+                    ////sum the values
+
+                    double result = firstVal - secondVal;
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //assign the unit of first quantity to the result.
+                        AQ.Unit = (Unit)firstQuantity.Unit.Clone();
+                    }
+
+
+                    AQ.Value = (T)(object)result;
+
+                    return AQ;
                 }
-
-                                
-                T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
-
-
-                if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                else
                 {
-                    //assign the unit of first quantity to the result.
-                    AQ.Unit = firstQuantity.Unit;
+                    //define the new dynamically created method
+                    //with the return type and the input types
+
+                    DynamicMethod method = new DynamicMethod(
+                        "Subtract_Method" + ":" + typeof(T).ToString(),
+                        typeof(T),
+                        new Type[] { typeof(T), typeof(T) });
+
+
+                    //get generator to construct the function.
+
+                    ILGenerator gen = method.GetILGenerator();
+
+
+                    gen.Emit(OpCodes.Ldarg_0);  //load the first value
+                    gen.Emit(OpCodes.Ldarg_1);  //load the second value
+
+
+                    if (typeof(T).IsPrimitive)
+                    {
+                        gen.Emit(OpCodes.Sub);              //adding them if they were premitive
+                    }
+                    else
+                    {
+                        MethodInfo info = typeof(T).GetMethod
+                            (
+                            "op_Subtraction",
+                            new Type[] { typeof(T), typeof(T) },
+                            null
+                            );
+
+                        gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
+
+                    }
+
+                    gen.Emit(OpCodes.Ret);
+
+
+
+                    T firstVal = (firstQuantity.Value);
+                    T secondVal = (secondQuantity.Value);
+
+                    //correct the values according to left unit or first unit.
+                    //the resulted quantity has the values of the first unit.
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //factor from second unit to first unit
+                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+                        secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
+                    }
+
+
+                    T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
+
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //assign the unit of first quantity to the result.
+                        AQ.Unit = firstQuantity.Unit;
+                    }
+
+                    AQ.Value = result;
+
+                    return AQ;
                 }
-
-                AQ.Value = result;
-
-                return AQ;
 
             }
             else
@@ -275,19 +359,36 @@ namespace QuantitySystem.Quantities.BaseQuantities
             {
             }
 
-            qresult.Value = MultiplyGenericByGeneric(firstQuantity.Value, secondQuantity.Value);
 
-            //check if any of the two quantities have a valid unit 
-            // to be able to derive the current quantity
-
-            if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+            if (typeof(T) == typeof(decimal) || typeof(T) == typeof(double) || typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(short))
             {
-               
-                Unit un = new Unit(qresult.GetType(), firstQuantity.Unit, secondQuantity.Unit);
-                qresult.Unit = un;
-                if (un.IsOverflowed) qresult.Value = MultiplyScalarByGeneric(un.GetUnitOverflow(), qresult.Value);
+                qresult.Value = (T)(object)(((double)(object)firstQuantity.Value) * ((double)(object)secondQuantity.Value));
 
-               
+                if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                {
+
+                    Unit un = new Unit(qresult.GetType(), firstQuantity.Unit, secondQuantity.Unit);
+                    qresult.Unit = un;
+                    if (un.IsOverflowed) qresult.Value = (T)(object)(un.GetUnitOverflow() * ((double)(object)qresult.Value));
+                }
+            }
+            else
+            {
+
+                qresult.Value = MultiplyGenericByGeneric(firstQuantity.Value, secondQuantity.Value);
+
+                //check if any of the two quantities have a valid unit 
+                // to be able to derive the current quantity
+
+                if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                {
+
+                    Unit un = new Unit(qresult.GetType(), firstQuantity.Unit, secondQuantity.Unit);
+                    qresult.Unit = un;
+                    if (un.IsOverflowed) qresult.Value = MultiplyScalarByGeneric(un.GetUnitOverflow(), qresult.Value);
+
+
+                }
             }
 
 
@@ -321,18 +422,34 @@ namespace QuantitySystem.Quantities.BaseQuantities
             }
 
 
-            qresult.Value = MultiplyGenericByGeneric(firstQuantity.Value, sec_qty.Value);
-
-            //check if any of the two quantities have a valid unit 
-            // to be able to derive the current quantity
-
-            if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+            if (typeof(T) == typeof(decimal) || typeof(T) == typeof(double) || typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(short))
             {
-                
-                Unit un = new Unit(qresult.GetType(), firstQuantity.Unit, sec_qty.Unit);
-                qresult.Unit = un;
-                if (un.IsOverflowed) qresult.Value = MultiplyScalarByGeneric(un.GetUnitOverflow(), qresult.Value);
-                
+                qresult.Value = (T)(object)(((double)(object)firstQuantity.Value) * ((double)(object)sec_qty.Value));
+
+                if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                {
+
+                    Unit un = new Unit(qresult.GetType(), firstQuantity.Unit, sec_qty.Unit);
+                    qresult.Unit = un;
+                    if (un.IsOverflowed) qresult.Value = (T)(object)(un.GetUnitOverflow() * ((double)(object)qresult.Value));
+                }
+            }
+            else
+            {
+
+                qresult.Value = MultiplyGenericByGeneric(firstQuantity.Value, sec_qty.Value);
+
+                //check if any of the two quantities have a valid unit 
+                // to be able to derive the current quantity
+
+                if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                {
+
+                    Unit un = new Unit(qresult.GetType(), firstQuantity.Unit, sec_qty.Unit);
+                    qresult.Unit = un;
+                    if (un.IsOverflowed) qresult.Value = MultiplyScalarByGeneric(un.GetUnitOverflow(), qresult.Value);
+
+                }
             }
 
             return qresult;

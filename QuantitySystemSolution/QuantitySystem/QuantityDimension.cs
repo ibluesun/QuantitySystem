@@ -408,6 +408,10 @@ namespace QuantitySystem
             }
         }
 
+
+
+        static Dictionary<Type, object> QuantitiesCached = new Dictionary<Type, object>();
+
         /// <summary>
         /// Returns Strongly typed Any Quantity From the dimension based on the discovered quantities discovered when 
         /// framework initiated.
@@ -426,7 +430,17 @@ namespace QuantitySystem
 
             Type QuantityWithContainerType = QuantityType.MakeGenericType(typeof(T));
 
-            return (AnyQuantity<T>)Activator.CreateInstance(QuantityWithContainerType);
+            object j;
+            if(QuantitiesCached.TryGetValue(QuantityWithContainerType, out j))
+            {
+                return (AnyQuantity<T>)((AnyQuantity<T>)j).Clone();
+            }
+            else
+            {
+                j = Activator.CreateInstance(QuantityWithContainerType);
+                QuantitiesCached.Add(QuantityWithContainerType, j);
+                return (AnyQuantity<T>)((AnyQuantity<T>)j).Clone();
+            }
 
         
         }

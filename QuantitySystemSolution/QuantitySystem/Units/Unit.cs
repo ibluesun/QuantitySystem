@@ -11,7 +11,7 @@ using QuantitySystem.Quantities;
 
 namespace QuantitySystem.Units
 {
-    public partial class Unit
+    public partial class Unit : ICloneable
     {
         #region Fields
         
@@ -282,6 +282,13 @@ namespace QuantitySystem.Units
             return unit;
         }
 
+        #region Manipulating quantities
+        //I want to get away from Activator.CreateInstance because it is very slow :)
+        // so I'll cach resluts 
+        static Dictionary<Type, object> Qcach = new Dictionary<Type, object>();
+
+
+
         /// <summary>
         /// Gets the quantity of this unit based on the desired container.
         /// <see cref="QuantityType"/>
@@ -291,20 +298,51 @@ namespace QuantitySystem.Units
         public AnyQuantity<T> GetThisUnitQuantity<T>()
         {
 
-            AnyQuantity<T> Quantity = (AnyQuantity<T>)Activator.CreateInstance(QuantityType.MakeGenericType(typeof(T)));
+            AnyQuantity<T> Quantity = null;
+
+            Type qt = QuantityType.MakeGenericType(typeof(T));
+                
+            object j;
+            if (Qcach.TryGetValue(qt, out j))
+            {
+                Quantity = (AnyQuantity<T>)((AnyQuantity<T>)j).Clone();  //optimization for created quantities before
+
+            }
+            else
+            {
+                Quantity = (AnyQuantity<T>)Activator.CreateInstance(QuantityType.MakeGenericType(typeof(T)));
+                Qcach.Add(qt, Quantity);
+
+            }
+
             Quantity.Unit = this;
 
 
             return Quantity;
         }
 
+        
         public AnyQuantity<T> GetThisUnitQuantity<T>(T value)
         {
 
             AnyQuantity<T> Quantity = null;
             if (QuantityType != typeof(DerivedQuantity<>) && QuantityType != null)
             {
-                Quantity = (AnyQuantity<T>)Activator.CreateInstance(QuantityType.MakeGenericType(typeof(T)));
+                Type qt = QuantityType.MakeGenericType(typeof(T));
+                
+                object j;
+                if (Qcach.TryGetValue(qt, out j))
+                {
+
+                    Quantity = (AnyQuantity<T>)((AnyQuantity<T>)j).Clone();  //optimization for created quantities before
+                }
+                else
+                {
+
+                    Quantity = (AnyQuantity<T>)Activator.CreateInstance(qt);
+
+                    Qcach.Add(qt, Quantity);
+                }
             }
             else
             {
@@ -318,6 +356,8 @@ namespace QuantitySystem.Units
 
             return Quantity;
         }
+
+        #endregion
 
 
 
@@ -422,5 +462,14 @@ namespace QuantitySystem.Units
         }
 
 
+
+        #region ICloneable Members
+
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
+
+        #endregion
     }
 }

@@ -157,7 +157,8 @@ namespace QuantitySystem.Units
                 }
                 else
                 {
-                    return referenceUnitDenominator;
+                    //return referenceUnitDenominator;
+                    return Math.Pow(referenceUnitDenominator, UnitExponent);
 
                 }
             }
@@ -187,7 +188,13 @@ namespace QuantitySystem.Units
                     //convert me to default also if I had prefix over the default of me
                     double CorrectToDefault = Math.Pow(this.defaultUnitPrefix.GetFactorForConvertTo(UnitPrefix), UnitExponent);
 
-                    return referenceUnitNumerator * CorrectToDefault;
+                    //p.u   where
+                    //      p: prefix
+                    //      u: metric unit
+                    //(p.u) i.e.  km, mm, Gare
+                    //(p.u)^r  = p^r*u^r
+
+                    return Math.Pow(referenceUnitNumerator, UnitExponent) * CorrectToDefault;
 
                 }
             }

@@ -117,8 +117,6 @@ namespace Qs
 
             var lib_ver = (AssemblyFileVersionAttribute)Assembly.GetAssembly(typeof(QuantityDimension)).GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false)[0];
 
-
-
             Console.WriteLine("Quantity System Framework  ver " + lib_ver.Version);
 
             Console.WriteLine("Quantity System Calculator ver " + qsc_ver.Version);
@@ -126,6 +124,8 @@ namespace Qs
 
             var qsc_cwr = (AssemblyCopyrightAttribute)Assembly.GetEntryAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false)[0];
             Console.WriteLine(qsc_cwr.Copyright);
+            Console.WriteLine();
+            Console.WriteLine("http://QuantitySystem.CodePlex.com");
             Console.WriteLine("-----------------------------------------------------------");
 
             Console.WriteLine("Email: Ahmed.Sadek@LostParticles.net; Ahmed.Amara@gmail.com");
