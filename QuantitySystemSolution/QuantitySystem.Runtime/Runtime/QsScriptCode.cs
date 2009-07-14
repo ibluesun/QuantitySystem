@@ -26,7 +26,8 @@ namespace Qs.Runtime
 
         public override object Run(Scope scope)
         {
-
+            CodeContext cc = new CodeContext(scope, this.LanguageContext);
+            
             string code = string.Empty;
             try
             {
@@ -37,25 +38,31 @@ namespace Qs.Runtime
                 code = LastLine;   //workaround because Host have something weird in SourceTextReader that don't work linux mono
             } 
 
+            QsEvaluator qs = new QsEvaluator();
+
+            qs.Scope = scope;
 
             string[] lines = code.Split(Environment.NewLine.ToCharArray());
 
             foreach (string line in lines)
             {
+
                 if (!string.IsNullOrEmpty(line))
                 {
-                    QsEvaluator qs = new QsEvaluator();
-
-                    qs.Scope = scope;
-
-                    QsCommands.CheckCommand(line, qs);
-
-                    if (!QsCommands.CommandProcessed)
+                    string cline = line.Trim();
+                    if (!cline.StartsWith("#") && cline != string.Empty)
                     {
-                        qs.Evaluate(line);
-                    }
 
-                    QsCommands.CommandProcessed = false;
+
+                        QsCommands.CheckCommand(line, qs);
+
+                        if (!QsCommands.CommandProcessed)
+                        {
+                            qs.Evaluate(line);
+                        }
+
+                        QsCommands.CommandProcessed = false;
+                    }
                 }
 
             }

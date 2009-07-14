@@ -10,7 +10,7 @@ using System.Reflection;
 
 namespace QuantitySystem.Quantities.BaseQuantities
 {
-    public abstract class BaseQuantity : ICloneable
+    public abstract class BaseQuantity
     {
         
 
@@ -41,7 +41,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
         /// </summary>
         public virtual BaseQuantity Invert()
         {
-            BaseQuantity bq = (BaseQuantity)this.Clone();
+            BaseQuantity bq = (BaseQuantity)this.MemberwiseClone();
             bq.SetExponent(0 - _Exponent);
             
 
@@ -106,17 +106,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
 
 
-
-
-
-        #region ICloneable Members
-
-        public object Clone()
-        {
-            return this.MemberwiseClone();
-        }
-
-        #endregion
     }
+
 
 }

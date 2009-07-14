@@ -23,9 +23,7 @@ namespace QuantitySystem.Units
 
         public double Denumenator { get; set; }
 
-
         public double Shift { get; set; }
-
 
 
         /// <summary>

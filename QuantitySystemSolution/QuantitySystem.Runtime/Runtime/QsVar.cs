@@ -14,6 +14,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Quantities.DimensionlessQuantities;
 using QuantitySystem.Units;
 using System.Globalization;
+using Qs.QsTypes;
 
 
 namespace Qs.Runtime
@@ -105,6 +106,8 @@ namespace Qs.Runtime
                 string q = tokens[ix].TokenValue;
                 if (q == "+" || q == "-")
                 {
+                    // unary prefix operator.
+
                     //consume another token for number
                     ix++;
                     q = q + tokens[ix].TokenValue;
@@ -112,6 +115,15 @@ namespace Qs.Runtime
 
                 string op = ix + 1 < tokens.Count ? tokens[ix + 1].TokenValue : string.Empty;
 
+                bool FactorialPostfix = false;
+                if (!string.IsNullOrEmpty(op))
+                {
+                    if (op == "!")
+                    {
+                        FactorialPostfix = true;
+                    }
+
+                }
 
                 if (tokens[ix].TokenType == typeof(FunctionCallToken))
                 {
@@ -126,14 +138,22 @@ namespace Qs.Runtime
                 }
                 else if (tokens[ix].TokenType == typeof(UnitizedNumberToken))
                 {
+
                     //unitized number
-                    quantityExpression = QuantityExpression(q);
+
+                    
+                    quantityExpression = Expression.Constant(Unit.ParseQuantity(q), typeof(AnyQuantity<double>)); //you have to explicitly tell expression the type because it searches for the operators and can't find them
+
+                    
 
                 }
                 else if (tokens[ix].TokenType == typeof(NumberToken))
                 {
                     //ordinary number
-                    quantityExpression = DimensionlessQuantityExpression(double.Parse(q));
+
+                    AnyQuantity<double> qty = Unit.DiscoverUnit(QuantityDimension.Dimensionless).GetThisUnitQuantity<double>(double.Parse(q));
+
+                    quantityExpression = Expression.Constant(qty, typeof(AnyQuantity<double>));
 
                 }
                 else
@@ -160,6 +180,19 @@ namespace Qs.Runtime
                         quantityExpression = GetVariable(q);
                     }                
                     
+                }
+
+                //apply the postfix here
+
+                if (FactorialPostfix)
+                {
+                    quantityExpression = Expression.Call(typeof(Gamma).GetMethod("Factorial"), quantityExpression);
+
+                    //get the next operator.
+                    ix++;
+                    op = ix + 1 < tokens.Count ? tokens[ix + 1].TokenValue : string.Empty;
+
+                    FactorialPostfix = false;
                 }
                 
 
@@ -303,30 +336,7 @@ namespace Qs.Runtime
             
         }
 
-        public static Expression DimensionlessQuantityExpression(double val)
-        {
-            DimensionlessQuantity<double> qty = new DimensionlessQuantity<double>();
 
-            qty.Unit = Unit.DiscoverUnit(QuantityDimension.Dimensionless);
-            qty.Value = val;
-
-            return Expression.Constant(qty, typeof(AnyQuantity<double>));
-        }
-
-
-        public static Expression QuantityExpression(string expr)
-        {
-            // I was naieve 
-            // why should I use expression 
-            //   when I want to represent code formation in memory
-            //   however all I want is AnyQuantity<> object and it doesn't need all of this hassle about dynamically creation
-            // I was stupid :)
-
-            
-            return Expression.Constant(Unit.ParseQuantity(expr), typeof(AnyQuantity<double>)); //you have to explicitly tell expression the type because it searches for the operators and can't find them
-           
-            
-        }
 
 
         private Expression ArithExpression(Expression left, string op, Expression right)
