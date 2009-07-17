@@ -1,3 +1,16 @@
+[Quantity System Framework 1.1.2]
+
+- [Specific Weight] quantity added
+- optimization for unit conversions  (caching added for already calculated unit conversions)
+
+- enahcing Qs hosting to be used dynamically inside any .NET applications using DLR hosting APIs.
+	to create the run time: 
+            var QsScope = sr.ExecuteFile("test.qs");            
+            var QsEngine = sr.GetEngine("Qs");
+            var a = QsEngine.Execute("a=5<m>", QsScope) as AnyQuantity<double>;
+		
+- factorial optimized. {I am still searching how to make factorial for real numbers}
+
 [Quantity System Framework 1.1.1]
 
 - Whole optimization for the library. in all 4 basic operations

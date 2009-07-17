@@ -44,6 +44,8 @@ namespace Qs.Runtime
 
             string[] lines = code.Split(Environment.NewLine.ToCharArray());
 
+            object ret=null;
+
             foreach (string line in lines)
             {
 
@@ -58,7 +60,7 @@ namespace Qs.Runtime
 
                         if (!QsCommands.CommandProcessed)
                         {
-                            qs.Evaluate(line);
+                            ret = qs.Evaluate(line);
                         }
 
                         QsCommands.CommandProcessed = false;
@@ -67,7 +69,7 @@ namespace Qs.Runtime
 
             }
 
-            return 0;
+            return ret;
         }
 
     }

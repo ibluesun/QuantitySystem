@@ -122,9 +122,9 @@ namespace Qs.Runtime
         }
 
 
-        public void Evaluate(string expr)
+        public object Evaluate(string expr)
         {
-            if (string.IsNullOrEmpty(expr)) return;
+            if (string.IsNullOrEmpty(expr)) return null;
             Match m = null;
 
             #region Match <unit> to <unit>
@@ -156,6 +156,8 @@ namespace Qs.Runtime
                     Console.ForegroundColor = ConsoleColor.Yellow;
                     Console.WriteLine(cf);
                     Console.ForegroundColor = ConsoleColor.White;
+
+                    return up.ConversionFactor;
                 }
                 catch (UnitNotFoundException)
                 {
@@ -166,7 +168,7 @@ namespace Qs.Runtime
                     PrintError("Units not dimensionally equal");
                 }
 
-                return;
+                return null;
             }
             #endregion
 
@@ -181,13 +183,14 @@ namespace Qs.Runtime
                 {
                     Unit u = Unit.Parse(m.Groups[1].Value);
                     PrintUnitInfo(u);
+                    return u;
                 }
                 catch (UnitNotFoundException)
                 {
                     PrintError("Unit Not Found");
                 }
                 
-                return;
+                return null;
             }
             #endregion
 
@@ -220,7 +223,7 @@ namespace Qs.Runtime
                     catch (QuantityNotFoundException)
                     {
                         Console.Error.WriteLine("Quantityt Not Found");
-                        return;
+                        return null;
                     }
 
                 }
@@ -230,7 +233,7 @@ namespace Qs.Runtime
                 SetVariable(varName, qty);
                 
                 PrintQuantity(qty);
-                return;
+                return qty;
             }
             #endregion
 
@@ -238,7 +241,7 @@ namespace Qs.Runtime
             #region expression
 
             //check if the line has '='
-            ExtraEvaluate(expr);
+            return ExtraEvaluate(expr);
 
 
             #endregion
@@ -246,7 +249,7 @@ namespace Qs.Runtime
         }
 
 
-        internal void ExtraEvaluate(string line)
+        internal object ExtraEvaluate(string line)
         {
             //test for lambda expression 
             // f(x,y,z)=> x + y + (z/2.04 * 32<kg>)
@@ -256,6 +259,7 @@ namespace Qs.Runtime
             {
                 //store the expression for later use 
                 Scope.SetName(SymbolTable.StringToId(func.FunctionName), func);
+                return func;
             }
             else
             {
@@ -270,7 +274,7 @@ namespace Qs.Runtime
                     if (char.IsNumber(varName[0]))
                     {
                         PrintError("Variable must start with letter");
-                        return;
+                        return null;
                     }
                 }
 
@@ -283,13 +287,16 @@ namespace Qs.Runtime
                         {
                             //assign the variable
                             SetVariable(varName, qv.Execute());
-
-                            PrintQuantity(GetQuantity(varName));
+                            var q = GetQuantity(varName);
+                            PrintQuantity(q);
+                            return q;
                         }
                         else
                         {
                             //only print the result.
-                            PrintQuantity(qv.Execute());
+                            var q = qv.Execute();
+                            PrintQuantity(q);
+                            return q;
                         }
                     }
                     catch (NullReferenceException nre)
@@ -316,7 +323,9 @@ namespace Qs.Runtime
                     {
                         PrintError(qse.Message);
                     }
+                    return null;
                 }
+                return null;
             }
         }
 

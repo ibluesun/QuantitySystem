@@ -105,6 +105,7 @@
     <Compile Include="Quantities\RadiantIntensity.cs" />
     <Compile Include="Quantities\SpecificHeat.cs" />
     <Compile Include="Quantities\SpecificVolume.cs" />
+    <Compile Include="Quantities\SpecificWeight.cs" />
     <Compile Include="Quantities\Torque.cs">
       <SubType>Code</SubType>
     </Compile>

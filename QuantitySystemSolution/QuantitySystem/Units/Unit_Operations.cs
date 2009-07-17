@@ -132,6 +132,11 @@ namespace QuantitySystem.Units
 
 
 
+        public Func<Unit, Unit, string> UnitToUnitSymbol = (Unit x, Unit y) => "[" + x.Symbol + ":" + x.UnitDimension.ToString() + "]" + "__" + "[" + y.Symbol + ":" + y.UnitDimension.ToString() + "]";
+
+        public static Dictionary<string, UnitPath> CachedPathes = new Dictionary<string, UnitPath>();
+        
+
         /// <summary>
         /// Gets the path to the unit starting from current unit.
         /// </summary>
@@ -139,6 +144,11 @@ namespace QuantitySystem.Units
         /// <returns></returns>
         public UnitPath PathToUnit(Unit unit)
         {
+            //because this method can be length method we try to check for cached pathes first.
+            UnitPath cachedPath;
+            if (CachedPathes.TryGetValue(UnitToUnitSymbol(this, unit), out cachedPath))
+                return cachedPath;
+
 
             if (this.UnitDimension.IsDimensionless == true && unit.UnitDimension.IsDimensionless == true)
             {
@@ -170,6 +180,7 @@ namespace QuantitySystem.Units
                 UnitPath Tito = new UnitPath();
 
                 
+
                 while (SourcePath.Count > 0)
                 {
                     Tito.Push(SourcePath.Pop());
@@ -184,6 +195,7 @@ namespace QuantitySystem.Units
 
                 }
 
+                CachedPathes.Add(UnitToUnitSymbol(this, unit), (UnitPath)Tito.Clone());
                 return Tito;
             }
 
@@ -350,6 +362,7 @@ namespace QuantitySystem.Units
                     upi.Invert();
             }
 
+            CachedPathes.Add(UnitToUnitSymbol(this, unit), (UnitPath)Total.Clone());
 
             return Total;
         }
