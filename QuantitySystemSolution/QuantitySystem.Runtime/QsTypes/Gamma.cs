@@ -22,19 +22,14 @@ namespace Qs.QsTypes
 
             if (v > 170) throw new NotImplementedException("Number Exceededs Factorial Limit > 170");
 
-            var One = (AnyQuantity<double>)Number.Clone();
-
-            One.Value = 1.0;
-
             AnyQuantity<double> num = (AnyQuantity<double>)Number.Clone();
             num.Value = Math.Floor(num.Value);
 
             AnyQuantity<double> Total = (AnyQuantity<double>)num.Clone();
 
-
             for (int i = v; i >1; i--)
             {
-                num = num - One;
+                num.Value--;
                 Total = Total * num;
             }
 

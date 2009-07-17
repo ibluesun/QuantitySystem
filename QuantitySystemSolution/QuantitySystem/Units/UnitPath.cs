@@ -12,7 +12,7 @@ namespace QuantitySystem.Units
 {
 
 
-    public class UnitPath:Stack<UnitPathItem>
+    public class UnitPath:Stack<UnitPathItem>, ICloneable
     {
 
         //I should add to expression tree here.
@@ -64,5 +64,29 @@ namespace QuantitySystem.Units
             }
         }
 
+
+
+
+        #region ICloneable Members
+
+        public object Clone()
+        {
+            UnitPath up = new UnitPath();
+            foreach (UnitPathItem upi in this.Reverse())
+            {
+                up.Push(new UnitPathItem
+                {
+                    Denumenator = upi.Denumenator,
+                    Numerator = upi.Numerator,
+                    Shift = upi.Shift,
+                    Unit = upi.Unit
+
+                });
+
+            }
+            return up;
+        }
+
+        #endregion
     }
 }
