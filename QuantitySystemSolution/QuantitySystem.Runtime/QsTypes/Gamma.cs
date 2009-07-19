@@ -26,13 +26,22 @@ namespace Qs.QsTypes
 
             AnyQuantity<double> Total = (AnyQuantity<double>)num.Clone();
 
+            double tot = 1;
             for (int i = v; i >1; i--)
             {
                 num.Value--;
-                Total = Total * num;
+                tot = tot * num.Value;
             }
 
-            if (number.Value > v) Total.Value = GammaFactorial(number.Value);
+            Total.Value = tot;
+
+            //    I think 3.5<kg>! = 11.631728<kg^3> is wrong and of course not <kg^4>  but it is <kg^3.5>
+            Total.Unit = Total.Unit.RaiseUnitPower((float)number.Value);
+
+            if (number.Value > v)
+            {
+                Total.Value = GammaFactorial(number.Value);
+            }
 
             return Total;
         
