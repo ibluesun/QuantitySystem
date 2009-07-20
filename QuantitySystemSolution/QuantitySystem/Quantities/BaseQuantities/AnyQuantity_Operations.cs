@@ -101,6 +101,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
                     double secondVal = (double)(object)secondQuantity.Value;
 
+
                     //correct the values according to left unit or first unit.
                     //the resulted quantity has the values of the first unit.
 
@@ -109,7 +110,10 @@ namespace QuantitySystem.Quantities.BaseQuantities
                         //factor from second unit to first unit
                         UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
-                        secondVal =  stof.ConversionFactor * secondVal;
+                        //secondVal =  stof.ConversionFactor * secondVal;  //original line without shift
+
+                        secondVal = stof.ConversionFactor * secondVal;
+
                     }
 
 
@@ -117,6 +121,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     ////sum the values
 
                     double result = firstVal + secondVal;
+
 
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
