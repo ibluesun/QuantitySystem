@@ -15,7 +15,7 @@ namespace QuantitySystem.Units
         {
             get
             {
-                return (Numerator / Denumenator) + Shift;
+                return Numerator / Denumenator;
             }
         }
 
@@ -23,7 +23,6 @@ namespace QuantitySystem.Units
 
         public double Denumenator { get; set; }
 
-        public double Shift { get; set; }
 
 
         /// <summary>

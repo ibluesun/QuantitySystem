@@ -169,6 +169,8 @@
     <Compile Include="Units\Metric\Cgs\ViscosityUnits.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Units\Metric\Gravitational\ForceUnits.cs" />
+    <Compile Include="Units\Metric\Gravitational\MassUnits.cs" />
     <Compile Include="Units\Metric\Mts\ForceUnits.cs" />
     <Compile Include="Units\Metric\Mts\MassUnits.cs" />
     <Compile Include="Units\Metric\Mts\PressureUnits.cs" />

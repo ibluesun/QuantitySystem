@@ -35,6 +35,8 @@ namespace QuantitySystem.Units
                 double RefTimesNum = 1;
                 double RefTimesDen = 1;
 
+                //double RefShift = 0.0;
+
                 // do the iteration until we reach the default unit.
                 while (RefUnit.IsDefaultUnit == false)
                 {
@@ -44,14 +46,15 @@ namespace QuantitySystem.Units
                         {
                             Unit = RefUnit,
                             Numerator = RefTimesNum,
-                            Denumenator = RefTimesDen
-                            
+                            Denumenator = RefTimesDen,
+                            //Shift = RefShift
                         }
                         );
 
                     RefTimesNum = RefUnit.ReferenceUnitNumerator;  //get the value before changing the RefUnit
                     RefTimesDen = RefUnit.ReferenceUnitDenominator;
-
+                    //RefShift = RefUnit.ReferenceUnitShift;
+                    
                     RefUnit = RefUnit.ReferenceUnit;
                 }
 
@@ -60,7 +63,8 @@ namespace QuantitySystem.Units
                     {
                         Unit = RefUnit,
                         Numerator = RefTimesNum,
-                        Denumenator = RefTimesDen
+                        Denumenator = RefTimesDen,
+                        //Shift = RefShift
                     }
                     );
             }
@@ -75,7 +79,9 @@ namespace QuantitySystem.Units
                         {
                             Unit = this,
                             Numerator = 1,
-                            Denumenator = 1
+                            Denumenator = 1,
+                            //Shift = 0.0
+
                         }
                         );
                 }
@@ -104,11 +110,13 @@ namespace QuantitySystem.Units
                 {
                     upi.Numerator = 1;
                     upi.Denumenator = 1;
+                    //upi.Shift = 0;
                 }
                 else
                 {
                     upi.Numerator = upi.Unit.ReferenceUnitDenominator;  //invert the number
                     upi.Denumenator = upi.Unit.ReferenceUnitNumerator;
+                    //upi.Shift = 0 - upi.Unit.ReferenceUnitShift;
                 }
 
                 Backward.Push(upi);
@@ -135,7 +143,20 @@ namespace QuantitySystem.Units
         public Func<Unit, Unit, string> UnitToUnitSymbol = (Unit x, Unit y) => "[" + x.Symbol + ":" + x.UnitDimension.ToString() + "]" + "__" + "[" + y.Symbol + ":" + y.UnitDimension.ToString() + "]";
 
         public static Dictionary<string, UnitPath> CachedPathes = new Dictionary<string, UnitPath>();
-        
+
+        private static bool enableUnitsCaching = true;
+        public static bool EnableUnitsCaching
+        {
+            get
+            {
+                return enableUnitsCaching;
+            }
+            set
+            {
+                enableUnitsCaching = value;
+                if (enableUnitsCaching) CachedPathes.Clear();
+            }
+        }
 
         /// <summary>
         /// Gets the path to the unit starting from current unit.
@@ -146,9 +167,19 @@ namespace QuantitySystem.Units
         {
             //because this method can be length method we try to check for cached pathes first.
             UnitPath cachedPath;
-            if (CachedPathes.TryGetValue(UnitToUnitSymbol(this, unit), out cachedPath))
-                return cachedPath;
+            if (EnableUnitsCaching)
+            {
+                if (CachedPathes.TryGetValue(UnitToUnitSymbol(this, unit), out cachedPath))
+                {
+                    return (UnitPath)cachedPath.Clone();   //<--- Clone
+                    
+                    //Why CLONE :D ??  because the unit path is a stack and I use Pop all the time 
+                    // during the application, and there were hidden error that poping from unit path in the 
+                    // cached store will not get them back again ;)
+                    //  I MUST return cloned copy of the UnitPath.
 
+                }
+            }
 
             if (this.UnitDimension.IsDimensionless == true && unit.UnitDimension.IsDimensionless == true)
             {
@@ -195,7 +226,13 @@ namespace QuantitySystem.Units
 
                 }
 
-                CachedPathes.Add(UnitToUnitSymbol(this, unit), (UnitPath)Tito.Clone());
+                //first location in cache look below for the second location.
+
+                if (EnableUnitsCaching)
+                {
+                    CachedPathes.Add(UnitToUnitSymbol(this, unit), (UnitPath)Tito.Clone());
+                }
+
                 return Tito;
             }
 
@@ -285,6 +322,7 @@ namespace QuantitySystem.Units
                         {
                             Numerator = DefaultPItem.Unit.ReferenceUnitNumerator,
                             Denumenator = DefaultPItem.Unit.ReferenceUnitDenominator,
+                            //Shift = DefaultPItem.Unit.ReferenceUnitShift,
                             Unit = DefaultPItem.Unit.ReferenceUnit
                         };                
                 }
@@ -299,10 +337,9 @@ namespace QuantitySystem.Units
 
                         Numerator = DefaultPItem.Unit.ReferenceUnitDenominator, // <=== opposite
                         Denumenator = DefaultPItem.Unit.ReferenceUnitNumerator, // <===
+                        //Shift = 0-DefaultPItem.Unit.ReferenceUnitShift,
                         Unit = DefaultPItem.Unit.ReferenceUnit
                     };
-
-
                 }
 
 
@@ -362,7 +399,11 @@ namespace QuantitySystem.Units
                     upi.Invert();
             }
 
-            CachedPathes.Add(UnitToUnitSymbol(this, unit), (UnitPath)Total.Clone());
+            //Second location in cache  look above for the first one in the same function here :D
+            if (EnableUnitsCaching)
+            {
+                CachedPathes.Add(UnitToUnitSymbol(this, unit), (UnitPath)Total.Clone());
+            }
 
             return Total;
         }
@@ -412,6 +453,7 @@ namespace QuantitySystem.Units
                                 {
                                     Numerator = DefaultPItem.Unit.ReferenceUnitNumerator,
                                     Denumenator = DefaultPItem.Unit.ReferenceUnitDenominator,
+                                    //Shift = DefaultPItem.Unit.ReferenceUnitShift,
                                     Unit = DefaultPItem.Unit.ReferenceUnit
                                 };
 

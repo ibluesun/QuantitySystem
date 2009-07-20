@@ -78,8 +78,8 @@ namespace QuantitySystem.Units
                 {
                     Denumenator = upi.Denumenator,
                     Numerator = upi.Numerator,
-                    Shift = upi.Shift,
-                    Unit = upi.Unit
+                    //Shift = upi.Shift,
+                    Unit = (Unit)upi.Unit.Clone()
 
                 });
 

@@ -34,6 +34,7 @@ namespace QuantitySystem.Units
         protected readonly double referenceUnitDenominator;
 
 
+
         private readonly bool isStronglyTyped = false;
 
         #endregion
@@ -118,6 +119,7 @@ namespace QuantitySystem.Units
 
                 referenceUnitNumerator = dua.Numerator;
                 referenceUnitDenominator = dua.Denominator;
+
             }
 
         }
@@ -239,7 +241,8 @@ namespace QuantitySystem.Units
             {
                 return Math.Pow(referenceUnitDenominator, unitExponent);
             }
-        } 
+        }
+
 
 
 

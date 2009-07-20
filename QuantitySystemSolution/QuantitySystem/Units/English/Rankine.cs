@@ -13,10 +13,10 @@ namespace QuantitySystem.Units.English
 
 
 
-    //[Unit("F", typeof(Temperature<>))]
-    //[ReferenceUnit(1, Shift = 459.67, UnitType = typeof(Rankine))]
-    //public sealed class Fahrenheit : Unit
-    //{
+    [Unit("°F", typeof(Temperature<>))]
+    [ReferenceUnit(1, Shift = 459.67, UnitType = typeof(Rankine))]
+    public sealed class Fahrenheit : Unit
+    {
 
-    //}
+    }
 }

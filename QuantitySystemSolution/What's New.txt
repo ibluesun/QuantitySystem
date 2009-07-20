@@ -1,3 +1,18 @@
+[Quantity System Framework 1.1.3]
+- Now Factorial is also available for real numbers
+- Fixed serious caching error in units conversion
+
+New Units
+---------
+- Gravitional System under metric added three new units
+- <hyl> for mass
+- <p>  small letter for Pond unit  which equal <gf> Gramforce  added also
+
+- <grain> renamed to <gr>  Grain unit
+- Poundal unit <pdl> added = <lbm.ft/s^2>
+
+
+
 [Quantity System Framework 1.1.2]
 
 - [Specific Weight] quantity added

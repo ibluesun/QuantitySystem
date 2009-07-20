@@ -26,7 +26,7 @@ namespace Qs.QsTypes
 
             AnyQuantity<double> Total = (AnyQuantity<double>)num.Clone();
 
-            double tot = 1;
+            double tot = num.Value == 0 ? 1 : num.Value;
             for (int i = v; i >1; i--)
             {
                 num.Value--;

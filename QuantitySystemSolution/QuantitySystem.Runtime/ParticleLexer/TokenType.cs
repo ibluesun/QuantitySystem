@@ -81,8 +81,8 @@ namespace ParticleLexer.TokenTypes
     }
 
     [TokenPattern(
-        RegexPattern = @"\d+(\.|\.\d+)?([eE][-+]?\d+)?" 
-        + "\\s*<(\\w+!?(\\^\\d+)?\\.?)+(/(\\w+!?(\\^\\d+)?\\.?)+)?>"
+        RegexPattern = @"\d+(\.|\.\d+)?([eE][-+]?\d+)?"                       //floating number
+        + "\\s*<(°?\\w+!?(\\^\\d+)?\\.?)+(/(°?\\w+!?(\\^\\d+)?\\.?)+)?>"          // unit itself.
         )
     ]
     public class UnitizedNumberToken : TokenType

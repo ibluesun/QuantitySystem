@@ -11,7 +11,7 @@ namespace QuantitySystem.Units.English
 
     }
 
-    [Unit("grain", typeof(Mass<>))]
+    [Unit("gr", typeof(Mass<>))]
     [ReferenceUnit(1, 7000, UnitType = typeof(Pound))]
     public sealed class Grain : Unit
     {
