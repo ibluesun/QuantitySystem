@@ -11,6 +11,9 @@ using Microsoft;
 
 namespace Qs.Runtime
 {
+    /// <summary>
+    /// Function that declared in Qs
+    /// </summary>
     public class QsFunction
     {
         private string functionName;
@@ -47,9 +50,52 @@ namespace Qs.Runtime
         }
 
         #region public delegate properties for the function with its number of parameters
+
+        public AnyQuantity<double> Invoke()
+        {
+            return FunctionDelegate_0();
+        }
+        public AnyQuantity<double> Invoke(params AnyQuantity<double>[] args)
+        {
+            switch (args.Length)
+            {
+                case 0:
+                    return FunctionDelegate_0();
+                case 1:
+                    return FunctionDelegate_1(args[0]);
+                case 2:
+                    return FunctionDelegate_2(args[0], args[1]);
+                case 3:
+                    return FunctionDelegate_3(args[0], args[1], args[2]);
+                case 4:
+                    return FunctionDelegate_4(args[0], args[1], args[2], args[3]);
+                case 5:
+                    return FunctionDelegate_5(args[0], args[1], args[2], args[3], args[4]);
+                case 6:
+                    return FunctionDelegate_6(args[0], args[1], args[2], args[3], args[4], args[5]);
+                case 7:
+                    return FunctionDelegate_7(args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+                case 8:
+                    return FunctionDelegate_8(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7]);
+                case 9:
+                    return FunctionDelegate_9(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8]);
+                case 10:
+                    return FunctionDelegate_10(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9]);
+                case 11:
+                    return FunctionDelegate_11(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10]);
+                case 12:
+                    return FunctionDelegate_12(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11]);
+
+                default:
+                    throw new QsInvalidInputException("Function with required parameters");
+            }
+        }
+
+
+
         private object _FunctionDelegate;
 
-        public Func<AnyQuantity<double>> FunctionDelegate_0
+        internal Func<AnyQuantity<double>> FunctionDelegate_0
         {
             get
             {
@@ -57,7 +103,7 @@ namespace Qs.Runtime
             }
         }
 
-        public Func<AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_1
+        internal Func<AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_1
         {
             get
             {
@@ -65,7 +111,7 @@ namespace Qs.Runtime
             }
         }
 
-        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_2
+        internal Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_2
         {
             get
             {
@@ -74,7 +120,7 @@ namespace Qs.Runtime
         }
 
 
-        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_3
+        internal Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_3
         {
             get
             {
@@ -82,7 +128,7 @@ namespace Qs.Runtime
             }
         }
 
-        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_4
+        internal Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_4
         {
             get
             {
@@ -90,7 +136,7 @@ namespace Qs.Runtime
             }
         }
 
-        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_5
+        internal Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_5
         {
             get
             {
@@ -98,7 +144,7 @@ namespace Qs.Runtime
             }
         }
 
-        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_6
+        internal Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_6
         {
             get
             {
@@ -106,7 +152,15 @@ namespace Qs.Runtime
             }
         }
 
-        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_8
+        internal Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_7
+        {
+            get
+            {
+                return (Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)_FunctionDelegate;
+            }
+        }
+
+        internal Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_8
         {
             get
             {
@@ -114,7 +168,7 @@ namespace Qs.Runtime
             }
         }
 
-        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_9
+        internal Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_9
         {
             get
             {
@@ -122,7 +176,7 @@ namespace Qs.Runtime
             }
         }
 
-        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_10
+        internal Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_10
         {
             get
             {
@@ -130,7 +184,7 @@ namespace Qs.Runtime
             }
         }
 
-        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_11
+        internal Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_11
         {
             get
             {
@@ -138,7 +192,7 @@ namespace Qs.Runtime
             }
         }
 
-        public Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_12
+        internal Func<AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> FunctionDelegate_12
         {
             get
             {
@@ -151,19 +205,19 @@ namespace Qs.Runtime
 
 
 
-        public string Function { get; private set; }
+        public string FunctionBody { get; private set; }
 
         public string[] Parameters { get; set; }
 
         public QsFunction(string function)
         {
-            Function = function;            
+            FunctionBody = function;            
         }
 
         public override string ToString()
         {
 
-            return Function;
+            return FunctionBody;
         }
 
         #region Helper Functions

@@ -159,16 +159,14 @@ namespace Qs.Runtime
 
                     return up.ConversionFactor;
                 }
-                catch (UnitNotFoundException)
+                catch (UnitNotFoundException e)
                 {
-                    PrintError("Unit Not Found");
+                    throw new QsException("Unit Not Found", e);
                 }
-                catch (UnitsNotDimensionallyEqualException)
+                catch (UnitsNotDimensionallyEqualException e)
                 {
-                    PrintError("Units not dimensionally equal");
+                    throw new QsException("Units not dimensionally equal", e);
                 }
-
-                return null;
             }
             #endregion
 
@@ -185,12 +183,11 @@ namespace Qs.Runtime
                     PrintUnitInfo(u);
                     return u;
                 }
-                catch (UnitNotFoundException)
+                catch (UnitNotFoundException e)
                 {
-                    PrintError("Unit Not Found");
+                    throw new QsException("Unit Not Found", e);
                 }
                 
-                return null;
             }
             #endregion
 
@@ -273,8 +270,7 @@ namespace Qs.Runtime
 
                     if (char.IsNumber(varName[0]))
                     {
-                        PrintError("Variable must start with letter");
-                        return null;
+                        throw (new QsInvalidInputException("Variable must start with letter"));
                     }
                 }
 
@@ -299,31 +295,31 @@ namespace Qs.Runtime
                             return q;
                         }
                     }
-                    catch (NullReferenceException nre)
+                    catch (NullReferenceException e)
                     {
-                        PrintError(nre.Message);
+                        throw new QsException(e.Message, e);
                     }
-                    catch (QuantitiesNotDimensionallyEqualException)
+                    catch (QuantitiesNotDimensionallyEqualException e)
                     {
-                        PrintError("Quantities Not Dimensionally Equal");
+                        throw new QsException("Quantities Not Dimensionally Equal", e);
+                    }
+                    catch (UnitNotFoundException e)
+                    {
+                        throw new QsException("Unit Not Found", e);
                     }
                     catch (QuantityException qe)
                     {
-                        PrintError(qe.Message);
+                        throw new QsException(qe.Message, qe);
                     }
-                    catch (UnitNotFoundException)
+                    catch (OverflowException e)
                     {
-                        PrintError("Unit Not Found");
+                        throw new QsException("Overflow", e);
                     }
-                    catch (OverflowException)
+                    catch (Exception e)
                     {
-                        PrintError("Overflow");
+                        throw new QsException("Unhandled", e);
                     }
-                    catch (QsException qse)
-                    {
-                        PrintError(qse.Message);
-                    }
-                    return null;
+
                 }
                 return null;
             }
@@ -331,15 +327,6 @@ namespace Qs.Runtime
 
 
         #region print information helpers
-        public void PrintError(string str)
-        {
-            ConsoleColor cc = Console.ForegroundColor;
-
-            Console.ForegroundColor = ConsoleColor.Red;
-            Console.Error.WriteLine(str);
-
-            Console.ForegroundColor = ConsoleColor.White;
-        }
 
         public void PrintUnitInfo(Unit unit)
         {

@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace QuantitySystem.Units
 {
     [Serializable()]
-    public class UnitNotFoundException : Exception
+    public class UnitNotFoundException : UnitException
     {
       public UnitNotFoundException()
       {

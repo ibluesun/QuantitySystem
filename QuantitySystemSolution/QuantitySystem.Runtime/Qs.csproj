@@ -58,6 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="QsInvalidInputException.cs" />
     <Compile Include="ParticleLexer\Token.cs" />
     <Compile Include="ParticleLexer\TokenPatternAttribute.cs" />
     <Compile Include="ParticleLexer\TokenType.cs" />
@@ -68,9 +69,11 @@
     <Compile Include="Runtime\QsBinder.cs" />
     <Compile Include="Runtime\QsContext.cs" />
     <Compile Include="Runtime\QsEvaluator.cs" />
-    <Compile Include="Runtime\QsException.cs" />
+    <Compile Include="QsException.cs" />
     <Compile Include="Runtime\QsFunction.cs" />
     <Compile Include="Runtime\QsScriptCode.cs" />
+    <Compile Include="Runtime\QsSequence.cs" />
+    <Compile Include="Runtime\QsSequenceElement.cs" />
     <Compile Include="Runtime\QsVar.cs" />
   </ItemGroup>
   <ItemGroup>

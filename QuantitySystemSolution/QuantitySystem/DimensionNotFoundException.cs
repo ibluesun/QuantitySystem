@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace QuantitySystem
 {
     [Serializable()]
-    public class DimensionNotFoundException : Exception
+    public class DimensionNotFoundException : QuantityException
     {
       public DimensionNotFoundException()
       {
