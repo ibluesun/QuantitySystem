@@ -561,7 +561,7 @@ namespace QuantitySystem.Units
 
 
         /// <summary>
-        /// Takes string of the form number and unit i.e. "50.34 kg>"
+        /// Takes string of the form number and unit i.e. "50.34 &lt;kg>"
         /// and returns Quantity of the discovered unit.
         /// </summary>
         /// <param name="quantity"></param>

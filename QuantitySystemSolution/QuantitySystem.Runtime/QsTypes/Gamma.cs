@@ -19,31 +19,37 @@ namespace Qs.QsTypes
         {
             int v = (int)number.Value;
 
-            if (v > 170) throw new NotImplementedException("Number Exceededs Factorial Limit > 170");
+            if (v > 170) throw new ArgumentOutOfRangeException("Number", number, "Number is greater than 170");
+            if (v < 0) throw new ArgumentOutOfRangeException("Number", number, "Number is less than 0");
 
             AnyQuantity<double> num = (AnyQuantity<double>)number.Clone();
             num.Value = Math.Floor(num.Value);
 
-            AnyQuantity<double> Total = (AnyQuantity<double>)num.Clone();
+            
 
-            double tot = num.Value == 0 ? 1 : num.Value;
+            double Total = num.Value == 0 ? 1 : num.Value;
+
+            //I am calculating the value part first for fast calculation
             for (int i = v; i >1; i--)
             {
                 num.Value--;
-                tot = tot * num.Value;
+                Total = Total * num.Value;
             }
 
-            Total.Value = tot;
-
+            //   Raise the power of the unit.
             //    I think 3.5<kg>! = 11.631728<kg^3> is wrong and of course not <kg^4>  but it is <kg^3.5>
-            Total.Unit = Total.Unit.RaiseUnitPower((float)number.Value);
+            QuantitySystem.Units.Unit TotalUnit = num.Unit.RaiseUnitPower((float)number.Value);
 
+
+            // if we have fraction correct the calculation with Gamma Factorial.
             if (number.Value > v)
             {
-                Total.Value = GammaFactorial(number.Value);
+                Total = GammaFactorial(number.Value);
             }
 
-            return Total;
+            AnyQuantity<double> TotalQuantity = TotalUnit.GetThisUnitQuantity<double>(Total);
+
+            return TotalQuantity;
         
         }
 

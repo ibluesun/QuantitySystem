@@ -1,29 +1,26 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Runtime.Serialization;
 
-namespace QuantitySystem.Units
+namespace Qs
 {
     [Serializable()]
-    public class UnitException : QuantityException
+    public class QsInvalidInputException : QsException
     {
-      public UnitException()
+      public QsInvalidInputException()
       {
          // Add any type-specific logic, and supply the default message.
       }
 
-      public UnitException(string message): base(message) 
+      public QsInvalidInputException(string message): base(message) 
       {
          // Add any type-specific logic.
       }
-      public UnitException(string message, Exception innerException): 
+      public QsInvalidInputException(string message, Exception innerException): 
          base (message, innerException)
       {
          // Add any type-specific logic for inner exceptions.
       }
-      protected UnitException(SerializationInfo info, 
+      protected QsInvalidInputException(SerializationInfo info, 
          StreamingContext context) : base(info, context)
       {
          // Implement type-specific serialization constructor logic.

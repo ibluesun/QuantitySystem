@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace QuantitySystem.Units
 {
     [Serializable()]
-    public class MetricPrefixException : Exception
+    public class MetricPrefixException : UnitException
     {
       public MetricPrefixException()
       {

@@ -7,7 +7,7 @@ using System.Runtime.Serialization;
 namespace QuantitySystem.Units
 {
     [Serializable()]
-    public class UnitsNotDimensionallyEqualException : Exception
+    public class UnitsNotDimensionallyEqualException : UnitException
     {
       public UnitsNotDimensionallyEqualException()
       {
