@@ -64,7 +64,6 @@
     <Compile Include="ParticleLexer\TokenType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Qs.cs" />
-    <Compile Include="QsCommands.cs" />
     <Compile Include="QsTypes\Gamma.cs" />
     <Compile Include="Runtime\QsBinder.cs" />
     <Compile Include="Runtime\QsContext.cs" />
@@ -74,6 +73,7 @@
     <Compile Include="Runtime\QsScriptCode.cs" />
     <Compile Include="Runtime\QsSequence.cs" />
     <Compile Include="Runtime\QsSequenceElement.cs" />
+    <Compile Include="Runtime\QsSequence_Helper.cs" />
     <Compile Include="Runtime\QsVar.cs" />
   </ItemGroup>
   <ItemGroup>

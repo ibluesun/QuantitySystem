@@ -3,26 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Reflection;
-using QuantitySystem;
-using QuantitySystem.Units;
 using Qs.Runtime;
+using Microsoft.Scripting.Hosting;
+using QuantitySystem.Units;
+using Microsoft.Scripting.Runtime;
+using Microsoft.Scripting;
 
-namespace Qs
-{
     public static class QsCommands
     {
 
         public static bool CommandProcessed;
 
 
+        public static ScriptEngine Engine { get; set; }
+        public static ScriptScope ScriptScope { get; set; }
+
         /// <summary>
         /// Console Commands.
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        public static bool CheckCommand(string command, QsEvaluator qse)
+        public static bool CheckCommand(string command, Scope scope)
         {
             string[] commands = command.ToLower().Split(' ');
+
+            //remove unnessacary spaces.
+            for (int i = 0; i < commands.Length; i++)
+                commands[i] = commands[i].Trim();
+
+            
 
             if (commands[0] == "quit") return false;
 
@@ -44,7 +53,7 @@ namespace Qs
 
                 if (commands.Length < 2)
                 {
-                    ListVariables(qse);
+                    ListVariables(scope);
                 }
                 else
                 {
@@ -69,7 +78,7 @@ namespace Qs
 
             if (commands[0] == "new")
             {
-                qse.New();
+                scope.Clear();
                 CommandProcessed = true;
             }
 
@@ -85,6 +94,22 @@ namespace Qs
                 CommandProcessed = true;
             }
 
+            if (commands[0] == "run")
+            {
+                //then we want to load a text file for evaluating its contents
+                // and adding its content to this session.
+
+                if (commands.Length > 1)
+                {
+                    string file = commands[1];
+
+                    ScriptScope.Engine.ExecuteFile(file, ScriptScope);
+                    
+
+                    CommandProcessed = true;
+                    
+                }
+            }
 
 
             return true;
@@ -113,13 +138,15 @@ namespace Qs
         {
             Console.ForegroundColor = ConsoleColor.Gray;
 
-            var qsc_ver = (AssemblyFileVersionAttribute)Assembly.GetEntryAssembly().GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false)[0];
+            var qsc_ver = (AssemblyFileVersionAttribute)Assembly.GetAssembly(typeof(QuantitySystem.QuantityDimension)).GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false)[0];
 
-            var lib_ver = (AssemblyFileVersionAttribute)Assembly.GetAssembly(typeof(QuantityDimension)).GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false)[0];
+            var lib_ver = (AssemblyFileVersionAttribute)Assembly.GetAssembly(typeof(Qs.Qs)).GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false)[0];
+
+            var calc_ver = (AssemblyFileVersionAttribute)Assembly.GetEntryAssembly().GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false)[0];
 
             Console.WriteLine("Quantity System Framework  ver " + lib_ver.Version);
-
-            Console.WriteLine("Quantity System Calculator ver " + qsc_ver.Version);
+            Console.WriteLine("Quantity System DLR        ver " + qsc_ver.Version);
+            Console.WriteLine("Quantity System Calculator ver " + calc_ver.Version);
 
 
             var qsc_cwr = (AssemblyCopyrightAttribute)Assembly.GetEntryAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false)[0];
@@ -173,17 +200,48 @@ namespace Qs
         }
 
 
+        public static IEnumerable<string> GetVariablesKeys(Scope scope)
+        {
+          
+            if (scope != null)
+            {
+                var varo = from item in scope.Items
+                           select SymbolTable.IdToString(item.Key);
+                return varo;
+            }
+
+            throw new Exception("Where is the Scope");
+                
+        }
+
+
+        public static object GetVariable(Scope scope, string varName)
+        {
+            if (scope != null)
+            {
+                object q;
+                scope.TryGetName(SymbolTable.StringToId(varName), out q);
+                return q;
+            }
+            else
+            {
+                throw new NotImplementedException("you should be running in DLR");
+
+            }
+
+        }
+
         /// <summary>
         /// List Command
         /// </summary>
-        internal static void ListVariables(QsEvaluator qe)
+        internal static void ListVariables(Scope scope)
         {
             Console.WriteLine();
             Console.ForegroundColor = ConsoleColor.Yellow;
 
-            foreach (string var in qe.VariablesKeys)
+            foreach (string var in GetVariablesKeys(scope))
             {
-                Console.WriteLine("    " + var + "= " + qe.GetVariable(var).ToString());
+                Console.WriteLine("    " + var + "= " + GetVariable(scope, var).ToString());
             }
 
             Console.ForegroundColor = ConsoleColor.White;
@@ -243,4 +301,3 @@ namespace Qs
         #endregion
 
     }
-}

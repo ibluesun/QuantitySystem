@@ -30,7 +30,30 @@ namespace Qs
 
         }
 
-        #region Extension methods
+        #region Extensions and helper methods
+
+        /// <summary>
+        /// Force to return integer value from <see cref="AnyQuantity<double>"/>
+        /// used mainly for calculated indexes for sequences.
+        /// </summary>
+        /// <param name="val"></param>
+        /// <returns></returns>
+        public static int IntegerFromQuantity(AnyQuantity<double> val)
+        {
+            return (int)val.Value;
+        }
+
+        /// <summary>
+        /// Quantitize the double value into DimensionlessQuantity
+        /// </summary>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        public static AnyQuantity<double> ToQuantity(this int i)
+        {
+            Unit un = Unit.DiscoverUnit(QuantityDimension.Dimensionless);
+            return un.GetThisUnitQuantity<double>((double)i);
+        }
+
 
         /// <summary>
         /// Quantitize the double value into DimensionlessQuantity

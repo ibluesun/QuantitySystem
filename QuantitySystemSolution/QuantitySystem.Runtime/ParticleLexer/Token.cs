@@ -131,13 +131,14 @@ namespace ParticleLexer
             return TokenType.ToString() + ": " + TokenValue;
         }
 
-        #region Grouping Functions
+        #region Grouping Functions, Sequences
 
         /// <summary>
-        /// assemble '(' ((()()(()())))--- ')' into individual tokens
+        /// Assemble Parenthesis '(' ((()()(()())))--- ')' into individual tokens and Parenthesis groups tokens
+        /// Assemble Square Brakets '[' [[[][][[][]]]] --- ']' into individual tokens and Square Brackets groups tokens
         /// </summary>
         /// <returns></returns>
-        public Token GroupParenthesis()
+        public Token GroupBrackets()
         {
             Token first = new Token();
             Token current = first;
@@ -155,11 +156,26 @@ namespace ParticleLexer
                     current = current.AppendSubToken();
                     current.AppendSubToken(c.TokenValue).TokenType = typeof(LeftParenthesisToken);
                 }
+                else if (c.TokenValue == "[")
+                {
+
+                    current = current.AppendSubToken();
+                    current.AppendSubToken(c.TokenValue).TokenType = typeof(LeftSquareBracketToken);
+                }
+                else if (c.TokenValue == "]")
+                {
+                    current.AppendSubToken(c.TokenValue).TokenType = typeof(RightSquareBracketToken);
+
+                    current.TokenType = typeof(SquareBracketGroupToken);
+
+                    current = current.ParentToken;
+
+                }
                 else if (c.TokenValue == ")")
                 {
                     current.AppendSubToken(c.TokenValue).TokenType = typeof(RightParenthesisToken);
 
-                    current.TokenType = typeof(GroupToken);
+                    current.TokenType = typeof(ParenthesisGroupToken);
 
 
                     current = current.ParentToken;
@@ -179,15 +195,23 @@ namespace ParticleLexer
 
         /// <summary>
         /// Should be used after merging by word
-        /// and grouping parenthesis
+        /// and grouping brackets
+        /// The function tries to find Word followed by complete parenthesis group or square brackets group.
+        /// And can parse this example:
+        ///            fn(434,fn((434+434)+8/4,50,fifo(5)))
+        ///            
+        ///            S[5,F[4,2,1],G](4, 3, 2,R[2], p(30*o(9)))
+        ///            -              - Parameters              -
+        ///            -    Indexes   -
+        ///            -              Sequence Call             -
         /// </summary>
         /// <returns></returns>
-        public Token DiscoverFunctionCalls()
+        public Token DiscoverCalls()
         {
             Token first = new Token();
             Token current = first;
 
-            // now I have fn(434,fn((434+434)+8/4,50,fifo(5)))
+            
 
             int ci = 0;
 
@@ -195,10 +219,10 @@ namespace ParticleLexer
             {
                 var c = childTokens[ci];
 
-                if (c.Contains(typeof(GroupToken)))
+                if (c.Contains(typeof(ParenthesisGroupToken)) | c.Contains(typeof(SquareBracketGroupToken)))
                 {
                     //recursive call if the token have inside groups
-                    current.AppendSubToken(c.DiscoverFunctionCalls());
+                    current.AppendSubToken(c.DiscoverCalls());
                 }
                 else
                 {
@@ -210,7 +234,8 @@ namespace ParticleLexer
                         {
                             Token cnext = childTokens[ci + 1];
 
-                            if (cnext.TokenType == typeof(GroupToken))
+                            #region Parenthesis group discovery
+                            if (cnext.TokenType == typeof(ParenthesisGroupToken))
                             {
                                 // so this is a function
                                 //take the current token with the next token and make it as functionToken
@@ -221,35 +246,12 @@ namespace ParticleLexer
 
 
 
-                                if (cnext.Contains((typeof(GroupToken))))
+                                if (cnext.Contains((typeof(ParenthesisGroupToken))) | cnext.Contains(typeof(SquareBracketGroupToken)))
                                 {
-                                    cnext = cnext.DiscoverFunctionCalls();
+                                    cnext = cnext.DiscoverCalls();
                                 }
 
-                                {
-                                    //to make the parameters tokens.
-
-                                    cnext = cnext.MergeTokens(new CommaOperatorToken());
-
-                                    //here I must merge all but the parenthesis
-                                    Token temp = new Token();
-
-                                    for (int iy = 1; iy < cnext.Count - 1; iy++)
-                                            temp.AppendSubToken(cnext[iy]);
-
-
-                                    temp = temp.MergeAllBut(new CommaOperatorToken(), typeof(FunctionParameterToken));
-
-                                    Token tmp2 = new Token();
-                                    tmp2.TokenType = cnext.TokenType;
-                                    tmp2.AppendSubToken(cnext[0]);
-                                    foreach (Token itmp in temp)
-                                        tmp2.AppendSubToken(itmp);
-                                    tmp2.AppendSubToken(cnext[cnext.Count - 1]);
-
-                                    cnext = Zabbat(tmp2);
-                                }
-
+                                cnext = SplitFunctionParamerers(cnext);
 
 
                                 functionCallToken.AppendSubToken(cnext);
@@ -259,6 +261,60 @@ namespace ParticleLexer
                                 ci += 2;
                                 continue;
                             }
+                            #endregion
+
+                            #region Square Brackets discovery
+                            if (cnext.TokenType == typeof(SquareBracketGroupToken))
+                            {
+                                // so this is a sequence
+                                //take the current token with the next token and make it as sequenceToken
+
+                                Token sequenceCallToken = new Token();
+                                sequenceCallToken.TokenType = typeof(SequenceCallToken);
+                                sequenceCallToken.AppendSubToken(c);
+
+                                if (cnext.Contains((typeof(SquareBracketGroupToken))) | cnext.Contains((typeof(ParenthesisGroupToken))))
+                                {
+                                    cnext = cnext.DiscoverCalls();
+                                }
+
+                                cnext = SplitSequenceIndexes(cnext);
+
+                                sequenceCallToken.AppendSubToken(cnext);
+
+                                if (childTokens.Count > ci + 2)
+                                {
+                                    //check if we have a Parenthesis parameters after Square Brackets
+                                    Token cnextnext = childTokens[ci + 2];
+                                    if (cnextnext.TokenType == typeof(ParenthesisGroupToken))
+                                    {
+                                        //then this is a sequence call with parameters.
+                                        if ((cnextnext.Contains((typeof(SquareBracketGroupToken))) | cnextnext.Contains((typeof(ParenthesisGroupToken)))))
+                                        {
+                                            cnextnext = cnextnext.DiscoverCalls();
+                                        }
+
+                                        cnextnext = SplitFunctionParamerers(cnextnext);
+
+                                        sequenceCallToken.AppendSubToken(cnextnext);
+
+                                        ci += 3;
+                                    }
+                                    else
+                                    {
+                                        ci += 2;
+                                    }
+                                }
+                                else
+                                {
+                                    ci += 2;
+                                }
+                                current.AppendSubToken(sequenceCallToken);
+                                continue;
+                            }
+
+                            #endregion
+
                         }
                     }
 
@@ -273,7 +329,77 @@ namespace ParticleLexer
             return Zabbat(first);
         }
 
+        private Token SplitFunctionParamerers(Token cnext)
+        {
+            //to make the parameters tokens.
+
+            cnext = cnext.MergeTokens(new CommaToken());
+
+            //here I must merge all but the parenthesis
+            Token temp = new Token();
+
+            for (int iy = 1; iy < cnext.Count - 1; iy++)
+                temp.AppendSubToken(cnext[iy]);
+
+
+            temp = temp.MergeAllBut(new CommaToken(), typeof(FunctionParameterToken));
+
+            Token tmp2 = new Token();
+            tmp2.TokenType = cnext.TokenType;
+            tmp2.AppendSubToken(cnext[0]);
+            foreach (Token itmp in temp)
+                tmp2.AppendSubToken(itmp);
+            tmp2.AppendSubToken(cnext[cnext.Count - 1]);
+
+            return Zabbat(tmp2);
+        }
+
+        private Token SplitSequenceIndexes(Token cnext)
+        {
+            //to make the parameters tokens.
+
+            cnext = cnext.MergeTokens(new CommaToken());
+
+            //here I must merge all but the parenthesis
+            Token temp = new Token();
+
+            for (int iy = 1; iy < cnext.Count - 1; iy++)
+                temp.AppendSubToken(cnext[iy]);
+
+
+            temp = temp.MergeAllBut(new CommaToken(), typeof(SequenceIndexToken));
+
+            Token tmp2 = new Token();
+            tmp2.TokenType = cnext.TokenType;
+            tmp2.AppendSubToken(cnext[0]);
+            foreach (Token itmp in temp)
+                tmp2.AppendSubToken(itmp);
+            tmp2.AppendSubToken(cnext[cnext.Count - 1]);
+
+            return Zabbat(tmp2);
+        }
+
+
+        /// <summary>
+        /// Merge all tokens into the one and exclude specific token
+        /// </summary>
+        /// <param name="tokenType">Excluded token or the separator token.</param>
+        /// <param name="mergedTokensType">The type of the new token merged from sub tokens.</param>
+        /// <returns></returns>
         public Token MergeAllBut(TokenType tokenType, Type mergedTokensType)
+        {
+            return MergeAllBut(0, tokenType, mergedTokensType);
+        }
+
+
+        /// <summary>
+        /// Merge all tokens into the one and exclude specific token
+        /// </summary>
+        /// <param name="tokenType">Excluded token or the separator token.</param>
+        /// <param name="mergedTokensType">The type of the new token merged from sub tokens.</param>
+        /// <param name="startIndex">Starting from token index</param>
+        /// <returns></returns>
+        public Token MergeAllBut(int startIndex, TokenType tokenType, Type mergedTokensType)
         {
             Token first = MergeTokens(tokenType);
 
@@ -287,22 +413,30 @@ namespace ParticleLexer
 
             while (ci < first.Count)
             {
+
                 var c = first[ci];
 
-                if (c.TokenType != tokenType.GetType())
+                if (ci < startIndex)
                 {
-                    mergedTokens.AppendSubToken(c);
+                    current.AppendSubToken(c);
                 }
                 else
                 {
-                    //found a separator
-                    mergedTokens.TokenType = mergedTokensType;
+                    if (c.TokenType != tokenType.GetType())
+                    {
+                        mergedTokens.AppendSubToken(c);
+                    }
+                    else
+                    {
+                        //found a separator
+                        mergedTokens.TokenType = mergedTokensType;
 
-                    current.AppendSubToken(mergedTokens);
-                    current.AppendSubToken(c);
+                        current.AppendSubToken(mergedTokens);
+                        current.AppendSubToken(c);
 
-                    mergedTokens = new Token();
+                        mergedTokens = new Token();
 
+                    }
                 }
                 
                 ci++;

@@ -560,6 +560,7 @@ namespace QuantitySystem.Units
 
 
 
+
         /// <summary>
         /// Takes string of the form number and unit i.e. "50.34 &lt;kg>"
         /// and returns Quantity of the discovered unit.
@@ -567,6 +568,15 @@ namespace QuantitySystem.Units
         /// <param name="quantity"></param>
         /// <returns></returns>
         public static AnyQuantity<double> ParseQuantity(string quantity)
+        {
+            AnyQuantity<double> aty;
+            if (TryParseQuantity(quantity, out aty))
+                return aty;
+            else
+                throw new QuantityException("Couldn't parse to quantity");
+        }
+
+        public static bool TryParseQuantity(string quantity, out AnyQuantity<double> qty)
         {
             string DoubleNumber = @"[-+]?\d+(\.\d+)*([eE][-+]?\d+)*";
 
@@ -580,27 +590,35 @@ namespace QuantitySystem.Units
                 val = double.Parse(um.Groups["num"].Value);
 
                 Unit un = Unit.Parse(varUnit);
-                AnyQuantity<double> qty = un.GetThisUnitQuantity<double>(val);
+                qty = un.GetThisUnitQuantity<double>(val);
 
-                return qty;
+                return true;
             }
             else if (double.TryParse(quantity, out val))
             {
-                Quantities.DimensionlessQuantities.DimensionlessQuantity<double> qty = val;
-                qty.Unit = DiscoverUnit(qty);
-                return (AnyQuantity<double>)qty;
+                qty = Unit.DiscoverUnit(QuantityDimension.Dimensionless).GetThisUnitQuantity<double>(val);
+                
+                return true;
             }
             else
             {
-                throw new NotSupportedException();
+                qty = default(AnyQuantity<double>);
+                return false;
             }
-
-
         }
 
 
         public Unit RaiseUnitPower(float power)
         {
+            //make short-cut when power equal zero return dimensionless unit immediatly
+            //  because if I left the execution to the end 
+            //  the dimensionless unit is created and wrapping the original unit under sub unit
+            //    and this made errors in conversion between dimensionless units :).
+            if (power == 0)
+            {
+                return Unit.DiscoverUnit(QuantityDimension.Dimensionless);
+            }
+
             Unit u = (Unit)this.MemberwiseClone();
 
             if (SubUnits!=null)

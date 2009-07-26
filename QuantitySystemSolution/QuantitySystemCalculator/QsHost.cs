@@ -40,7 +40,7 @@ internal class QsHost : ConsoleHost
         Console.ForegroundColor = ConsoleColor.White;
         Console.Clear();
 
-        Qs.QsCommands.StartConsole();
+        QsCommands.StartConsole();
 
         return new QsHost().Run(args);
         //QuantitySystemCalculator.Program.OldMain(args);

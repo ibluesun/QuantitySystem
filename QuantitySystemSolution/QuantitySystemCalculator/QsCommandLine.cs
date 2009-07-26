@@ -16,12 +16,36 @@ public class QsCommandLine : CommandLine
         }
     }
 
+    
 
     protected override string ReadLine(int autoIndentSize)
     {
-        Qs.Runtime.QsScriptCode.LastLine =  base.ReadLine(autoIndentSize);
+        
+        Qs.Runtime.QsScriptCode.LastLine = base.ReadLine(autoIndentSize);
+
+
+
+        if (!string.IsNullOrEmpty(Qs.Runtime.QsScriptCode.LastLine))
+        {
+            QsCommands.Engine = this.Engine;
+
+            QsCommands.ScriptScope = this.ScriptScope;
+
+
+            QsCommands.CheckCommand(Qs.Runtime.QsScriptCode.LastLine, this.Scope);
+
+            if (QsCommands.CommandProcessed)
+            {
+                QsCommands.CommandProcessed = false;
+                return string.Empty;
+            }
+        }
+
         return Qs.Runtime.QsScriptCode.LastLine;
+
     }
+
+
 
     protected override void UnhandledException(Exception e)
     {
@@ -36,8 +60,14 @@ public class QsCommandLine : CommandLine
         ConsoleColor cc = System.Console.ForegroundColor;
 
         System.Console.ForegroundColor = ConsoleColor.Red;
-        Console.ErrorOutput.WriteLine("{0}: {1}, {2}", e.GetType().Name, e.InnerException.GetType().Name, e.Message);
+        
+        Console.ErrorOutput.WriteLine("{0}: {1}", e.GetType().Name, e.Message);
 
+        if (e.InnerException != null)
+        {
+            Console.ErrorOutput.WriteLine("{0}: {1}", e.InnerException.GetType().Name, e.InnerException.Message);
+        }
+        
         System.Console.ForegroundColor = ConsoleColor.White;
     }
 

@@ -10,22 +10,14 @@ using Microsoft.Linq.Expressions;
 namespace Qs.Runtime
 {
     /// <summary>
-    /// Specs will be released soon.
+    /// Single indexed sequence.
     /// </summary>
-    public class QsSequence : Dictionary<int, QsSequenceElement>
+    public partial class QsSequence : Dictionary<int, QsSequenceElement>
     {
 
-        public string SequenceBody { get; private set; }
 
 
-        /// <summary>
-        /// The sequence must have element in zero index.
-        /// </summary>
-        /// <param name="zeroElement"></param>
-        public QsSequence(QsSequenceElement zeroElement)
-        {
-            base[0] = zeroElement;
-        }
+        
 
         /// <summary>
         /// Correspones To: S[i]
@@ -84,19 +76,77 @@ namespace Qs.Runtime
             
         }
 
+        /// <summary>
+        /// Keeps the the values that were calculated before.
+        /// When modifieng an item the index of this item and all after items should be deleted.
+        /// </summary>
+        private Dictionary<int, AnyQuantity<double>> CachedValues = new Dictionary<int, AnyQuantity<double>>();
+
         public AnyQuantity<double> GetElementQuantity(int index)
         {
-            
-
-            return (AnyQuantity<double>)GetElement(index).Execute(index);
-
+            AnyQuantity<double> val;
+            if (CachedValues.TryGetValue(index, out val))
+            {
+                return val;
+            }
+            else
+            {
+                val = (AnyQuantity<double>)GetElement(index).Execute(index);
+                //CachedValues[index] = val;
+                return val;
+            }
         }
 
+        #region Get Element Quantity Functions
+        public AnyQuantity<double> GetElementQuantity(int index, AnyQuantity<double> arg0)
+        {
+            AnyQuantity<double> val = (AnyQuantity<double>)GetElement(index).Execute(index, arg0);
+            return val;
+        }
+
+        public AnyQuantity<double> GetElementQuantity(int index, AnyQuantity<double> arg0, AnyQuantity<double> arg1)
+        {
+            AnyQuantity<double> val = (AnyQuantity<double>)GetElement(index).Execute(index, arg0, arg1);
+            return val;
+        }
+
+        public AnyQuantity<double> GetElementQuantity(int index, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2)
+        {
+            AnyQuantity<double> val = (AnyQuantity<double>)GetElement(index).Execute(index, arg0, arg1, arg2);
+            return val;
+        }
+
+        public AnyQuantity<double> GetElementQuantity(int index, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3)
+        {
+            AnyQuantity<double> val = (AnyQuantity<double>)GetElement(index).Execute(index, arg0, arg1, arg2, arg3);
+            return val;
+        }
+
+        public AnyQuantity<double> GetElementQuantity(int index, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4)
+        {
+            AnyQuantity<double> val = (AnyQuantity<double>)GetElement(index).Execute(index, arg0, arg1, arg2, arg3, arg4);
+            return val;
+        }
+
+        public AnyQuantity<double> GetElementQuantity(int index, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4, AnyQuantity<double> arg5)
+        {
+            AnyQuantity<double> val = (AnyQuantity<double>)GetElement(index).Execute(index, arg0, arg1, arg2, arg3, arg4, arg5);
+            return val;
+        }
+
+        public AnyQuantity<double> GetElementQuantity(int index, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4, AnyQuantity<double> arg5, AnyQuantity<double> arg6)
+        {
+            AnyQuantity<double> val = (AnyQuantity<double>)GetElement(index).Execute(index, arg1, arg1, arg2, arg3, arg4, arg5, arg6);
+            return val;
+        }
+
+        #endregion
+        
         /// <summary>
         /// The method sum all elements in the sequence between the supplied indexes.
         /// Correspondes To: S[i..k]
         /// </summary>
-        public AnyQuantity<double> Sum(int fromIndex, int toIndex)
+        public AnyQuantity<double> SumElements(int fromIndex, int toIndex)
         {
             AnyQuantity<double> Total = GetElementQuantity(fromIndex);
 
@@ -108,9 +158,76 @@ namespace Qs.Runtime
             return Total;
         }
 
+        #region SumElements Functions
+        public AnyQuantity<double> SumElements(int fromIndex, int toIndex, AnyQuantity<double> arg0)
+        {
+            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0);
+            for (int i = fromIndex + 1; i <= toIndex; i++)
+            {
+                Total = Total + GetElementQuantity(i, arg0);
+            }
+            return Total;
+        }
+        public AnyQuantity<double> SumElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1)
+        {
+            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1);
+            for (int i = fromIndex + 1; i <= toIndex; i++)
+            {
+                Total = Total + GetElementQuantity(i, arg0, arg1);
+            }
+            return Total;
+        }
+        public AnyQuantity<double> SumElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2)
+        {
+            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1, arg2);
+            for (int i = fromIndex + 1; i <= toIndex; i++)
+            {
+                Total = Total + GetElementQuantity(i, arg0, arg1, arg2);
+            }
+            return Total;
+        }
+        public AnyQuantity<double> SumElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3)
+        {
+            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1, arg2, arg3);
+            for (int i = fromIndex + 1; i <= toIndex; i++)
+            {
+                Total = Total + GetElementQuantity(i, arg0, arg1, arg2, arg3);
+            }
+            return Total;
+        }
+        public AnyQuantity<double> SumElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4)
+        {
+            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1, arg2, arg3, arg4);
+            for (int i = fromIndex + 1; i <= toIndex; i++)
+            {
+                Total = Total + GetElementQuantity(i, arg0, arg1, arg2, arg3, arg4);
+            }
+            return Total;
+        }
+        public AnyQuantity<double> SumElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4, AnyQuantity<double> arg5)
+        {
+            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1, arg2, arg3, arg4, arg5);
+            for (int i = fromIndex + 1; i <= toIndex; i++)
+            {
+                Total = Total + GetElementQuantity(i, arg0, arg1, arg2, arg3, arg4, arg5);
+            }
+            return Total;
+        }
+        public AnyQuantity<double> SumElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4, AnyQuantity<double> arg5, AnyQuantity<double> arg6)
+        {
+            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+            for (int i = fromIndex + 1; i <= toIndex; i++)
+            {
+                Total = Total + GetElementQuantity(i, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+            }
+            return Total;
+        }
+        #endregion
+
+
         public AnyQuantity<double> Mean(int fromIndex, int toIndex)
         {
-            var tot = Sum(fromIndex, toIndex);
+            var tot = SumElements(fromIndex, toIndex);
             var n = toIndex - fromIndex + 1;
             var count = Unit.ParseQuantity(n.ToString(CultureInfo.InvariantCulture));
 
