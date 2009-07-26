@@ -8,6 +8,8 @@ using QuantitySystem;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
 using Microsoft.Linq.Expressions;
+using ParticleLexer;
+using ParticleLexer.TokenTypes;
 
 
 namespace Qs.Runtime
@@ -52,19 +54,7 @@ namespace Qs.Runtime
             }
         }
 
-
         public Scope Scope { get; set; }
-
-        public void New()
-        {
-            _Variables = new Dictionary<string, AnyQuantity<double>>();
-
-            if (Scope != null)
-            {
-                Scope.Clear();
-            }
-        }
-
 
 
         public object GetVariable(string varName)
@@ -248,11 +238,20 @@ namespace Qs.Runtime
 
         internal object ExtraEvaluate(string line)
         {
-            //test for lambda expression 
-            // f(x,y,z)=> x + y + (z/2.04 * 32<kg>)
+            //try to get sequence.
+            QsSequence seqo = QsSequence.ParseSequence(this, line);
 
+            //test for lambda expression 
+            // f(x,y,z) = x + y + (z/2.04 * 32<kg>)
             QsFunction func = QsFunction.ParseFunction(this, line);
-            if(func!=null)
+
+            if (seqo != null)
+            {
+                //store the expression for later use 
+                Scope.SetName(SymbolTable.StringToId(seqo.SequenceName), seqo);
+                return seqo;
+            }
+            else if (func != null)
             {
                 //store the expression for later use 
                 Scope.SetName(SymbolTable.StringToId(func.FunctionName), func);
@@ -270,7 +269,7 @@ namespace Qs.Runtime
 
                     if (char.IsNumber(varName[0]))
                     {
-                        throw (new QsInvalidInputException("Variable must start with letter"));
+                        throw (new QsInvalidInputException("Variable must start with a letter"));
                     }
                 }
 
@@ -278,17 +277,60 @@ namespace Qs.Runtime
                 {
                     try
                     {
-                        QsVar qv = new QsVar(this, line);
                         if (!string.IsNullOrEmpty(varName))
                         {
-                            //assign the variable
-                            SetVariable(varName, qv.Execute());
-                            var q = GetQuantity(varName);
-                            PrintQuantity(q);
-                            return q;
+                            // May be variable or sequence element.
+                            Token seq = Token.ParseText(varName);
+                            seq = seq.RemoveSpaceTokens();
+                            seq = seq.MergeTokens(new WordToken());
+                            seq = seq.MergeTokens(new ColonToken());
+                            seq = seq.GroupBrackets();
+                            if (seq.Count == 2)
+                            {
+                                if (seq[1].TokenType == typeof(SquareBracketGroupToken))
+                                {
+                                    //most likely sequence assignation
+                                    string sqname = QsSequence.FormSequenceName(seq[0].TokenValue, 1, 0);
+                                    QsSequence sq = QsSequence.GetSequence(Scope, sqname);
+
+                                    
+                                    if (seq[1].Contains(typeof(ColonToken)))
+                                    {
+                                        //a[n:1] = n!    the form that we expect.
+
+                                        int n = int.Parse(seq[1][3].TokenValue);
+                                        string indexName = seq[1][1].TokenValue;
+                                        string evline = line.Replace(indexName, sq.SequenceIndexName);
+                                        sq[n] = QsSequenceElement.Parse(evline, this, sq);
+                                    }
+                                    else
+                                    {
+                                        int n = int.Parse(seq[1][1].TokenValue);
+
+                                        sq[n] = QsSequenceElement.Parse(line, this, sq);
+                                    }
+                                    return null;
+                                }
+                                else
+                                {
+                                    //do nothing
+                                    return null;
+                                }
+
+                            }
+                            else
+                            {
+                                QsVar qv = new QsVar(this, line);
+                                //assign the variable
+                                SetVariable(varName, qv.Execute());
+                                var q = GetQuantity(varName);
+                                PrintQuantity(q);
+                                return q;
+                            }
                         }
                         else
                         {
+                            QsVar qv = new QsVar(this, line);
                             //only print the result.
                             var q = qv.Execute();
                             PrintQuantity(q);

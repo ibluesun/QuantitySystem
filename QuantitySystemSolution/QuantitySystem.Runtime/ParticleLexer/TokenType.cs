@@ -49,12 +49,18 @@ namespace ParticleLexer.TokenTypes
     }
 
 
+    /// <summary>
+    /// Any charachter
+    /// </summary>
     public class CharToken : TokenType
     {
 
     }
 
-    public class GroupToken : TokenType
+    /// <summary>
+    /// () groups
+    /// </summary>
+    public class ParenthesisGroupToken : TokenType
     {
         
     }
@@ -66,6 +72,25 @@ namespace ParticleLexer.TokenTypes
 
     [TokenPattern(RegexPattern = ")")]
     public class RightParenthesisToken : TokenType
+    {
+    }
+
+
+    /// <summary>
+    /// [] Groups
+    /// </summary>
+    public class SquareBracketGroupToken : TokenType
+    {
+
+    }
+
+    [TokenPattern(RegexPattern = "[")]
+    public class LeftSquareBracketToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = "]")]
+    public class RightSquareBracketToken : TokenType
     {
     }
 
@@ -91,39 +116,75 @@ namespace ParticleLexer.TokenTypes
     }
 
 
-    [TokenPattern(RegexPattern="=>")]
-    public class LambdaOperatorToken : TokenType
-    {
-    }
-
     [TokenPattern(RegexPattern = "=")]
-    public class AssignmentOperator : TokenType
+    public class AssignmentOperatorToken : TokenType
     {
     }
 
 
 
     [TokenPattern(RegexPattern = ",")]
-    public class CommaOperatorToken : TokenType
+    public class CommaToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = ";")]
+    public class SemiColonToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = ":")]
+    public class ColonToken : TokenType
     {
     }
 
 
+
+    /// <summary>
+    /// fifo(p1, p2, ..., pn)    whole token
+    /// </summary>
     public class FunctionCallToken : TokenType
     {
     }
 
+    /// <summary>
+    /// (p1, p2, ..., pn)  p(s) inside parenthesis
+    /// </summary>
     public class FunctionParameterToken : TokenType
     {
     }
 
     [TokenPattern(RegexPattern = "..>")]
-    public class ForwardSeries : TokenType
+    public class PositiveSequenceToken : TokenType
     {
     }
 
     [TokenPattern(RegexPattern = "<..")]
-    public class BackwardSeries : TokenType
+    public class NegativeSequenceToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern="\\.\\.")]
+    public class SequenceRangeToken : TokenType
+    {
+    }
+
+    /// <summary>
+    /// fifo[i1, i2, ..., in](p1, p2, ..., p3)    whole token
+    /// </summary>
+    public class SequenceCallToken : TokenType
+    {
+    }
+
+    /// <summary>
+    /// [i1, i2, ..., in]  i(s) inside parenthesis
+    /// </summary>
+    public class SequenceIndexToken : TokenType
+    {
+    }
+
+
+    public class SequenceElementToken : TokenType
     {
     }
 

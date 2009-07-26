@@ -51,19 +51,10 @@ namespace Qs.Runtime
 
                 if (!string.IsNullOrEmpty(line))
                 {
-                    string cline = line.Trim();
-                    if (!cline.StartsWith("#") && cline != string.Empty)
+                    if (!line.Trim().StartsWith("#"))
                     {
-
-
-                        QsCommands.CheckCommand(line, qs);
-
-                        if (!QsCommands.CommandProcessed)
-                        {
-                            ret = qs.Evaluate(line);
-                        }
-
-                        QsCommands.CommandProcessed = false;
+                        string cline = line.Trim();
+                        ret = qs.Evaluate(line);
                     }
                 }
 

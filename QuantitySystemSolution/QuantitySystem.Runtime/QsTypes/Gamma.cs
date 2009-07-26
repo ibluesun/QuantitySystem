@@ -19,7 +19,7 @@ namespace Qs.QsTypes
         {
             int v = (int)number.Value;
 
-            if (v > 170) throw new ArgumentOutOfRangeException("Number", number, "Number is greater than 170");
+            //if (v > 170) throw new ArgumentOutOfRangeException("Number", number, "Number is greater than 170");
             if (v < 0) throw new ArgumentOutOfRangeException("Number", number, "Number is less than 0");
 
             AnyQuantity<double> num = (AnyQuantity<double>)number.Clone();

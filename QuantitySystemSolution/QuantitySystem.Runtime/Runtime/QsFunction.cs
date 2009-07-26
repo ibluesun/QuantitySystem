@@ -228,12 +228,12 @@ namespace Qs.Runtime
             t = t.MergeTokens(new WordToken());
             t = t.MergeTokens(new NumberToken());
             t = t.MergeTokens(new UnitizedNumberToken());
-            t = t.GroupParenthesis();
+            t = t.GroupBrackets();
 
-            t = t.MergeTokens(new AssignmentOperator());
+            t = t.MergeTokens(new AssignmentOperatorToken());
             if (t[0].TokenType == typeof(WordToken)
-                && (t.Count > 1 ? t[1].TokenType == typeof(GroupToken) : false)
-                && (t.Count > 2 ? t[2].TokenType == typeof(AssignmentOperator) : false))
+                && (t.Count > 1 ? t[1].TokenType == typeof(ParenthesisGroupToken) : false)
+                && (t.Count > 2 ? t[2].TokenType == typeof(AssignmentOperatorToken) : false))
             {
                 //get function name
                 // will be the first token
