@@ -19,7 +19,37 @@ namespace Qs.Runtime
     public class QsSequenceElement
     {
 
-        public string ElementDeclaration { get; set; }
+        private string elementDeclaration;
+
+        /// <summary>
+        /// The original text that the element took when created.
+        /// </summary>
+        public string ElementDeclaration 
+        {
+            get
+            {
+                return elementDeclaration.Trim();
+            }
+            set
+            {
+                elementDeclaration = value;
+            }
+        }
+
+
+        // I want to know if specific element will have to evaluate index or parameter
+        // this information will be usefull later when planning the caching of the sequence.
+
+        /// <summary>
+        /// If true the element has an index that evaluated at runtime.
+        /// </summary>
+        public bool IndexEvaluation { get; set; }
+
+        /// <summary>
+        /// If true the element one or more parameters that evaluated at runtime.
+        /// </summary>
+        public bool ParameterEvaluation { get; set; }
+
 
         /// <summary>
         /// The value of the sequence element.
@@ -44,80 +74,104 @@ namespace Qs.Runtime
         
 
         /// <summary>
-        /// Execute the element and passing it the index on which execution should work on.
+        /// Execute the element by accepting the index of execution.
+        /// index of execution may differ on IndexInParentSequence.
         /// </summary>
-        /// <param name="executeIndex"></param>
+        /// <param name="executionIndex">The real calling index.</param>
         /// <returns></returns>
-        public AnyQuantity<double> Execute(int executeIndex)
+        public AnyQuantity<double> Execute(int executionIndex)
         {
 
             if (ElementValue.GetType() == typeof(Microsoft.Func<int, AnyQuantity<double>>))
             {
 
-                return ((Microsoft.Func<int, AnyQuantity<double>>)ElementValue)(executeIndex);
+                return ((Microsoft.Func<int, AnyQuantity<double>>)ElementValue)(executionIndex);
                 
             }
             else if (ElementValue.GetType() == typeof(QsSequence))
             {
                 QsSequence seq = (QsSequence)ElementValue;
 
-                return seq.GetElementQuantity(executeIndex);
+                return seq.GetElementQuantity(executionIndex);
             }
             else
                 return (AnyQuantity<double>)ElementValue;
         }
 
-        public AnyQuantity<double> Execute(int executeIndex, params AnyQuantity<double>[] args)
+        public AnyQuantity<double> Execute(int executionIndex, params AnyQuantity<double>[] args)
         {
+            if (ElementValue is AnyQuantity<double>)
+                return (AnyQuantity<double>)ElementValue;
             switch (args.Length)
             {
 
                 case 0:
-                    return Execute(executeIndex);
+                    return Execute(executionIndex);
                 case 1:
-                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executeIndex, args[0]);
+                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executionIndex, args[0]);
                 case 2:
-                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executeIndex, args[0], args[1]);
+                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executionIndex, args[0], args[1]);
                 case 3:
-                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executeIndex, args[0], args[1], args[2]);
+                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executionIndex, args[0], args[1], args[2]);
                 case 4:
-                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executeIndex, args[0], args[1], args[2], args[3]);
+                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3]);
                 case 5:
-                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executeIndex, args[0], args[1], args[2], args[3], args[4]);
+                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4]);
                 case 6:
-                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executeIndex, args[0], args[1], args[2], args[3], args[4], args[5]);
+                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4], args[5]);
                 case 7:
-                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executeIndex, args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
 
             }
             throw new QsException("Parameters Exeeded the limits");
         }
 
 
-
+        public override string ToString()
+        {
+            return ElementDeclaration;
+        }
 
         #region Helper Functions
+
+        /// <summary>
+        /// Creates element from quantity.
+        /// </summary>
+        /// <param name="quantity"></param>
+        /// <returns></returns>
         public static QsSequenceElement FromQuantity(AnyQuantity<double> quantity)
         {
             QsSequenceElement el = new QsSequenceElement();
             el.ElementValue = quantity;
+            el.ElementDeclaration = quantity.ToString();
 
-            return el;
-
-        }
-
-        public static QsSequenceElement FromSequenceAccess(QsSequence sequence)
-        {
-
-            QsSequenceElement el = new QsSequenceElement();
-            el.ElementValue = sequence;
+            el.IndexEvaluation = false;
+            el.ParameterEvaluation = false;
 
             return el;
 
         }
 
         /// <summary>
-        /// With index to 
+        /// Creates element from sequence.
+        /// The element will return the target sequence with the same index.
+        /// </summary>
+        /// <param name="sequence"></param>
+        /// <returns></returns>
+        public static QsSequenceElement FromSequenceAccess(QsSequence sequence)
+        {
+
+            QsSequenceElement el = new QsSequenceElement();
+            el.ElementValue = sequence;
+
+            el.IndexEvaluation = false;  
+            el.ParameterEvaluation = false;
+
+            return el;
+        }
+
+        /// <summary>
+        /// Create element that point to delegate of one index and no parameters.
         /// </summary>
         /// <param name="function"></param>
         /// <returns></returns>
@@ -129,22 +183,35 @@ namespace Qs.Runtime
             return el;
         }
 
+        /// <summary>
+        /// Create an element that point to delegate of one index and one Parameter.
+        /// </summary>
+        /// <param name="function"></param>
+        /// <returns></returns>
         public static QsSequenceElement FromDelegate(Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>> function)
         {
             QsSequenceElement el = new QsSequenceElement();
             el.ElementValue = function;
-
             return el;
         }
 
+        /// <summary>
+        /// Two parameters.
+        /// </summary>
+        /// <param name="function"></param>
+        /// <returns></returns>
         public static QsSequenceElement FromDelegate(Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> function)
         {
             QsSequenceElement el = new QsSequenceElement();
             el.ElementValue = function;
-
             return el;
         }
 
+        /// <summary>
+        /// Three parameters.
+        /// </summary>
+        /// <param name="function"></param>
+        /// <returns></returns>
         public static QsSequenceElement FromDelegate(Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> function)
         {
             QsSequenceElement el = new QsSequenceElement();
@@ -155,12 +222,13 @@ namespace Qs.Runtime
 
 
         /// <summary>
-        /// 
+        /// Parse the element text and make the element point to delegate which evaluate the text if necessary.
         /// </summary>
         /// <param name="element"></param>
         /// <returns></returns>
         public static QsSequenceElement Parse(string element, QsEvaluator qse, QsSequence sequence)
         {
+            if (string.IsNullOrEmpty(element)) throw new QsException("Can't create element from empty string.");
             
             //try direct quantity
             AnyQuantity<double> v;
@@ -168,21 +236,34 @@ namespace Qs.Runtime
             {
                 var el = QsSequenceElement.FromQuantity(v);
                 el.ElementDeclaration = element;
+
+                el.IndexEvaluation = false;
+                el.ParameterEvaluation = false;
                 return el;
             }
             else
             {
-                //try one index delegate without parameters
+                QsSequenceElement se = new QsSequenceElement();
                 
-
+                //try one index delegate without parameters
+                //Create the lambda function that will pass the index and parameters to the expression.
                 LambdaBuilder lb = Utils.Lambda(typeof(AnyQuantity<double>), "ElementValue");
 
-                //make the index parameter
+                //add the index parameter
                 lb.Parameter(typeof(int), sequence.SequenceIndexName);
+                
+                //find the index parameter in line to know if it will be evaluated or not
+                if (element.IndexOf(sequence.SequenceIndexName) > -1)
+                    se.IndexEvaluation = true;
+
 
                 //make the sequence parameters.
                 foreach (string seqParam in sequence.SequenceParameters)
+                {
                     lb.Parameter(typeof(AnyQuantity<double>), seqParam);
+                    if (element.IndexOf(seqParam) > -1)
+                        se.ParameterEvaluation = true;
+                }
 
                 QsVar pvar = new QsVar(qse, element, sequence, lb);
 
@@ -190,7 +271,6 @@ namespace Qs.Runtime
 
                 LambdaExpression le = lb.MakeLambda();
 
-                QsSequenceElement se = new QsSequenceElement();
                 se.ElementDeclaration = element;
                 se.ElementValue = le.Compile();
 

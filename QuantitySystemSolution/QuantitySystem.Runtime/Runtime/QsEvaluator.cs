@@ -285,42 +285,130 @@ namespace Qs.Runtime
                             seq = seq.MergeTokens(new WordToken());
                             seq = seq.MergeTokens(new ColonToken());
                             seq = seq.GroupBrackets();
-                            if (seq.Count == 2)
+                            if (seq.Count >= 2)
                             {
+                                // Sequence element assignation.
+
                                 if (seq[1].TokenType == typeof(SquareBracketGroupToken))
                                 {
-                                    //most likely sequence assignation
-                                    string sqname = QsSequence.FormSequenceName(seq[0].TokenValue, 1, 0);
-                                    QsSequence sq = QsSequence.GetSequence(Scope, sqname);
-
-                                    
                                     if (seq[1].Contains(typeof(ColonToken)))
                                     {
+                                        //indexed sequence.
                                         //a[n:1] = n!    the form that we expect.
-
                                         int n = int.Parse(seq[1][3].TokenValue);
                                         string indexName = seq[1][1].TokenValue;
-                                        string evline = line.Replace(indexName, sq.SequenceIndexName);
-                                        sq[n] = QsSequenceElement.Parse(evline, this, sq);
+
+                                        
+                                        if (seq.Count == 3)
+                                        {
+                                            //Parameterized indexed Sequence
+                                            
+                                            string[] parameters = { }; //array with zero count :)
+                                            if (seq[2].TokenType == typeof(ParenthesisGroupToken))
+                                            {
+                                                parameters = (from c in seq[2]
+                                                              where c.TokenType == typeof(WordToken)
+                                                              select c.TokenValue).ToArray();
+                                            }
+                                            else
+                                            {
+                                                throw new QsException("Expected Parenthesis for sequence element assignation");
+                                            }
+
+                                            string sqname = QsSequence.FormSequenceName(seq[0].TokenValue, 1, parameters.Length);
+
+                                            QsSequence sq = QsSequence.GetSequence(Scope, sqname);
+
+                                            //replace the index name used with the real index of the sequence.
+                                            string evline = line.Replace(indexName, sq.SequenceIndexName);
+
+
+                                            //replace the parameter names with parameters with the real parameter names of sequence
+                                            for (int i = 0; i < parameters.Length; i++)
+                                            {
+                                                evline = evline.Replace(parameters[i], sq.SequenceParameters[i]);
+                                            }
+
+                                            sq[n] = QsSequenceElement.Parse(evline, this, sq);
+                                        }
+                                        else
+                                        {
+                                            // Parameterless indexed Sequence
+                                            string sqname = QsSequence.FormSequenceName(seq[0].TokenValue, 1, 0);
+                                            QsSequence sq = QsSequence.GetSequence(Scope, sqname);
+
+                                            //replace the index name used with the real index of the sequence.
+                                            string evline = line.Replace(indexName, sq.SequenceIndexName);
+
+                                            sq[n] = QsSequenceElement.Parse(evline, this, sq);
+                                        }
                                     }
                                     else
                                     {
+                                     
+                                        //non indexed sequence
+                                        //match for a[1]
                                         int n = int.Parse(seq[1][1].TokenValue);
 
-                                        sq[n] = QsSequenceElement.Parse(line, this, sq);
+                                        if (seq.Count == 3)
+                                        {
+                                            //Parametrized non indexed sequence
+
+                                            string[] parameters = { }; //array with zero count :)
+                                            if (seq[2].TokenType == typeof(ParenthesisGroupToken))
+                                            {
+                                                parameters = (from c in seq[2]
+                                                              where c.TokenType == typeof(WordToken)
+                                                              select c.TokenValue).ToArray();
+                                            }
+                                            else
+                                            {
+                                                throw new QsException("Expected Parenthesis for sequence element assignation");
+                                            }
+
+                                            string sqname = QsSequence.FormSequenceName(seq[0].TokenValue, 1, parameters.Length);
+
+                                            QsSequence sq = QsSequence.GetSequence(Scope, sqname);
+
+                                            string evline = line;
+
+                                            //replace the parameter names with parameters with the real parameter names of sequence
+                                            for (int i = 0; i < parameters.Length; i++)
+                                            {
+                                                evline = evline.Replace(parameters[i], sq.SequenceParameters[i]);
+                                            }
+
+                                            sq[n] = QsSequenceElement.Parse(evline, this, sq);
+
+                                        }
+                                        else
+                                        {
+
+                                            // Parameterless Sequence
+                                            string sqname = QsSequence.FormSequenceName(seq[0].TokenValue, 1, 0);
+
+                                            QsSequence sq = QsSequence.GetSequence(Scope, sqname);
+
+                                            sq[n] = QsSequenceElement.Parse(line, this, sq);
+
+                                        }
                                     }
+
                                     return null;
                                 }
                                 else
                                 {
+                                    // not sequence.
                                     //do nothing
                                     return null;
                                 }
-
                             }
                             else
                             {
+                                //Normal Variable.
+
                                 QsVar qv = new QsVar(this, line);
+
                                 //assign the variable
                                 SetVariable(varName, qv.Execute());
                                 var q = GetQuantity(varName);
