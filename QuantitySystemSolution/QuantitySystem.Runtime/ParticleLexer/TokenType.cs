@@ -42,10 +42,7 @@ namespace ParticleLexer.TokenTypes
 
                 regexes.Add(tclass, Regex);
             }
-
         }
-
-        
     }
 
 
@@ -164,7 +161,15 @@ namespace ParticleLexer.TokenTypes
     {
     }
 
-    [TokenPattern(RegexPattern="\\.\\.")]
+    /// <summary>
+    /// The operator range that appears in the sequence calling square brackets n..m
+    /// where .. is
+    ///         ++ Series:              Sum elements
+    ///         ** Product:             Multiply elements
+    ///         :: Average:             Get the Mean of elements
+    ///         ## Standard Deviation
+    /// </summary>
+    [TokenPattern(RegexPattern = "((\\+\\+)?|(\\:\\:)?|(\\*\\*)?|(\\#\\#)?)")]
     public class SequenceRangeToken : TokenType
     {
     }

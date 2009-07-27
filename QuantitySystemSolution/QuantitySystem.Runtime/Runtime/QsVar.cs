@@ -408,13 +408,20 @@ namespace Qs.Runtime
             Token itok = Token.ParseText(indexText);
             itok = itok.RemoveSpaceTokens();
             itok = itok.MergeTokens(new WordToken());
-            itok = itok.MergeAllBut(new SequenceRangeToken(),typeof(WordToken));            
+            
+            itok = itok.MergeAllBut(new SequenceRangeToken(), typeof(WordToken));
+
             if (itok.Count == 3 && itok[1].TokenType == typeof(SequenceRangeToken))
             {
                 FromExpression = Expression.Call(typeof(Qs).GetMethod("IntegerFromQuantity"), ParseArithmatic(itok[0].TokenValue));
                 ToExpression = Expression.Call(typeof(Qs).GetMethod("IntegerFromQuantity"), ParseArithmatic(itok[2].TokenValue));
 
-                methodName = "SumElements";
+                if (itok[1].TokenValue == "++")
+                    methodName = "SumElements";
+                else if (itok[1].TokenValue == "::")
+                    methodName = "Average";
+                else if (itok[1].TokenValue == "**")
+                    methodName = "MulElements";
             }
             else if (int.TryParse(indexText, out n))
             {
@@ -471,7 +478,7 @@ namespace Qs.Runtime
                 parameters.Insert(0, IndexExpression);
 
             }
-            else if (methodName == "SumElements")
+            else
             {
                 switch (parameters.Count)
                 {
@@ -506,10 +513,6 @@ namespace Qs.Runtime
                 parameters.Insert(0, ToExpression);
                 parameters.Insert(0, FromExpression);
 
-            }
-            else
-            {
-                throw new QsException("Sequence method not found.");
             }
 
             #endregion

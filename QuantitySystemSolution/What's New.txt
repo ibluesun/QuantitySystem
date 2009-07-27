@@ -1,3 +1,7 @@
+[Quantity System 1.1.6]
+- Sequence concept added. in Qs ver 1.1.6
+
+
 [Quantity System Framework 1.1.4] {Releases}
 - Moved Exception handling from Qs layer to Console layer  so that dynamically calling for Qs will see the real exceptions.
 

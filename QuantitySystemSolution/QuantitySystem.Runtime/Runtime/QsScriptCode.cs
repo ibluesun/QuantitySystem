@@ -48,13 +48,13 @@ namespace Qs.Runtime
 
             foreach (string line in lines)
             {
-
                 if (!string.IsNullOrEmpty(line))
                 {
-                    if (!line.Trim().StartsWith("#"))
+                    string[] cl = line.Trim().Split('#');  //split the comment and normal line.
+
+                    if (!cl[0].StartsWith("#"))
                     {
-                        string cline = line.Trim();
-                        ret = qs.Evaluate(line);
+                        ret = qs.Evaluate(cl[0].Trim());
                     }
                 }
 
