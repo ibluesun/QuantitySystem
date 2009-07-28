@@ -324,7 +324,7 @@ namespace QuantitySystem.Units
 
             }
 
-            throw new UnitNotFoundException("Not found in strongly typed units");
+            throw new UnitNotFoundException(un);
         }
 
 
@@ -494,7 +494,7 @@ namespace QuantitySystem.Units
 
 
             nounit:
-            throw new UnitNotFoundException("Not found in strongly typed units");
+            throw new UnitNotFoundException(un);
 
         }
 
@@ -580,10 +580,10 @@ namespace QuantitySystem.Units
         {
             string DoubleNumber = @"[-+]?\d+(\.\d+)*([eE][-+]?\d+)*";
 
-            string UnitizedNumber = "(?<num>" + DoubleNumber + ")\\s*<(?<unit>.+?)>";
+            string UnitizedNumber = "^(?<num>" + DoubleNumber + ")\\s*<(?<unit>.+?)>$";
 
             double val;
-            Match um = Regex.Match(quantity, UnitizedNumber);
+            Match um = Regex.Match(quantity.Trim(), UnitizedNumber);
             if (um.Success)
             {
                 string varUnit = um.Groups["unit"].Value;

@@ -14,9 +14,15 @@ namespace QuantitySystem.Units
          // Add any type-specific logic, and supply the default message.
       }
 
-      public UnitNotFoundException(string message): base(message) 
+      public UnitNotFoundException(string unit)
+          : base(unit + " Not found")
       {
-         // Add any type-specific logic.
+      }
+
+      public UnitNotFoundException(string message, string unit)
+          : base(unit + " " + message)
+      {
+          // Add any type-specific logic.
       }
       public UnitNotFoundException(string message, Exception innerException): 
          base (message, innerException)
