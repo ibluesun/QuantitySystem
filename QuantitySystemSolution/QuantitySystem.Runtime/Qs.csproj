@@ -70,6 +70,8 @@
     <Compile Include="Runtime\QsEvaluator.cs" />
     <Compile Include="QsException.cs" />
     <Compile Include="Runtime\QsFunction.cs" />
+    <Compile Include="Runtime\QsParameter.cs" />
+    <Compile Include="Runtime\QsParamInfo.cs" />
     <Compile Include="Runtime\QsScriptCode.cs" />
     <Compile Include="Runtime\QsSequence.cs" />
     <Compile Include="Runtime\QsSequenceElement.cs" />

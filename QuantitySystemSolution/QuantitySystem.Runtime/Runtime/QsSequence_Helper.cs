@@ -24,7 +24,7 @@ namespace Qs.Runtime
                 {
                     gg += " {" + v.ToString(CultureInfo.InvariantCulture) + ": " + base[v].ElementDeclaration + "};";
                 }
-                return sequenceDeclaration + " " + gg;
+                return sequenceDeclaration + " ..> " + gg;
             }
             set
             {
@@ -32,7 +32,7 @@ namespace Qs.Runtime
             }
         }
 
-        public string[] SequenceParameters { get; private set; }
+        public QsParamInfo[] Parameters { get; private set; }
         public string SequenceIndexName { get; set; }
 
         private string sequenceName;
@@ -42,7 +42,7 @@ namespace Qs.Runtime
             {
                 //% indexes number.
                 //# parameters number.
-                return FormSequenceName(sequenceName, 1, SequenceParameters.Length);
+                return FormSequenceName(sequenceName, 1, Parameters.Length);
             }
             private set
             {
@@ -59,7 +59,7 @@ namespace Qs.Runtime
             else
                 SequenceIndexName = DefaultIndexName;
 
-            this.SequenceParameters = parameters;
+            this.Parameters = (from v in parameters select new QsParamInfo { Name = v }).ToArray();
 
         }
 

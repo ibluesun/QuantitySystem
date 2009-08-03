@@ -67,6 +67,10 @@ namespace Qs.Runtime
 
         LambdaBuilder lambdaBuilder = null;
 
+
+        private QsFunction Function;
+
+
         /// <summary>
         /// Evaluate the function body taking into considerations
         /// the parameters of the lambda function.
@@ -74,17 +78,29 @@ namespace Qs.Runtime
         /// <param name="evaluator"></param>
         /// <param name="line"></param>
         /// <param name="lb"></param>
-        public QsVar(QsEvaluator evaluator, string line, LambdaBuilder lb)
+        public QsVar(QsEvaluator evaluator, string line, QsFunction function, LambdaBuilder lb)
         {
             this.evaluator = evaluator;
-            if (lb != null)
+            if (function != null)
             {
                 lambdaBuilder = lb;
+
+                Function = function;
+
                 ParseMode = QsVarParseModes.Function;
             }
+
             ResultExpression = ParseArithmatic(line);
 
         }
+
+
+        public static Expression ParseToExpression(QsEvaluator evaluator, string line)
+        {
+            QsVar v = new QsVar(evaluator, line);
+            return v.ResultExpression;
+        }
+
 
         /// <summary>
         /// Evaluates Normal Calculations.
@@ -97,10 +113,7 @@ namespace Qs.Runtime
 
             ResultExpression = ParseArithmatic(line);
 
-
         }
-
-
 
         private QsSequence Sequence= null;
 
@@ -131,7 +144,7 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="line"></param>
         /// <returns></returns>
-        private Expression ParseArithmatic(string line)
+        internal Expression ParseArithmatic(string line)
         {
             var tokens = Token.ParseText(line);
 
@@ -214,6 +227,7 @@ namespace Qs.Runtime
                 }
                 else
                 {
+                    // Word token:  means variable 
                     if (ParseMode == QsVarParseModes.Function)
                     {
                         //get it from the parameters of the lambda
@@ -222,10 +236,40 @@ namespace Qs.Runtime
 
                         try
                         {
-                            quantityExpression = lambdaBuilder.Parameters.Single(c => c.Name == q);
+                            Expression eu = lambdaBuilder.Parameters.Single(c => c.Name == q);
+
+                            
+                            // parameter is having quantity in normal cases
+                            Expression directQuantity = Expression.Property(eu, "Quantity");
+                            
+                            // another expression for getting the quantity from the variable passed 
+                            //   this case only occur if I called a function declated like this   f(a) = a(5,3)+a
+                            //      because when calling f(u)  where u=50 and u(x,y)=x+y  then I want the evaluation to get the calculations right
+                            //      because a alone is expressing single global variable.
+
+                            // in this expression the RawValue were set because u had marked as function argument. 
+                            Expression indirectQuantity = Expression.Property(eu, "RawValue");
+
+                            indirectQuantity  = Expression.Call(
+                                                    typeof(QsEvaluator).GetMethod("GetScopeQuantity"),
+                                                    Expression.Constant(Scope), 
+                                                    indirectQuantity
+                                                    );
+
+                            //exression to test if quantity is null or not
+                            
+                            
+                            quantityExpression = Expression.Condition(
+                                Expression.Equal(directQuantity, Expression.Constant(null)),
+                                indirectQuantity,
+                                directQuantity
+                            );
+                            
                         }
-                        catch
+                        catch(Exception e)
                         {
+                            System.Diagnostics.Debug.Print(e.ToString());
+
                             //quantity variable  //get it from evaluator  global heap
                             quantityExpression = GetVariable(q);
                         }
@@ -323,6 +367,12 @@ namespace Qs.Runtime
             return fe;
         }
 
+        public AnyQuantity<double> Execute(string line)
+        {
+            ParseArithmatic(line);
+            return Execute();
+        }
+
         public AnyQuantity<double> Execute()
         {
             Expression<Func<AnyQuantity<double>>> cq = Expression.Lambda<Func<AnyQuantity<double>>>
@@ -357,6 +407,16 @@ namespace Qs.Runtime
             return siso.Success;
         }
         #endregion
+
+        public Microsoft.Scripting.Runtime.Scope Scope
+        {
+            get
+            {
+                return this.Evaluator.Scope;
+            }
+        }
+
+        public Type ScopeType { get { return Scope.GetType(); } }
 
         #region Expressions Generators
 
@@ -418,7 +478,7 @@ namespace Qs.Runtime
 
                 if (itok[1].TokenValue == "++")
                     methodName = "SumElements";
-                else if (itok[1].TokenValue == "::")
+                else if (itok[1].TokenValue == "!!")
                     methodName = "Average";
                 else if (itok[1].TokenValue == "**")
                     methodName = "MulElements";
@@ -527,7 +587,8 @@ namespace Qs.Runtime
         }
 
         /// <summary>
-        /// Function Expression result.
+        /// Used to build the function call expression 
+        /// either if called directly or called from another function 
         /// </summary>
         /// <param name="functionName"></param>
         /// <param name="args"></param>
@@ -536,63 +597,147 @@ namespace Qs.Runtime
         {
             //fn(x,y,ff(y/x,e+fr(d)))     <== sample form :D
 
+            List<string> paramsText = new List<string>();  //contains the parameters sent as text 
 
-            string fn = functionName;
-
-            List<Expression> parameters = new List<Expression>();
-
-            //now parameters separated
-
+            //discover parameters
             for (int ai = 1; ai < args.Count - 1; ai++ )
             {
-                if (args[ai].TokenValue != ",")
-                    parameters.Add(ParseArithmatic(args[ai].TokenValue));
+                if (args[ai].TokenValue != ",") paramsText.Add(args[ai].TokenValue);
             }
 
-            string fnr = fn + "#" + parameters.Count; //to call the right function 
+            //now parameters separated
+            // specify the function real name 
+            string TargetFunctionRealName = QsFunction.FormFunctionScopeName(functionName, paramsText.Count); //to call the right function 
 
-            object QsFunc;
+            QsFunction TargetFunction = QsFunction.GetFunction(Scope, TargetFunctionRealName);
+            List<Expression> parameters = new List<Expression>();
 
-            //find the function
-            if (this.Evaluator.Scope.TryGetName(SymbolTable.StringToId(fnr), out QsFunc))
+
+            #region Helper delegates
+            //delegate to check if the function name in the Function object of the current function expression formation or if parsemode = function
+            Func<string, Expression> ParameterFunction = delegate(string funcName)
             {
+                //but may be the function name should be retrieved from a parameter.
+                int co;
+                if (ParseMode == QsVarParseModes.Function)
+                    co = Function.Parameters.Count(c => c.Name == funcName);
+                else if (ParseMode == QsVarParseModes.Sequence)
+                    co = Sequence.Parameters.Count(c => c.Name == funcName);
+                else
+                    throw new QsException("Parse mode is not known to evaluate this function");
 
-                //I need to call the function by its reference
-                //  which means get the function reference and make an expression which call it 
-                //    how can I make this here?????
-                
-                
-                Type ScopeType = this.Evaluator.Scope.GetType();
-
-                //store the scope
-                var ScopeExp = Expression.Constant(Evaluator.Scope, ScopeType);
-
-                
-                var fe = Expression.Call(
-                    typeof(QsFunction).GetMethod("GetFunction"), 
-                    ScopeExp, Expression.Constant(fnr));
+                if (co > 0)
+                {
+                    QsParamInfo pinfo;
+                    if (ParseMode == QsVarParseModes.Function)
+                        pinfo = Function.Parameters.Single(c => c.Name == funcName);
+                    else if (ParseMode == QsVarParseModes.Sequence)
+                        pinfo = Sequence.Parameters.Single(c => c.Name == funcName);
+                    else
+                        throw new QsException("Parse mode is not known to evaluate this function");
 
 
 
-                string param_count = parameters.Count.ToString(CultureInfo.InvariantCulture);
+                    //Yes the function should be retrieved dynamically from the passed parameter name.
+
+                    // THIS IS THE RIGHT SIDE OF EVALUATING FUNCTION    i.e. f(a) = 5+a(4,2)+a  
+                    // ------------------------------------------------------------------------
+
+                    // Prepare the expression that will execute this function dynamically
+
+                    // Get the function name from the parameter
+                    Expression FunctionParameter = lambdaBuilder.Parameters.Single(c => c.Name == functionName);
+
+                    Expression FunctionParameterName = Expression.Call(FunctionParameter,
+                        typeof(QsParameter).GetMethod("GetTrueFunctionName"),
+                        Expression.Constant(paramsText.Count)
+                        );
+
+                    // Get the Function object.
+                    Expression Functor = Expression.Call(typeof(QsFunction).GetMethod("GetFunctionAndThrowIfNotFound"),
+                        Expression.Constant(Scope),
+                        FunctionParameterName
+                        );
+
+                    //prepare arguments.
+                    //  evaluate the inner arguments of this function  v(x, c , b) = c(b(x), x-2,x/4,40) 
+                    //   b(x)  //will be evaluate to another late discover expression.
+                    //   x-2
+                    //   x/4
+                    //   40
+                    List<Expression> FunctorParams = new List<Expression>();
+                    foreach (string prm in paramsText)
+                    {
+                        Expression q = ParseArithmatic(prm); // evaluate the parameter
+                        Expression rw;
+                        try
+                        {
+                            rw = lambdaBuilder.Parameters.Single(c => c.Name == prm);
+                            rw = Expression.Property(rw, "RawValue");  //raw value that was send with this parameter.
+                        }
+                        catch
+                        {
+                            rw = Expression.Constant(prm);   // the hard coded parameter because finding the parameter value failed
+                            //occurs if the passing parameter contains expression not standalone variable.
+                        }
+
+                        Expression qp = Expression.Call(
+                            typeof(QsParameter).GetMethod("MakeParameter"),
+                            q,                                //Evaluated value.
+                            rw                                //Raw Value
+                            );
+
+                        FunctorParams.Add(qp);
+
+                    }
+
+                    Expression CallExpression = Expression.Call(Functor,
+                        typeof(QsFunction).GetMethod("GetInvoke"),
+                        Expression.NewArrayInit(typeof(QsParameter), FunctorParams)
+                        );
+
+                    //set that the parameter is function.
+                    pinfo.Type = QsParamType.Function;
 
 
-                return Expression.Invoke(Expression.Property(fe, "FunctionDelegate_" + param_count), parameters);
+                    return CallExpression;
+                }
 
-                
+                return null;
 
+            };
+
+            #endregion
+
+            if (TargetFunction != null)
+            {
+                //Yes we have a direct available function for call.
+
+                // check if the function name is originally come from the parameters.
+                if (this.ParseMode == QsVarParseModes.Function)
+                {
+                    Expression FunP = ParameterFunction(functionName); //caling the helper delegate.
+                    if (FunP != null) return FunP;
+                }
+
+                // Function exist in global heap of the scope 
+                return TargetFunction.GetInvokeExpression(this, paramsText);
             }
             else
             {
-                throw new QsException(fn + " function with " + parameters.Count.ToString() + " parameter(s) not found.");
+                //Why we can't find the function in the global heap.
+
+                if (this.ParseMode == QsVarParseModes.Function)
+                {
+                    Expression FunP = ParameterFunction(functionName);
+                    if (FunP != null) return FunP;
+                }
+
+                throw new QsException(functionName + ": Can't be found in global heap");
+
             }
 
-
-            
-            
         }
-
-
 
 
         /// <summary>

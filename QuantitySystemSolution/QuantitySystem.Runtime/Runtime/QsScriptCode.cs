@@ -50,11 +50,11 @@ namespace Qs.Runtime
             {
                 if (!string.IsNullOrEmpty(line))
                 {
-                    string[] cl = line.Trim().Split('#');  //split the comment and normal line.
+                    string[] l2 = line.Split('#');
 
-                    if (!cl[0].StartsWith("#"))
+                    if (!l2[0].Trim().StartsWith("#"))
                     {
-                        ret = qs.Evaluate(cl[0].Trim());
+                        ret = qs.Evaluate(l2[0].Trim());
                     }
                 }
 
