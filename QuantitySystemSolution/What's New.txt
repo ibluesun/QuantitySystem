@@ -1,3 +1,14 @@
+[Quantity System 1.1.7] {Release}
+
+- Passing Functions as arguments.
+  
+- Optimization for parameterless sequqnece  {actually I am only caching elements  especially for fibonaccy like sequences}
+     however sequence still need another optimizations.
+     
+- Run [filename] in console load the content file into the current session and execute its contents (usefull if you had coded previous functions or sequences before)
+
+
+                                          
 [Quantity System 1.1.6]
 - Sequence concept added. in Qs ver 1.1.6
 

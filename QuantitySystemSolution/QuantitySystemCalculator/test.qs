@@ -27,6 +27,17 @@ c[] ..> b[]/a[]
 
 v[n] ..> b[n-1] * a[n+1]
 
+
+# Function as argument into another function
+
+g(x) = x^2
+
+c(x,y) = x(y/2)
+d(x,y) = x+y
+
+v(l1,l2,h) = l1(l2,h)
+
+
 #Please Accept my deepest regards 
 #	Ahmed Sadek
 

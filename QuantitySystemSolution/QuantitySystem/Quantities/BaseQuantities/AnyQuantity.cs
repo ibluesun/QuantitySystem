@@ -50,6 +50,22 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
             return qname + ": " + Value.ToString() + " " + (Unit != null ? Unit.Symbol : "");
         }
+
+        public string ToShortString()
+        {
+            
+            string un = string.Empty;
+            if (Unit != null)
+            {
+                un = Unit.Symbol.Trim();
+
+                if (un[0] != '<') un = "<" + un + ">"; 
+            }
+            
+            return Value.ToString() + " " + un;
+        
+        }
+
         #endregion
 
 

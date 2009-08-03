@@ -166,10 +166,10 @@ namespace ParticleLexer.TokenTypes
     /// where .. is
     ///         ++ Series:              Sum elements
     ///         ** Product:             Multiply elements
-    ///         :: Average:             Get the Mean of elements
+    ///         !! Average:             Get the Mean of elements
     ///         ## Standard Deviation
     /// </summary>
-    [TokenPattern(RegexPattern = "((\\+\\+)?|(\\:\\:)?|(\\*\\*)?|(\\#\\#)?)")]
+    [TokenPattern(RegexPattern = "((\\+\\+)?|(!!)?|(\\*\\*)?|(\\#\\#)?)")]
     public class SequenceRangeToken : TokenType
     {
     }

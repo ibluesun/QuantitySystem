@@ -258,10 +258,10 @@ namespace Qs.Runtime
 
 
                 //make the sequence parameters.
-                foreach (string seqParam in sequence.SequenceParameters)
+                foreach (var seqParam in sequence.Parameters)
                 {
-                    lb.Parameter(typeof(AnyQuantity<double>), seqParam);
-                    if (element.IndexOf(seqParam) > -1)
+                    lb.Parameter(typeof(AnyQuantity<double>), seqParam.Name);
+                    if (element.IndexOf(seqParam.Name) > -1)
                         se.ParameterEvaluation = true;
                 }
 

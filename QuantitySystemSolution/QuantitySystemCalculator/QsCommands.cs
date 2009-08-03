@@ -242,6 +242,7 @@ using Microsoft.Scripting;
             foreach (string var in GetVariablesKeys(scope))
             {
                 Console.WriteLine("    " + var + "= " + GetVariable(scope, var).ToString());
+                Console.WriteLine();
             }
 
             Console.ForegroundColor = ConsoleColor.White;

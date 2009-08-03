@@ -112,6 +112,22 @@ namespace Qs.Runtime
         }
 
 
+
+        public bool SilentOutput = false;
+
+        /// <summary>
+        /// Never put any thing on the output screen.
+        /// </summary>
+        /// <param name="line"></param>
+        /// <returns></returns>
+        public object SilentEvaluate(string line)
+        {
+            SilentOutput = true;
+            var r = Evaluate(line);
+            SilentOutput = false;
+            return r;
+        }
+
         public object Evaluate(string expr)
         {
             if (string.IsNullOrEmpty(expr)) return null;
@@ -326,7 +342,7 @@ namespace Qs.Runtime
                                             //replace the parameter names with parameters with the real parameter names of sequence
                                             for (int i = 0; i < parameters.Length; i++)
                                             {
-                                                evline = evline.Replace(parameters[i], sq.SequenceParameters[i]);
+                                                evline = evline.Replace(parameters[i], sq.Parameters[i].Name);
                                             }
 
                                             sq[n] = QsSequenceElement.Parse(evline, this, sq);
@@ -375,7 +391,7 @@ namespace Qs.Runtime
                                             //replace the parameter names with parameters with the real parameter names of sequence
                                             for (int i = 0; i < parameters.Length; i++)
                                             {
-                                                evline = evline.Replace(parameters[i], sq.SequenceParameters[i]);
+                                                evline = evline.Replace(parameters[i], sq.Parameters[i].Name);
                                             }
 
                                             sq[n] = QsSequenceElement.Parse(evline, this, sq);
@@ -474,11 +490,14 @@ namespace Qs.Runtime
 
         public void PrintQuantity(BaseQuantity qty)
         {
-            Console.ForegroundColor = ConsoleColor.Yellow;
-            
-            Console.WriteLine("    {0}", qty.ToString());
+            if (!SilentOutput)
+            {
+                Console.ForegroundColor = ConsoleColor.Yellow;
 
-            Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("    {0}", qty.ToString());
+
+                Console.ForegroundColor = ConsoleColor.White;
+            }
         }
 
         #endregion
