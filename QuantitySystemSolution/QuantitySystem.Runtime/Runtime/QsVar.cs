@@ -14,7 +14,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Quantities.DimensionlessQuantities;
 using QuantitySystem.Units;
 using System.Globalization;
-using Qs.QsTypes;
+using Qs.Modules;
 using System.Reflection;
 
 
@@ -298,6 +298,7 @@ namespace Qs.Runtime
                         {
                             //quantity variable  //get it from evaluator  global heap
                             quantityExpression = GetVariable(q);
+                            Sequence.CachingEnabled = false;  //because when evaluating external variable the external variable may change without knowing
                         }
 
                     }
@@ -445,7 +446,7 @@ namespace Qs.Runtime
                 }
             }
 
-            string seqo = QsSequence.FormSequenceName(sequenceName, 1, parameters.Count);
+            string seqo = QsSequence.FormSequenceScopeName(sequenceName, 1, parameters.Count);
 
             //get the sequence dynamically because sequence can be recursive :)
 
@@ -617,18 +618,20 @@ namespace Qs.Runtime
             //delegate to check if the function name in the Function object of the current function expression formation or if parsemode = function
             Func<string, Expression> ParameterFunction = delegate(string funcName)
             {
+                //this anonymous function is calling the function dynamically from the passed function argument.
+                
                 //but may be the function name should be retrieved from a parameter.
-                int co;
+                int parametersCount;
                 if (ParseMode == QsVarParseModes.Function)
-                    co = Function.Parameters.Count(c => c.Name == funcName);
+                    parametersCount = Function.Parameters.Count(c => c.Name == funcName);
                 else if (ParseMode == QsVarParseModes.Sequence)
-                    co = Sequence.Parameters.Count(c => c.Name == funcName);
+                    parametersCount = Sequence.Parameters.Count(c => c.Name == funcName);
                 else
                     throw new QsException("Parse mode is not known to evaluate this function");
 
-                if (co > 0)
+                if (parametersCount > 0)
                 {
-                    QsParamInfo pinfo;
+                    QsParamInfo pinfo; //the parameter in the parent function that hold the function name.
                     if (ParseMode == QsVarParseModes.Function)
                         pinfo = Function.Parameters.Single(c => c.Name == funcName);
                     else if (ParseMode == QsVarParseModes.Sequence)
@@ -691,6 +694,7 @@ namespace Qs.Runtime
 
                     }
 
+                    // expression to call the function QsFunction.GetInvoke  is used here 
                     Expression CallExpression = Expression.Call(Functor,
                         typeof(QsFunction).GetMethod("GetInvoke"),
                         Expression.NewArrayInit(typeof(QsParameter), FunctorParams)
@@ -711,11 +715,18 @@ namespace Qs.Runtime
 
             if (TargetFunction != null)
             {
-                //Yes we have a direct available function for call.
+                // Means a function is already available in the global heap to be called.
+                // so we can call it directly if we wish 
+                
 
                 // check if the function name is originally come from the parameters.
                 if (this.ParseMode == QsVarParseModes.Function)
                 {
+                    //but if the function name is from parameter name 
+                    // then we can't call it from global heap 
+                    // we have to get the parameter name that was passed to the function
+                    //  and call it dynamically from there.
+
                     Expression FunP = ParameterFunction(functionName); //caling the helper delegate.
                     if (FunP != null) return FunP;
                 }

@@ -1,3 +1,12 @@
+[Quantity System 1.1.8] 
+
+New Quantities:
+- Stiffness  <N/m>
+- RotationalStiffness Torque / Angle
+- Momentum  Mass * Velocity
+- MassMomentOfInteria  I   <kg.m!^2>   like the regular mass
+- AngularMomentum  Mass Moment Of Interia * Angular Velocity
+
 [Quantity System 1.1.7] {Release}
 
 - Passing Functions as arguments.

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 
-namespace Qs.QsTypes
+namespace Qs.Modules
 {
     /// <summary>
     /// Gives the factorial of real numbers.

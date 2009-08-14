@@ -46,7 +46,7 @@ namespace Qs
         /// <summary>
         /// Quantitize the double value into DimensionlessQuantity
         /// </summary>
-        /// <param name="d"></param>
+        /// <param name="i"></param>
         /// <returns></returns>
         public static AnyQuantity<double> ToQuantity(this int i)
         {

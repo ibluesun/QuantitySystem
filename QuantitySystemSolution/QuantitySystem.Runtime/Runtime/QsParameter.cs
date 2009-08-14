@@ -60,7 +60,13 @@ namespace Qs.Runtime
             }
         }
 
-
+        /// <summary>
+        /// if we consider the <see cref="RawValue"/> as a function name.
+        /// then this function will get the actual function name which include parameters count.
+        /// This function is only used in making expressions.
+        /// </summary>
+        /// <param name="paramCount"></param>
+        /// <returns></returns>
         public string GetTrueFunctionName(int paramCount)
         {
             return QsFunction.FormFunctionScopeName(RawValue, paramCount);
