@@ -66,6 +66,7 @@
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="QuantitiesNotDimensionallyEqualException.cs" />
     <Compile Include="Quantities\AngularAcceleration.cs" />
+    <Compile Include="Quantities\AngularMomentum.cs" />
     <Compile Include="Quantities\AngularVelocity.cs" />
     <Compile Include="Quantities\BaseQuantities\AmountOfSubstance.cs" />
     <Compile Include="Quantities\BaseQuantities\AnyQuantity_Operations.cs" />
@@ -99,13 +100,19 @@
     <Compile Include="Quantities\LuminousFlux.cs" />
     <Compile Include="Quantities\MagneticFlux.cs" />
     <Compile Include="Quantities\MagneticFluxDensity.cs" />
+    <Compile Include="Quantities\MassMomentOfInertia.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Quantities\MolarMass.cs" />
+    <Compile Include="Quantities\Momentum.cs" />
     <Compile Include="Quantities\Power.cs" />
     <Compile Include="Quantities\Pressure.cs" />
     <Compile Include="Quantities\RadiantIntensity.cs" />
+    <Compile Include="Quantities\RotationalStiffness.cs" />
     <Compile Include="Quantities\SpecificHeat.cs" />
     <Compile Include="Quantities\SpecificVolume.cs" />
     <Compile Include="Quantities\SpecificWeight.cs" />
+    <Compile Include="Quantities\Stiffness.cs" />
     <Compile Include="Quantities\Torque.cs">
       <SubType>Code</SubType>
     </Compile>

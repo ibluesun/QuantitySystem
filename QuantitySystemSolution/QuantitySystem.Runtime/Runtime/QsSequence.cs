@@ -30,7 +30,7 @@ namespace Qs.Runtime
         /// Correspones To: S[i]
         /// </summary>
         /// <param name="index"></param>
-        /// <returns></returns>
+        /// <returns><see cref="QsSequenceElement"/></returns>
         public new QsSequenceElement this[int index]
         {
             get
@@ -83,9 +83,35 @@ namespace Qs.Runtime
             }   
         }
 
+        /// <summary>
+        /// The same function as indexer.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
         public QsSequenceElement GetElement(int index)
         {
             return this[index];
+        }
+
+
+
+        private bool _CachingEnabled;
+        /// <summary>
+        /// If true the sequence ability to to be cached is available.
+        /// </summary>
+        public bool CachingEnabled
+        {
+            internal set
+            {
+                _CachingEnabled = value;
+
+                if (value == false)
+                    CachedValues.Clear(); //clear the previous cached values.
+            }
+            get
+            {
+                return _CachingEnabled;
+            }
         }
 
         /// <summary>
@@ -103,16 +129,20 @@ namespace Qs.Runtime
         public AnyQuantity<double> GetElementQuantity(int index)
         {
             AnyQuantity<double> val;
-            if (CachedValues.TryGetValue(index, out val))
+            if (CachingEnabled)
             {
-                return val;
+                if (CachedValues.TryGetValue(index, out val))
+                {
+                    return val;
+                }
             }
-            else
-            {
-                val = (AnyQuantity<double>)GetElement(index).Execute(index);
-                CachedValues[index] = val;
-                return val;
-            }
+
+            val = (AnyQuantity<double>)GetElement(index).Execute(index);
+
+            if (CachingEnabled) CachedValues[index] = val;
+
+            return val;
+
         }
 
         #region Get Element Quantity Functions

@@ -12,7 +12,11 @@ namespace QuantitySystem.Quantities
         public Torque()
             : base(1, new Force<T>(), new Length<T>(1, LengthType.Radius))
         {
+        }
 
+        public Torque(float exponent)
+            : base(exponent, new Force<T>(exponent), new Length<T>(exponent, LengthType.Radius))
+        {
         }
 
 

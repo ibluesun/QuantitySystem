@@ -1,4 +1,4 @@
-﻿using Qs.QsTypes;
+﻿using Qs.Modules;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;

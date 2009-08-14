@@ -62,7 +62,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 if (un[0] != '<') un = "<" + un + ">"; 
             }
             
-            return Value.ToString() + " " + un;
+            return Value.ToString() + un;
         
         }
 

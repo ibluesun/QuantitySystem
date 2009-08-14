@@ -64,12 +64,15 @@
     <Compile Include="ParticleLexer\TokenType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Qs.cs" />
-    <Compile Include="QsTypes\Gamma.cs" />
+    <Compile Include="Modules\Gamma.cs" />
     <Compile Include="Runtime\QsBinder.cs" />
     <Compile Include="Runtime\QsContext.cs" />
     <Compile Include="Runtime\QsEvaluator.cs" />
     <Compile Include="QsException.cs" />
     <Compile Include="Runtime\QsFunction.cs" />
+    <Compile Include="Runtime\QsMatrix.cs" />
+    <Compile Include="Runtime\QsMatrixException.cs" />
+    <Compile Include="Runtime\QsMatrixOperators.cs" />
     <Compile Include="Runtime\QsParameter.cs" />
     <Compile Include="Runtime\QsParamInfo.cs" />
     <Compile Include="Runtime\QsScriptCode.cs" />

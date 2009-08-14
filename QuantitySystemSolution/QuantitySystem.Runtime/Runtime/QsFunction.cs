@@ -64,11 +64,28 @@ namespace Qs.Runtime
         }
 
 
+        public AnyQuantity<double> Invoke(params AnyQuantity<double>[] args)
+        {
+            var parms = (from arg in args
+                         select QsParameter.MakeParameter(arg, arg.ToShortString())).ToArray();
 
+            return Invoke(parms);
+        }
+
+        /// <summary>
+        /// Invoke parameterless function
+        /// </summary>
+        /// <returns></returns>
         public AnyQuantity<double> Invoke()
         {
             return FunctionDelegate_0();
         }
+
+        /// <summary>
+        /// Invoke function with any number of parameters up to 12 parameter
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public AnyQuantity<double> Invoke(params QsParameter[] args)
         {
             switch (args.Length)
@@ -101,7 +118,7 @@ namespace Qs.Runtime
                     return FunctionDelegate_12(args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10], args[11]);
 
                 default:
-                    throw new QsInvalidInputException("Function with required parameters");
+                    throw new QsInvalidInputException("Function arguments exceed the library limit {12}");
             }
         }
 
@@ -120,10 +137,11 @@ namespace Qs.Runtime
                 Expression nakedParameter;
                 Expression rawParameter = Expression.Constant(args[ip]);
 
-                if (this.Parameters[ip].Type == QsParamType.Function)
+                if (this.Parameters[ip].Type == QsParamType.Function) //is this parameter in declaration is pointing to function handle
                 {
-                    //Handle to function.
-                    nakedParameter = Expression.Constant(args[ip]);  // and I will postpone the evaluation untill we process the function.
+                    //yes: treat this parameter as function handle
+                    // get the argument as a string value to be used after that as a function name.
+                    nakedParameter = Expression.Constant(args[ip]);  // and I will postpone the evaluation until we process the function.
                 }
                 else
                 {
@@ -131,6 +149,7 @@ namespace Qs.Runtime
                     nakedParameter = vario.ParseArithmatic(args[ip]);
                 }
 
+                //expression to make parameter from the corresponding naked parameter
                 parameters.Add(Expression.Call(typeof(QsParameter).GetMethod("MakeParameter"), nakedParameter, rawParameter));
 
             }
@@ -140,17 +159,14 @@ namespace Qs.Runtime
         }
 
 
+        /// <summary>
+        /// This function is used internally from the expression calls.
+        ///  by this I was able to solve passing function handle more than once into another functions.
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         public AnyQuantity<double> GetInvoke(params QsParameter[] parameters)
         {
-            // args hold the hard coded value of the arguments that the function take.
-            // parameters hold  the enclosed function parameters that will be sent this function
-            // for example  V(x,c) = c(x/2)
-            //   x as a parameter from parameters  which will be QsParameter.
-            //   "x/2" is the hard coded text that passed to the 
-            // we have to get the value of x into the "x/2" and evaluate
-            // 
-
-
             List<QsParameter> ProcessedParameters = new List<QsParameter>();
 
             for (int ip = 0; ip < parameters.Count(); ip++)
@@ -395,6 +411,13 @@ namespace Qs.Runtime
             
         }
 
+        /// <summary>
+        /// Get the function from the global heap and throw exception if not found.
+        /// This function is used in building expression.
+        /// </summary>
+        /// <param name="scope"></param>
+        /// <param name="realName"></param>
+        /// <returns></returns>
         public static QsFunction GetFunctionAndThrowIfNotFound(Scope scope, string realName)
         {
             var f = GetFunction(scope, realName);

@@ -46,7 +46,7 @@ namespace Qs.Runtime
         public bool IndexEvaluation { get; set; }
 
         /// <summary>
-        /// If true the element one or more parameters that evaluated at runtime.
+        /// If true the element has one or more parameters that evaluated at runtime.
         /// </summary>
         public bool ParameterEvaluation { get; set; }
 
@@ -278,7 +278,7 @@ namespace Qs.Runtime
 
             }
 
-            throw new Exception("Check me :( :( :( ");
+            throw new Exception("Check me in sequence element :( :( :( ");
             
         }
 

@@ -110,10 +110,7 @@ using Microsoft.Scripting;
                     
                 }
             }
-
-
             return true;
-
         }
 
 
@@ -138,9 +135,9 @@ using Microsoft.Scripting;
         {
             Console.ForegroundColor = ConsoleColor.Gray;
 
-            var qsc_ver = (AssemblyFileVersionAttribute)Assembly.GetAssembly(typeof(QuantitySystem.QuantityDimension)).GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false)[0];
+            var lib_ver = (AssemblyFileVersionAttribute)Assembly.GetAssembly(typeof(QuantitySystem.QuantityDimension)).GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false)[0];
 
-            var lib_ver = (AssemblyFileVersionAttribute)Assembly.GetAssembly(typeof(Qs.Qs)).GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false)[0];
+            var qsc_ver = (AssemblyFileVersionAttribute)Assembly.GetAssembly(typeof(Qs.Qs)).GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false)[0];
 
             var calc_ver = (AssemblyFileVersionAttribute)Assembly.GetEntryAssembly().GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false)[0];
 
@@ -152,7 +149,8 @@ using Microsoft.Scripting;
             var qsc_cwr = (AssemblyCopyrightAttribute)Assembly.GetEntryAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false)[0];
             Console.WriteLine(qsc_cwr.Copyright);
             Console.WriteLine();
-            Console.WriteLine("http://QuantitySystem.CodePlex.com");
+            Console.WriteLine("Project Source: http://QuantitySystem.CodePlex.com");
+            Console.WriteLine("Project Blog:   http://QuantitySystem.WordPress.com");
             Console.WriteLine("-----------------------------------------------------------");
 
             Console.WriteLine("Email: Ahmed.Sadek@LostParticles.net; Ahmed.Amara@gmail.com");

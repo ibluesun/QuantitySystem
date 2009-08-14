@@ -106,11 +106,17 @@ namespace Qs.Runtime
 
             scope.TryGetName(SymbolTable.StringToId(name), out q);
 
+            if (q != null)
+            {
+                return (AnyQuantity<double>)q;
+            }
+            else
+            {
+                throw new QsException("Variable '" + name + "' Not Found.");
 
-            return (AnyQuantity<double>)q;
+            }
 
         }
-
 
 
         public bool SilentOutput = false;
@@ -331,7 +337,7 @@ namespace Qs.Runtime
                                                 throw new QsException("Expected Parenthesis for sequence element assignation");
                                             }
 
-                                            string sqname = QsSequence.FormSequenceName(seq[0].TokenValue, 1, parameters.Length);
+                                            string sqname = QsSequence.FormSequenceScopeName(seq[0].TokenValue, 1, parameters.Length);
 
                                             QsSequence sq = QsSequence.GetSequence(Scope, sqname);
 
@@ -350,7 +356,7 @@ namespace Qs.Runtime
                                         else
                                         {
                                             // Parameterless indexed Sequence
-                                            string sqname = QsSequence.FormSequenceName(seq[0].TokenValue, 1, 0);
+                                            string sqname = QsSequence.FormSequenceScopeName(seq[0].TokenValue, 1, 0);
                                             QsSequence sq = QsSequence.GetSequence(Scope, sqname);
 
                                             //replace the index name used with the real index of the sequence.
@@ -382,7 +388,7 @@ namespace Qs.Runtime
                                                 throw new QsException("Expected Parenthesis for sequence element assignation");
                                             }
 
-                                            string sqname = QsSequence.FormSequenceName(seq[0].TokenValue, 1, parameters.Length);
+                                            string sqname = QsSequence.FormSequenceScopeName(seq[0].TokenValue, 1, parameters.Length);
 
                                             QsSequence sq = QsSequence.GetSequence(Scope, sqname);
 
@@ -401,7 +407,7 @@ namespace Qs.Runtime
                                         {
 
                                             // Parameterless Sequence
-                                            string sqname = QsSequence.FormSequenceName(seq[0].TokenValue, 1, 0);
+                                            string sqname = QsSequence.FormSequenceScopeName(seq[0].TokenValue, 1, 0);
 
                                             QsSequence sq = QsSequence.GetSequence(Scope, sqname);
 

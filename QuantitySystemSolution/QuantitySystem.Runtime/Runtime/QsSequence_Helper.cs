@@ -42,7 +42,7 @@ namespace Qs.Runtime
             {
                 //% indexes number.
                 //# parameters number.
-                return FormSequenceName(sequenceName, 1, Parameters.Length);
+                return FormSequenceScopeName(sequenceName, 1, Parameters.Length);
             }
             private set
             {
@@ -50,6 +50,9 @@ namespace Qs.Runtime
             }
         }
 
+        /// <summary>
+        /// The default index name in the sequence without explicitly declared index name.
+        /// </summary>
         public const string DefaultIndexName = "_1";
 
         public QsSequence(string indexName, string[] parameters)
@@ -60,6 +63,9 @@ namespace Qs.Runtime
                 SequenceIndexName = DefaultIndexName;
 
             this.Parameters = (from v in parameters select new QsParamInfo { Name = v }).ToArray();
+
+            if (parameters.Length == 0) CachingEnabled = true;  //Allow caching for parameterless sequence.
+
 
         }
 
@@ -150,9 +156,7 @@ namespace Qs.Runtime
 
                 t = t.MergeAllBut(3 + shift, new SemiColonToken(), typeof(SequenceElementToken));
 
-
-
-                QsSequence seqo = GetSequence(qse.Scope, FormSequenceName(sequenceName, indexes.Length, parameters.Length));
+                QsSequence seqo = GetSequence(qse.Scope, FormSequenceScopeName(sequenceName, indexes.Length, parameters.Length));
 
 
                 if (seqo == null)
@@ -172,6 +176,22 @@ namespace Qs.Runtime
                 else
                 {
                     //sequence exist 
+                    if (SequenceTokenType == typeof(PositiveSequenceToken))
+                    {
+                        //it meanse I am defining the sequence again and overwrite the previous one
+
+                        seqo = new QsSequence(indexes.Length > 0 ? indexes[0] : string.Empty, parameters)
+                        {
+                            SequenceName = sequenceName,
+                            SequenceDeclaration = t[0].TokenValue + t[1].TokenValue + (shift == 1 ? t[2].TokenValue : "")
+
+                        };
+
+                    }
+                    else
+                    {
+                        seqo.CachedValues.Clear();  //clear all cache because we are defining extra elements.
+                    }
                 }
 
                 //beginElement is zero index element in positive sequence and -1 index element in negative sequence.
@@ -244,7 +264,7 @@ namespace Qs.Runtime
 
         }
 
-        public static string FormSequenceName(string name, int indexesCount, int parametersCount)
+        public static string FormSequenceScopeName(string name, int indexesCount, int parametersCount)
         {
             if (indexesCount == 0) indexesCount = 1;
             return name + "%" + indexesCount.ToString(CultureInfo.InvariantCulture) + "#" + parametersCount.ToString(CultureInfo.InvariantCulture);
