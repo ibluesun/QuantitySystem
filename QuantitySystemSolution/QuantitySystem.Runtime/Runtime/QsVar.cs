@@ -16,6 +16,7 @@ using QuantitySystem.Units;
 using System.Globalization;
 using Qs.Modules;
 using System.Reflection;
+using Qs.RuntimeTypes;
 
 
 namespace Qs.Runtime
@@ -138,6 +139,15 @@ namespace Qs.Runtime
         }
 
 
+        internal Token MergeOperators(Token token)
+        {
+            Token tok = token.MergeTokens(new MatlabArrayMultilply());
+            tok = tok.MergeTokens(new MatlabArrayDivide());
+            tok = tok.MergeTokens(new MatlabArrayPower());
+
+            return tok;
+        }
+
 
         /// <summary>
         /// Main parsing method.
@@ -148,12 +158,23 @@ namespace Qs.Runtime
         {
             var tokens = Token.ParseText(line);
 
-            tokens = tokens.RemoveSpaceTokens();                                            //remove all spaces
-            tokens = tokens.MergeTokens(new WordToken());                           //discover words
-            tokens = tokens.MergeTokens(new NumberToken());                   //discover the numbers
+            tokens = tokens.MergeTokens(new SpaceToken());                 
+            tokens = tokens.MergeTokens(new WordToken());                 //discover words
+            tokens = tokens.MergeTokens(new NumberToken());               //discover the numbers
             tokens = tokens.MergeTokens(new UnitizedNumberToken());   //discover the unitized numbers
 
+            tokens = MergeOperators(tokens);
+
             tokens = tokens.GroupBrackets();                             // group (--()-) parenthesis
+
+
+            tokens = tokens.MergeTokens(new MagnitudeToken());
+            tokens = tokens.MergeTokens(new AbsoluteToken());
+
+
+
+            tokens = tokens.RemoveSpaceTokens();                           //remove all spaces
+
             tokens = tokens.DiscoverCalls();
 
 
@@ -213,17 +234,33 @@ namespace Qs.Runtime
 
                     //unitized number
                     
-                    quantityExpression = Expression.Constant(Unit.ParseQuantity(q), typeof(AnyQuantity<double>)); //you have to explicitly tell expression the type because it searches for the operators and can't find them
+                    quantityExpression = Expression.Constant(QsValue.ParseScalar(q), typeof(QsValue)); //you have to explicitly tell expression the type because it searches for the operators and can't find them
 
                 }
                 else if (tokens[ix].TokenType == typeof(NumberToken))
                 {
                     //ordinary number
 
-                    AnyQuantity<double> qty = Unit.DiscoverUnit(QuantityDimension.Dimensionless).GetThisUnitQuantity<double>(double.Parse(q));
+                    quantityExpression = Expression.Constant(QsValue.ParseScalar(q), typeof(QsValue));
 
-                    quantityExpression = Expression.Constant(qty, typeof(AnyQuantity<double>));
-
+                }
+                else if (tokens[ix].TokenType == typeof(CurlyBracketGroupToken))
+                {
+                    // Vector declaration.
+                    quantityExpression = ParseVector(tokens[ix]);
+                }
+                else if (tokens[ix].TokenType == typeof(SquareBracketGroupToken))
+                {
+                    // Matrix declaration.
+                    quantityExpression = ParseMatrix(tokens[ix]);
+                }
+                else if (tokens[ix].TokenType == typeof(MagnitudeToken))
+                {
+                    quantityExpression = ValueNorm(tokens[ix]);
+                }
+                else if (tokens[ix].TokenType == typeof(AbsoluteToken))
+                {
+                    quantityExpression = ValueAbsolute(tokens[ix]);
                 }
                 else
                 {
@@ -238,10 +275,10 @@ namespace Qs.Runtime
                         {
                             Expression eu = lambdaBuilder.Parameters.Single(c => c.Name == q);
 
-                            
+
                             // parameter is having quantity in normal cases
                             Expression directQuantity = Expression.Property(eu, "Quantity");
-                            
+
                             // another expression for getting the quantity from the variable passed 
                             //   this case only occur if I called a function declated like this   f(a) = a(5,3)+a
                             //      because when calling f(u)  where u=50 and u(x,y)=x+y  then I want the evaluation to get the calculations right
@@ -250,23 +287,22 @@ namespace Qs.Runtime
                             // in this expression the RawValue were set because u had marked as function argument. 
                             Expression indirectQuantity = Expression.Property(eu, "RawValue");
 
-                            indirectQuantity  = Expression.Call(
-                                                    typeof(QsEvaluator).GetMethod("GetScopeQuantity"),
-                                                    Expression.Constant(Scope), 
+                            indirectQuantity = Expression.Call(
+                                                    typeof(QsEvaluator).GetMethod("GetScopeQsValue"),
+                                                    Expression.Constant(Scope),
                                                     indirectQuantity
                                                     );
 
                             //exression to test if quantity is null or not
-                            
-                            
+
                             quantityExpression = Expression.Condition(
                                 Expression.Equal(directQuantity, Expression.Constant(null)),
                                 indirectQuantity,
                                 directQuantity
                             );
-                            
+
                         }
-                        catch(Exception e)
+                        catch (Exception e)
                         {
                             System.Diagnostics.Debug.Print(e.ToString());
 
@@ -279,7 +315,7 @@ namespace Qs.Runtime
                         //try to get the variable from the sequence index
                         try
                         {
-                            quantityExpression = lambdaBuilder.Parameters.Single(c => c.Name == q); 
+                            quantityExpression = lambdaBuilder.Parameters.Single(c => c.Name == q);
 
                             //we should check if q is index or parameter of sequence.
 
@@ -289,10 +325,10 @@ namespace Qs.Runtime
                                 // convert it into Quantity.
                                 //   because it is only integer
 
-                                quantityExpression = Expression.Call(typeof(Qs).GetMethod("ToQuantity", new Type[] { typeof(int) }), quantityExpression);
+                                quantityExpression = Expression.Call(typeof(Qs).GetMethod("ToScalarValue", new Type[] { typeof(int) }), quantityExpression);
 
                             }
-                            
+
                         }
                         catch
                         {
@@ -306,8 +342,8 @@ namespace Qs.Runtime
                     {
                         //quantity variable  //get it from evaluator  global heap
                         quantityExpression = GetVariable(q);
-                    }                
-                    
+                    }
+
                 }
 
                 //apply the postfix here
@@ -322,7 +358,6 @@ namespace Qs.Runtime
 
                     FactorialPostfix = false;
                 }
-                
 
                 if (eop == null)
                 {
@@ -345,13 +380,125 @@ namespace Qs.Runtime
 
             }
 
-
             //then form the calculation expression
-
             return  ConstructExpression(FirstEop);
 
         }
 
+
+        /// <summary>
+        /// Get Absolute of number or determinant of matrix.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private Expression ValueAbsolute(Token token)
+        {
+            Expression rr = ParseArithmatic(token.TokenValue.Trim('|'));
+
+            rr = Expression.Call(rr, typeof(QsValue).GetMethod("AbsOperation"));
+
+            return rr;
+        }
+
+        /// <summary>
+        /// Get the magnitude of the inner text between ||text||
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private Expression ValueNorm(Token token)
+        {
+            //the token is holding the vector or the expression that will lead to the vector.
+
+            Expression rr = ParseArithmatic(token.TokenValue.Trim('|'));
+
+            rr = Expression.Call(rr, typeof(QsValue).GetMethod("NormOperation"));
+            
+            return rr;
+
+        }
+
+
+        /// <summary>
+        /// Vector of the format { 40, 20, f(2), S[10], 23}
+        /// </summary>
+        /// <param name="vectorText"></param>
+        /// <returns></returns>
+        private Expression ParseVector(Token tok)
+        {
+            List<Expression> qtyExpressions = new List<Expression>();
+            Token token = tok.TrimStart(typeof(LeftCurlyBracketToken));
+            token = token.TrimEnd(typeof(RightCurlyBracketToken));
+
+            token = token.MergeAllBut(typeof(WordToken), new CommaToken(), new SpaceToken());
+            token = token.RemoveTokens(typeof(CommaToken), typeof(SpaceToken));
+            
+
+            for (int i = 0; i < token.Count ;i++ )
+            {
+                if (token[i].TokenType==typeof(WordToken))
+                {
+                    qtyExpressions.Add(ParseArithmatic(token[i].TokenValue));
+                }
+            }
+
+            var valuesArray = Expression.NewArrayInit(typeof(QsValue), qtyExpressions);
+
+            var vectorExpression = Expression.Call(
+                typeof(QsValue).GetMethod("VectorFromValues"),
+                valuesArray);
+
+            return vectorExpression;
+        }
+
+
+        /// <summary>
+        /// Parsing is expecting values separated by colon or space 
+        /// also components should be vectors on the syntax {4 3 2 1}.
+        /// </summary>
+        /// <param name="tok"></param>
+        /// <returns></returns>
+        private Expression ParseMatrix(Token tok)
+        {
+            List<Expression> vctExpressions = new List<Expression>();
+
+            Token token = tok.TrimStart(typeof(LeftSquareBracketToken));
+
+            token = token.TrimEnd(typeof(RightSquareBracketToken));
+
+            // first split between semi colon tokens.
+            // then use every splitted token to 
+            
+            token = token.MergeAllBut(typeof(WordToken), new SemiColonToken());
+
+            // now the tokens are scalars or vectors followed by semi colon;
+            // put them beside each other
+
+            for (int i = 0; i < token.Count; i++)
+            {
+                if (token[i].TokenType == typeof(WordToken))
+                {
+
+                    vctExpressions.Add(ParseArithmatic("{" + token[i].TokenValue + "}"));
+                    
+                }
+            }
+
+            var valuesArray = Expression.NewArrayInit(typeof(QsValue), vctExpressions);
+
+            var matrixExpression = Expression.Call(
+                typeof(QsValue).GetMethod("MatrixFromValues"),
+                valuesArray);
+
+            return matrixExpression;
+        }
+
+
+
+        /// <summary>
+        /// Obtain variable value by expression in the current scope
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
         public Expression GetVariable(string name)
         {
 
@@ -361,27 +508,27 @@ namespace Qs.Runtime
             var ScopeExp = Expression.Constant(Evaluator.Scope, ScopeType);
 
             var fe = Expression.Call(
-                typeof(QsEvaluator).GetMethod("GetScopeQuantity"),
+                typeof(QsEvaluator).GetMethod("GetScopeQsValue"),
                 ScopeExp, Expression.Constant(name));
 
 
             return fe;
         }
 
-        public AnyQuantity<double> Execute(string line)
+        public QsValue Execute(string line)
         {
             ParseArithmatic(line);
-            return Execute();
+            return Execute() as QsValue;
         }
 
-        public AnyQuantity<double> Execute()
+        public object Execute()
         {
-            Expression<Func<AnyQuantity<double>>> cq = Expression.Lambda<Func<AnyQuantity<double>>>
+            Expression<Func<object>> cq = Expression.Lambda<Func<object>>
                 (this.ResultExpression);
 
-            Func<AnyQuantity<double>> aqf = cq.Compile();
+            Func<object> aqf = cq.Compile();
 
-            AnyQuantity<double> result = aqf();
+            object result = aqf();
             return result;
         }
 
@@ -464,18 +611,18 @@ namespace Qs.Runtime
             // integer number
             int n;
 
-            string methodName = "GetElementQuantity";
+            string methodName = "GetElementValue";
 
             Token itok = Token.ParseText(indexText);
             itok = itok.RemoveSpaceTokens();
             itok = itok.MergeTokens(new WordToken());
             
-            itok = itok.MergeAllBut(new SequenceRangeToken(), typeof(WordToken));
+            itok = itok.MergeAllBut(typeof(WordToken), new SequenceRangeToken());
 
             if (itok.Count == 3 && itok[1].TokenType == typeof(SequenceRangeToken))
             {
-                FromExpression = Expression.Call(typeof(Qs).GetMethod("IntegerFromQuantity"), ParseArithmatic(itok[0].TokenValue));
-                ToExpression = Expression.Call(typeof(Qs).GetMethod("IntegerFromQuantity"), ParseArithmatic(itok[2].TokenValue));
+                FromExpression = Expression.Call(typeof(Qs).GetMethod("IntegerFromQsValue"), ParseArithmatic(itok[0].TokenValue));
+                ToExpression = Expression.Call(typeof(Qs).GetMethod("IntegerFromQsValue"), ParseArithmatic(itok[2].TokenValue));
 
                 if (itok[1].TokenValue == "++")
                     methodName = "SumElements";
@@ -483,6 +630,8 @@ namespace Qs.Runtime
                     methodName = "Average";
                 else if (itok[1].TokenValue == "**")
                     methodName = "MulElements";
+                else if (itok[1].TokenValue == "..")
+                    methodName = "QsValueElements";
             }
             else if (int.TryParse(indexText, out n))
             {
@@ -497,14 +646,14 @@ namespace Qs.Runtime
                 IndexExpression = ParseArithmatic(indexText);
 
                 //however we need to convert it to integer. because it is an index
-                IndexExpression = Expression.Call(typeof(Qs).GetMethod("IntegerFromQuantity"), IndexExpression);
+                IndexExpression = Expression.Call(typeof(Qs).GetMethod("IntegerFromQsValue"), IndexExpression);
 
             }
             #endregion
 
-            #region GetElementQuantity determination
+            #region GetElementValue determination
             MethodInfo mi;
-            if (methodName == "GetElementQuantity")
+            if (methodName == "GetElementValue")
             {
                 switch (parameters.Count)
                 {
@@ -512,25 +661,25 @@ namespace Qs.Runtime
                         mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int) });
                         break;
                     case 1:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(AnyQuantity<double>) });
+                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(QsValue) });
                         break;
                     case 2:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>) });
+                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(QsValue), typeof(QsValue) });
                         break;
                     case 3:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>) });
+                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
                         break;
                     case 4:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>) });
+                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
                         break;
                     case 5:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>) });
+                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
                         break;
                     case 6:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>) });
+                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
                         break;
                     case 7:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>) });
+                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
                         break;
                     default:
                         throw new QsException("Number of sequence parameters exceed the built in functionality");
@@ -547,25 +696,25 @@ namespace Qs.Runtime
                         mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int) });
                         break;
                     case 1:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(AnyQuantity<double>) });
+                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(QsValue) });
                         break;
                     case 2:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>) });
+                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(QsValue), typeof(QsValue) });
                         break;
                     case 3:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>) });
+                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
                         break;
                     case 4:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>) });
+                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
                         break;
                     case 5:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>) });
+                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
                         break;
                     case 6:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>) });
+                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
                         break;
                     case 7:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>), typeof(AnyQuantity<double>) });
+                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
                         break;
                     default:
                         throw new QsException("Number of sequence parameters exceed the built in functionality");
@@ -603,7 +752,7 @@ namespace Qs.Runtime
             //discover parameters
             for (int ai = 1; ai < args.Count - 1; ai++ )
             {
-                if (args[ai].TokenValue != ",") paramsText.Add(args[ai].TokenValue);
+                if (args[ai].TokenValue != ",") paramsText.Add(args[ai].TokenValue.Trim());
             }
 
             //now parameters separated
@@ -684,11 +833,22 @@ namespace Qs.Runtime
                             //occurs if the passing parameter contains expression not standalone variable.
                         }
 
-                        Expression qp = Expression.Call(
+                        
+                        var tc = Utils.Try(
+                         Expression.Call(
                             typeof(QsParameter).GetMethod("MakeParameter"),
                             q,                                //Evaluated value.
                             rw                                //Raw Value
-                            );
+                            ));
+
+                        tc.Catch(typeof(QsVariableNotFoundException),
+                            Expression.Call(
+                            typeof(QsParameter).GetMethod("MakeParameter"),
+                            Expression.Constant(null),                                //no value 
+                            rw                                //Raw Value
+                            ));
+
+                        Expression qp = tc.ToExpression();
 
                         FunctorParams.Add(qp);
 
@@ -760,16 +920,18 @@ namespace Qs.Runtime
         /// <returns></returns>
         private Expression ArithExpression(Expression left, string op, Expression right)
         {
-            Type aqType = typeof(AnyQuantity<double>);
-            
-            if (op == "^") return Expression.Power(left, right, aqType.GetMethod("Power"));
+            Type aqType = typeof(QsValue);
+
+            if (op == "^") return Expression.Power(left, right, aqType.GetMethod("Pow"));
             if (op == "*") return Expression.Multiply(left, right);
+            if (op == ".") return Expression.Multiply(left, right, aqType.GetMethod("DotProduct"));
+            if (op == "x") return Expression.Multiply(left, right, aqType.GetMethod("CrossProduct"));
             if (op == "/") return Expression.Divide(left, right);
             if (op == "%") return Expression.Modulo(left, right);
             if (op == "+") return Expression.Add(left, right);
             if (op == "-") return Expression.Subtract(left, right);
 
-            throw new NotSupportedException("not supported operator");
+            throw new NotSupportedException("Not Supported Operator '" + op + "'");
         }
 
         /// <summary>
@@ -789,8 +951,17 @@ namespace Qs.Runtime
             //  + and - are in the same pass
 
 
-            string[] Group = { "^" };
-            string[] Group1 = { "*", "/", "%" /*modulus*/ };
+            string[] Group = { "^", 
+                               ".^" /* matlab array power */ };
+
+            string[] Group1 = { "*" /* normal multiplication */, 
+                                "." /* dot product */, 
+                                "x" /* cross product */, 
+                                "/" /* normal division */, 
+                                ".*" /* Matlab array multiplication */, 
+                                "./" /* Matlab array division */,
+                                "%" /*modulus*/ };
+
             string[] Group2 = { "+", "-" };
 
             string[][] OperatorGroups = { Group, Group1, Group2 };
@@ -813,12 +984,9 @@ namespace Qs.Runtime
                         //drop eop.Next
                         if (eop.Next.Next != null)
                         {
-
                             eop.Operation = eop.Next.Operation;
 
                             eop.Next = eop.Next.Next;
-
-
                         }
                         else
                         {

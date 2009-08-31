@@ -5,17 +5,62 @@ using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 using System.Globalization;
 
-namespace Qs.Runtime
+namespace Qs.RuntimeTypes
 {
     /// <summary>
     /// Matrix that hold quantities
     /// and the basic matrix calculations.
     /// </summary>
-    public partial class QsMatrix
+    public partial class QsMatrix: QsValue
     {
-        List<AnyQuantity<double>[]> Rows = new List<AnyQuantity<double>[]>();
+        List<QsVector> Rows = new List<QsVector>();
 
-        public void AddRow(params AnyQuantity<double>[] row)
+        public QsMatrix()
+        {
+        }
+
+        /// <summary>
+        /// Initiate matrix with a set of vectors
+        /// </summary>
+        /// <param name="vectors"></param>
+        public QsMatrix(params QsVector[] vectors)
+        {
+            Rows.AddRange(vectors);
+        }
+
+        /// <summary>
+        /// Increase the matrix with a vector values.
+        /// </summary>
+        /// <param name="vector"></param>
+        public void AddVector(QsVector vector)
+        {
+            Rows.Add(vector);
+        }
+
+        /// <summary>
+        /// Increase the matrix with a column vector values.
+        /// </summary>
+        /// <param name="vector"></param>
+        public void AddColumnVector(QsVector vector)
+        {
+            AddColumn(vector.ToArray());
+        }
+
+        /// <summary>
+        /// Increase the matrix with a set of vectors.
+        /// </summary>
+        /// <param name="vectors"></param>
+        public void AddVectors(params QsVector[] vectors)
+        {
+            Rows.AddRange(vectors);
+        }
+
+
+        /// <summary>
+        /// Add a row of quantities to the matrix.
+        /// </summary>
+        /// <param name="row"></param>
+        public void AddRow(params QsScalar[] row)
         {
             if (Rows.Count > 0) //test if the matrix initialized.
             {
@@ -25,10 +70,18 @@ namespace Qs.Runtime
                 }
             }
 
-            Rows.Add(row);
+            QsVector vec = new QsVector();
+
+            vec.AddComponents(row);
+
+            Rows.Add(vec);
         }
 
-        public void AddColumn(params AnyQuantity<double>[] column)
+        /// <summary>
+        /// Add a column of quantities to the matrix.
+        /// </summary>
+        /// <param name="column"></param>
+        public void AddColumn(params QsScalar[] column)
         {
 
             if (Rows.Count > 0) //test if the matrix initialized.
@@ -44,26 +97,22 @@ namespace Qs.Runtime
                 int newIndex = ColumnsCount+1;
                 for (int IY = 0; IY < RowsCount; IY++)
                 {
-                    var cols = Rows[IY];
-                    Array.Resize<AnyQuantity<double>>(ref cols, newIndex);
-
-                    
-                    cols[newIndex-1] = column[IY];
-
-                    Rows[IY] = cols;
-
+                    Rows[IY].AddComponent(column[IY]);
                 }
             }
             else
             {
 
-                foreach (AnyQuantity<double> q in column)
+                foreach (var q in column)
                 {
                     AddRow(q);
                 }
             }
         }
 
+        /// <summary>
+        /// Count of the matrix rows {m}
+        /// </summary>
         public int RowsCount
         {
             get
@@ -72,19 +121,32 @@ namespace Qs.Runtime
             }
         }
 
+        /// <summary>
+        /// Count of the matrix columns {n}
+        /// </summary>
         public int ColumnsCount
         {
             get
             {
-               return Rows[0].Length;
+               return Rows[0].Count;
             }
         }
 
-        public AnyQuantity<double> this[int row, int column]
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="row"></param>
+        /// <param name="column"></param>
+        /// <returns></returns>
+        public QsScalar this[int row, int column]
         {
             get
             {
                 return Rows[row][column];
+            }
+            set
+            {
+                Rows[row][column] = value;
             }
         }
 
@@ -103,7 +165,7 @@ namespace Qs.Runtime
                 QsMatrix Total = new QsMatrix();
                 for (int IY = 0; IY < this.RowsCount; IY++)
                 {
-                    List<AnyQuantity<double>> row = new List<AnyQuantity<double>>(ColumnsCount);
+                    List<QsScalar> row = new List<QsScalar>(ColumnsCount);
 
                     for (int IX = 0; IX < this.ColumnsCount; IX++)
                     {
@@ -136,7 +198,7 @@ namespace Qs.Runtime
                 QsMatrix Total = new QsMatrix();
                 for (int IY = 0; IY < this.RowsCount; IY++)
                 {
-                    List<AnyQuantity<double>> row = new List<AnyQuantity<double>>(ColumnsCount);
+                    List<QsScalar> row = new List<QsScalar>(ColumnsCount);
 
                     for (int IX = 0; IX < this.ColumnsCount; IX++)
                     {
@@ -174,22 +236,22 @@ namespace Qs.Runtime
                 {
                     var vec = this.Rows[iy];
 
-                    AnyQuantity<double>[] tvec = new AnyQuantity<double>[matrix.ColumnsCount]; //the target row in the Total Matrix.
+                    QsScalar[] tvec = new QsScalar[matrix.ColumnsCount]; //the target row in the Total Matrix.
 
                     //loop through all co vectors in the target matrix.
                     for (int tix = 0; tix < matrix.ColumnsCount; tix++)
                     {
-                        var covec = matrix.GetCoVector(tix).GetRawQuantities();
+                        var covec = matrix.GetColumnVectorMatrix(tix).ToArray();
 
                         //multiply vec*covec and store it at the Total matrix at iy,ix
 
-                        AnyQuantity<double>[] snum = new AnyQuantity<double>[vec.Length];
-                        for (int i = 0; i < vec.Length; i++)
+                        QsScalar[] snum = new QsScalar[vec.Count];
+                        for (int i = 0; i < vec.Count; i++)
                         {
                             snum[i] = vec[i] * covec[i];
                         }
 
-                        AnyQuantity<double> tnum = snum[0];
+                        QsScalar tnum = snum[0];
 
                         for (int i = 1; i < snum.Length; i++)
                         {
@@ -212,15 +274,18 @@ namespace Qs.Runtime
             }
         }
 
-
+        /// <summary>
+        /// Transfer the columns of the matrix into rows.
+        /// </summary>
+        /// <returns></returns>
         public QsMatrix Transpose()
         {
             QsMatrix m = new QsMatrix();
             for (int IX = 0; IX < ColumnsCount; IX++)
             {
-                var vec = this.GetCoVector(IX);
+                var vec = this.GetColumnVectorMatrix(IX);
 
-                m.AddRow(vec.GetRawQuantities());
+                m.AddRow(vec.ToArray());
             }
             return m;
         }
@@ -230,201 +295,51 @@ namespace Qs.Runtime
         #endregion
 
 
-        #region Scalar operations
-
-        /// <summary>
-        /// Matrix + scalar
-        /// </summary>
-        /// <param name="scalarQuantity"></param>
-        /// <returns></returns>
-        public QsMatrix AddMatrixToScalar(AnyQuantity<double> scalarQuantity)
-        {
-            QsMatrix Total = new QsMatrix();
-            for (int IY = 0; IY < this.RowsCount; IY++)
-            {
-                List<AnyQuantity<double>> row = new List<AnyQuantity<double>>(ColumnsCount);
-
-                for (int IX = 0; IX < this.ColumnsCount; IX++)
-                {
-                    row.Add(this[IY, IX] + scalarQuantity);
-                }
-
-                Total.AddRow(row.ToArray());
-            }
-            return Total;
-
-        }
-
-
-        /// <summary>
-        /// Scalar + matrix
-        /// </summary>
-        /// <param name="scalarQuantity"></param>
-        /// <returns></returns>
-        public QsMatrix AddScalarToMatrix(AnyQuantity<double> scalarQuantity)
-        {
-            QsMatrix Total = new QsMatrix();
-            for (int IY = 0; IY < this.RowsCount; IY++)
-            {
-                List<AnyQuantity<double>> row = new List<AnyQuantity<double>>(ColumnsCount);
-
-                for (int IX = 0; IX < this.ColumnsCount; IX++)
-                {
-                    row.Add(scalarQuantity + this[IY, IX] );
-                }
-
-                Total.AddRow(row.ToArray());
-            }
-            return Total;
-
-        }
-
-
-        /// <summary>
-        /// Matrix * scalar
-        /// </summary>
-        /// <param name="scalarQuantity"></param>
-        /// <returns></returns>
-        public QsMatrix MultiplyMatrixByScalar(AnyQuantity<double> scalarQuantity)
-        {
-            QsMatrix Total = new QsMatrix();
-            for (int IY = 0; IY < this.RowsCount; IY++)
-            {
-                List<AnyQuantity<double>> row = new List<AnyQuantity<double>>(ColumnsCount);
-
-                for (int IX = 0; IX < this.ColumnsCount; IX++)
-                {
-                    row.Add(this[IY, IX] * scalarQuantity);
-                }
-
-                Total.AddRow(row.ToArray());
-            }
-            return Total;
-
-        }
-        
-        /// <summary>
-        /// Matrix / scalar
-        /// </summary>
-        /// <param name="scalarQuantity"></param>
-        /// <returns></returns>
-        public QsMatrix DivideMatrixByScalar(AnyQuantity<double> scalarQuantity)
-        {
-            QsMatrix Total = new QsMatrix();
-            for (int IY = 0; IY < this.RowsCount; IY++)
-            {
-                List<AnyQuantity<double>> row = new List<AnyQuantity<double>>(ColumnsCount);
-
-                for (int IX = 0; IX < this.ColumnsCount; IX++)
-                {
-                    row.Add(this[IY, IX] / scalarQuantity);
-                }
-
-                Total.AddRow(row.ToArray());
-            }
-            return Total;
-
-        }
-
-
-        /// <summary>
-        /// Scalar / Matrix
-        /// </summary>
-        /// <param name="scalarQuantity"></param>
-        /// <returns></returns>
-        public QsMatrix DivideScalarByMatrix(AnyQuantity<double> scalarQuantity)
-        {
-            QsMatrix Total = new QsMatrix();
-            for (int IY = 0; IY < this.RowsCount; IY++)
-            {
-                List<AnyQuantity<double>> row = new List<AnyQuantity<double>>(ColumnsCount);
-
-                for (int IX = 0; IX < this.ColumnsCount; IX++)
-                {
-                    row.Add(scalarQuantity / this[IY, IX]);
-                }
-
-                Total.AddRow(row.ToArray());
-            }
-            return Total;
-
-        }
-
-        /// <summary>
-        /// Matrix - scalar
-        /// </summary>
-        /// <param name="scalarQuantity"></param>
-        /// <returns></returns>
-        public QsMatrix SubtractMatrixFromScalar(AnyQuantity<double> scalarQuantity)
-        {
-            QsMatrix Total = new QsMatrix();
-            for (int IY = 0; IY < this.RowsCount; IY++)
-            {
-                List<AnyQuantity<double>> row = new List<AnyQuantity<double>>(ColumnsCount);
-
-                for (int IX = 0; IX < this.ColumnsCount; IX++)
-                {
-                    row.Add(this[IY, IX] - scalarQuantity);
-                }
-
-                Total.AddRow(row.ToArray());
-            }
-            return Total;
-        }
-
-        /// <summary>
-        /// Scalar - Matrix.
-        /// </summary>
-        /// <param name="scalarQuantity"></param>
-        /// <returns></returns>
-        public QsMatrix SubtractScalarFromMatrix(AnyQuantity<double> scalarQuantity)
-        {
-            QsMatrix Total = new QsMatrix();
-            for (int IY = 0; IY < this.RowsCount; IY++)
-            {
-                List<AnyQuantity<double>> row = new List<AnyQuantity<double>>(ColumnsCount);
-
-                for (int IX = 0; IX < this.ColumnsCount; IX++)
-                {
-                    row.Add(scalarQuantity - this[IY, IX]);
-                }
-
-                Total.AddRow(row.ToArray());
-            }
-            return Total;
-        }
-        
-        #endregion
 
         #region Manipulation
-        public QsMatrix GetVector(int rowIndex)
+        public QsVector GetVector(int rowIndex)
         {
             if (rowIndex > RowsCount) throw new QsMatrixException("Index '" + rowIndex + "' Exceeds the rows limits '" + RowsCount + "'");
-            QsMatrix rt = new QsMatrix();
 
-            rt.AddRow(this.Rows[rowIndex]);
-
-            return rt;
-
+            return QsVector.CopyVector(Rows[rowIndex]);
         }
 
-        public QsMatrix GetCoVector(int columnIndex)
+
+        public QsMatrix GetVectorMatrix(int rowIndex)
+        {
+            if (rowIndex > RowsCount) throw new QsMatrixException("Index '" + rowIndex + "' Exceeds the rows limits '" + RowsCount + "'");
+
+            QsMatrix mat = new QsMatrix();
+
+            mat.AddVector(QsVector.CopyVector(Rows[rowIndex]));
+
+            return mat;
+        }
+
+        public QsVector GetColumnVector(int columnIndex)
         {
             if (columnIndex > ColumnsCount) throw new QsMatrixException("Index '" + columnIndex + "' Exceeds the columns limits '" + ColumnsCount + "'");
-            QsMatrix rt = new QsMatrix();
 
-            AnyQuantity<double>[] col = new AnyQuantity<double>[this.RowsCount];
-            int nc=0;
+
+            QsScalar[] col = new QsScalar[this.RowsCount];
+            int nc = 0;
             for (int IY = 0; IY < this.RowsCount; IY++)
             {
                 col[nc] = this[IY, columnIndex];
                 nc++;
             }
+            QsVector vec = new QsVector(col);
 
-            rt.AddColumn(col);
 
+            return vec;
 
-            return rt;
+        }
+
+        public QsMatrix GetColumnVectorMatrix(int columnIndex)
+        {
+            QsMatrix mat = new QsMatrix();
+            mat.AddColumnVector(GetColumnVector(columnIndex));
+            return mat;
         }
 
         /// <summary>
@@ -432,14 +347,14 @@ namespace Qs.Runtime
         /// starting from left to right then by going down.
         /// </summary>
         /// <returns></returns>
-        public AnyQuantity<double>[] GetRawQuantities()
+        public QsScalar[] ToArray()
         {
-            AnyQuantity<double>[] values = new AnyQuantity<double>[ColumnsCount * RowsCount];
+            QsScalar[] values = new QsScalar[ColumnsCount * RowsCount];
 
             int valIndex=0;
-            for (int IY = 0; IY < this.RowsCount; IY++)
+            for (int IX = 0; IX < this.ColumnsCount; IX++)
             {
-                for (int IX = 0; IX < this.ColumnsCount; IX++)
+                for (int IY = 0; IY < this.RowsCount; IY++)
                 {
                     values[valIndex] = this[IY, IX];
                     valIndex++;
@@ -456,14 +371,17 @@ namespace Qs.Runtime
         {
 
             StringBuilder sb = new StringBuilder();
+            sb.Append("QsMatrix:");
+            sb.AppendLine();
 
             for (int IY = 0; IY < this.RowsCount; IY++)
             {
-                
+                //sb.Append("\t");   
                 for (int IX = 0; IX < this.ColumnsCount; IX++)
                 {
-                    string cell = this[IY,IX].ToShortString();
-                    sb.Append(cell);
+                    string cell = this[IY,IX].Quantity.ToShortString();
+                    
+                    sb.Append(cell.PadLeft(13));
                     sb.Append(" ");
                 }
 
@@ -501,6 +419,69 @@ namespace Qs.Runtime
             }
         }
 
+        public bool IsDeterminant
+        {
+            get
+            {
+                if (RowsCount == ColumnsCount) return true;
+                else return false;
+            }
+        }
+
+        /// <summary>
+        /// Calculates the determinant and return it as a vector.
+        /// </summary>
+        /// <returns></returns>
+        public QsVector Determinant()
+        {
+            if (IsDeterminant)
+            {
+                if(IsScalar)
+                {
+                    return new QsVector(this[0,0]);
+                }
+                else if (RowsCount == 2)
+                {
+                    QsVector vec = new QsVector(2);
+                    vec.AddComponent(this[0, 0] * this[1, 1]);
+                    vec.AddComponent(
+                        new QsScalar
+                        {
+                            Quantity = "-1".ToQuantity() * (this[0, 1].Quantity * this[1, 0].Quantity)
+                        }
+                        );
+
+                    return vec;
+                }
+                else if (RowsCount == 3)
+                {
+                    QsVector vec = new QsVector(3);
+
+                    vec.AddComponent((this[1, 1] * this[2, 2]) - (this[1, 2] * this[2, 1]));
+
+                    vec.AddComponent((this[1, 2] * this[2, 0]) - (this[1, 0] * this[2, 2]));
+
+                    vec.AddComponent((this[1, 0] * this[2, 1]) - (this[1, 1] * this[2, 0]));
+
+                    vec[0] = this[0, 0] * vec[0];
+
+                    vec[1] = this[0, 1] * vec[1];
+
+                    vec[2] = this[0, 2] * vec[2];
+
+                    return vec;
+                }
+                else
+                {
+                    //I think this is the LU decomposition.
+                    throw new QsMatrixException("Determinant of more than 3 elements not Implemented yet");
+                }
+                    
+            }
+            else throw new QsMatrixException("matrix is not determinant");
+        }
+
+
         #endregion
 
         /// <summary>
@@ -527,8 +508,6 @@ namespace Qs.Runtime
                 return false;
             }
         }
-
-
 
 
     }

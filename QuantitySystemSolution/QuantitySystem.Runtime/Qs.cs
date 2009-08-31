@@ -6,6 +6,8 @@ using Microsoft.Scripting.Hosting;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
 using QuantitySystem;
+using Qs.RuntimeTypes;
+using System.Diagnostics;
 
 namespace Qs
 {
@@ -40,7 +42,14 @@ namespace Qs
         /// <returns></returns>
         public static int IntegerFromQuantity(AnyQuantity<double> val)
         {
+            Debug.Assert(val is QuantitySystem.Quantities.DimensionlessQuantities.DimensionlessQuantity<double>);
+
             return (int)val.Value;
+        }
+
+        public static int IntegerFromQsValue(QsValue val)
+        {
+            return IntegerFromQuantity(((QsScalar)val).Quantity);
         }
 
         /// <summary>
@@ -54,6 +63,16 @@ namespace Qs
             return un.GetThisUnitQuantity<double>((double)i);
         }
 
+        /// <summary>
+        /// Quantitize the double value into DimensionlessQuantity
+        /// </summary>
+        /// <param name="d"></param>
+        /// <returns></returns>
+        public static AnyQuantity<double> ToQuantity(this float d)
+        {
+            Unit un = Unit.DiscoverUnit(QuantityDimension.Dimensionless);
+            return un.GetThisUnitQuantity<double>((double)d);
+        }
 
         /// <summary>
         /// Quantitize the double value into DimensionlessQuantity
@@ -87,9 +106,31 @@ namespace Qs
         public static AnyQuantity<double> ToQuantity(this string s)
         {
             return Unit.ParseQuantity(s);
-
         }
- 
+
+        public static QsValue ToScalarValue(this AnyQuantity<double> qty)
+        {
+            return new QsScalar { Quantity = qty };
+        }
+
+        public static QsValue ToScalarValue(this string s)
+        {
+            return QsValue.ParseScalar(s);
+        }
+
+        public static QsValue ToScalarValue(this int i)
+        {
+            return new QsScalar { Quantity = ToQuantity(i) };
+        }
+
+
+        public static QsScalar ToScalar(this string s)
+        {
+            return new QsScalar { Quantity = s.ToQuantity() };
+        }
+
+
+        
         #endregion
     }
 }

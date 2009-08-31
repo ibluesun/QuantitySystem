@@ -91,8 +91,50 @@ namespace ParticleLexer.TokenTypes
     {
     }
 
+    /// <summary>
+    /// {} Groups
+    /// </summary>
+    public class CurlyBracketGroupToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = "{")]
+    public class LeftCurlyBracketToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = "}")]
+    public class RightCurlyBracketToken : TokenType
+    {
+    }
+
+    /// <summary>
+    /// || Groups
+    /// </summary>
+    public class MatrixGroupToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = "|")]
+    public class MatrixBracketToken : TokenType
+    {
+    }
+
+
     [TokenPattern(RegexPattern="\\w+")]
     public class WordToken : TokenType
+    {
+    }
+
+
+
+    [TokenPattern(RegexPattern = @"\|[^\|]+?\|")]
+    public class AbsoluteToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = @"\|\|[^\|]+\|\|")]
+    public class MagnitudeToken : TokenType
     {
     }
 
@@ -135,6 +177,10 @@ namespace ParticleLexer.TokenTypes
     {
     }
 
+    [TokenPattern(RegexPattern = @"\s+")]
+    public class SpaceToken : TokenType
+    {
+    }
 
 
     /// <summary>
@@ -151,6 +197,9 @@ namespace ParticleLexer.TokenTypes
     {
     }
 
+
+
+    #region Sequence tokens
     [TokenPattern(RegexPattern = "..>")]
     public class PositiveSequenceToken : TokenType
     {
@@ -160,16 +209,18 @@ namespace ParticleLexer.TokenTypes
     public class NegativeSequenceToken : TokenType
     {
     }
-
+    
     /// <summary>
+    /// a=S[u SequenceRangeToken ]   like  a=S[2++5]
     /// The operator range that appears in the sequence calling square brackets n..m
     /// where .. is
-    ///         ++ Series:              Sum elements
-    ///         ** Product:             Multiply elements
-    ///         !! Average:             Get the Mean of elements
-    ///         ## Standard Deviation
+    ///         ++ Series:                  Sum elements                    returns Scalar
+    ///         ** Product:                 Multiply elements               returns Scalar
+    ///         !! Average:                 Get the Mean of elements.       returns Scalar.
+    ///         ## Standard Deviation       
+    ///         .. Range                                                    returns Vector if components are scalars, Matrix if components are vectors
     /// </summary>
-    [TokenPattern(RegexPattern = "((\\+\\+)?|(!!)?|(\\*\\*)?|(\\#\\#)?)")]
+    [TokenPattern(RegexPattern = "((\\+\\+)?|(!!)?|(\\*\\*)?|(\\#\\#)?|(\\.\\.)?)")]
     public class SequenceRangeToken : TokenType
     {
     }
@@ -182,15 +233,41 @@ namespace ParticleLexer.TokenTypes
     }
 
     /// <summary>
-    /// [i1, i2, ..., in]  i(s) inside parenthesis
+    /// [i1, i2, sequenceIndexToken, ..., in]  i(s) inside parenthesis
     /// </summary>
     public class SequenceIndexToken : TokenType
     {
     }
 
-
+    /// <summary>
+    /// S[] ..> elementToken; elementToken; elementToken.
+    /// </summary>
     public class SequenceElementToken : TokenType
     {
     }
+
+    #endregion
+
+
+
+    #region Matlab operators
+    [TokenPattern(RegexPattern = @"\.\*")]
+    public class MatlabArrayMultilply : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = @"\.\/")]
+    public class MatlabArrayDivide : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = @"\.\^")]
+    public class MatlabArrayPower : TokenType
+    {
+    }
+
+
+
+    #endregion
 
 }

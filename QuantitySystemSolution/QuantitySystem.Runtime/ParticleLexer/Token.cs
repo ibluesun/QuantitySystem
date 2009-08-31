@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 
 using ParticleLexer.TokenTypes;
+using System.Diagnostics;
 
 namespace ParticleLexer
 {
@@ -73,6 +74,10 @@ namespace ParticleLexer
             get
             {
                 return childTokens[index];
+            }
+            set
+            {
+                childTokens[index] = value;
             }
         }
 
@@ -162,6 +167,11 @@ namespace ParticleLexer
                     current = current.AppendSubToken();
                     current.AppendSubToken(c.TokenValue).TokenType = typeof(LeftSquareBracketToken);
                 }
+                else if (c.TokenValue == "{")
+                {
+                    current = current.AppendSubToken();
+                    current.AppendSubToken(c.TokenValue).TokenType = typeof(LeftCurlyBracketToken);
+                }
                 else if (c.TokenValue == "]")
                 {
                     current.AppendSubToken(c.TokenValue).TokenType = typeof(RightSquareBracketToken);
@@ -169,7 +179,6 @@ namespace ParticleLexer
                     current.TokenType = typeof(SquareBracketGroupToken);
 
                     current = current.ParentToken;
-
                 }
                 else if (c.TokenValue == ")")
                 {
@@ -177,14 +186,20 @@ namespace ParticleLexer
 
                     current.TokenType = typeof(ParenthesisGroupToken);
 
-
                     current = current.ParentToken;
 
+                }
+                else if (c.TokenValue == "}")
+                {
+                    current.AppendSubToken(c.TokenValue).TokenType = typeof(RightCurlyBracketToken);
+
+                    current.TokenType = typeof(CurlyBracketGroupToken);
+
+                    current = current.ParentToken;
                 }
                 else
                 {
                     current.AppendSubToken(c);
-
                 }
 
                 ci++;
@@ -210,8 +225,6 @@ namespace ParticleLexer
         {
             Token first = new Token();
             Token current = first;
-
-            
 
             int ci = 0;
 
@@ -342,7 +355,7 @@ namespace ParticleLexer
                 temp.AppendSubToken(cnext[iy]);
 
 
-            temp = temp.MergeAllBut(new CommaToken(), typeof(FunctionParameterToken));
+            temp = temp.MergeAllBut(typeof(FunctionParameterToken), new CommaToken());
 
             Token tmp2 = new Token();
             tmp2.TokenType = cnext.TokenType;
@@ -367,7 +380,7 @@ namespace ParticleLexer
                 temp.AppendSubToken(cnext[iy]);
 
 
-            temp = temp.MergeAllBut(new CommaToken(), typeof(SequenceIndexToken));
+            temp = temp.MergeAllBut(typeof(SequenceIndexToken), new CommaToken());
 
             Token tmp2 = new Token();
             tmp2.TokenType = cnext.TokenType;
@@ -379,18 +392,90 @@ namespace ParticleLexer
             return Zabbat(tmp2);
         }
 
+        /// <summary>
+        /// remove the token from the start of tokens.
+        /// </summary>
+        /// <param name="tokenType"></param>
+        /// <returns></returns>
+        public Token TrimStart(Type tokenType)
+        {
+            Token Trimmed = new Token();
+
+            int ci = 0;
+            while (ci < childTokens.Count)
+            {
+                var tok = childTokens[ci];
+                if (tok.TokenType == tokenType)
+                {
+                    //ignore this token
+                }
+                else
+                {
+                    //from here take the rest tokens
+                    while (ci < childTokens.Count)
+                    {
+                        tok = childTokens[ci];
+                        Trimmed.AppendSubToken(tok);
+                        ci++;
+                    }
+
+                    break;
+                }
+
+                ci++;
+            }
+
+            return Trimmed;
+        }
+
+        /// <summary>
+        /// Remove the token type from the end of tokens
+        /// </summary>
+        /// <param name="tokenType"></param>
+        /// <returns></returns>
+        public Token TrimEnd(Type tokenType)
+        {
+            Token Trimmed = new Token();
+
+            int ci = childTokens.Count - 1;
+            while (ci >= 0)
+            {
+                var tok = childTokens[ci];
+                if (tok.TokenType == tokenType)
+                {
+                    //ignore this token
+                }
+                else
+                {
+                    //from here take the rest tokens
+                    for (int i = 0; i <= ci; i++)
+                    {
+                        tok = childTokens[i];
+                        Trimmed.AppendSubToken(tok);
+                        
+                    }
+
+                    break;
+                }
+
+                ci--;
+            }
+
+            return Trimmed;
+        }
+
+
 
         /// <summary>
         /// Merge all tokens into the one and exclude specific token
         /// </summary>
-        /// <param name="tokenType">Excluded token or the separator token.</param>
+        /// <param name="tokenType">Excluded tokens or Token(s) that act as separators.</param>
         /// <param name="mergedTokensType">The type of the new token merged from sub tokens.</param>
         /// <returns></returns>
-        public Token MergeAllBut(TokenType tokenType, Type mergedTokensType)
+        public Token MergeAllBut(Type mergedTokensType, params TokenType[] tokenTypes)
         {
-            return MergeAllBut(0, tokenType, mergedTokensType);
+            return MergeAllBut(0, mergedTokensType, tokenTypes);
         }
-
 
         /// <summary>
         /// Merge all tokens into the one and exclude specific token
@@ -399,9 +484,15 @@ namespace ParticleLexer
         /// <param name="mergedTokensType">The type of the new token merged from sub tokens.</param>
         /// <param name="startIndex">Starting from token index</param>
         /// <returns></returns>
-        public Token MergeAllBut(int startIndex, TokenType tokenType, Type mergedTokensType)
+        public Token MergeAllBut(int startIndex, Type mergedTokensType, params TokenType[] tokenTypes)
         {
-            Token first = MergeTokens(tokenType);
+            Token first = this.MergeTokens(tokenTypes[0]);
+            for (int i = 1; i < tokenTypes.Length; i++)
+            {
+                first = first.MergeTokens(tokenTypes[i]);
+            }
+            
+            Debug.Assert(first != null);
 
             Token current = new Token();
 
@@ -422,16 +513,19 @@ namespace ParticleLexer
                 }
                 else
                 {
-                    if (c.TokenType != tokenType.GetType())
+                    if (tokenTypes.Count(tok => tok.GetType() == c.TokenType) == 0)
                     {
                         mergedTokens.AppendSubToken(c);
                     }
                     else
                     {
                         //found a separator
-                        mergedTokens.TokenType = mergedTokensType;
+                        if (mergedTokens.Count > 0)
+                        {
+                            mergedTokens.TokenType = mergedTokensType;
 
-                        current.AppendSubToken(mergedTokens);
+                            current.AppendSubToken(mergedTokens);
+                        }
                         current.AppendSubToken(c);
 
                         mergedTokens = new Token();
@@ -596,6 +690,96 @@ namespace ParticleLexer
         }
 
 
+        /// <summary>
+        /// Removes specific tokens from the current tokens.
+        /// </summary>
+        /// <param name="tokenType">Array of tokens that should be removed.</param>
+        /// <returns></returns>
+        public Token RemoveTokens(params Type[] tokenTypes)
+        {
+            Token first = new Token();
+            Token current = first;
+
+            int ci = 0;
+            while (ci < childTokens.Count)
+            {
+                var tok = childTokens[ci];
+
+                //make sure all chars in value are white spaces
+
+                //if (tok.TokenValue.ToCharArray().Count(w => char.IsWhiteSpace(w)) == tok.TokenValue.Length)
+                if (tokenTypes.Count(f => f == tok.TokenType) > 0)
+                {
+                    //all string are white spaces
+                }
+                else
+                {
+                    current.AppendSubToken(tok);
+                }
+
+                ci++;
+            }
+
+            return first;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="tokenType"></param>
+        /// <returns></returns>
+        public int IndexOf(Type tokenType)
+        {
+            int idx = -1;
+            for (int i = 0; i < this.Count; i++)
+            {
+                if (this[i].TokenType == tokenType)
+                {
+                    idx = i;
+                    break;
+                }
+            }
+            return idx;
+        }
+
+
+        /// <summary>
+        /// Remove specific token until we reach a closing token.
+        /// </summary>
+        /// <param name="tokenType"></param>
+        /// <returns></returns>
+        public Token RemoveTokenUntil(Type tokenType, Type untilToken)
+        {
+            Token first = new Token();
+            Token current = first;
+
+            bool reached = false;  //specifiy if we reach the close token or not.
+
+            int ci = 0;
+            while (ci < childTokens.Count)
+            {
+                var tok = childTokens[ci];
+
+                //make sure all chars in value are white spaces
+
+                if (tokenType == tok.TokenType && reached == false)
+                {
+                    //all string are white spaces
+                }
+                else
+                {
+                    if (tok.TokenType == untilToken) reached = true;
+
+                    //not the required token add it to the return value.
+                    current.AppendSubToken(tok);
+                }
+
+                ci++;
+            }
+
+            return first;
+        }
+
         public Token RemoveSpaceTokens()
         {
             Token first = new Token();
@@ -608,14 +792,14 @@ namespace ParticleLexer
                 
                 //make sure all chars in value are white spaces
                 
-                if (tok.TokenValue.ToCharArray().Count(w => char.IsWhiteSpace(w)) == tok.TokenValue.Length)
+                //if (tok.TokenValue.ToCharArray().Count(w => char.IsWhiteSpace(w)) == tok.TokenValue.Length)
+                if(tok.TokenType == typeof(SpaceToken))
                 {
                     //all string are white spaces
                 }
                 else
                 {
                     current.AppendSubToken(tok);
-
                 }
 
                 ci++;

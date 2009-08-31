@@ -9,6 +9,7 @@ using ParticleLexer;
 using ParticleLexer.TokenTypes;
 using QuantitySystem.Quantities.BaseQuantities;
 using System.Globalization;
+using Qs.RuntimeTypes;
 
 
 namespace Qs.Runtime
@@ -63,13 +64,33 @@ namespace Qs.Runtime
             }
         }
 
-
+        /// <summary>
+        /// Level one function calling with direct Quantities.
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public AnyQuantity<double> Invoke(params AnyQuantity<double>[] args)
         {
             var parms = (from arg in args
-                         select QsParameter.MakeParameter(arg, arg.ToShortString())).ToArray();
+                         select 
+                         QsParameter.MakeParameter(arg.ToScalarValue(), arg.ToShortString())).ToArray();
 
-            return Invoke(parms);
+            return ((QsScalar)Invoke(parms)).Quantity;
+        }
+
+        /// <summary>
+        /// Level two function calling with Qs Values 
+        /// </summary>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public QsValue Invoke(params QsValue[] args)
+        {
+            var parms = (from arg in args
+                         select
+                         QsParameter.MakeParameter(arg, arg.ToString())).ToArray();
+
+            return (QsScalar)Invoke(parms);
+            
         }
 
         /// <summary>
@@ -78,7 +99,7 @@ namespace Qs.Runtime
         /// <returns></returns>
         public AnyQuantity<double> Invoke()
         {
-            return FunctionDelegate_0();
+            return ((QsScalar)FunctionDelegate_0()).Quantity;
         }
 
         /// <summary>
@@ -86,7 +107,7 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public AnyQuantity<double> Invoke(params QsParameter[] args)
+        public QsValue Invoke(params QsParameter[] args)
         {
             switch (args.Length)
             {
@@ -142,15 +163,37 @@ namespace Qs.Runtime
                     //yes: treat this parameter as function handle
                     // get the argument as a string value to be used after that as a function name.
                     nakedParameter = Expression.Constant(args[ip]);  // and I will postpone the evaluation until we process the function.
+
+                    //expression to make parameter from the corresponding naked parameter
+                    parameters.Add(Expression.Call(typeof(QsParameter).GetMethod("MakeParameter"),
+                        nakedParameter,
+                        rawParameter));
                 }
                 else
                 {
                     //normal variable
+                    
                     nakedParameter = vario.ParseArithmatic(args[ip]);
+
+                    // if this was another function name without like  v(c,g,8)  where g is a function name will be passed to c
+                    //  then excpetion will occur in GetQuantity that variable was not found in the scope
+
+                    Expression tryBody = Expression.Call(typeof(QsParameter).GetMethod("MakeParameter"),
+                        nakedParameter,
+                        rawParameter);
+
+                    Expression catchBody = Expression.Call(typeof(QsParameter).GetMethod("MakeParameter"),
+                        Expression.Constant(null),
+                        rawParameter);
+
+                    var tt = Utils.Try(tryBody);
+                    tt.Catch(typeof(QsVariableNotFoundException), catchBody);
+
+                    
+
+                    parameters.Add(tt.ToExpression());
                 }
 
-                //expression to make parameter from the corresponding naked parameter
-                parameters.Add(Expression.Call(typeof(QsParameter).GetMethod("MakeParameter"), nakedParameter, rawParameter));
 
             }
 
@@ -165,7 +208,7 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        public AnyQuantity<double> GetInvoke(params QsParameter[] parameters)
+        public QsValue GetInvoke(params QsParameter[] parameters)
         {
             List<QsParameter> ProcessedParameters = new List<QsParameter>();
 
@@ -206,108 +249,108 @@ namespace Qs.Runtime
 
         private object _FunctionDelegate;
 
-        internal Func<AnyQuantity<double>> FunctionDelegate_0
+        internal Func<QsValue> FunctionDelegate_0
         {
             get
             {
-                return (Func<AnyQuantity<double>>)_FunctionDelegate;
+                return (Func<QsValue>)_FunctionDelegate;
             }
         }
 
-        internal Func<QsParameter, AnyQuantity<double>> FunctionDelegate_1
+        internal Func<QsParameter, QsValue> FunctionDelegate_1
         {
             get
             {
-                return (Func<QsParameter, AnyQuantity<double>>)_FunctionDelegate;
+                return (Func<QsParameter, QsValue>)_FunctionDelegate;
             }
         }
 
-        internal Func<QsParameter, QsParameter, AnyQuantity<double>> FunctionDelegate_2
+        internal Func<QsParameter, QsParameter, QsValue> FunctionDelegate_2
         {
             get
             {
-                return (Func<QsParameter, QsParameter, AnyQuantity<double>>)_FunctionDelegate;
+                return (Func<QsParameter, QsParameter, QsValue>)_FunctionDelegate;
             }
         }
 
 
-        internal Func<QsParameter, QsParameter, QsParameter, AnyQuantity<double>> FunctionDelegate_3
+        internal Func<QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_3
         {
             get
             {
-                return (Func<QsParameter, QsParameter, QsParameter, AnyQuantity<double>>)_FunctionDelegate;
+                return (Func<QsParameter, QsParameter, QsParameter, QsValue>)_FunctionDelegate;
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>> FunctionDelegate_4
+        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_4
         {
             get
             {
-                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>>)_FunctionDelegate;
+                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, QsValue>)_FunctionDelegate;
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>> FunctionDelegate_5
+        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_5
         {
             get
             {
-                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>>)_FunctionDelegate;
+                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>)_FunctionDelegate;
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>> FunctionDelegate_6
+        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_6
         {
             get
             {
-                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>>)_FunctionDelegate;
+                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>)_FunctionDelegate;
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>> FunctionDelegate_7
+        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_7
         {
             get
             {
-                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>>)_FunctionDelegate;
+                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>)_FunctionDelegate;
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>> FunctionDelegate_8
+        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_8
         {
             get
             {
-                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>>)_FunctionDelegate;
+                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>)_FunctionDelegate;
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>> FunctionDelegate_9
+        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_9
         {
             get
             {
-                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>>)_FunctionDelegate;
+                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>)_FunctionDelegate;
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>> FunctionDelegate_10
+        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_10
         {
             get
             {
-                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>>)_FunctionDelegate;
+                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>)_FunctionDelegate;
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>> FunctionDelegate_11
+        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_11
         {
             get
             {
-                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>>)_FunctionDelegate;
+                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>)_FunctionDelegate;
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>> FunctionDelegate_12
+        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_12
         {
             get
             {
-                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, AnyQuantity<double>>)_FunctionDelegate;
+                return (Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>)_FunctionDelegate;
             }
         }
 
@@ -345,11 +388,12 @@ namespace Qs.Runtime
         public static QsFunction ParseFunction(QsEvaluator qse, string function)
         {
             Token t = Token.ParseText(function);
-            t = t.RemoveSpaceTokens();
+            t = t.MergeTokens(new SpaceToken());
             t = t.MergeTokens(new WordToken());
             t = t.MergeTokens(new NumberToken());
             t = t.MergeTokens(new UnitizedNumberToken());
             t = t.GroupBrackets();
+            t = t.RemoveSpaceTokens();
 
             t = t.MergeTokens(new AssignmentOperatorToken());
             if (t[0].TokenType == typeof(WordToken)
@@ -373,7 +417,7 @@ namespace Qs.Runtime
                 };
 
 
-                LambdaBuilder lb = Utils.Lambda(typeof(AnyQuantity<double>), functionName);
+                LambdaBuilder lb = Utils.Lambda(typeof(QsValue), functionName);
 
 
                 foreach (QsParamInfo prm in prms)

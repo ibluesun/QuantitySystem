@@ -22,7 +22,7 @@ namespace Qs.Runtime
                 string gg = "";
                 foreach (var v in base.Keys)
                 {
-                    gg += " {" + v.ToString(CultureInfo.InvariantCulture) + ": " + base[v].ElementDeclaration + "};";
+                    gg += v.ToString(CultureInfo.InvariantCulture).Trim() + ": " + base[v].ElementDeclaration + ";";
                 }
                 return sequenceDeclaration + " ..> " + gg;
             }
@@ -81,16 +81,35 @@ namespace Qs.Runtime
         public static QsSequence ParseSequence(QsEvaluator qse, string sequence)
         {
             Token t = Token.ParseText(sequence);
-            t = t.RemoveSpaceTokens();
+
+
+            t = t.MergeTokens(new SpaceToken());
+
+            t = t.MergeTokens(new PositiveSequenceToken());  //    ..>  start from 0 index to +ve
+            t = t.MergeTokens(new NegativeSequenceToken());  //    <..  start from -1 index to -ve
+
+            if (t.IndexOf(typeof(PositiveSequenceToken)) > -1)
+            {
+                t = t.RemoveTokenUntil(typeof(SpaceToken), typeof(PositiveSequenceToken));
+            }
+            else if (t.IndexOf(typeof(NegativeSequenceToken)) > -1)
+            {
+                t = t.RemoveTokenUntil(typeof(SpaceToken), typeof(PositiveSequenceToken));
+            }
+            else
+            {
+                return null;
+            }            
+
             t = t.MergeTokens(new WordToken());
             t = t.MergeTokens(new NumberToken());
             t = t.MergeTokens(new UnitizedNumberToken());
             t = t.GroupBrackets();
 
+
+
             t = t.MergeTokens(new SemiColonToken());
 
-            t = t.MergeTokens(new PositiveSequenceToken());  //    ..>  start from 0 index to +ve
-            t = t.MergeTokens(new NegativeSequenceToken());  //    <..  start from -1 index to -ve
 
 
             if (t[0].TokenType == typeof(WordToken)
@@ -154,7 +173,7 @@ namespace Qs.Runtime
 
                 //make all things between ';' be a whole word.
 
-                t = t.MergeAllBut(3 + shift, new SemiColonToken(), typeof(SequenceElementToken));
+                t = t.MergeAllBut(3 + shift, typeof(SequenceElementToken), new SemiColonToken());
 
                 QsSequence seqo = GetSequence(qse.Scope, FormSequenceScopeName(sequenceName, indexes.Length, parameters.Length));
 

@@ -1,0 +1,342 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using QuantitySystem.Quantities.BaseQuantities;
+using QuantitySystem.Units;
+
+namespace Qs.RuntimeTypes
+{
+    public partial class QsVector : QsValue, IEnumerable<QsScalar>
+    {
+        
+        #region Scalar Operations
+        public QsVector DivideScalar(QsScalar scalar)
+        {
+            QsVector v = new QsVector(this.Count);
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                v.AddComponent(this[i] / scalar);
+            }
+
+            return v;
+
+        }
+
+        public QsVector PowerScalar(QsScalar scalar)
+        {
+
+            QsVector v = new QsVector(this.Count);
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                v.AddComponent(this[i].PowerScalar(scalar));
+            }
+
+            return v;
+        }
+
+        #endregion
+        #region Vector Operations
+
+        /// <summary>
+        /// Adds two vectors
+        /// </summary>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        /// <returns></returns>
+        public QsVector AddVector(QsVector vector)
+        {
+            if (this.Count != vector.Count) throw new QsException("Vectors are not equal");
+
+            QsVector v = new QsVector(this.Count);
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                v.AddComponent(this[i] + vector[i]);
+            }
+
+            return v;
+        }
+
+        /// <summary>
+        /// Subtract two vectors
+        /// </summary>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        /// <returns></returns>
+        public QsVector SubtractVector(QsVector vector)
+        {
+            if (this.Count != vector.Count) throw new QsException("Vectors are not equal");
+
+            QsVector v = new QsVector(this.Count);
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                v.AddComponent(this[i] - vector[i]);
+            }
+
+            return v;
+        }
+
+
+
+        /// <summary>
+        /// Multiply vector component by component.
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        public QsVector MultiplyVector(QsVector vector)
+        {
+            if (this.Count != vector.Count) throw new QsException("Vectors are not equal");
+
+            QsVector v = new QsVector(this.Count);
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                v.AddComponent(this[i] * vector[i]);
+            }
+
+            return v;
+        }
+        
+        
+        /// <summary>
+        /// Divide vector component by component.
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        public QsVector DivideVector(QsVector vector)
+        {
+            if (this.Count != vector.Count) throw new QsException("Vectors are not equal");
+
+            QsVector v = new QsVector(this.Count);
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                v.AddComponent(this[i] / vector[i]);
+            }
+
+            return v;
+        }
+
+
+        /*
+         * Scalar prodcut is commutative that is a{}.b{} = b{}.a{}
+         * a{}.b{} = a1b1+a2b2+anbn
+         */
+
+
+        /// <summary>
+        /// Dot product of two vectors
+        /// </summary>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        /// <returns></returns>
+        public QsScalar ScalarProduct(QsVector vector)
+        {
+            if (this.Count != vector.Count) throw new QsException("Vectors are not equal");
+
+            AnyQuantity<double> Total = this[0].Quantity * vector[0].Quantity;
+
+            for (int i = 1; i < this.Count; i++)
+            {
+                Total = Total + (this[i].Quantity * vector[i].Quantity);
+            }
+
+            return new QsScalar { Quantity = Total };
+        }
+
+
+        /// <summary>
+        /// Cross product for 3 components vector.
+        /// </summary>
+        /// <param name="v1"></param>
+        /// <param name="v2"></param>
+        /// <returns></returns>
+        public QsVector VectorProduct(QsVector v2)
+        {
+            if (this.Count != v2.Count) throw new QsException("Vectors are not equal");
+
+
+            QsVector units = new QsVector(this.Count);
+            QsVector a = new QsVector(this.Count);
+            QsVector b = new QsVector(v2.Count);
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                // first row is the units.
+                var utou = this[i].Quantity.Unit.PathToUnit(v2[i].Quantity.Unit).ConversionFactor; //the units may be different but the quantities are the same.
+                Unit u = (Unit)this[i].Quantity.Unit.Clone();
+
+                // unit with the conversion factor
+                units.AddComponent(new QsScalar { Quantity = u.GetThisUnitQuantity<double>(utou) });
+
+
+                // second row is first vector
+                //take the value of the quantity and convert it to dimensionless value.
+                a.AddComponent(new QsScalar { Quantity = this[i].Quantity.Value.ToQuantity() });
+
+                // third row is the second vector
+                b.AddComponent(new QsScalar { Quantity = v2[i].Quantity.Value.ToQuantity() });
+
+            }
+
+            QsMatrix mat = new QsMatrix(units, a, b);
+
+            return mat.Determinant();
+
+            // problem now: what if we have more than 3 elements in the vector.
+            // there is no cross product for more than 3 elements for vectors.
+
+        }
+
+
+
+
+        #endregion
+
+
+
+        #region QsValue operations
+        public override QsValue AddOperation(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                var s = value as QsScalar;
+                return s.AddVector(this);
+            }
+            else if (value is QsVector)
+            {
+                return this.AddVector((QsVector)value);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        public override QsValue SubtractOperation(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                var s = value as QsScalar;
+                return s.SubtractVector(this);
+            }
+            else if (value is QsVector)
+            {
+                return this.SubtractVector((QsVector)value);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+
+        /// <summary>
+        /// Normal multiplication.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public override QsValue MultiplyOperation(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                var s = value as QsScalar;
+                return s.MultiplyVector(this);
+            }
+            else if (value is QsVector)
+            {
+                return this.MultiplyVector((QsVector)value);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+
+        /// <summary>
+        /// Dot product
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public override QsValue DotProductOperation(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                var s = value as QsScalar;
+                return s.MultiplyVector(this);
+            }
+            else if (value is QsVector)
+            {
+                return this.ScalarProduct((QsVector)value);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        public override QsValue CrossProductOperation(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                var s = value as QsScalar;
+                return s.MultiplyVector(this);
+            }
+            else if (value is QsVector)
+            {
+                return this.VectorProduct((QsVector)value);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        public override QsValue DivideOperation(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                var s = value as QsScalar;
+                return this.DivideScalar(s);
+            }
+            else if (value is QsVector)
+            {
+                return this.DivideVector((QsVector)value);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+        public override QsValue PowerOperation(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                var s = value as QsScalar;
+                return this.PowerScalar(s);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        public override QsValue NormOperation()
+        {
+            return this.Magnitude();
+        }
+
+        public override QsValue AbsOperation()
+        {
+            throw new NotSupportedException();
+        }
+        #endregion
+
+
+    }
+}

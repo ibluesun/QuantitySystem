@@ -19,6 +19,10 @@ cos(x) = cos[0++40](x)							#cos function
 
 fib[n] ..> 0; 1; fib[n-1] + fib[n-2]			#fibonaccy sequence
 
+# Pi calculation http://en.wikipedia.org/wiki/Chudnovsky_algorithm
+pi_Ch[k] ..> ((-1)^k * (6*k)! * (13591409 + 545140134*k))/((3*k)! * (k!)^3 * 640320^(3*k+(3/2)))
+pi() = 1/(12*pi_Ch[0++20])
+
 
 #Normal sequences 
 a[] ..> 2; 3; 5; 7; 9; 11

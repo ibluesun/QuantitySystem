@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
+using Qs.RuntimeTypes;
 
 namespace Qs.Runtime
 {
@@ -19,6 +20,7 @@ namespace Qs.Runtime
         /// </summary>
         public string RawValue { get; private set; }
 
+        
         public static QsParameter MakeParameter(object value, string rawValue)
         {
             QsParameter qp = new QsParameter();
@@ -31,11 +33,11 @@ namespace Qs.Runtime
         }
 
 
-        public AnyQuantity<double> Quantity
+        public QsValue Quantity
         {
             get
             {
-                return Value as AnyQuantity<double>;
+                return Value as QsValue;
             }
         }
 
