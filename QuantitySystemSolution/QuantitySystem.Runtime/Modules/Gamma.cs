@@ -3,19 +3,53 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
+using Qs.RuntimeTypes;
 
 namespace Qs.Modules
 {
     /// <summary>
     /// Gives the factorial of real numbers.
-    /// should be complex number also but I will not include it
-    /// ----------
-    /// the implementation now is integer numbers.
     /// </summary>
     public static class Gamma
     {
-        
-        public static AnyQuantity<double> Factorial(AnyQuantity<double> number)
+        /// <summary>
+        /// Get factorial for the <see>QsValue</see> whether it is Scalar, Vector, Matrix, and later Tensor.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static QsValue Factorial(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                AnyQuantity<double> number = ((QsScalar)value).Quantity;
+                return new QsScalar { Quantity = QuantityFactorial(number) };
+            }
+            else if (value is QsVector)
+            {
+                var vec = value as QsVector;
+
+                QsVector rvec = new QsVector(vec.Count);
+
+                foreach (var v in vec)
+                {
+
+                    rvec.AddComponent(new QsScalar { Quantity = QuantityFactorial(v.Quantity) });
+                }
+
+                return rvec;
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        /// <summary>
+        /// Get the factorial of quantity
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
+        public static AnyQuantity<double> QuantityFactorial(AnyQuantity<double> number)
         {
             int v = (int)number.Value;
 
@@ -25,12 +59,10 @@ namespace Qs.Modules
             AnyQuantity<double> num = (AnyQuantity<double>)number.Clone();
             num.Value = Math.Floor(num.Value);
 
-            
-
             double Total = num.Value == 0 ? 1 : num.Value;
 
             //I am calculating the value part first for fast calculation
-            for (int i = v; i >1; i--)
+            for (int i = v; i > 1; i--)
             {
                 num.Value--;
                 Total = Total * num.Value;
@@ -50,9 +82,14 @@ namespace Qs.Modules
             AnyQuantity<double> TotalQuantity = TotalUnit.GetThisUnitQuantity<double>(Total);
 
             return TotalQuantity;
-        
         }
 
+
+        /// <summary>
+        /// Factorial for real numbers.
+        /// </summary>
+        /// <param name="number"></param>
+        /// <returns></returns>
         public static double GammaFactorial(double number)
         {
             //I checked this http://www.rskey.org/gamma.htm 

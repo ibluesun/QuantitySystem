@@ -10,6 +10,7 @@ using QuantitySystem.Units;
 using Microsoft.Linq.Expressions;
 using ParticleLexer;
 using ParticleLexer.TokenTypes;
+using Qs.RuntimeTypes;
 
 
 namespace Qs.Runtime
@@ -31,10 +32,6 @@ namespace Qs.Runtime
 
 
 
-
-
-        Dictionary<string, AnyQuantity<double>> _Variables;
-
         public IEnumerable<string> VariablesKeys
         {
             get
@@ -47,9 +44,7 @@ namespace Qs.Runtime
                 }
                 else
                 {
-                    var varo = from item in _Variables.Keys
-                               select item;
-                    return varo;
+                    throw new Exception("No Scope exist");
                 }
             }
         }
@@ -68,7 +63,6 @@ namespace Qs.Runtime
             else
             {
                 throw new NotImplementedException("you should be running in DLR");
-
             }
 
         }
@@ -83,11 +77,17 @@ namespace Qs.Runtime
             }
             else
             {
-                return _Variables[varName];
+                throw new Exception("No Scope exist");
             }
         }
 
-        public void SetVariable(string varName, AnyQuantity<double> varValue)
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="varName"></param>
+        /// <param name="varValue"></param>
+        public void SetVariable(string varName, object varValue)
         {
             if (Scope != null)
             {
@@ -95,27 +95,8 @@ namespace Qs.Runtime
             }
             else
             {
-                _Variables[varName] = varValue;
+                throw new Exception("No Scope exist");
             }
-        }
-
-        public static AnyQuantity<double> GetScopeQuantity(Scope scope, string name)
-        {
-            object q;
-
-
-            scope.TryGetName(SymbolTable.StringToId(name), out q);
-
-            if (q != null)
-            {
-                return (AnyQuantity<double>)q;
-            }
-            else
-            {
-                throw new QsException("Variable '" + name + "' Not Found.");
-
-            }
-
         }
 
 
@@ -231,7 +212,7 @@ namespace Qs.Runtime
                     }
                     catch (QuantityNotFoundException)
                     {
-                        Console.Error.WriteLine("Quantityt Not Found");
+                        Console.Error.WriteLine("Quantity Not Found");
                         return null;
                     }
 
@@ -303,6 +284,7 @@ namespace Qs.Runtime
                         {
                             // May be variable or sequence element.
                             Token seq = Token.ParseText(varName);
+                            seq = seq.MergeTokens(new SpaceToken());
                             seq = seq.RemoveSpaceTokens();
                             seq = seq.MergeTokens(new WordToken());
                             seq = seq.MergeTokens(new ColonToken());
@@ -433,7 +415,7 @@ namespace Qs.Runtime
 
                                 //assign the variable
                                 SetVariable(varName, qv.Execute());
-                                var q = GetQuantity(varName);
+                                var q = GetVariable(varName);
                                 PrintQuantity(q);
                                 return q;
                             }
@@ -494,7 +476,7 @@ namespace Qs.Runtime
             Console.ForegroundColor = ConsoleColor.White;
         }
 
-        public void PrintQuantity(BaseQuantity qty)
+        public void PrintQuantity(object qty)
         {
             if (!SilentOutput)
             {
@@ -507,6 +489,33 @@ namespace Qs.Runtime
         }
 
         #endregion
+
+
+
+
+
+
+        #region Scope Helper methods.
+        public static QsValue GetScopeQsValue(Scope scope, string name)
+        {
+            object q;
+
+
+            scope.TryGetName(SymbolTable.StringToId(name), out q);
+
+            if (q != null)
+            {
+                return (QsValue)q;
+            }
+            else
+            {
+                throw new QsVariableNotFoundException("Variable '" + name + "' Not Found.");
+            }
+
+        }
+        #endregion
+
+    
     }
 
 }

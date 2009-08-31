@@ -65,14 +65,18 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Qs.cs" />
     <Compile Include="Modules\Gamma.cs" />
+    <Compile Include="RuntimeTypes\QsScalar.cs" />
+    <Compile Include="RuntimeTypes\QsValue.cs" />
+    <Compile Include="RuntimeTypes\QsVector.cs" />
+    <Compile Include="RuntimeTypes\QsVectorOperations.cs" />
     <Compile Include="Runtime\QsBinder.cs" />
     <Compile Include="Runtime\QsContext.cs" />
     <Compile Include="Runtime\QsEvaluator.cs" />
     <Compile Include="QsException.cs" />
     <Compile Include="Runtime\QsFunction.cs" />
-    <Compile Include="Runtime\QsMatrix.cs" />
-    <Compile Include="Runtime\QsMatrixException.cs" />
-    <Compile Include="Runtime\QsMatrixOperators.cs" />
+    <Compile Include="RuntimeTypes\QsMatrix.cs" />
+    <Compile Include="RuntimeTypes\QsMatrixException.cs" />
+    <Compile Include="RuntimeTypes\QsMatrixOperations.cs" />
     <Compile Include="Runtime\QsParameter.cs" />
     <Compile Include="Runtime\QsParamInfo.cs" />
     <Compile Include="Runtime\QsScriptCode.cs" />
@@ -80,6 +84,7 @@
     <Compile Include="Runtime\QsSequenceElement.cs" />
     <Compile Include="Runtime\QsSequence_Helper.cs" />
     <Compile Include="Runtime\QsVar.cs" />
+    <Compile Include="Runtime\QsVariableNotFoundException.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QuantitySystem\QuantitySystem.csproj">

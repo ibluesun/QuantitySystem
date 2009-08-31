@@ -125,6 +125,7 @@
     <Compile Include="QuantityDimension.cs" />
     <Compile Include="QuantityException.cs" />
     <Compile Include="QuantityNotFoundException.cs" />
+    <Compile Include="Units\Ancient\LengthUnits.cs" />
     <Compile Include="Units\Astronomical\EnergyUnits.cs" />
     <Compile Include="Units\Astronomical\LengthUnits.cs" />
     <Compile Include="Units\Astronomical\MassUnits.cs" />

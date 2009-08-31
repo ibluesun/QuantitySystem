@@ -6,6 +6,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 using Microsoft.Linq.Expressions;
 using Microsoft.Scripting.Ast;
 using QuantitySystem.Units;
+using Qs.RuntimeTypes;
 
 namespace Qs.Runtime
 {
@@ -79,48 +80,48 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="executionIndex">The real calling index.</param>
         /// <returns></returns>
-        public AnyQuantity<double> Execute(int executionIndex)
+        public QsValue Execute(int executionIndex)
         {
 
-            if (ElementValue.GetType() == typeof(Microsoft.Func<int, AnyQuantity<double>>))
+            if (ElementValue.GetType() == typeof(Microsoft.Func<int, QsValue>))
             {
 
-                return ((Microsoft.Func<int, AnyQuantity<double>>)ElementValue)(executionIndex);
+                return ((Microsoft.Func<int, QsValue>)ElementValue)(executionIndex);
                 
             }
             else if (ElementValue.GetType() == typeof(QsSequence))
             {
                 QsSequence seq = (QsSequence)ElementValue;
 
-                return seq.GetElementQuantity(executionIndex);
+                return seq.GetElementValue(executionIndex);
             }
             else
-                return (AnyQuantity<double>)ElementValue;
+                return (QsValue)ElementValue;
         }
 
-        public AnyQuantity<double> Execute(int executionIndex, params AnyQuantity<double>[] args)
+        public QsValue Execute(int executionIndex, params QsValue[] args)
         {
-            if (ElementValue is AnyQuantity<double>)
-                return (AnyQuantity<double>)ElementValue;
+            if (ElementValue is QsValue)
+                return (QsValue)ElementValue;
             switch (args.Length)
             {
 
                 case 0:
                     return Execute(executionIndex);
                 case 1:
-                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executionIndex, args[0]);
+                    return ((Microsoft.Func<int, QsValue, QsValue>)ElementValue)(executionIndex, args[0]);
                 case 2:
-                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executionIndex, args[0], args[1]);
+                    return ((Microsoft.Func<int, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1]);
                 case 3:
-                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executionIndex, args[0], args[1], args[2]);
+                    return ((Microsoft.Func<int, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2]);
                 case 4:
-                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3]);
+                    return ((Microsoft.Func<int, QsValue, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3]);
                 case 5:
-                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4]);
+                    return ((Microsoft.Func<int, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4]);
                 case 6:
-                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4], args[5]);
+                    return ((Microsoft.Func<int, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4], args[5]);
                 case 7:
-                    return ((Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+                    return ((Microsoft.Func<int, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
 
             }
             throw new QsException("Parameters Exeeded the limits");
@@ -139,7 +140,7 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="quantity"></param>
         /// <returns></returns>
-        public static QsSequenceElement FromQuantity(AnyQuantity<double> quantity)
+        public static QsSequenceElement FromQuantity(QsValue quantity)
         {
             QsSequenceElement el = new QsSequenceElement();
             el.ElementValue = quantity;
@@ -175,7 +176,7 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="function"></param>
         /// <returns></returns>
-        public static QsSequenceElement FromDelegate(Microsoft.Func<int, AnyQuantity<double>> function)
+        public static QsSequenceElement FromDelegate(Microsoft.Func<int, QsValue> function)
         {
             QsSequenceElement el = new QsSequenceElement();
             el.ElementValue = function;
@@ -188,7 +189,7 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="function"></param>
         /// <returns></returns>
-        public static QsSequenceElement FromDelegate(Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>> function)
+        public static QsSequenceElement FromDelegate(Microsoft.Func<int, QsValue, QsValue> function)
         {
             QsSequenceElement el = new QsSequenceElement();
             el.ElementValue = function;
@@ -200,7 +201,7 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="function"></param>
         /// <returns></returns>
-        public static QsSequenceElement FromDelegate(Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> function)
+        public static QsSequenceElement FromDelegate(Microsoft.Func<int, QsValue, QsValue, QsValue> function)
         {
             QsSequenceElement el = new QsSequenceElement();
             el.ElementValue = function;
@@ -212,7 +213,7 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="function"></param>
         /// <returns></returns>
-        public static QsSequenceElement FromDelegate(Microsoft.Func<int, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>, AnyQuantity<double>> function)
+        public static QsSequenceElement FromDelegate(Microsoft.Func<int, QsValue, QsValue, QsValue, QsValue> function)
         {
             QsSequenceElement el = new QsSequenceElement();
             el.ElementValue = function;
@@ -234,7 +235,7 @@ namespace Qs.Runtime
             AnyQuantity<double> v;
             if (Unit.TryParseQuantity(element, out v))
             {
-                var el = QsSequenceElement.FromQuantity(v);
+                var el = QsSequenceElement.FromQuantity(new QsScalar { Quantity = v });
                 el.ElementDeclaration = element;
 
                 el.IndexEvaluation = false;
@@ -247,7 +248,7 @@ namespace Qs.Runtime
                 
                 //try one index delegate without parameters
                 //Create the lambda function that will pass the index and parameters to the expression.
-                LambdaBuilder lb = Utils.Lambda(typeof(AnyQuantity<double>), "ElementValue");
+                LambdaBuilder lb = Utils.Lambda(typeof(QsValue), "ElementValue");
 
                 //add the index parameter
                 lb.Parameter(typeof(int), sequence.SequenceIndexName);
@@ -260,7 +261,7 @@ namespace Qs.Runtime
                 //make the sequence parameters.
                 foreach (var seqParam in sequence.Parameters)
                 {
-                    lb.Parameter(typeof(AnyQuantity<double>), seqParam.Name);
+                    lb.Parameter(typeof(QsValue), seqParam.Name);
                     if (element.IndexOf(seqParam.Name) > -1)
                         se.ParameterEvaluation = true;
                 }

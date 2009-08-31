@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 
-namespace Qs.Runtime
+namespace Qs.RuntimeTypes
 {
     [Serializable()]
     public class QsMatrixException : QsException
     {
-              public QsMatrixException()
+      public QsMatrixException()
       {
          // Add any type-specific logic, and supply the default message.
       }

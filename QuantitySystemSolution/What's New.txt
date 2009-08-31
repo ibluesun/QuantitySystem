@@ -1,13 +1,77 @@
 [Quantity System 1.1.8] 
 
+Code Design Change in Qs DLR:
+-----------------------------
+
+now there is a QsScalar class that wrap the AnyQuantity<double> class
+QsScalar is inherited from QsValue
+Three Classes inherited from QsValue
+
+ 1) QsScalar  
+ 2) QsVector
+ 3) QsMatrix
+ 
+ 
+Later the Qs will also support Tensor with rank 3 {any suggestions is appreciated}
+
+please notice that the matrix calculations is not the best algorithm available.
+
+
+New features:
+-------------
+
+- Absolute Operator   |n|  where n is QsScalar or QsMatrix
+
+- Vector support:
+	  a= {2 3 4}  or a={2,3,5}
+	  
+- Dot product for vectors   New opertaor
+	  {2,3,4} . { 5 6 3}
+	  
+- Crosss product for vectors of 3 components  use 'x' letter       New Operator
+	  {3<m> 2<A> 4<N>} x {2<ft> 2<mA> 3<pdl>}
+	  
+- Vector Norm ||_||:
+	    ||{3 5 3 2 1}|| or  ||a||
+
+- Factorial of Vector gets all the factorial of its components
+
+- calling a function with vector as input result in vector as a result.
+  
+
+- Matrix support 
+	m1 = [2 3 4; 3 2 1; {5 4 3}]
+	
+- Matrix multiplication
+
+- Determinant for matrix using determinant operator
+	| a | 
+	| [ 2 3 4; 3 2 1; 5 2 3] |
+	only for 2x2 and 3x3 matrices.
+	LU decomposition methods comes later.
+	
+- Sequence new range operator '..' i.e. 's[n..m]':
+   returns vector if elements are scalars.
+   returns matrix if elements are vectors.	
+
+- Enhancments in parsing and exceptions handling.
+
 New Quantities:
-- Stiffness  <N/m>
-- RotationalStiffness Torque / Angle
-- Momentum  Mass * Velocity
-- MassMomentOfInteria  I   <kg.m!^2>   like the regular mass
-- AngularMomentum  Mass Moment Of Interia * Angular Velocity
+---------------
+
+- Stiffness						<N/m>
+- RotationalStiffness			Torque / Angle
+- Momentum						Mass * Velocity
+- MassMomentOfInteria			I   <kg.m!^2>   like the regular mass
+- AngularMomentum				Mass Moment Of Interia * Angular Velocity
+
+New Units:
+----------
+- Cubit <cubit>					Ancient Length unit = 45.72<cm> based on google calculator.
+
 
 [Quantity System 1.1.7] {Release}
+----------------------------------
 
 - Passing Functions as arguments.
   

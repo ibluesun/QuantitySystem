@@ -6,13 +6,14 @@ using QuantitySystem.Quantities.BaseQuantities;
 using System.Globalization;
 using QuantitySystem.Units;
 using Microsoft.Linq.Expressions;
+using Qs.RuntimeTypes;
 
 namespace Qs.Runtime
 {
     /// <summary>
     /// Single indexed sequence.
     /// </summary>
-    public partial class QsSequence : Dictionary<int, QsSequenceElement> , IEnumerable<AnyQuantity<double>>
+    public partial class QsSequence : Dictionary<int, QsSequenceElement> , IEnumerable<QsValue>
     {
 
         /// <summary>
@@ -118,7 +119,7 @@ namespace Qs.Runtime
         /// Keeps the the values that were calculated before.
         /// When modifieng an item the index of this item and all after items should be deleted.
         /// </summary>
-        private Dictionary<int, AnyQuantity<double>> CachedValues = new Dictionary<int, AnyQuantity<double>>();
+        private Dictionary<int, QsValue> CachedValues = new Dictionary<int, QsValue>();
 
 
         /// <summary>
@@ -126,9 +127,9 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
-        public AnyQuantity<double> GetElementQuantity(int index)
+        public QsValue GetElementValue(int index)
         {
-            AnyQuantity<double> val;
+            QsValue val;
             if (CachingEnabled)
             {
                 if (CachedValues.TryGetValue(index, out val))
@@ -137,7 +138,7 @@ namespace Qs.Runtime
                 }
             }
 
-            val = (AnyQuantity<double>)GetElement(index).Execute(index);
+            val = (QsValue)GetElement(index).Execute(index);
 
             if (CachingEnabled) CachedValues[index] = val;
 
@@ -146,191 +147,200 @@ namespace Qs.Runtime
         }
 
         #region Get Element Quantity Functions
-        public AnyQuantity<double> GetElementQuantity(int index, AnyQuantity<double> arg0)
+        public QsValue GetElementValue(int index, QsValue arg0)
         {
-            AnyQuantity<double> val = (AnyQuantity<double>)GetElement(index).Execute(index, arg0);
+            QsValue val = (QsValue)GetElement(index).Execute(index, arg0);
             return val;
         }
 
-        public AnyQuantity<double> GetElementQuantity(int index, AnyQuantity<double> arg0, AnyQuantity<double> arg1)
+        public QsValue GetElementValue(int index, QsValue arg0, QsValue arg1)
         {
-            AnyQuantity<double> val = (AnyQuantity<double>)GetElement(index).Execute(index, arg0, arg1);
+            QsValue val = (QsValue)GetElement(index).Execute(index, arg0, arg1);
             return val;
         }
 
-        public AnyQuantity<double> GetElementQuantity(int index, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2)
+        public QsValue GetElementValue(int index, QsValue arg0, QsValue arg1, QsValue arg2)
         {
-            AnyQuantity<double> val = (AnyQuantity<double>)GetElement(index).Execute(index, arg0, arg1, arg2);
+            QsValue val = (QsValue)GetElement(index).Execute(index, arg0, arg1, arg2);
             return val;
         }
 
-        public AnyQuantity<double> GetElementQuantity(int index, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3)
+        public QsValue GetElementValue(int index, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3)
         {
-            AnyQuantity<double> val = (AnyQuantity<double>)GetElement(index).Execute(index, arg0, arg1, arg2, arg3);
+            QsValue val = (QsValue)GetElement(index).Execute(index, arg0, arg1, arg2, arg3);
             return val;
         }
 
-        public AnyQuantity<double> GetElementQuantity(int index, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4)
+        public QsValue GetElementValue(int index, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4)
         {
-            AnyQuantity<double> val = (AnyQuantity<double>)GetElement(index).Execute(index, arg0, arg1, arg2, arg3, arg4);
+            QsValue val = (QsValue)GetElement(index).Execute(index, arg0, arg1, arg2, arg3, arg4);
             return val;
         }
 
-        public AnyQuantity<double> GetElementQuantity(int index, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4, AnyQuantity<double> arg5)
+        public QsValue GetElementValue(int index, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5)
         {
-            AnyQuantity<double> val = (AnyQuantity<double>)GetElement(index).Execute(index, arg0, arg1, arg2, arg3, arg4, arg5);
+            QsValue val = (QsValue)GetElement(index).Execute(index, arg0, arg1, arg2, arg3, arg4, arg5);
             return val;
         }
 
-        public AnyQuantity<double> GetElementQuantity(int index, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4, AnyQuantity<double> arg5, AnyQuantity<double> arg6)
+        public QsValue GetElementValue(int index, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5, QsValue arg6)
         {
-            AnyQuantity<double> val = (AnyQuantity<double>)GetElement(index).Execute(index, arg1, arg1, arg2, arg3, arg4, arg5, arg6);
+            QsValue val = (QsValue)GetElement(index).Execute(index, arg1, arg1, arg2, arg3, arg4, arg5, arg6);
             return val;
         }
 
         #endregion
-        
+
+
+        #region Higher Sequence Manipulation functions (Summation, Multiplication, and Average).
+
         /// <summary>
         /// The method sum all elements in the sequence between the supplied indexes.
-        /// Correspondes To: S[i..k]
+        /// Correspondes To: S[i++k]
         /// </summary>
-        public AnyQuantity<double> SumElements(int fromIndex, int toIndex)
+        public QsValue SumElements(int fromIndex, int toIndex)
         {
-            AnyQuantity<double> Total = GetElementQuantity(fromIndex);
+            QsValue Total = GetElementValue(fromIndex);
 
             for (int i = fromIndex + 1; i <= toIndex; i++)
             {
-                Total = Total + GetElementQuantity(i);
+                Total = Total + GetElementValue(i);
             }
 
             return Total;
         }
 
         #region SumElements Functions
-        public AnyQuantity<double> SumElements(int fromIndex, int toIndex, AnyQuantity<double> arg0)
+        public QsValue SumElements(int fromIndex, int toIndex, QsValue arg0)
         {
-            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0);
+            QsValue Total = GetElementValue(fromIndex, arg0);
             for (int i = fromIndex + 1; i <= toIndex; i++)
             {
-                Total = Total + GetElementQuantity(i, arg0);
+                Total = Total + GetElementValue(i, arg0);
             }
             return Total;
         }
-        public AnyQuantity<double> SumElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1)
+        public QsValue SumElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1)
         {
-            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1);
+            QsValue Total = GetElementValue(fromIndex, arg0, arg1);
             for (int i = fromIndex + 1; i <= toIndex; i++)
             {
-                Total = Total + GetElementQuantity(i, arg0, arg1);
+                Total = Total + GetElementValue(i, arg0, arg1);
             }
             return Total;
         }
-        public AnyQuantity<double> SumElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2)
+        public QsValue SumElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2)
         {
-            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1, arg2);
+            QsValue Total = GetElementValue(fromIndex, arg0, arg1, arg2);
             for (int i = fromIndex + 1; i <= toIndex; i++)
             {
-                Total = Total + GetElementQuantity(i, arg0, arg1, arg2);
+                Total = Total + GetElementValue(i, arg0, arg1, arg2);
             }
             return Total;
         }
-        public AnyQuantity<double> SumElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3)
+        public QsValue SumElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3)
         {
-            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1, arg2, arg3);
+            QsValue Total = GetElementValue(fromIndex, arg0, arg1, arg2, arg3);
             for (int i = fromIndex + 1; i <= toIndex; i++)
             {
-                Total = Total + GetElementQuantity(i, arg0, arg1, arg2, arg3);
+                Total = Total + GetElementValue(i, arg0, arg1, arg2, arg3);
             }
             return Total;
         }
-        public AnyQuantity<double> SumElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4)
+        public QsValue SumElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4)
         {
-            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1, arg2, arg3, arg4);
+            QsValue Total = GetElementValue(fromIndex, arg0, arg1, arg2, arg3, arg4);
             for (int i = fromIndex + 1; i <= toIndex; i++)
             {
-                Total = Total + GetElementQuantity(i, arg0, arg1, arg2, arg3, arg4);
+                Total = Total + GetElementValue(i, arg0, arg1, arg2, arg3, arg4);
             }
             return Total;
         }
-        public AnyQuantity<double> SumElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4, AnyQuantity<double> arg5)
+        public QsValue SumElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5)
         {
-            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1, arg2, arg3, arg4, arg5);
+            QsValue Total = GetElementValue(fromIndex, arg0, arg1, arg2, arg3, arg4, arg5);
             for (int i = fromIndex + 1; i <= toIndex; i++)
             {
-                Total = Total + GetElementQuantity(i, arg0, arg1, arg2, arg3, arg4, arg5);
+                Total = Total + GetElementValue(i, arg0, arg1, arg2, arg3, arg4, arg5);
             }
             return Total;
         }
-        public AnyQuantity<double> SumElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4, AnyQuantity<double> arg5, AnyQuantity<double> arg6)
+        public QsValue SumElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5, QsValue arg6)
         {
-            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+            QsValue Total = GetElementValue(fromIndex, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
             for (int i = fromIndex + 1; i <= toIndex; i++)
             {
-                Total = Total + GetElementQuantity(i, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+                Total = Total + GetElementValue(i, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
             }
             return Total;
         }
         #endregion
 
-
-        public AnyQuantity<double> Average(int fromIndex, int toIndex)
+        /// <summary>
+        /// Take the average of the sequence.
+        /// Corresponds To: S[i!!k]
+        /// </summary>
+        /// <param name="fromIndex"></param>
+        /// <param name="toIndex"></param>
+        /// <returns></returns>
+        public QsValue Average(int fromIndex, int toIndex)
         {
             var tot = SumElements(fromIndex, toIndex);
             var n = toIndex - fromIndex + 1;
-            var count = Qs.ToQuantity((double)n);
+            var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
             return tot / count;
         }
 
 
 
         #region Average Functions
-        public AnyQuantity<double> Average(int fromIndex, int toIndex, AnyQuantity<double> arg0)
+        public QsValue Average(int fromIndex, int toIndex, QsValue arg0)
         {
             var tot = SumElements(fromIndex, toIndex, arg0);
             var n = toIndex - fromIndex + 1;
-            var count = Qs.ToQuantity((double)n);
+            var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
             return tot / count;
         }
-        public AnyQuantity<double> Average(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1)
+        public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1)
         {
             var tot = SumElements(fromIndex, toIndex, arg0, arg1);
             var n = toIndex - fromIndex + 1;
-            var count = Qs.ToQuantity((double)n);
+            var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
             return tot / count;
         }
-        public AnyQuantity<double> Average(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2)
+        public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2)
         {
             var tot = SumElements(fromIndex, toIndex, arg0, arg1, arg2);
             var n = toIndex - fromIndex + 1;
-            var count = Qs.ToQuantity((double)n);
+            var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
             return tot / count;
         }
-        public AnyQuantity<double> Average(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3)
+        public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3)
         {
             var tot = SumElements(fromIndex, toIndex, arg0, arg1, arg2, arg3);
             var n = toIndex - fromIndex + 1;
-            var count = Qs.ToQuantity((double)n);
+            var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
             return tot / count;
         }
-        public AnyQuantity<double> Average(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4)
+        public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4)
         {
             var tot = SumElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4);
             var n = toIndex - fromIndex + 1;
-            var count = Qs.ToQuantity((double)n);
+            var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
             return tot / count;
         }
-        public AnyQuantity<double> Average(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4, AnyQuantity<double> arg5)
+        public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5)
         {
             var tot = SumElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4, arg5);
             var n = toIndex - fromIndex + 1;
-            var count = Qs.ToQuantity((double)n);
+            var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
             return tot / count;
         }
-        public AnyQuantity<double> Average(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4, AnyQuantity<double> arg5, AnyQuantity<double> arg6)
+        public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5, QsValue arg6)
         {
             var tot = SumElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
             var n = toIndex - fromIndex + 1;
-            var count = Qs.ToQuantity((double)n);
+            var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
             return tot / count;
         }
         #endregion
@@ -339,81 +349,81 @@ namespace Qs.Runtime
 
         /// <summary>
         /// The method multiply all elements in the sequence between the supplied indexes.
-        /// Correspondes To: S[i..k]
+        /// Correspondes To: S[i**k]
         /// </summary>
-        public AnyQuantity<double> MulElements(int fromIndex, int toIndex)
+        public QsValue MulElements(int fromIndex, int toIndex)
         {
-            AnyQuantity<double> Total = GetElementQuantity(fromIndex);
+            QsValue Total = GetElementValue(fromIndex);
 
             for (int i = fromIndex + 1; i <= toIndex; i++)
             {
-                Total = Total * GetElementQuantity(i);
+                Total = Total * GetElementValue(i);
             }
 
             return Total;
         }
 
         #region MulElements Functions
-        public AnyQuantity<double> MulElements(int fromIndex, int toIndex, AnyQuantity<double> arg0)
+        public QsValue MulElements(int fromIndex, int toIndex, QsValue arg0)
         {
-            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0);
+            QsValue Total = GetElementValue(fromIndex, arg0);
             for (int i = fromIndex + 1; i <= toIndex; i++)
             {
-                Total = Total * GetElementQuantity(i, arg0);
+                Total = Total * GetElementValue(i, arg0);
             }
             return Total;
         }
-        public AnyQuantity<double> MulElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1)
+        public QsValue MulElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1)
         {
-            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1);
+            QsValue Total = GetElementValue(fromIndex, arg0, arg1);
             for (int i = fromIndex + 1; i <= toIndex; i++)
             {
-                Total = Total * GetElementQuantity(i, arg0, arg1);
+                Total = Total * GetElementValue(i, arg0, arg1);
             }
             return Total;
         }
-        public AnyQuantity<double> MulElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2)
+        public QsValue MulElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2)
         {
-            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1, arg2);
+            QsValue Total = GetElementValue(fromIndex, arg0, arg1, arg2);
             for (int i = fromIndex + 1; i <= toIndex; i++)
             {
-                Total = Total * GetElementQuantity(i, arg0, arg1, arg2);
+                Total = Total * GetElementValue(i, arg0, arg1, arg2);
             }
             return Total;
         }
-        public AnyQuantity<double> MulElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3)
+        public QsValue MulElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3)
         {
-            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1, arg2, arg3);
+            QsValue Total = GetElementValue(fromIndex, arg0, arg1, arg2, arg3);
             for (int i = fromIndex + 1; i <= toIndex; i++)
             {
-                Total = Total * GetElementQuantity(i, arg0, arg1, arg2, arg3);
+                Total = Total * GetElementValue(i, arg0, arg1, arg2, arg3);
             }
             return Total;
         }
-        public AnyQuantity<double> MulElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4)
+        public QsValue MulElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4)
         {
-            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1, arg2, arg3, arg4);
+            QsValue Total = GetElementValue(fromIndex, arg0, arg1, arg2, arg3, arg4);
             for (int i = fromIndex + 1; i <= toIndex; i++)
             {
-                Total = Total * GetElementQuantity(i, arg0, arg1, arg2, arg3, arg4);
+                Total = Total * GetElementValue(i, arg0, arg1, arg2, arg3, arg4);
             }
             return Total;
         }
-        public AnyQuantity<double> MulElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4, AnyQuantity<double> arg5)
+        public QsValue MulElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5)
         {
-            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1, arg2, arg3, arg4, arg5);
+            QsValue Total = GetElementValue(fromIndex, arg0, arg1, arg2, arg3, arg4, arg5);
             for (int i = fromIndex + 1; i <= toIndex; i++)
             {
-                Total = Total * GetElementQuantity(i, arg0, arg1, arg2, arg3, arg4, arg5);
+                Total = Total * GetElementValue(i, arg0, arg1, arg2, arg3, arg4, arg5);
             }
             return Total;
         }
-        public AnyQuantity<double> MulElements(int fromIndex, int toIndex, AnyQuantity<double> arg0, AnyQuantity<double> arg1, AnyQuantity<double> arg2, AnyQuantity<double> arg3, AnyQuantity<double> arg4, AnyQuantity<double> arg5, AnyQuantity<double> arg6)
+        public QsValue MulElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5, QsValue arg6)
         {
-            AnyQuantity<double> Total = GetElementQuantity(fromIndex, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+            QsValue Total = GetElementValue(fromIndex, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
             for (int i = fromIndex + 1; i <= toIndex; i++)
             {
-                Total = Total * GetElementQuantity(i, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+                Total = Total * GetElementValue(i, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
             }
             return Total;
         }
@@ -421,24 +431,353 @@ namespace Qs.Runtime
 
 
 
-        #region IEnumerable<AnyQuantity<double>> Members
+        /// <summary>
+        /// This is a tricky functions
+        /// it returns Vector if components are Scalars.
+        /// Matrix if components are Vectors
+        /// </summary>
+        /// <param name="fromIndex"></param>
+        /// <param name="toIndex"></param>
+        /// <returns></returns>
+        public QsValue QsValueElements(int fromIndex, int toIndex)
+        {
+            QsValue firstElement = GetElementValue(fromIndex);
+            if (firstElement is QsScalar)
+            {
+                //return vector
+                QsVector Total = new QsVector(toIndex - fromIndex + 1);
+
+                Total.AddComponent((QsScalar)firstElement);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total.AddComponent((QsScalar)GetElementValue(i));
+                }
+
+                return Total;
+            }
+            else if(firstElement is QsVector)
+            {
+                //return vector
+                QsMatrix Total = new QsMatrix();
+                Total.AddVector((QsVector)firstElement);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total.AddVector((QsVector)GetElementValue(i));
+                }
+
+                return Total;
+            }
+            else if (firstElement is QsMatrix)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        #region QsValueElements Functions
+        public QsValue QsValueElements(int fromIndex, int toIndex, QsValue arg0)
+        {
+            QsValue firstElement = GetElementValue(fromIndex, arg0);
+            if (firstElement is QsScalar)
+            {
+                //return vector
+                QsVector Total = new QsVector(toIndex - fromIndex + 1);
+
+                Total.AddComponent((QsScalar)firstElement);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total.AddComponent((QsScalar)GetElementValue(i, arg0));
+                }
+
+                return Total;
+            }
+            else if (firstElement is QsVector)
+            {
+                //return vector
+                QsMatrix Total = new QsMatrix();
+                Total.AddVector((QsVector)firstElement);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total.AddVector((QsVector)GetElementValue(i, arg0));
+                }
+
+                return Total;
+            }
+            else if (firstElement is QsMatrix)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+        public QsValue QsValueElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1)
+        {
+            QsValue firstElement = GetElementValue(fromIndex, arg0, arg1);
+            if (firstElement is QsScalar)
+            {
+                //return vector
+                QsVector Total = new QsVector(toIndex - fromIndex + 1);
+
+                Total.AddComponent((QsScalar)firstElement);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total.AddComponent((QsScalar)GetElementValue(i, arg0, arg1));
+                }
+
+                return Total;
+            }
+            else if (firstElement is QsVector)
+            {
+                //return vector
+                QsMatrix Total = new QsMatrix();
+                Total.AddVector((QsVector)firstElement);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total.AddVector((QsVector)GetElementValue(i, arg0, arg1));
+                }
+
+                return Total;
+            }
+            else if (firstElement is QsMatrix)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+        public QsValue QsValueElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2)
+        {
+            QsValue firstElement = GetElementValue(fromIndex, arg0, arg1, arg2);
+            if (firstElement is QsScalar)
+            {
+                //return vector
+                QsVector Total = new QsVector(toIndex - fromIndex + 1);
+
+                Total.AddComponent((QsScalar)firstElement);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total.AddComponent((QsScalar)GetElementValue(i, arg0, arg1, arg2));
+                }
+
+                return Total;
+            }
+            else if (firstElement is QsVector)
+            {
+                //return vector
+                QsMatrix Total = new QsMatrix();
+                Total.AddVector((QsVector)firstElement);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total.AddVector((QsVector)GetElementValue(i, arg0, arg1, arg2));
+                }
+
+                return Total;
+            }
+            else if (firstElement is QsMatrix)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+        public QsValue QsValueElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3)
+        {
+            QsValue firstElement = GetElementValue(fromIndex, arg0, arg1, arg2, arg3);
+            if (firstElement is QsScalar)
+            {
+                //return vector
+                QsVector Total = new QsVector(toIndex - fromIndex + 1);
+
+                Total.AddComponent((QsScalar)firstElement);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total.AddComponent((QsScalar)GetElementValue(i, arg0, arg1, arg2, arg3));
+                }
+
+                return Total;
+            }
+            else if (firstElement is QsVector)
+            {
+                //return vector
+                QsMatrix Total = new QsMatrix();
+                Total.AddVector((QsVector)firstElement);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total.AddVector((QsVector)GetElementValue(i, arg0, arg1, arg2, arg3));
+                }
+
+                return Total;
+            }
+            else if (firstElement is QsMatrix)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+        public QsValue QsValueElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4)
+        {
+            QsValue firstElement = GetElementValue(fromIndex, arg0, arg1, arg2, arg3, arg4);
+            if (firstElement is QsScalar)
+            {
+                //return vector
+                QsVector Total = new QsVector(toIndex - fromIndex + 1);
+
+                Total.AddComponent((QsScalar)firstElement);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total.AddComponent((QsScalar)GetElementValue(i, arg0, arg1, arg2, arg3, arg4));
+                }
+
+                return Total;
+            }
+            else if (firstElement is QsVector)
+            {
+                //return vector
+                QsMatrix Total = new QsMatrix();
+                Total.AddVector((QsVector)firstElement);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total.AddVector((QsVector)GetElementValue(i, arg0, arg1, arg2, arg3, arg4));
+                }
+
+                return Total;
+            }
+            else if (firstElement is QsMatrix)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+        public QsValue QsValueElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5)
+        {
+            QsValue firstElement = GetElementValue(fromIndex, arg0, arg1, arg2, arg3, arg4, arg5);
+            if (firstElement is QsScalar)
+            {
+                //return vector
+                QsVector Total = new QsVector(toIndex - fromIndex + 1);
+
+                Total.AddComponent((QsScalar)firstElement);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total.AddComponent((QsScalar)GetElementValue(i, arg0, arg1, arg2, arg3, arg4, arg5));
+                }
+
+                return Total;
+            }
+            else if (firstElement is QsVector)
+            {
+                //return vector
+                QsMatrix Total = new QsMatrix();
+                Total.AddVector((QsVector)firstElement);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total.AddVector((QsVector)GetElementValue(i, arg0, arg1, arg2, arg3, arg4, arg5));
+                }
+
+                return Total;
+            }
+            else if (firstElement is QsMatrix)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+        public QsValue QsValueElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5, QsValue arg6)
+        {
+            QsValue firstElement = GetElementValue(fromIndex, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+            if (firstElement is QsScalar)
+            {
+                //return vector
+                QsVector Total = new QsVector(toIndex - fromIndex + 1);
+
+                Total.AddComponent((QsScalar)firstElement);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total.AddComponent((QsScalar)GetElementValue(i, arg0, arg1, arg2, arg3, arg4, arg5, arg6));
+                }
+
+                return Total;
+            }
+            else if (firstElement is QsVector)
+            {
+                //return vector
+                QsMatrix Total = new QsMatrix();
+                Total.AddVector((QsVector)firstElement);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total.AddVector((QsVector)GetElementValue(i, arg0, arg1, arg2, arg3, arg4, arg5, arg6));
+                }
+
+                return Total;
+            }
+            else if (firstElement is QsMatrix)
+            {
+                throw new NotImplementedException();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+        
+        
+        #endregion
+
+        #endregion
+
+
+        #region IEnumerable<QsValue> Members
 
 
         /// <summary>
         /// Sequence begin from minimum declared index till the maximum number that can stored in double.
         /// </summary>
         /// <returns></returns>
-        public new IEnumerator<AnyQuantity<double>> GetEnumerator()
+        public new IEnumerator<QsValue> GetEnumerator()
         {
             int i = MinimumIndex;
-            var q = this.GetElementQuantity(i);
-            while (q.Value < double.MaxValue)
+            var q = this.GetElementValue(i);
+            while (((QsScalar)q).Quantity.Value < double.MaxValue)
             {
 
                 yield return q;
 
                 i++;
-                q = this.GetElementQuantity(i);
+                q = this.GetElementValue(i);
 
             }
         }
