@@ -1,3 +1,28 @@
+[Quantity System 1.1.8.1] 
+- Metric prefixes overflow fix
+  when you form a unit <ms.s> milli second * second 
+  the result is <s^2>  and an overflow occur due to the milli prefix
+  this milli factor goes to the value part
+  so if you entered 2<ms.s> the result will be 0.002<s^2>
+  
+  however the framework is always try to get the best expression it can have.
+  for example if you make 2<Gm.mm> giga Metre * milli Metre the result will be 2<km^2>
+  
+  but if there were no corresponding prefix for the overflow then the prefix is removed 
+  and overflow flag in the unit is raised, and the quantity value is altered as shown 
+  in the first example.
+
+- Still I am confused about matrix multiplication operators.
+	now * operator makes array multiplication for matrix
+	and . dot operator make the ordinary matrix multiplication.
+	
+	this is due to in calling function or sequences 
+	the * operator is used and the makes the calculation of QsValue go through all elements
+	I find it usefull frankly
+	
+NOTE:	my brain is distracted and I can't make correct judgment :(
+  
+  
 [Quantity System 1.1.8] 
 
 Code Design Change in Qs DLR:

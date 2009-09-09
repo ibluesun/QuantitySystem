@@ -13,21 +13,66 @@ namespace Qs.RuntimeTypes
 
 
         #region the must inherit functions.
+
+        /// <summary>
+        /// QsValue + QsValue 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         abstract public QsValue AddOperation(QsValue value);
 
+        /// <summary>
+        /// QsValue - QsValue 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         abstract public QsValue SubtractOperation(QsValue value);
+
+        /// <summary>
+        /// QsValue * QsValue 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         abstract public QsValue MultiplyOperation(QsValue value);
 
+        /// <summary>
+        /// QsValue /  QsValue 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         abstract public QsValue DivideOperation(QsValue value);
 
+        /// <summary>
+        /// QsValue ^ QsValue 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         abstract public QsValue PowerOperation(QsValue value);
 
+        /// <summary>
+        /// QsValue . QsValue 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         abstract public QsValue DotProductOperation(QsValue value);
 
+        /// <summary>
+        /// QsValue x QsValue 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         abstract public QsValue CrossProductOperation(QsValue value);
 
+        /// <summary>
+        /// || QsValue ||
+        /// </summary>
+        /// <returns></returns>
         abstract public QsValue NormOperation();
 
+        /// <summary>
+        /// | QsValue |
+        /// </summary>
+        /// <returns></returns>
         abstract public QsValue AbsOperation();
 
         #endregion

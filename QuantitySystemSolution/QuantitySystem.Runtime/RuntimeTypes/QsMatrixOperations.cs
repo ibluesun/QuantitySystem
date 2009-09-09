@@ -68,11 +68,36 @@ namespace Qs.RuntimeTypes
             QsMatrix Total = this;
 
             int count = Qs.IntegerFromQsValue(scalar);
-            for (int i = 1; i < count; i++)
+            for (int i = 2; i < count; i++)
             {
                 Total = Total * Total;
             }
 
+            return Total;
+        }
+
+
+
+
+        /// <summary>
+        /// Matrix elements ^ scalar
+        /// </summary>
+        /// <param name="scalarQuantity"></param>
+        /// <returns></returns>
+        public QsMatrix ElementsPowerScalar(QsScalar scalar)
+        {
+            QsMatrix Total = new QsMatrix();
+            for (int IY = 0; IY < this.RowsCount; IY++)
+            {
+                List<QsScalar> row = new List<QsScalar>(ColumnsCount);
+
+                for (int IX = 0; IX < this.ColumnsCount; IX++)
+                {
+                    row.Add(this[IY, IX].PowerScalar(scalar));
+                }
+
+                Total.AddRow(row.ToArray());
+            }
             return Total;
         }
 
@@ -220,7 +245,7 @@ namespace Qs.RuntimeTypes
             }
             else if (value is QsMatrix)
             {
-                return this.MultiplyMatrix((QsMatrix)value);
+                return this.MultiplyMatrixByElements((QsMatrix)value);
             }
             else
             {
@@ -230,7 +255,23 @@ namespace Qs.RuntimeTypes
 
         public override QsValue DotProductOperation(QsValue value)
         {
-            throw new NotImplementedException();
+            if (value is QsScalar)
+            {
+                var s = value as QsScalar;
+                return s.MultiplyMatrix(this);
+            }
+            else if (value is QsVector)
+            {
+                throw new NotSupportedException();
+            }
+            else if (value is QsMatrix)
+            {
+                return this.MultiplyMatrix((QsMatrix)value);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
 
         public override QsValue CrossProductOperation(QsValue value)
@@ -251,7 +292,7 @@ namespace Qs.RuntimeTypes
             }
             else if (value is QsMatrix)
             {
-                throw new NotSupportedException();
+                return this.DivideMatrixByElements((QsMatrix)value);
             }
             else
             {
@@ -264,7 +305,7 @@ namespace Qs.RuntimeTypes
             if (value is QsScalar)
             {
                 var s = value as QsScalar;
-                return this.PowerScalar(s);
+                return this.ElementsPowerScalar(s);
             }
             else if (value is QsVector)
             {

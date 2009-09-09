@@ -5,7 +5,7 @@ namespace QuantitySystem.Units.Misc
 {
     [Unit("cc", typeof(Volume<>))]
     [ReferenceUnit(1e-6)]
-    public class CubicCentimetre : Unit
+    public sealed class CubicCentimetre : Unit
     {
     }
 }

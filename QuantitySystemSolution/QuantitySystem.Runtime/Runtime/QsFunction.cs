@@ -407,7 +407,7 @@ namespace Qs.Runtime
                 //get parameters
                 QsParamInfo[] prms = (from c in t[1]
                                       where c.TokenType == typeof(WordToken)
-                                      select new QsParamInfo { Name = c.TokenValue, Type = QsParamType.AnyQuantity }).ToArray();
+                                      select new QsParamInfo { Name = c.TokenValue, Type = QsParamType.Value }).ToArray();
 
 
                 QsFunction qf = new QsFunction(function)
