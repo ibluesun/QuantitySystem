@@ -9,7 +9,7 @@ namespace QuantitySystem.Units.Misc
 
     [Unit("r", typeof(Angle<>))]
     [ReferenceUnit(360, UnitType = typeof(ArcDegree))]
-    public class Revolution : Unit
+    public sealed class Revolution : Unit
     {
     }
 
@@ -19,7 +19,7 @@ namespace QuantitySystem.Units.Misc
 
     [Unit("grad", typeof(Angle<>))]
     [ReferenceUnit(9, 10, UnitType = typeof(ArcDegree))]
-    public class Gradian : Unit
+    public sealed class Gradian : Unit
     {
     }
 
@@ -27,27 +27,27 @@ namespace QuantitySystem.Units.Misc
 
     [DefaultUnit("deg", typeof(Angle<>))]
     [ReferenceUnit(Math.PI, 180)]
-    public class ArcDegree : Unit
+    public sealed class ArcDegree : Unit
     {
     }
 
     [Unit("arcmin", typeof(Angle<>))]
     [ReferenceUnit(1, 60, UnitType = typeof(ArcDegree))]
-    public class ArcMinute : Unit
+    public sealed class ArcMinute : Unit
     {
     }
 
 
     [Unit("arcsec", typeof(Angle<>))]
     [ReferenceUnit(1, 60, UnitType = typeof(ArcMinute))]
-    public class ArcSecond : Unit
+    public sealed class ArcSecond : Unit
     {
     }
 
 
     [Unit("mas", typeof(Angle<>))]
     [ReferenceUnit(1, 1000, UnitType = typeof(ArcSecond))]
-    public class MilliArcSecond : Unit
+    public sealed class MilliArcSecond : Unit
     {
     }
 

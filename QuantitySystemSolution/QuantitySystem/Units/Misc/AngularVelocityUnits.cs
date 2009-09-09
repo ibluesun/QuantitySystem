@@ -8,7 +8,7 @@ namespace QuantitySystem.Units.Misc
 {
     [Unit("rpm", typeof(AngularVelocity<>))]
     [ReferenceUnit(2* Math.PI, 60)]
-    public class RevolutionPerMinute : Unit
+    public sealed class RevolutionPerMinute : Unit
     {
     }
 }

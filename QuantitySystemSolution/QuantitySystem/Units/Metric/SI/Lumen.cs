@@ -5,7 +5,7 @@ using QuantitySystem.Attributes;
 namespace QuantitySystem.Units.Metric.SI
 {
     [MetricUnit("lm", typeof(LuminousFlux<>))]
-    public class Lumen : MetricUnit
+    public sealed class Lumen : MetricUnit
     {
     }
 }

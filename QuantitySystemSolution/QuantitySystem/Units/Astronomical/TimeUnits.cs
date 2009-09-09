@@ -6,7 +6,7 @@ namespace QuantitySystem.Units.Astronomical
 {
     [Unit("a", typeof(Time<>))]
     [ReferenceUnit(31557600)]
-    public class JulianYear : Unit
+    public sealed class JulianYear : Unit
     {
     }
 }

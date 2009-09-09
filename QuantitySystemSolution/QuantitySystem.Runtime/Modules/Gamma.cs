@@ -38,6 +38,24 @@ namespace Qs.Modules
 
                 return rvec;
             }
+            else if (value is QsMatrix)
+            {
+                var mat = value as QsMatrix;
+                QsMatrix Total = new QsMatrix();
+
+                for (int IY = 0; IY < mat.RowsCount; IY++)
+                {
+                    List<QsScalar> row = new List<QsScalar>(mat.ColumnsCount);
+
+                    for (int IX = 0; IX < mat.ColumnsCount; IX++)
+                    {
+                        row.Add(new QsScalar { Quantity = QuantityFactorial(mat[IY, IX].Quantity) });
+                    }
+
+                    Total.AddRow(row.ToArray());
+                }
+                return Total;
+            }
             else
             {
                 throw new NotSupportedException();

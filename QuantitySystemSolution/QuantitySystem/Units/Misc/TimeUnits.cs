@@ -6,7 +6,7 @@ namespace QuantitySystem.Units.Misc
 
     [DefaultUnit("min", typeof(Time<>))]
     [ReferenceUnit(60)]
-    public class Minute : Unit
+    public sealed class Minute : Unit
     {
 
     }
@@ -14,7 +14,7 @@ namespace QuantitySystem.Units.Misc
 
     [Unit("h", typeof(Time<>))]
     [ReferenceUnit(60, UnitType = typeof(Minute))]
-    public class Hour : Unit
+    public sealed class Hour : Unit
     {
 
     }
@@ -22,7 +22,7 @@ namespace QuantitySystem.Units.Misc
 
     [Unit("d", typeof(Time<>))]
     [ReferenceUnit(24, UnitType = typeof(Hour))]
-    public class Day : Unit
+    public sealed class Day : Unit
     {
 
     }

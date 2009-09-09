@@ -124,7 +124,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
         #region Generic Helper Calculations
         
-        protected static T MultiplyScalarByGeneric(double factor, T value)
+        public static T MultiplyScalarByGeneric(double factor, T value)
         {
             if (factor == 1.0) return value;
 
@@ -171,7 +171,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
             return result;
         }
 
-        protected static T DivideScalarByGeneric(double factor, T value)
+        public static T DivideScalarByGeneric(double factor, T value)
         {
             if (typeof(T) == typeof(decimal) || typeof(T) == typeof(double) || typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(short))
             {
@@ -223,7 +223,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
             }
         }
 
-        protected static T MultiplyGenericByGeneric(T firstVal, T secondVal)
+        public static T MultiplyGenericByGeneric(T firstVal, T secondVal)
         {
             DynamicMethod method = new DynamicMethod(
                 "Multiply_Method" + ":" + typeof(T).ToString(),
@@ -266,7 +266,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
         }
 
 
-        protected static T RaiseGenericByScalar(T value, double factor)
+        public static T RaiseGenericByScalar(T value, double factor)
         {
             if (typeof(T) == typeof(decimal) || typeof(T) == typeof(double) || typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(short))
             {

@@ -138,8 +138,22 @@ namespace Qs.Runtime
                     Console.ForegroundColor = ConsoleColor.Gray;
 
                     Console.WriteLine();
+                    double ConversionFactor = up.ConversionFactor;
+                    if (u1.IsOverflowed)
+                    {
+                        var uof = u1.GetUnitOverflow();
+                        Console.WriteLine("    Overflow in first unit {0}: {1}", u1.Symbol, uof);
+                        ConversionFactor *= uof;
+                    }
 
-                    string cf = "    Conversion Factor => " + up.ConversionFactor.ToString();
+                    if (u2.IsOverflowed)
+                    {
+                        var uof = u2.GetUnitOverflow();
+                        Console.WriteLine("    Overflow in second unit {0}: {1}", u2.Symbol, uof);
+                        ConversionFactor /= uof;
+                    }
+
+                    string cf = "    Conversion Factor => " + ConversionFactor.ToString();
 
                     foreach (UnitPathItem upi in up) Console.WriteLine("    -> {0}", upi);
 
@@ -472,6 +486,11 @@ namespace Qs.Runtime
             Console.WriteLine("    Quantity:    {0}", unit.QuantityType.Name);
             Console.WriteLine("    Dimension:   {0}", unit.UnitDimension);
             Console.WriteLine("    Unit System: {0}", unit.UnitSystem);
+
+            if (unit.IsOverflowed)
+            {
+                Console.WriteLine("    Unit overflow: {0}", unit.GetUnitOverflow());
+            }
 
             Console.ForegroundColor = ConsoleColor.White;
         }

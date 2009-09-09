@@ -6,7 +6,7 @@ namespace QuantitySystem.Units.Metric.SI
 {
     
     [MetricUnit("S", typeof(ElectricConductance<>))]
-    public class Siemens : MetricUnit
+    public sealed class Siemens : MetricUnit
     {
     }
 

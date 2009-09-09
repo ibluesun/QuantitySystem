@@ -354,9 +354,12 @@ namespace QuantitySystem.Units
 
             }
             Quantity.Unit = this;
+
             Quantity.Value = value;
 
-
+            if (this.IsOverflowed) Quantity.Value =
+                 AnyQuantity<T>.MultiplyScalarByGeneric(this.GetUnitOverflow(), value);
+            
             return Quantity;
         }
 

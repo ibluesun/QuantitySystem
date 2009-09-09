@@ -7,7 +7,7 @@ namespace Qs.Runtime
 {
     public enum QsParamType
     {
-        AnyQuantity,
+        Value,
         Function,
         Sequence
     }

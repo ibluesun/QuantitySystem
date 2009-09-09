@@ -5,7 +5,7 @@ using QuantitySystem.Attributes;
 namespace QuantitySystem.Units.Metric.SI
 {
     [MetricUnit("T", typeof(MagneticFluxDensity<>))]
-    public class Tesla : MetricUnit
+    public sealed class Tesla : MetricUnit
     {
     }
 }
