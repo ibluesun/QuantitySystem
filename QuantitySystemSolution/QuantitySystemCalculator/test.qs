@@ -9,13 +9,13 @@ SA(r) = 0<m^2> + 4 * 3.14159265<rad^2> * r^2				#Sphere Area
 SV(r) = 0<m^3> + ((4/3) * 3.14159265<rad^3> * r^3)			#Sphere Volume
 
 e[n](x) ..> x^n/n!				#Exponential sequence
-e(x) = e[0++40](x)				#Exponential function
+e(x) = e[0++50](x)				#Exponential function
 
 sin[n](x) ..> ((-1)^n*x^(2*n+1))/(2*n+1)!		#Sin sequence
-sin(x) = sin[0++40](x)							#Sin function
+sin(x) = sin[0++50](x)							#Sin function
 
 cos[n](x) ..> ((-1)^n*x^(2*n))/(2*n)!			#cos sequence
-cos(x) = cos[0++40](x)							#cos function
+cos(x) = cos[0++50](x)							#cos function
 
 fib[n] ..> 0; 1; fib[n-1] + fib[n-2]			#fibonaccy sequence
 

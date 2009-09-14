@@ -166,16 +166,49 @@ using Microsoft.Scripting;
         {
             Console.ForegroundColor = ConsoleColor.Gray;
 
-            Console.WriteLine("    Type \"<unit>\" for information [case sensitive]");
+            Console.WriteLine("    Type \"<unit>\" for information about unit");
             Console.WriteLine("         Example: <kn> for knot");
             Console.WriteLine();
-            Console.WriteLine("       - \"var = number[<unit>]\" for quantity");
-            Console.WriteLine("         Omit <unit> for dimensionless quantity");
+            Console.WriteLine("       - \"var = number[<unit>]\" for making scalar value");
+            Console.WriteLine("           Omit <unit> for dimensionless quantity");
+            Console.WriteLine();
+
+            Console.WriteLine("       - Vector");
+            Console.WriteLine("           \" vec = {3 4 5}");
+            Console.WriteLine("           ||vec|| to get magnitude");
+            Console.WriteLine("           v1 * v2 vector multiplication");
+            Console.WriteLine("           v1 . v2 dot product.");
+            Console.WriteLine("           v1 x v2  use x letter for cross product.");
+            Console.WriteLine();
+
+            Console.WriteLine("       - Matrix");
+            Console.WriteLine("           \" m = [3 4 5; 3 4 2; 9 3 2]");
+            Console.WriteLine("           \" |m| \" for determinant of square matrix");
+            Console.WriteLine("           \" m1 * m2 \" for ordinary matrix multiplication");
+            Console.WriteLine("           \" m1 . m2 \" for matrix element wist multiplication");
+            Console.WriteLine("           \" m^ 2 \" for power with ordinary matrix multiplication");
+            Console.WriteLine("           \" m^. 2 \" for power with element matrix multiplication");
+
+
             Console.WriteLine();
             Console.WriteLine("       - \"f(x,y,z) = x+y+z\" to make a function");
+
+            Console.WriteLine();
+            Console.WriteLine("       - Sequence:");
+            Console.WriteLine("           \"S[] or S[n] or S[n](x) ..> 10;20;n;x^n \" to make a sequence.");
+            Console.WriteLine("           \"S[n:10](x) = n^2/x^(1/n)  to set specific element of sequence.");
+            Console.WriteLine("           \"S[10]+S[20] to sum element 10 and 20");
+
+            Console.WriteLine();
+            Console.WriteLine("       - \"Sequence operators:");
+            Console.WriteLine("             Series operator S[0++40](args)  to get series from 0 to 40.");
+            Console.WriteLine("             Multiplication operator S[1**20)(args) to get products.");
+            Console.WriteLine("             Average operator S[1!!20] sum from 1 to 20 and divide by 20-1");
+            Console.WriteLine("             Range operator S[0..20] Returns Vector or Matrix.");
+
             Console.WriteLine();
             Console.WriteLine("       - \"var = number[Quantity Name]\" ");
-            Console.WriteLine("         to make a variable with default SI units of the quantity");
+            Console.WriteLine("             to make a variable with default SI units of the quantity");
             Console.WriteLine();
             Console.WriteLine("       - \"variable name\" alone to show its information");
             Console.WriteLine();
@@ -187,9 +220,11 @@ using Microsoft.Scripting;
             Console.WriteLine();
             Console.WriteLine("       - \"New\" to clear all variables.");
             Console.WriteLine();
+            Console.WriteLine("       - \"Run file.qs\" to execute external Qs commands into current session.");
+            Console.WriteLine();
             Console.WriteLine("       - \"Cls\" to clear the screen.");
             Console.WriteLine();
-            Console.WriteLine("       - \"copyright\", and \"CTRL+Z\" to terminate the console.");
+            Console.WriteLine("       - \"Copyright\", and \"CTRL+Z\" to terminate the console.");
 
 
             Console.ForegroundColor = ConsoleColor.White;
@@ -255,14 +290,27 @@ using Microsoft.Scripting;
             Console.ForegroundColor = ConsoleColor.Gray;
 
             Console.WriteLine();
-
+            List<string> quats = new List<string>();
             foreach (Type QType in QuantitySystem.QuantityDimension.CurrentQuantitiesDictionary.Values)
             {
-                Console.WriteLine("    " + QType.Name.Substring(0, QType.Name.Length - 2));
+                quats.Add ("    " + QType.Name.Substring(0, QType.Name.Length - 2).PadRight(30) + "    " + QuantitySystem.QuantityDimension.DimensionFrom(QType).ToString());
             }
+
+            var qss = from q in quats orderby q select q;
+            foreach (var qq in qss)
+                Console.WriteLine(qq);
+
             Console.ForegroundColor = ConsoleColor.White;
         }
 
+
+        private struct UnitInfo
+        {
+            public string uname;
+            public string symbol;
+            public string system;
+            public string qtype;
+        }
 
         /// <summary>
         /// List Units Command
@@ -270,30 +318,63 @@ using Microsoft.Scripting;
         internal static void ListUnits(string quantity)
         {
             Console.ForegroundColor = ConsoleColor.Gray;
+
+            var units = new List<UnitInfo>();
+
             foreach (Type utype in Unit.UnitTypes)
             {
                 QuantitySystem.Attributes.UnitAttribute ua = Unit.GetUnitAttribute(utype);
                 if (ua != null)
                 {
                     string uname = utype.Name.PadRight(16);
+
                     string symbol = "<" + ua.Symbol + ">";
                     symbol = symbol.PadRight(10);
-                    string system = utype.Namespace.Substring("QuantitySystem.Units".Length + 1).PadRight(16);
+
+                    string system = utype.Namespace.Substring("QuantitySystem.Units".Length + 1).PadRight(18);
 
                     string qtype = ua.QuantityType.ToString().Substring(ua.QuantityType.Namespace.Length + 1).TrimEnd("`1[T]".ToCharArray());
 
+
                     if (string.IsNullOrEmpty(quantity))
                     {
+                        UnitInfo ui = new UnitInfo
+                        {
+                            uname = uname,
+                            symbol = symbol,
+                            system = system,
+                            qtype = qtype
+                        };
 
-                        Console.WriteLine("    " + uname + " " + symbol + " " + system + qtype);
+                        units.Add(ui);
+
+                        
                     }
                     else
                     {
                         //print if only the unit is for this quantity
                         if (qtype.Equals(quantity, StringComparison.InvariantCultureIgnoreCase)) Console.WriteLine("    " + uname + " " + symbol + " " + system + qtype);
                     }
+
+
                 }
+
+
             }
+
+            var uts = from ut in units
+                      orderby ut.qtype
+                      select ("    " + ut.uname + " " + ut.symbol + " " + ut.system + ut.qtype);
+
+           
+                foreach (var ut in uts)
+                {
+                    
+                    Console.WriteLine(ut);
+                }
+
+            
+
             Console.ForegroundColor = ConsoleColor.White;
         }
 

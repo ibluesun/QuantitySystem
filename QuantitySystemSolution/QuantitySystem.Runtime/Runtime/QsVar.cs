@@ -139,11 +139,16 @@ namespace Qs.Runtime
         }
 
 
+        /// <summary>
+        /// Merge operators that have more than one letter.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         internal Token MergeOperators(Token token)
         {
-            Token tok = token.MergeTokens(new MatlabArrayMultilply());
-            tok = tok.MergeTokens(new MatlabArrayDivide());
-            tok = tok.MergeTokens(new MatlabArrayPower());
+            Token tok = token.MergeTokens(new PowerDotToken());
+            tok = tok.MergeTokens(new PowerCrossToken());
+            
 
             return tok;
         }
@@ -923,6 +928,8 @@ namespace Qs.Runtime
             Type aqType = typeof(QsValue);
 
             if (op == "^") return Expression.Power(left, right, aqType.GetMethod("Pow"));
+            if (op == "^.") return Expression.Power(left, right, aqType.GetMethod("PowDot"));
+            if (op == "^x") return Expression.Power(left, right, aqType.GetMethod("PowCross"));
             if (op == "*") return Expression.Multiply(left, right);
             if (op == ".") return Expression.Multiply(left, right, aqType.GetMethod("DotProduct"));
             if (op == "x") return Expression.Multiply(left, right, aqType.GetMethod("CrossProduct"));
@@ -951,15 +958,14 @@ namespace Qs.Runtime
             //  + and - are in the same pass
 
 
-            string[] Group = { "^", 
-                               ".^" /* matlab array power */ };
+            string[] Group = { "^" /* Power for normal product '*' */, 
+                               "^." /* Power for dot product */ ,
+                               "^x" /* Power for cross product */ };
 
             string[] Group1 = { "*" /* normal multiplication */, 
                                 "." /* dot product */, 
                                 "x" /* cross product */, 
                                 "/" /* normal division */, 
-                                ".*" /* Matlab array multiplication */, 
-                                "./" /* Matlab array division */,
                                 "%" /*modulus*/ };
 
             string[] Group2 = { "+", "-" };

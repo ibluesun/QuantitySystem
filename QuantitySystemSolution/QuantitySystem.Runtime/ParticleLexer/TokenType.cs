@@ -128,17 +128,6 @@ namespace ParticleLexer.TokenTypes
 
 
 
-    [TokenPattern(RegexPattern = @"\|[^\|]+?\|")]
-    public class AbsoluteToken : TokenType
-    {
-    }
-
-    [TokenPattern(RegexPattern = @"\|\|[^\|]+\|\|")]
-    public class MagnitudeToken : TokenType
-    {
-    }
-
-
     [TokenPattern(RegexPattern=@"\d+(\.|\.\d+)?([eE][-+]?\d+)?")]
     public class NumberToken : TokenType
     {
@@ -250,23 +239,72 @@ namespace ParticleLexer.TokenTypes
 
 
 
-    #region Matlab operators
-    [TokenPattern(RegexPattern = @"\.\*")]
-    public class MatlabArrayMultilply : TokenType
+
+
+
+    #region Qs Arithmatic Operators  {not all of classes here are used but they may be used however they serve as a guide for me to all operators I used in Qs
+
+
+    /// <summary>
+    /// | x |
+    /// </summary>
+    [TokenPattern(RegexPattern = @"\|[^\|]+?\|")]
+    public class AbsoluteToken : TokenType
     {
     }
 
-    [TokenPattern(RegexPattern = @"\.\/")]
-    public class MatlabArrayDivide : TokenType
+    /// <summary>
+    /// || x ||
+    /// </summary>
+    [TokenPattern(RegexPattern = @"\|\|[^\|]+\|\|")]
+    public class MagnitudeToken : TokenType
     {
     }
 
-    [TokenPattern(RegexPattern = @"\.\^")]
-    public class MatlabArrayPower : TokenType
+    [TokenPattern(RegexPattern = @"\+")]
+    public class AddToken : TokenType
     {
     }
 
+    [TokenPattern(RegexPattern = @"\-")]
+    public class SubtractToken : TokenType
+    {
+    }
 
+    [TokenPattern(RegexPattern = @"\*")]
+    public class MultiplyToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = @"\.")]
+    public class DotMultiplyToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = @"\x")]
+    public class CrossMultiplyToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = @"\^")]
+    public class PowerToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = @"\^\.")]
+    public class PowerDotToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = @"\^x")]
+    public class PowerCrossToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = @"\/")]
+    public class DivideToken : TokenType
+    {
+    }
 
     #endregion
 

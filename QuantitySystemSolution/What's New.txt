@@ -1,3 +1,14 @@
+[Quantity System 1.1.8.2] 
+- Now Matrix operators
+  '*'  for ordinary matrix multiplication
+  '^'  power of ordinary matrix multiplication
+  '.'  for matrix elements multiplication
+  '.^' for matrix elements power.
+
+  please let me know if you have further ideas about this arrangement.  
+  
+- The first manual for the program and also specifications.
+  
 [Quantity System 1.1.8.1] 
 - Metric prefixes overflow fix
   when you form a unit <ms.s> milli second * second 

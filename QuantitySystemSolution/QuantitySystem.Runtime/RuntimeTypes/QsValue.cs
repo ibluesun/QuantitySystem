@@ -12,7 +12,9 @@ namespace Qs.RuntimeTypes
     {
 
 
+
         #region the must inherit functions.
+        abstract public QsValue Identity{get;}
 
         /// <summary>
         /// QsValue + QsValue 
@@ -57,11 +59,53 @@ namespace Qs.RuntimeTypes
         abstract public QsValue DotProductOperation(QsValue value);
 
         /// <summary>
+        /// QsValue ^. QsValue
+        /// Power of multiple dot product operations.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        virtual public QsValue PowerDotOperation(QsValue value)
+        {
+            QsValue Total = this.Identity;
+
+            int count = Qs.IntegerFromQsValue((QsScalar)value);
+
+            for (int i = 1; i <= count; i++)
+            {
+                Total = Total.DotProductOperation(this);
+            }
+
+            return Total;
+
+        }
+
+        /// <summary>
         /// QsValue x QsValue 
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
         abstract public QsValue CrossProductOperation(QsValue value);
+
+        /// <summary>
+        /// QsValue ^x QsValue
+        /// Power of multiple cross product operations
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        virtual public QsValue PowerCrossOperation(QsValue value)
+        {
+            QsValue Total = this.Identity;
+
+            int count = Qs.IntegerFromQsValue((QsScalar)value);
+
+            for (int i = 1; i <= count; i++)
+            {
+                Total =  Total.CrossProductOperation(this);
+            }
+
+            return Total;
+
+        }
 
         /// <summary>
         /// || QsValue ||
@@ -103,6 +147,16 @@ namespace Qs.RuntimeTypes
             return a.PowerOperation(b);
         }
 
+        public static QsValue PowDot(QsValue a, QsValue b)
+        {
+            return a.PowerDotOperation(b);
+        }
+
+        public static QsValue PowCross(QsValue a, QsValue b)
+        {
+            return a.PowerCrossOperation(b);
+        }
+
         public static QsValue DotProduct(QsValue a, QsValue b)
         {
             return a.DotProductOperation(b);
@@ -112,15 +166,26 @@ namespace Qs.RuntimeTypes
         {
             return a.CrossProductOperation(b);
         }
+
         
 
         #region Helper Methods
 
+        /// <summary>
+        /// Parse quantity text.
+        /// </summary>
+        /// <param name="quantity"></param>
+        /// <returns>QsScalar on the form of QsValue</returns>
         public static QsValue ParseScalar(string quantity)
         {
             return new QsScalar { Quantity = quantity.ToQuantity() };
         }
 
+        /// <summary>
+        /// Parse Vector text.
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns>QsVector on the form of QsValue.</returns>
         public static QsValue ParseVector(string vector)
         {
             string[] qs = vector.Split(',');
@@ -133,7 +198,7 @@ namespace Qs.RuntimeTypes
         }
 
         /// <summary>
-        /// 
+        /// Form Vector From QsValues that are scalars or vector.
         /// </summary>
         /// <param name="values">Scalars</param>
         /// <returns></returns>
