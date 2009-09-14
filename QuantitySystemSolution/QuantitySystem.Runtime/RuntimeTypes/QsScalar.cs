@@ -199,9 +199,42 @@ namespace Qs.RuntimeTypes
         #endregion
 
 
+        private static QsScalar one = "1".ToScalar();
+
+        /// <summary>
+        /// return 1 as dimensionless quantity scalar.
+        /// </summary>
+        public static  QsScalar One
+        {
+            get
+            {
+                return one;
+            }
+        }
+        private static QsScalar zero = "0".ToScalar();
+
+        /// <summary>
+        /// Returns zero as dimensionless quantity.
+        /// </summary>
+        public static QsScalar Zero
+        {
+            get
+            {
+                return zero;
+            }
+        }
 
 
         #region QsValue Operations
+
+
+        public override QsValue Identity
+        {
+            get
+            {
+                return One;
+            }
+        }
 
         public override QsValue AddOperation(QsValue value)
         {
@@ -234,6 +267,11 @@ namespace Qs.RuntimeTypes
 
                 return this.SubtractVector(b);
 
+            }
+            else if (value is QsMatrix)
+            {
+                var m = value as QsMatrix;
+                return this.SubtractMatrix(m);
             }
             else
             {
@@ -320,6 +358,8 @@ namespace Qs.RuntimeTypes
             }
 
         }
+
+
         #endregion
 
     }

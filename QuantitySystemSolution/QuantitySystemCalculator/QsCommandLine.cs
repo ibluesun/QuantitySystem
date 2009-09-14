@@ -56,10 +56,13 @@ public class QsCommandLine : CommandLine
 
     public void PrintError(Exception e)
     {
+
         
         ConsoleColor cc = System.Console.ForegroundColor;
 
         System.Console.ForegroundColor = ConsoleColor.Red;
+
+        
         
         Console.ErrorOutput.WriteLine("{0}: {1}", e.GetType().Name, e.Message);
 

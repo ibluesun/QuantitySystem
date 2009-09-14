@@ -575,5 +575,31 @@ namespace Qs.RuntimeTypes
         }
 
 
+
+
+        /// <summary>
+        /// Make identity matrix bases on dimention
+        /// </summary>
+        /// <param name="n">dimension or n * n matrix</param>
+        /// <returns></returns>
+        public static QsMatrix MakeIdentity(int n)
+        {
+            QsMatrix m = new QsMatrix();
+
+            for (int i = 0; i < n; i++)
+            {
+                QsVector v = new QsVector(n);
+                for (int j = 0; j < n; j++)
+                {
+                    if (j == i) 
+                        v.AddComponent(QsScalar.One);
+                    else 
+                        v.AddComponent(QsScalar.Zero);
+                }
+                m.AddVector(v);
+            }
+
+            return m;
+        }
     }
 }

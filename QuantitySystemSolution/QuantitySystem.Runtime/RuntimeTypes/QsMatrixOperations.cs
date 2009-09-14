@@ -58,29 +58,32 @@ namespace Qs.RuntimeTypes
             return Total;
         }
 
-        /// <summary>
-        /// Matrix powered to scalar.
-        /// </summary>
-        /// <param name="scalar"></param>
-        /// <returns></returns>
-        public QsMatrix PowerScalar(QsScalar scalar)
-        {
-            QsMatrix Total = this;
 
-            int count = Qs.IntegerFromQsValue(scalar);
-            for (int i = 2; i < count; i++)
+
+        /// <summary>
+        /// Matrix ^ scalar
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public QsMatrix PowerScalar(QsScalar value)
+        {
+            QsMatrix Total = (QsMatrix)this.Identity; //first get the identity matrix of this matrix.
+
+            int count = Qs.IntegerFromQsValue(value);
+
+            for (int i = 1; i <= count; i++)
             {
-                Total = Total * Total;
+                Total = Total.MultiplyMatrix(this);
             }
 
             return Total;
+
         }
 
 
 
-
         /// <summary>
-        /// Matrix elements ^ scalar
+        /// Matrix elements ^. scalar
         /// </summary>
         /// <param name="scalarQuantity"></param>
         /// <returns></returns>
@@ -190,6 +193,23 @@ namespace Qs.RuntimeTypes
 
 
         #region QsValue operations
+
+        public override QsValue Identity
+        {
+            get
+            {
+                if (IsDeterminant)
+                {
+                    return MakeIdentity(this.RowsCount);
+                }
+                else
+                {
+                    throw new QsMatrixException("No Identity matrix for non square matrix");
+                }
+            }
+
+        }
+
         public override QsValue AddOperation(QsValue value)
         {
             if (value is QsScalar)
@@ -216,7 +236,7 @@ namespace Qs.RuntimeTypes
             if (value is QsScalar)
             {
                 var s = value as QsScalar;
-                return s.SubtractMatrix(this);
+                return this.SubtractScalar(s);
             }
             else if (value is QsVector)
             {
@@ -245,7 +265,7 @@ namespace Qs.RuntimeTypes
             }
             else if (value is QsMatrix)
             {
-                return this.MultiplyMatrixByElements((QsMatrix)value);
+                return this.MultiplyMatrix((QsMatrix)value);
             }
             else
             {
@@ -266,7 +286,7 @@ namespace Qs.RuntimeTypes
             }
             else if (value is QsMatrix)
             {
-                return this.MultiplyMatrix((QsMatrix)value);
+                return this.MultiplyMatrixByElements((QsMatrix)value);
             }
             else
             {
@@ -305,7 +325,7 @@ namespace Qs.RuntimeTypes
             if (value is QsScalar)
             {
                 var s = value as QsScalar;
-                return this.ElementsPowerScalar(s);
+                return this.PowerScalar(s);
             }
             else if (value is QsVector)
             {
@@ -331,6 +351,30 @@ namespace Qs.RuntimeTypes
             return this.Determinant().Sum();
 
         }
+
+
+        public override QsValue PowerDotOperation(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                var s = value as QsScalar;
+                return this.ElementsPowerScalar(s);
+            }
+            else if (value is QsVector)
+            {
+                throw new NotSupportedException();
+            }
+            else if (value is QsMatrix)
+            {
+                throw new NotSupportedException();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+
         #endregion
 
     }

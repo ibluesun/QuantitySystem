@@ -200,6 +200,21 @@ namespace Qs.RuntimeTypes
 
 
         #region QsValue operations
+
+        public override QsValue Identity
+
+        {
+            get
+            {
+                QsVector v = new QsVector(this.Count);
+                for (int i = 0; i < this.Count; i++)
+                {
+                    v.AddComponent(QsScalar.One);
+                }
+                return v;
+            }
+        }
+
         public override QsValue AddOperation(QsValue value)
         {
             if (value is QsScalar)
@@ -335,6 +350,8 @@ namespace Qs.RuntimeTypes
         {
             throw new NotSupportedException();
         }
+
+
         #endregion
 
 

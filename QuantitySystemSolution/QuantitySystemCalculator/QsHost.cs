@@ -31,6 +31,11 @@ internal class QsHost : ConsoleHost
     [STAThread]
     public static int Main(string[] args)
     {
+        System.Console.SetWindowSize(1, 1);
+        System.Console.SetBufferSize(125, 300);
+        System.Console.SetWindowSize(125, 50);
+        
+
         if (Environment.GetEnvironmentVariable("TERM") == null)
         {
             Environment.SetEnvironmentVariable("TERM", "dumb");
