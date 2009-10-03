@@ -5,12 +5,12 @@ using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 using Qs.RuntimeTypes;
 
-namespace Qs.Modules
+namespace Qs.Runtime.Operators
 {
     /// <summary>
     /// Gives the factorial of real numbers.
     /// </summary>
-    public static class Gamma
+    public static class QsGamma
     {
         /// <summary>
         /// Get factorial for the <see>QsValue</see> whether it is Scalar, Vector, Matrix, and later Tensor.

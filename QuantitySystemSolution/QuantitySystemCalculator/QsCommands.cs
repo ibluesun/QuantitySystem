@@ -18,6 +18,12 @@ using Microsoft.Scripting;
         public static ScriptEngine Engine { get; set; }
         public static ScriptScope ScriptScope { get; set; }
 
+        public const ConsoleColor BackgroundColor = ConsoleColor.DarkBlue;
+        public const ConsoleColor ForegroundColor = ConsoleColor.White;
+        public const ConsoleColor HelpColor = ConsoleColor.Gray;
+        public const ConsoleColor ValuesColor = ConsoleColor.Yellow;
+
+
         /// <summary>
         /// Console Commands.
         /// </summary>
@@ -119,7 +125,7 @@ using Microsoft.Scripting;
 
         public static void StartConsole()
         {
-            Console.BackgroundColor = ConsoleColor.DarkMagenta;
+            Console.BackgroundColor = BackgroundColor;
             Console.Clear();
 
             PrintCopyright();
@@ -127,13 +133,13 @@ using Microsoft.Scripting;
             Console.WriteLine();
             Console.WriteLine("Type \"help\" for more information.");
 
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ForegroundColor;
 
         }
 
         internal static void PrintCopyright()
         {
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = HelpColor;
 
             var lib_ver = (AssemblyFileVersionAttribute)Assembly.GetAssembly(typeof(QuantitySystem.QuantityDimension)).GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false)[0];
 
@@ -164,7 +170,7 @@ using Microsoft.Scripting;
         /// </summary>
         internal static void PrintHelp()
         {
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = HelpColor;
 
             Console.WriteLine("    Type \"<unit>\" for information about unit");
             Console.WriteLine("         Example: <kn> for knot");
@@ -227,7 +233,7 @@ using Microsoft.Scripting;
             Console.WriteLine("       - \"Copyright\", and \"CTRL+Z\" to terminate the console.");
 
 
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ForegroundColor;
 
 
         }
@@ -270,7 +276,7 @@ using Microsoft.Scripting;
         internal static void ListVariables(Scope scope)
         {
             Console.WriteLine();
-            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.ForegroundColor = ValuesColor;
 
             foreach (string var in GetVariablesKeys(scope))
             {
@@ -278,7 +284,7 @@ using Microsoft.Scripting;
                 Console.WriteLine();
             }
 
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ForegroundColor;
             Console.WriteLine();
         }
 
@@ -287,7 +293,7 @@ using Microsoft.Scripting;
         /// </summary>
         internal static void ListQuantities()
         {
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = HelpColor;
 
             Console.WriteLine();
             List<string> quats = new List<string>();
@@ -300,7 +306,7 @@ using Microsoft.Scripting;
             foreach (var qq in qss)
                 Console.WriteLine(qq);
 
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ForegroundColor;
         }
 
 
@@ -317,7 +323,7 @@ using Microsoft.Scripting;
         /// </summary>
         internal static void ListUnits(string quantity)
         {
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = HelpColor;
 
             var units = new List<UnitInfo>();
 
@@ -375,7 +381,7 @@ using Microsoft.Scripting;
 
             
 
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ForegroundColor;
         }
 
         #endregion

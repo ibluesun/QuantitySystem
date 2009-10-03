@@ -240,7 +240,7 @@ namespace ParticleLexer
                 else
                 {
                     //sub groups then test this token 
-                    if (c.TokenType == typeof(WordToken))
+                    if (c.TokenType == typeof(WordToken) || c.TokenType==typeof(NameSpaceAndValueToken))
                     {
                         //check if the next token is group
                         if (ci < this.Count-1)

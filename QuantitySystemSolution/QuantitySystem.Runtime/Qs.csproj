@@ -58,13 +58,16 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modules\QsMath.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="QsInvalidInputException.cs" />
     <Compile Include="ParticleLexer\Token.cs" />
     <Compile Include="ParticleLexer\TokenPatternAttribute.cs" />
     <Compile Include="ParticleLexer\TokenType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Qs.cs" />
-    <Compile Include="Modules\Gamma.cs" />
+    <Compile Include="Runtime\Operators\QsGamma.cs" />
     <Compile Include="RuntimeTypes\QsScalar.cs" />
     <Compile Include="RuntimeTypes\QsValue.cs" />
     <Compile Include="RuntimeTypes\QsVector.cs" />
@@ -77,6 +80,7 @@
     <Compile Include="RuntimeTypes\QsMatrix.cs" />
     <Compile Include="RuntimeTypes\QsMatrixException.cs" />
     <Compile Include="RuntimeTypes\QsMatrixOperations.cs" />
+    <Compile Include="Runtime\QsNameSpace.cs" />
     <Compile Include="Runtime\QsParameter.cs" />
     <Compile Include="Runtime\QsParamInfo.cs" />
     <Compile Include="Runtime\QsScriptCode.cs" />

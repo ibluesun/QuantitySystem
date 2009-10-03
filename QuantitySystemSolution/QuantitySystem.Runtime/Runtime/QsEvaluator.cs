@@ -99,6 +99,69 @@ namespace Qs.Runtime
             }
         }
 
+        /// <summary>
+        /// Set the variable in the name space.
+        /// </summary>
+        /// <param name="nameSpace"></param>
+        /// <param name="varName"></param>
+        /// <param name="varValue"></param>
+        public void SetVariable(string nameSpace, string varName, object varValue)
+        {
+            if (string.IsNullOrEmpty(nameSpace))
+            {
+                SetVariable(varName, varValue);
+            }
+            else
+            {
+                //get the namespace from the scope
+                object o;
+
+                Scope.TryGetName(SymbolTable.StringToId(nameSpace), out o);
+
+                QsNameSpace ns = o as QsNameSpace;
+
+                if (ns == null)
+                {
+                    //new name space so create it. and add it to the current scope
+                    ns = new QsNameSpace(nameSpace);
+                    Scope.SetName(SymbolTable.StringToId(nameSpace), ns);
+                }
+
+                ns.SetName(varName, varValue);
+            }
+            
+        }
+
+        /// <summary>
+        /// Get Variable from the namespace.
+        /// </summary>
+        /// <param name="nameSpace"></param>
+        /// <param name="varName"></param>
+        /// <returns></returns>
+        public object GetVariable(string nameSpace, string varName)
+        {
+            if (string.IsNullOrEmpty(nameSpace))
+            {
+                return GetVariable(varName);
+            }
+            else
+            {
+                object o;
+
+                Scope.TryGetName(SymbolTable.StringToId(nameSpace), out o);
+
+                QsNameSpace ns = o as QsNameSpace;
+
+                if (ns != null)
+                {
+                    return ns.GetName(varName);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
 
         public bool SilentOutput = false;
 
@@ -209,19 +272,20 @@ namespace Qs.Runtime
                 varName = m.Groups[1].Value;
                 double varVal = double.Parse(m.Groups[2].Value);
 
-                AnyQuantity<double> qty = null;
+                QsScalar qty = null;
 
                 if (!string.IsNullOrEmpty(m.Groups[5].Value))
                 {
                     try
                     {
                         //get the quantity
- 
-                        qty = AnyQuantity<double>.Parse(m.Groups[6].Value);
+
+                        qty = new QsScalar { Quantity = AnyQuantity<double>.Parse(m.Groups[6].Value) };
+
 
                         //get the quantity
 
-                        qty.Unit = Unit.DiscoverUnit(qty); 
+                        qty.Quantity.Unit = Unit.DiscoverUnit(qty.Quantity); 
 
                     }
                     catch (QuantityNotFoundException)
@@ -232,7 +296,7 @@ namespace Qs.Runtime
 
                 }
 
-                qty.Value = varVal;
+                qty.Quantity.Value = varVal;
 
                 SetVariable(varName, qty);
                 
@@ -270,8 +334,11 @@ namespace Qs.Runtime
             }
             else if (func != null)
             {
+               
                 //store the expression for later use 
-                Scope.SetName(SymbolTable.StringToId(func.FunctionName), func);
+              
+                SetVariable(func.FunctionNamespace, func.FunctionName, func);
+           
                 return func;
             }
             else
@@ -303,7 +370,15 @@ namespace Qs.Runtime
                             seq = seq.MergeTokens(new WordToken());
                             seq = seq.MergeTokens(new ColonToken());
                             seq = seq.GroupBrackets();
+
+                            seq = seq.MergeTokens(new NameSpaceToken()); //discover namespace tokens
+
+                            bool IsSequence = false;
                             if (seq.Count >= 2)
+                                if (seq[1].TokenType == typeof(SquareBracketGroupToken)) 
+                                    IsSequence = true;
+
+                            if (IsSequence)
                             {
                                 // Sequence element assignation.
 
@@ -424,18 +499,41 @@ namespace Qs.Runtime
                             else
                             {
                                 //Normal Variable.
-
+                                // get the after assign expression value
                                 QsVar qv = new QsVar(this, line);
 
-                                //assign the variable
-                                SetVariable(varName, qv.Execute());
-                                var q = GetVariable(varName);
-                                PrintQuantity(q);
-                                return q;
+
+                                Token vnToken = Token.ParseText(varName);
+                                vnToken = vnToken.MergeTokens(new SpaceToken());
+                                vnToken = vnToken.RemoveSpaceTokens();
+                                vnToken = vnToken.MergeTokens(new WordToken());
+                                vnToken = vnToken.MergeTokens(new ColonToken());
+                                vnToken = vnToken.MergeTokens(new NameSpaceToken());
+
+                                if (vnToken.Contains(typeof(NameSpaceToken)))
+                                {
+                                    SetVariable(vnToken[0][0].TokenValue, vnToken[1].TokenValue, qv.Execute());
+
+                                    var q = GetVariable(vnToken[0][0].TokenValue, vnToken[1].TokenValue);
+                                    PrintQuantity(q);
+                                    return q;
+                                }
+                                else
+                                {
+                                    //assign the variable
+                                    SetVariable(varName, qv.Execute());
+
+                                    var q = GetVariable(varName);
+                                    PrintQuantity(q);
+                                    return q;
+                                }
                             }
                         }
                         else
                         {
+                            // there is no assignation here  
+                            // the code goes here when we don't find '=' equal sign.
+
                             QsVar qv = new QsVar(this, line);
                             //only print the result.
                             var q = qv.Execute();
@@ -478,7 +576,6 @@ namespace Qs.Runtime
 
         public void PrintUnitInfo(Unit unit)
         {
-            
 
             Console.ForegroundColor = ConsoleColor.Gray;
 
@@ -515,20 +612,88 @@ namespace Qs.Runtime
 
 
         #region Scope Helper methods.
-        public static QsValue GetScopeQsValue(Scope scope, string name)
+
+        public static object GetScopeVariable(Scope scope, string nameSpace, string name)
         {
-            object q;
-
-
-            scope.TryGetName(SymbolTable.StringToId(name), out q);
-
-            if (q != null)
+            if (string.IsNullOrEmpty(nameSpace))
             {
-                return (QsValue)q;
+                object q;
+                scope.TryGetName(SymbolTable.StringToId(name), out q);
+                return q;
             }
             else
             {
-                throw new QsVariableNotFoundException("Variable '" + name + "' Not Found.");
+                object o;
+
+                scope.TryGetName(SymbolTable.StringToId(nameSpace), out o);
+
+                QsNameSpace ns = o as QsNameSpace;
+
+                if (ns != null)
+                {
+                    return ns.GetName(name);
+                }
+                else
+                {
+                    return null;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Used by reflection.
+        /// </summary>
+        /// <param name="scope"></param>
+        /// <param name="nameSpace"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static QsValue GetScopeQsValue(Scope scope, string nameSpace, string name)
+        {
+
+            if (string.IsNullOrEmpty(nameSpace))
+            {
+                object q;
+
+                scope.TryGetName(SymbolTable.StringToId(name), out q);
+
+                if (q != null)
+                {
+                    return (QsValue)q;
+                }
+                else
+                {
+                    throw new QsVariableNotFoundException("Variable '" + name + "' Not Found.");
+                }
+            }
+            else
+            {
+                //get the variable from the name space
+                object o;
+
+                scope.TryGetName(SymbolTable.StringToId(nameSpace), out o);
+
+                QsNameSpace ns = o as QsNameSpace;
+
+                if (ns != null)
+                {
+                    return (QsValue)ns.GetName(name);
+                }
+                else
+                {
+                    //try to get it from the Qs.Modules.QsModule.public property
+                    try
+                    {
+                        var module = System.Type.GetType("Qs.Modules." + nameSpace);
+                        var prop = module.GetProperty(name);
+                        return (QsValue)prop.GetValue(null, null);
+
+                    }
+                    catch (Exception e)
+                    {
+                        throw new QsVariableNotFoundException("Variable '" + name + "' Not Found In Namespace '" + nameSpace + "'", e);
+                    }
+                }
+
             }
 
         }

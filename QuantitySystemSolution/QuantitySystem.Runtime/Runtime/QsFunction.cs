@@ -10,6 +10,8 @@ using ParticleLexer.TokenTypes;
 using QuantitySystem.Quantities.BaseQuantities;
 using System.Globalization;
 using Qs.RuntimeTypes;
+using System.Reflection;
+using System.Reflection.Emit;
 
 
 namespace Qs.Runtime
@@ -34,6 +36,11 @@ namespace Qs.Runtime
                 functionName = value;
             }
         }
+
+        /// <summary>
+        /// if the function has a namespace then the value of it is here.
+        /// </summary>
+        public string FunctionNamespace { get; set; }
 
 
         private LambdaExpression _FunctionExpression;
@@ -387,31 +394,46 @@ namespace Qs.Runtime
 
         public static QsFunction ParseFunction(QsEvaluator qse, string function)
         {
+
             Token t = Token.ParseText(function);
             t = t.MergeTokens(new SpaceToken());
             t = t.MergeTokens(new WordToken());
             t = t.MergeTokens(new NumberToken());
             t = t.MergeTokens(new UnitizedNumberToken());
+
+            t = t.MergeTokens(new NameSpaceToken());
+
             t = t.GroupBrackets();
             t = t.RemoveSpaceTokens();
 
             t = t.MergeTokens(new AssignmentOperatorToken());
-            if (t[0].TokenType == typeof(WordToken)
-                && (t.Count > 1 ? t[1].TokenType == typeof(ParenthesisGroupToken) : false)
-                && (t.Count > 2 ? t[2].TokenType == typeof(AssignmentOperatorToken) : false))
+
+            int tidx = 0; // surve as a base for indexing token if there is namespace it will be 1 otherwise remain 0
+
+            if (t[0].TokenType == typeof(NameSpaceToken)) tidx = 1; //the function begin with namespace.
+
+            if (
+                t[tidx].TokenType == typeof(WordToken)
+                && (t.Count > (tidx + 1) ? t[tidx + 1].TokenType == typeof(ParenthesisGroupToken) : false)
+                && (t.Count > (tidx + 2) ? t[tidx + 2].TokenType == typeof(AssignmentOperatorToken) : false)
+                )
             {
                 //get function name
-                // will be the first token
-                string functionName = t[0].TokenValue;
+                // will be the first token after excluding namespace.
+                string functionName = t[tidx].TokenValue;
+
+                string functionNamespace = "";
+                if (tidx == 1) functionNamespace = t[0][0].TokenValue;
 
                 //get parameters
-                QsParamInfo[] prms = (from c in t[1]
+                QsParamInfo[] prms = (from c in t[tidx + 1]
                                       where c.TokenType == typeof(WordToken)
                                       select new QsParamInfo { Name = c.TokenValue, Type = QsParamType.Value }).ToArray();
 
 
                 QsFunction qf = new QsFunction(function)
                 {
+                    FunctionNamespace = functionNamespace,
                     FunctionName = functionName,
                     Parameters = prms
                 };
@@ -427,7 +449,7 @@ namespace Qs.Runtime
 
                 List<Expression> statements = new List<Expression>();
 
-                QsVar qv = new QsVar(qse, function.Substring(t[2].IndexInText + t[2].TokenValueLength), qf, lb);
+                QsVar qv = new QsVar(qse, function.Substring(t[tidx + 2].IndexInText + t[tidx + 2].TokenValueLength), qf, lb);
 
                 statements.Add(qv.ResultExpression);   //making the variable expression itself make it the return value of the function.
 
@@ -435,7 +457,6 @@ namespace Qs.Runtime
 
                 LambdaExpression lbe = lb.MakeLambda();
                 qf.FunctionExpression = lbe;
-
 
                 return qf;
 
@@ -449,14 +470,124 @@ namespace Qs.Runtime
 
         public static QsFunction GetFunction(Scope scope, string realName)
         {
-            object q;
-            scope.TryGetName(SymbolTable.StringToId(realName), out q);
-            return (QsFunction)q;
+            //get the namespace part
+            string ns = "";
+
+            if (realName.IndexOf(':') > -1) ns = realName.Substring(0, realName.IndexOf(':'));
+
+            string funcName = realName.Substring(realName.IndexOf(':') + 1);
+
+            var function = (QsFunction)QsEvaluator.GetScopeVariable(scope, ns, funcName);
+
+            if (function != null)
+            {
+                return function;
+            }
+            else if (!string.IsNullOrEmpty(ns))
+            {
+                //try another search in the Qs.Modules
+
+                string QsFuncName = funcName.Substring(0, funcName.IndexOf('#'));
+                int QsFuncParamCount = int.Parse(funcName.Substring(funcName.IndexOf('#') + 1));
+
+
+                QsFunction QsModFunc = new QsFunction("[Qs.Modules." + ns + "." + QsFuncName + "]");
+                QsModFunc.FunctionNamespace = ns;
+                QsModFunc.FunctionName = QsFuncName;
+
+
+                var module = System.Type.GetType("Qs.Modules." + ns);
+                MethodInfo mi = module.GetMethod(QsFuncName);
+                var miParameters = mi.GetParameters();
+
+                QsParamInfo[] prms = (from c in miParameters
+                                      select new QsParamInfo { Name = c.Name, Type = QsParamType.Value }).ToArray();
+
+                QsModFunc.Parameters = prms;
+                #region Delegate creation section
+                switch (QsFuncParamCount)
+                {
+                    case 0:
+                        QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                            typeof(Func<QsValue>),
+                            mi);
+                        break;
+                    case 1:
+                        QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                            typeof(Func<QsParameter, QsValue>),
+                            mi);
+                        break;
+                    case 2:
+                        QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                            typeof(Func<QsParameter, QsParameter, QsValue>),
+                            mi);
+                        break;
+                    case 3:
+                        QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                            typeof(Func<QsParameter, QsParameter, QsParameter, QsValue>),
+                            mi);
+                        break;
+                    case 4:
+                        QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                            typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
+                            mi);
+                        break;
+                    case 5:
+                        QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                            typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
+                            mi);
+                        break;
+                    case 6:
+                        QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                            typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
+                            mi);
+                        break;
+                    case 7:
+                        QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                            typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
+                            mi);
+                        break;
+                    case 8:
+                        QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                            typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
+                            mi);
+                        break;
+                    case 9:
+                        QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                            typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
+                            mi);
+                        break;
+                    case 10:
+                        QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                            typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
+                            mi);
+                        break;
+                    case 11:
+                        QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                            typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
+                            mi);
+                        break;
+                    case 12:
+                        QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                            typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
+                            mi);
+                        break;
+
+                }
+                #endregion
+
+                return QsModFunc;
+
+            }
+            else
+            {
+                return null;
+            }
             
         }
 
         /// <summary>
-        /// Get the function from the global heap and throw exception if not found.
+        /// Get the function from the global heap or from namespace, and throw exception if not found.
         /// This function is used in building expression.
         /// </summary>
         /// <param name="scope"></param>

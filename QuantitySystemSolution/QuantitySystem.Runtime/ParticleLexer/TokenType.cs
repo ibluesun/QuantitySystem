@@ -238,8 +238,21 @@ namespace ParticleLexer.TokenTypes
     #endregion
 
 
+    /// <summary>
+    /// Reference token on the form WordToken,ColonToken  x:  oh:
+    /// </summary>
+    [TokenPattern(RegexPattern = @"\w+:")]
+    public class NameSpaceToken : TokenType
+    {
+    }
 
-
+    /// <summary>
+    /// Reference Namespace with its value  x:r   x:u  xd:Abs  etc...
+    /// </summary>
+    [TokenPattern(RegexPattern = @"\w+:\w+")]
+    public class NameSpaceAndValueToken : TokenType
+    {
+    }
 
 
     #region Qs Arithmatic Operators  {not all of classes here are used but they may be used however they serve as a guide for me to all operators I used in Qs
