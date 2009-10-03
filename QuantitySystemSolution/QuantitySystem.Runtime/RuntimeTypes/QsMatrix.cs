@@ -13,7 +13,7 @@ namespace Qs.RuntimeTypes
     /// </summary>
     public partial class QsMatrix: QsValue
     {
-        List<QsVector> Rows = new List<QsVector>();
+        public List<QsVector> Rows = new List<QsVector>();
 
         public QsMatrix()
         {

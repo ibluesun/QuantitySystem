@@ -38,8 +38,8 @@ internal class QsHost : ConsoleHost
             Environment.SetEnvironmentVariable("TERM", "dumb");
         }
 
-        Console.BackgroundColor = ConsoleColor.DarkMagenta;
-        Console.ForegroundColor = ConsoleColor.White;
+        Console.BackgroundColor = QsCommands.BackgroundColor;
+        Console.ForegroundColor = QsCommands.ForegroundColor;
         Console.Clear();
 
         QsCommands.StartConsole();

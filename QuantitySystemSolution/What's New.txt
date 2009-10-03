@@ -1,9 +1,30 @@
-[Quantity System 1.1.8.2] 
+[Quantity System 1.1.8.3] 
+- Namespace capabilities
+   Namespace can be added to variables and functions.
+	so this is a valid form
+	
+		x:r = 10
+		x:g(x) = x/2
+		b=g(x:r)
+		
+- Calling functions written in C#
+  Namespace is mapped to Static Class in C#
+  the root of Qs namespaces is [Qs.Modules]  you should add your classes here.
+  
+  and Public properties will serve as qs namespace variables
+  public functions will server as the qs namespace functions
+  
+  the return values whould be QsValue.
+  and function parameters are QsParameter.
+  
+   
+
+[Quantity System 1.1.8.2] (Released)
 - Now Matrix operators
   '*'  for ordinary matrix multiplication
   '^'  power of ordinary matrix multiplication
   '.'  for matrix elements multiplication
-  '.^' for matrix elements power.
+  '^.' for matrix elements power.
 
   please let me know if you have further ideas about this arrangement.  
   

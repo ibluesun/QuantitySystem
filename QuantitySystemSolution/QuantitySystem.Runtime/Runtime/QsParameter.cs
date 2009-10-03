@@ -20,7 +20,32 @@ namespace Qs.Runtime
         /// </summary>
         public string RawValue { get; private set; }
 
-        
+
+        public string Namespace
+        {
+            get
+            {
+                string[] rv = RawValue.Split(':');
+                if (rv.Length == 2)
+                    return rv[0];
+                else
+                    return "";
+
+            }
+        }
+
+        public string NamespaceValue
+        {
+            get
+            {
+                string[] rv = RawValue.Split(':');
+                if (rv.Length == 2)
+                    return rv[1];
+                else
+                    return rv[0];
+            }
+        }
+
         public static QsParameter MakeParameter(object value, string rawValue)
         {
             QsParameter qp = new QsParameter();

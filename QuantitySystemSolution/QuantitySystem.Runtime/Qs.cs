@@ -107,6 +107,10 @@ namespace Qs
         {
             return Unit.ParseQuantity(s);
         }
+        public static QsScalar ToScalar(this AnyQuantity<double> qty)
+        {
+            return new QsScalar { Quantity = qty };
+        }
 
         public static QsValue ToScalarValue(this AnyQuantity<double> qty)
         {

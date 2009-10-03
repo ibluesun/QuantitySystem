@@ -17,6 +17,7 @@ using System.Globalization;
 using Qs.Modules;
 using System.Reflection;
 using Qs.RuntimeTypes;
+using Qs.Runtime.Operators;
 
 
 namespace Qs.Runtime
@@ -170,6 +171,9 @@ namespace Qs.Runtime
 
             tokens = MergeOperators(tokens);
 
+            tokens = tokens.MergeTokens(new NameSpaceToken());
+            tokens = tokens.MergeTokens(new NameSpaceAndValueToken());
+
             tokens = tokens.GroupBrackets();                             // group (--()-) parenthesis
 
 
@@ -181,7 +185,6 @@ namespace Qs.Runtime
             tokens = tokens.RemoveSpaceTokens();                           //remove all spaces
 
             tokens = tokens.DiscoverCalls();
-
 
             Expression quantityExpression = null;
             ExprOp eop = null;
@@ -212,7 +215,6 @@ namespace Qs.Runtime
                     }
 
                 }
-
                 if(tokens[ix].TokenType == typeof(SequenceCallToken))
                 {
                     quantityExpression = SequenceCallExpression(
@@ -236,11 +238,8 @@ namespace Qs.Runtime
                 }
                 else if (tokens[ix].TokenType == typeof(UnitizedNumberToken))
                 {
-
-                    //unitized number
-                    
+                    //unitized number                    
                     quantityExpression = Expression.Constant(QsValue.ParseScalar(q), typeof(QsValue)); //you have to explicitly tell expression the type because it searches for the operators and can't find them
-
                 }
                 else if (tokens[ix].TokenType == typeof(NumberToken))
                 {
@@ -292,10 +291,14 @@ namespace Qs.Runtime
                             // in this expression the RawValue were set because u had marked as function argument. 
                             Expression indirectQuantity = Expression.Property(eu, "RawValue");
 
+                            Expression rawValueNameSpace = Expression.Property(eu, "Namespace");
+                            Expression rawValueNameSpaceValue = Expression.Property(eu, "NamespaceValue");
+
                             indirectQuantity = Expression.Call(
                                                     typeof(QsEvaluator).GetMethod("GetScopeQsValue"),
                                                     Expression.Constant(Scope),
-                                                    indirectQuantity
+                                                    rawValueNameSpace,
+                                                    rawValueNameSpaceValue
                                                     );
 
                             //exression to test if quantity is null or not
@@ -355,7 +358,7 @@ namespace Qs.Runtime
 
                 if (FactorialPostfix)
                 {
-                    quantityExpression = Expression.Call(typeof(Gamma).GetMethod("Factorial"), quantityExpression);
+                    quantityExpression = Expression.Call(typeof(QsGamma).GetMethod("Factorial"), quantityExpression);
 
                     //get the next operator.
                     ix++;
@@ -506,18 +509,36 @@ namespace Qs.Runtime
         /// <returns></returns>
         public Expression GetVariable(string name)
         {
-
             Type ScopeType = this.Evaluator.Scope.GetType();
 
             //store the scope
             var ScopeExp = Expression.Constant(Evaluator.Scope, ScopeType);
 
-            var fe = Expression.Call(
-                typeof(QsEvaluator).GetMethod("GetScopeQsValue"),
-                ScopeExp, Expression.Constant(name));
+            //check if the name contain namespace
+            string[] var = name.Split(':');
+            if (var.Length == 2)
+            {
+                var fe = Expression.Call(
+                    typeof(QsEvaluator).GetMethod("GetScopeQsValue"),
+                    ScopeExp,
+                    Expression.Constant(var[0]),
+                    Expression.Constant(var[1])
+                    );
+                return fe;
+            }
+            else
+            {
+
+                var fe = Expression.Call(
+                    typeof(QsEvaluator).GetMethod("GetScopeQsValue"),
+                    ScopeExp,
+                    Expression.Constant(string.Empty),
+                    Expression.Constant(var[0])
+                    );
 
 
-            return fe;
+                return fe;
+            }
         }
 
         public QsValue Execute(string line)
@@ -762,9 +783,11 @@ namespace Qs.Runtime
 
             //now parameters separated
             // specify the function real name 
-            string TargetFunctionRealName = QsFunction.FormFunctionScopeName(functionName, paramsText.Count); //to call the right function 
+            string TargetFunctionRealName = 
+                QsFunction.FormFunctionScopeName(functionName, paramsText.Count); //to call the right function 
 
             QsFunction TargetFunction = QsFunction.GetFunction(Scope, TargetFunctionRealName);
+
             List<Expression> parameters = new List<Expression>();
 
 
