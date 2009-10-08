@@ -8,7 +8,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 
 namespace Qs.Modules
 {
-    public static class QsMath
+    public static class Math
     {
 
         public static QsValue Sinh(QsParameter val)
@@ -266,13 +266,11 @@ namespace Qs.Modules
             }
         }
 
-
-
         public static QsValue PI
         {
             get
             {
-                return Math.PI.ToQuantity().ToScalarValue();
+                return System.Math.PI.ToQuantity().ToScalarValue();
             }
         }
     }

@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
 using Qs.RuntimeTypes;
+using Qs.Runtime.Operators;
 
 namespace QsTestProject
 {

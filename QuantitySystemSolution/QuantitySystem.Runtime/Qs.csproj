@@ -58,7 +58,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Modules\QsMath.cs">
+    <Compile Include="Modules\Math.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="QsInvalidInputException.cs" />

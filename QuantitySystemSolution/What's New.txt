@@ -7,6 +7,7 @@
 		x:g(x) = x/2
 		b=g(x:r)
 		
+		
 - Calling functions written in C#
   Namespace is mapped to Static Class in C#
   the root of Qs namespaces is [Qs.Modules]  you should add your classes here.
@@ -16,6 +17,15 @@
   
   the return values whould be QsValue.
   and function parameters are QsParameter.
+  
+- I included QsStudio.dll as extension module 
+  this library is not completed however you can try this :)
+  
+  Qs> Music:Play(c d e f g a b c>)     #Play major scale on Do  
+  Qs> Music:SaveMidi(c d e f g a b c>, tt.mid)
+  Qs> Music:PlayMidi(tt.mid)
+  Qs> Music:PlayMidi(RaisingFight.mid)   #included in the 
+  
   
    
 

@@ -11,6 +11,8 @@ using Microsoft.Linq.Expressions;
 using ParticleLexer;
 using ParticleLexer.TokenTypes;
 using Qs.RuntimeTypes;
+using System.Reflection;
+using System.IO;
 
 
 namespace Qs.Runtime
@@ -113,55 +115,46 @@ namespace Qs.Runtime
             }
             else
             {
-                //get the namespace from the scope
-                object o;
+                //try to set the property in the namespace
 
-                Scope.TryGetName(SymbolTable.StringToId(nameSpace), out o);
+                bool nbi = false;
 
-                QsNameSpace ns = o as QsNameSpace;
-
-                if (ns == null)
                 {
-                    //new name space so create it. and add it to the current scope
-                    ns = new QsNameSpace(nameSpace);
-                    Scope.SetName(SymbolTable.StringToId(nameSpace), ns);
+                    Type ns = GetQsNameSpace(nameSpace);
+                    if (ns != null)
+                    {
+                        var prop = ns.GetProperty(varName);
+                        if (prop != null)
+                        {
+                            prop.SetValue(null, varValue, null);
+                            nbi = true;
+                        }
+                    }
                 }
 
-                ns.SetName(varName, varValue);
+                if (nbi == false)
+                {
+
+                    //get the namespace from the scope
+                    object o;
+
+                    Scope.TryGetName(SymbolTable.StringToId(nameSpace), out o);
+
+                    QsNameSpace ns = o as QsNameSpace;
+
+                    if (ns == null)
+                    {
+                        //new name space so create it. and add it to the current scope
+                        ns = new QsNameSpace(nameSpace);
+                        Scope.SetName(SymbolTable.StringToId(nameSpace), ns);
+                    }
+
+                    ns.SetName(varName, varValue);
+                }
             }
             
         }
 
-        /// <summary>
-        /// Get Variable from the namespace.
-        /// </summary>
-        /// <param name="nameSpace"></param>
-        /// <param name="varName"></param>
-        /// <returns></returns>
-        public object GetVariable(string nameSpace, string varName)
-        {
-            if (string.IsNullOrEmpty(nameSpace))
-            {
-                return GetVariable(varName);
-            }
-            else
-            {
-                object o;
-
-                Scope.TryGetName(SymbolTable.StringToId(nameSpace), out o);
-
-                QsNameSpace ns = o as QsNameSpace;
-
-                if (ns != null)
-                {
-                    return ns.GetName(varName);
-                }
-                else
-                {
-                    return null;
-                }
-            }
-        }
 
         public bool SilentOutput = false;
 
@@ -514,7 +507,7 @@ namespace Qs.Runtime
                                 {
                                     SetVariable(vnToken[0][0].TokenValue, vnToken[1].TokenValue, qv.Execute());
 
-                                    var q = GetVariable(vnToken[0][0].TokenValue, vnToken[1].TokenValue);
+                                    var q = GetScopeQsValue(this.Scope, vnToken[0][0].TokenValue, vnToken[1].TokenValue);
                                     PrintQuantity(q);
                                     return q;
                                 }
@@ -523,7 +516,7 @@ namespace Qs.Runtime
                                     //assign the variable
                                     SetVariable(varName, qv.Execute());
 
-                                    var q = GetVariable(varName);
+                                    var q = GetScopeQsValue(this.Scope, "", varName);
                                     PrintQuantity(q);
                                     return q;
                                 }
@@ -537,7 +530,7 @@ namespace Qs.Runtime
                             QsVar qv = new QsVar(this, line);
                             //only print the result.
                             var q = qv.Execute();
-                            PrintQuantity(q);
+                            if(q!= null) PrintQuantity(q);
                             return q;
                         }
                     }
@@ -674,19 +667,21 @@ namespace Qs.Runtime
 
                 QsNameSpace ns = o as QsNameSpace;
 
+                QsValue r = null;
+
                 if (ns != null)
                 {
-                    return (QsValue)ns.GetName(name);
+                    r = (QsValue)ns.GetName(name);
                 }
-                else
+
+                if (r == null)
                 {
-                    //try to get it from the Qs.Modules.QsModule.public property
+                    //try to get it from the Qs.Modules.QsModule property
                     try
                     {
-                        var module = System.Type.GetType("Qs.Modules." + nameSpace);
+                        var module = GetQsNameSpace(nameSpace);
                         var prop = module.GetProperty(name);
-                        return (QsValue)prop.GetValue(null, null);
-
+                        r = (QsValue)prop.GetValue(null, null);
                     }
                     catch (Exception e)
                     {
@@ -694,12 +689,44 @@ namespace Qs.Runtime
                     }
                 }
 
+                return r;
             }
 
         }
         #endregion
 
-    
+
+        #region Helpers for getting qsnampespaces
+        /// <summary>
+        /// The namespace is a static C# class under Qs.Modules.*
+        /// </summary>
+        /// <param name="nameSpace"></param>
+        /// <returns></returns>
+        public static Type GetQsNameSpace(string nameSpace)
+        {
+            string cls = "Qs.Modules." + nameSpace;
+            //try the current assembly
+
+            Type ns = Type.GetType(cls);
+
+            if (ns == null)
+            {
+                // try  another search in the Qs*.dll dlls
+                DirectoryInfo di = new DirectoryInfo(Environment.CurrentDirectory + "\\Modules");
+                var files = di.GetFiles("Qs*.dll");
+                foreach (var file in files)
+                {
+                    var a = Assembly.LoadFrom(file.FullName);
+                    ns = a.GetType(cls );//+ ", " + file.Name.TrimEnd('.', 'd', 'l', 'l'));
+                    if (ns != null) break;  //found the break and pop out from the loop.
+                }
+            }
+
+            return ns;
+
+        }
+        #endregion
+
     }
 
 }
