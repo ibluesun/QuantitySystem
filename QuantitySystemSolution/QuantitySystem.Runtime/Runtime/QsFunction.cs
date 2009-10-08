@@ -193,8 +193,10 @@ namespace Qs.Runtime
                         Expression.Constant(null),
                         rawParameter);
 
+                    // The try catch block when catch exception will execute the call but by passing the parameter as text only
                     var tt = Utils.Try(tryBody);
-                    tt.Catch(typeof(QsVariableNotFoundException), catchBody);
+                    //tt.Catch(typeof(QsVariableNotFoundException), catchBody);
+                    tt.Catch(typeof(System.Exception), catchBody);
 
                     
 
@@ -279,7 +281,6 @@ namespace Qs.Runtime
                 return (Func<QsParameter, QsParameter, QsValue>)_FunctionDelegate;
             }
         }
-
 
         internal Func<QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_3
         {
@@ -387,9 +388,6 @@ namespace Qs.Runtime
             return FunctionBody;
         }
 
-
- 
-
         #region Helper Functions
 
         public static QsFunction ParseFunction(QsEvaluator qse, string function)
@@ -477,33 +475,66 @@ namespace Qs.Runtime
 
             string funcName = realName.Substring(realName.IndexOf(':') + 1);
 
-            var function = (QsFunction)QsEvaluator.GetScopeVariable(scope, ns, funcName);
-
-            if (function != null)
+            if (string.IsNullOrEmpty(ns))
             {
+                var function = (QsFunction)QsEvaluator.GetScopeVariable(scope, ns, funcName);
+
                 return function;
+                
             }
-            else if (!string.IsNullOrEmpty(ns))
+            else
             {
-                //try another search in the Qs.Modules
+                //try the external module first 
+                //then try the local scope function
+                var func = GetFunctionFromExternalModule(realName);
+                if (func == null)
+                {
+                    func = (QsFunction)QsEvaluator.GetScopeVariable(scope, ns, funcName);
 
-                string QsFuncName = funcName.Substring(0, funcName.IndexOf('#'));
-                int QsFuncParamCount = int.Parse(funcName.Substring(funcName.IndexOf('#') + 1));
+                }
+                return func;
+            }
+            
+        }
 
 
-                QsFunction QsModFunc = new QsFunction("[Qs.Modules." + ns + "." + QsFuncName + "]");
-                QsModFunc.FunctionNamespace = ns;
-                QsModFunc.FunctionName = QsFuncName;
+
+        private static QsFunction GetFunctionFromExternalModule(string realName)
+        {
+            //get the namespace part
+            string ns = "";
+
+            if (realName.IndexOf(':') > -1) ns = realName.Substring(0, realName.IndexOf(':'));
+
+            string funcName = realName.Substring(realName.IndexOf(':') + 1);
+
+            //try another search in the Qs.Modules
+
+            string QsFuncName = funcName.Substring(0, funcName.IndexOf('#'));
+            int QsFuncParamCount = int.Parse(funcName.Substring(funcName.IndexOf('#') + 1));
 
 
-                var module = System.Type.GetType("Qs.Modules." + ns);
-                MethodInfo mi = module.GetMethod(QsFuncName);
+            QsFunction QsModFunc = new QsFunction("[Qs.Modules." + ns + "." + QsFuncName + "]");
+            QsModFunc.FunctionNamespace = ns;
+            QsModFunc.FunctionName = QsFuncName;
+
+
+            var module = QsEvaluator.GetQsNameSpace(ns);
+
+            List<System.Type> paramTypes = new List<System.Type>(QsFuncParamCount);
+            for (int i = 0; i < QsFuncParamCount; i++) paramTypes.Add(typeof(QsParameter));
+
+            MethodInfo mi = module.GetMethod(QsFuncName, paramTypes.ToArray());
+
+            if (mi != null)
+            {
                 var miParameters = mi.GetParameters();
 
                 QsParamInfo[] prms = (from c in miParameters
                                       select new QsParamInfo { Name = c.Name, Type = QsParamType.Value }).ToArray();
 
                 QsModFunc.Parameters = prms;
+
                 #region Delegate creation section
                 switch (QsFuncParamCount)
                 {
@@ -577,13 +608,11 @@ namespace Qs.Runtime
                 #endregion
 
                 return QsModFunc;
-
             }
             else
             {
                 return null;
             }
-            
         }
 
         /// <summary>

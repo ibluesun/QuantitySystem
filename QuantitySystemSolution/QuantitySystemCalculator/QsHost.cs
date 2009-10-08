@@ -44,6 +44,10 @@ internal class QsHost : ConsoleHost
 
         QsCommands.StartConsole();
 
+
+        
+
+
         return new QsHost().Run(args);
         //QuantitySystemCalculator.Program.OldMain(args);
         //return 0;
