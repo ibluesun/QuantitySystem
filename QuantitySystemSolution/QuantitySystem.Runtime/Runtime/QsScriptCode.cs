@@ -1,6 +1,8 @@
 ﻿using System;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Runtime;
+using ParticleLexer;
+using System.Text;
 
 namespace Qs.Runtime
 {
@@ -50,11 +52,37 @@ namespace Qs.Runtime
             {
                 if (!string.IsNullOrEmpty(line))
                 {
-                    string[] l2 = line.Split('#');
+                    
+                    //I want to exclude # if it was between parentthesis.
+                    //  oo(ferwe#kd adflk ) # 
 
-                    if (!l2[0].Trim().StartsWith("#"))
+                    // find the # char which is the comment.
+                    int pc=0;
+
+                    StringBuilder sb = new StringBuilder();
+                    foreach (char c in line)
                     {
-                        ret = qs.Evaluate(l2[0].Trim());
+                        if (c == '(') pc++;
+                        if (c == '#')
+                        {
+                            if (pc == 0)
+                            {
+                                //found the comment 
+                                // break
+                                break;
+                            }
+                        }
+
+                        if (c == ')') pc--;
+
+                        sb.Append(c);
+                    }
+
+                    string l2 = sb.ToString();
+
+                    if (!l2.Trim().StartsWith("#"))
+                    {
+                        ret = qs.Evaluate(l2.Trim());
                     }
                 }
 
