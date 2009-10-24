@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Microsoft.Scripting;
 
 namespace Qs.Runtime
 {
@@ -20,17 +21,17 @@ namespace Qs.Runtime
         public string Name { get; set; }
 
 
-        private Dictionary<string, object> Values = new Dictionary<string, object>();
+        private Dictionary<SymbolId, object> Values = new Dictionary<SymbolId, object>();
 
         public void SetName(string name, object value)
         {
-            Values[name] = value;
+            Values[SymbolTable.StringToCaseInsensitiveId(name)] = value;
         }
 
         public object GetName(string name)
         {
             object o;
-            Values.TryGetValue(name,out o);
+            Values.TryGetValue(SymbolTable.StringToCaseInsensitiveId(name),out o);
             return o;
         }
 

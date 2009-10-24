@@ -59,7 +59,7 @@ namespace Qs.Runtime
             if (Scope != null)
             {
                 object q;
-                Scope.TryGetName(SymbolTable.StringToId(varName), out q);
+                Scope.TryGetName(SymbolTable.StringToCaseInsensitiveId(varName), out q);
                 return q;
             }
             else
@@ -74,7 +74,7 @@ namespace Qs.Runtime
             if (Scope != null)
             {
                 object q;
-                Scope.TryGetName(SymbolTable.StringToId(varName), out q);
+                Scope.TryGetName(SymbolTable.StringToCaseInsensitiveId(varName), out q);
                 return (AnyQuantity<double>)q;
             }
             else
@@ -93,7 +93,7 @@ namespace Qs.Runtime
         {
             if (Scope != null)
             {
-                Scope.SetName(SymbolTable.StringToId(varName), varValue);
+                Scope.SetName(SymbolTable.StringToCaseInsensitiveId(varName), varValue);
             }
             else
             {
@@ -123,7 +123,7 @@ namespace Qs.Runtime
                     Type ns = GetQsNameSpace(nameSpace);
                     if (ns != null)
                     {
-                        var prop = ns.GetProperty(varName);
+                        var prop = ns.GetProperty(varName, BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase);
                         if (prop != null)
                         {
                             prop.SetValue(null, varValue, null);
@@ -138,7 +138,7 @@ namespace Qs.Runtime
                     //get the namespace from the scope
                     object o;
 
-                    Scope.TryGetName(SymbolTable.StringToId(nameSpace), out o);
+                    Scope.TryGetName(SymbolTable.StringToCaseInsensitiveId(nameSpace), out o);
 
                     QsNameSpace ns = o as QsNameSpace;
 
@@ -146,7 +146,7 @@ namespace Qs.Runtime
                     {
                         //new name space so create it. and add it to the current scope
                         ns = new QsNameSpace(nameSpace);
-                        Scope.SetName(SymbolTable.StringToId(nameSpace), ns);
+                        Scope.SetName(SymbolTable.StringToCaseInsensitiveId(nameSpace), ns);
                     }
 
                     ns.SetName(varName, varValue);
@@ -322,7 +322,7 @@ namespace Qs.Runtime
             if (seqo != null)
             {
                 //store the expression for later use 
-                Scope.SetName(SymbolTable.StringToId(seqo.SequenceName), seqo);
+                Scope.SetName(SymbolTable.StringToCaseInsensitiveId(seqo.SequenceName), seqo);
                 return seqo;
             }
             else if (func != null)
@@ -361,6 +361,7 @@ namespace Qs.Runtime
                             seq = seq.MergeTokens(new SpaceToken());
                             seq = seq.RemoveSpaceTokens();
                             seq = seq.MergeTokens(new WordToken());
+                            
                             seq = seq.MergeTokens(new ColonToken());
                             seq = seq.GroupBrackets();
 
@@ -611,14 +612,14 @@ namespace Qs.Runtime
             if (string.IsNullOrEmpty(nameSpace))
             {
                 object q;
-                scope.TryGetName(SymbolTable.StringToId(name), out q);
+                scope.TryGetName(SymbolTable.StringToCaseInsensitiveId(name), out q);
                 return q;
             }
             else
             {
                 object o;
 
-                scope.TryGetName(SymbolTable.StringToId(nameSpace), out o);
+                scope.TryGetName(SymbolTable.StringToCaseInsensitiveId(nameSpace), out o);
 
                 QsNameSpace ns = o as QsNameSpace;
 
@@ -647,7 +648,7 @@ namespace Qs.Runtime
             {
                 object q;
 
-                scope.TryGetName(SymbolTable.StringToId(name), out q);
+                scope.TryGetName(SymbolTable.StringToCaseInsensitiveId(name), out q);
 
                 if (q != null)
                 {
@@ -663,7 +664,7 @@ namespace Qs.Runtime
                 //get the variable from the name space
                 object o;
 
-                scope.TryGetName(SymbolTable.StringToId(nameSpace), out o);
+                scope.TryGetName(SymbolTable.StringToCaseInsensitiveId(nameSpace), out o);
 
                 QsNameSpace ns = o as QsNameSpace;
 
@@ -680,7 +681,7 @@ namespace Qs.Runtime
                     try
                     {
                         var module = GetQsNameSpace(nameSpace);
-                        var prop = module.GetProperty(name);
+                        var prop = module.GetProperty(name, BindingFlags.IgnoreCase | BindingFlags.Static | BindingFlags.Public);
                         r = (QsValue)prop.GetValue(null, null);
                     }
                     catch (Exception e)
@@ -697,6 +698,7 @@ namespace Qs.Runtime
 
 
         #region Helpers for getting qsnampespaces
+
         /// <summary>
         /// The namespace is a static C# class under Qs.Modules.*
         /// </summary>
@@ -705,9 +707,11 @@ namespace Qs.Runtime
         public static Type GetQsNameSpace(string nameSpace)
         {
             string cls = "Qs.Modules." + nameSpace;
+
+
             //try the current assembly
 
-            Type ns = Type.GetType(cls);
+            Type ns = Type.GetType(cls, false, true);
 
             if (ns == null)
             {
@@ -717,7 +721,7 @@ namespace Qs.Runtime
                 foreach (var file in files)
                 {
                     var a = Assembly.LoadFrom(file.FullName);
-                    ns = a.GetType(cls );//+ ", " + file.Name.TrimEnd('.', 'd', 'l', 'l'));
+                    ns = a.GetType(cls, false, true);//+ ", " + file.Name.TrimEnd('.', 'd', 'l', 'l'));
                     if (ns != null) break;  //found the break and pop out from the loop.
                 }
             }
