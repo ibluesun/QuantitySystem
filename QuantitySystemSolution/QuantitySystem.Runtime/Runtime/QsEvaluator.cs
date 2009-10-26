@@ -382,8 +382,9 @@ namespace Qs.Runtime
                                     {
                                         //indexed sequence.
                                         //a[n:1] = n!    the form that we expect.
-                                        int n = int.Parse(seq[1][3].TokenValue);
-                                        string indexName = seq[1][1].TokenValue;
+                                        string[] indexText = seq[1].TokenValue.Trim('[', ']').Split(':');
+                                        int n = int.Parse(indexText[1]);
+                                        string indexName = indexText[0];
 
                                         
                                         if (seq.Count == 3)
@@ -435,7 +436,7 @@ namespace Qs.Runtime
                                      
                                         //non indexed sequence
                                         //match for a[1]
-                                        int n = int.Parse(seq[1][1].TokenValue);
+                                        int n = int.Parse(seq[1].TokenValue.Trim('[', ']'));
 
                                         if (seq.Count == 3)
                                         {
@@ -716,6 +717,7 @@ namespace Qs.Runtime
             if (ns == null)
             {
                 // try  another search in the Qs*.dll dlls
+
                 DirectoryInfo di = new DirectoryInfo(Environment.CurrentDirectory + "\\Modules");
                 var files = di.GetFiles("Qs*.dll");
                 foreach (var file in files)

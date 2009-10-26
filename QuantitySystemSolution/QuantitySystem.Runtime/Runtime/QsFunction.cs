@@ -465,7 +465,12 @@ namespace Qs.Runtime
             }
         }
 
-
+        /// <summary>
+        /// Get the function that is stored in the scope.
+        /// </summary>
+        /// <param name="scope"></param>
+        /// <param name="realName"></param>
+        /// <returns></returns>
         public static QsFunction GetFunction(Scope scope, string realName)
         {
             //get the namespace part

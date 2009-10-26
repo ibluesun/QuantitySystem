@@ -67,10 +67,14 @@ namespace Qs.Runtime
         }
 
 
+        /// <summary>
+        /// if there are a value other than string then return true.
+        /// </summary>
         public bool IsKnown
         {
             get
             {
+                if (Value == null) return false;
                 return !(Value is string);
             }
         }
