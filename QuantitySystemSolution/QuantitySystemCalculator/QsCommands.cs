@@ -280,7 +280,18 @@ using Microsoft.Scripting;
 
             foreach (string var in GetVariablesKeys(scope))
             {
-                Console.WriteLine("    " + var + "= " + GetVariable(scope, var).ToString());
+                var v = GetVariable(scope, var);
+                Console.WriteLine("    " + var + " = " + v.ToString());
+                if (v is QsNameSpace)
+                {
+                    QsNameSpace ns = (QsNameSpace)v;
+                    foreach (string nsvar in ns.GetVariablesKeys())
+                    {
+                        Console.WriteLine("        " + nsvar + " = " + ns.GetName(nsvar).ToString());
+                    }                    
+                }
+
+                
                 Console.WriteLine();
             }
 

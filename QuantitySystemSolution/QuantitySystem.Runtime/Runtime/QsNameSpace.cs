@@ -41,6 +41,15 @@ namespace Qs.Runtime
         }
 
 
+        public IEnumerable<string> GetVariablesKeys()
+        {
+            var varo = from item in this.Values
+                       select  SymbolTable.IdToString(item.Key);
+            return varo;
+
+        }
+
+
 
     }
 }

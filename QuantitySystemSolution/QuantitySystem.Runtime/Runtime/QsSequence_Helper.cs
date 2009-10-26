@@ -11,7 +11,7 @@ using System.Globalization;
 
 namespace Qs.Runtime
 {
-    public partial class QsSequence : Dictionary<int, QsSequenceElement>
+    public partial class QsSequence : SortedList<int, QsSequenceElement>
     {
         private string sequenceDeclaration;
         public string SequenceDeclaration 
@@ -20,9 +20,10 @@ namespace Qs.Runtime
             {
                 //go through all elements and print their index: text
                 string gg = "";
+                
                 foreach (var v in base.Keys)
                 {
-                    gg += v.ToString(CultureInfo.InvariantCulture).Trim() + ": " + base[v].ElementDeclaration + ";";
+                    gg += v.ToString(CultureInfo.InvariantCulture).Trim() + ": " + base[v].ElementDeclaration + "; ";
                 }
                 return sequenceDeclaration + " ..> " + gg;
             }
