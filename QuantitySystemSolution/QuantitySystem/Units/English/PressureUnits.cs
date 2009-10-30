@@ -6,7 +6,7 @@ namespace QuantitySystem.Units.English
     /// <summary>
     /// Pounds Per Square inch.
     /// </summary>
-    [DefaultUnit("psi", typeof(Pressure<>))]
+    [DefaultUnit("psi", typeof(Stress<>))]
     [ReferenceUnit(6894.72971416677)]
     public sealed class Psi : Unit
     {

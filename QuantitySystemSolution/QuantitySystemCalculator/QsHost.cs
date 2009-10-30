@@ -19,13 +19,6 @@ internal class QsHost : ConsoleHost
     }
     
 
-
-    protected override void UnhandledException(Microsoft.Scripting.Hosting.ScriptEngine engine, Exception e)
-    {
-        base.UnhandledException(engine, e);
-    }
-
-    
     
 
     [STAThread]

@@ -5,7 +5,7 @@ using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 using System.Globalization;
 using QuantitySystem.Units;
-using Microsoft.Linq.Expressions;
+using Microsoft.Scripting.Ast;
 using Qs.RuntimeTypes;
 
 namespace Qs.Runtime

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Microsoft.Linq.Expressions;
 using Microsoft.Scripting;
 
 using Microsoft.Scripting.Ast;
@@ -781,12 +780,16 @@ namespace Qs.Runtime
                 if (args[ai].TokenValue != ",") paramsText.Add(args[ai].TokenValue.Trim());
             }
 
+
             //now parameters separated
             // specify the function real name 
             string TargetFunctionRealName = 
                 QsFunction.FormFunctionScopeName(functionName, paramsText.Count); //to call the right function 
 
             QsFunction TargetFunction = QsFunction.GetFunction(Scope, TargetFunctionRealName);
+
+
+
 
             List<Expression> parameters = new List<Expression>();
 
@@ -919,8 +922,64 @@ namespace Qs.Runtime
                     if (FunP != null) return FunP;
                 }
 
+
+
+                //Rearrange paramsText so it includes named arguments
+                //  named argument is on the format  x:20, j:30
+
+                Dictionary<string, string> fParameters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                Dictionary<string, bool> setParameters = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
+
+                // first add all values of parameters in dictionary of ParameterName: Value
+                for (int i = 0; i < paramsText.Count;i++ )
+                {
+                    fParameters.Add(TargetFunction.Parameters[i].Name, paramsText[i]);
+                    setParameters.Add(TargetFunction.Parameters[i].Name, false);
+                }
+
+                // second search for named arguments and replace the old values.
+                bool NamedArgumentOccured = false;
+                for (int i = 0; i < paramsText.Count; i++)
+                {
+                    string namedParam = paramsText[i];
+
+                    string[] pr = namedParam.Split(new string[] { ":=" }, StringSplitOptions.None);
+
+
+                    if (pr.Length > 1)
+                    {
+                        string paramName = pr[0].Trim();
+                        string paramVal = pr[1].Trim();
+
+                        if (fParameters.ContainsKey(paramName))
+                        {
+                            if (!setParameters[paramName]) //check if the parameter was set before.
+                                fParameters[paramName] = paramVal;  //put the value in its corresponding parameter.
+                            else
+                                throw new QsException("Parameter {" + paramName + "} was set before");
+
+                            setParameters[paramName] = true;
+                        }
+                        else 
+                        {
+                            throw new QsException("Named argument not found in the function: " + TargetFunction.FunctionBody);
+                        }
+
+                        NamedArgumentOccured = true; //to prevent normal arguments after named arguments.
+                    }
+                    else
+                    {
+                        if (NamedArgumentOccured) throw new QsException("Normal argument after named argument");
+                        setParameters[TargetFunction.Parameters[i].Name] = true;
+                    }
+
+                }
+                
+                
+
                 // Function exist in global heap of the scope 
-                return TargetFunction.GetInvokeExpression(this, paramsText);
+                //  send values of corrected ordinal (positions parameters)
+                return TargetFunction.GetInvokeExpression(this, fParameters.Values.ToArray<string>());
             }
             else
             {

@@ -7,7 +7,6 @@ using Microsoft.Scripting.Runtime;
 using QuantitySystem;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
-using Microsoft.Linq.Expressions;
 using ParticleLexer;
 using ParticleLexer.TokenTypes;
 using Qs.RuntimeTypes;
@@ -40,8 +39,8 @@ namespace Qs.Runtime
             {
                 if (Scope != null)
                 {
-                    var varo = from item in Scope.Items
-                               select SymbolTable.IdToString(item.Key);
+                    var varo = from item in ((ScopeStorage)Scope.Storage).GetItems()
+                               select item.Key;
                     return varo;
                 }
                 else
@@ -59,7 +58,7 @@ namespace Qs.Runtime
             if (Scope != null)
             {
                 object q;
-                Scope.TryGetName(SymbolTable.StringToCaseInsensitiveId(varName), out q);
+                ((ScopeStorage)Scope.Storage).TryGetValue(varName, true, out q);
                 return q;
             }
             else
@@ -74,7 +73,7 @@ namespace Qs.Runtime
             if (Scope != null)
             {
                 object q;
-                Scope.TryGetName(SymbolTable.StringToCaseInsensitiveId(varName), out q);
+                ((ScopeStorage)Scope.Storage).TryGetValue(varName, true, out q);
                 return (AnyQuantity<double>)q;
             }
             else
@@ -93,7 +92,7 @@ namespace Qs.Runtime
         {
             if (Scope != null)
             {
-                Scope.SetName(SymbolTable.StringToCaseInsensitiveId(varName), varValue);
+                ((ScopeStorage)Scope.Storage).SetValue(varName, true, varValue);
             }
             else
             {
@@ -138,7 +137,7 @@ namespace Qs.Runtime
                     //get the namespace from the scope
                     object o;
 
-                    Scope.TryGetName(SymbolTable.StringToCaseInsensitiveId(nameSpace), out o);
+                    ((ScopeStorage)Scope.Storage).TryGetValue(nameSpace, true, out o);
 
                     QsNameSpace ns = o as QsNameSpace;
 
@@ -146,7 +145,7 @@ namespace Qs.Runtime
                     {
                         //new name space so create it. and add it to the current scope
                         ns = new QsNameSpace(nameSpace);
-                        Scope.SetName(SymbolTable.StringToCaseInsensitiveId(nameSpace), ns);
+                        ((ScopeStorage)Scope.Storage).SetValue(nameSpace, true, ns);
                     }
 
                     ns.SetName(varName, varValue);
@@ -322,7 +321,7 @@ namespace Qs.Runtime
             if (seqo != null)
             {
                 //store the expression for later use 
-                Scope.SetName(SymbolTable.StringToCaseInsensitiveId(seqo.SequenceName), seqo);
+                ((ScopeStorage)Scope.Storage).SetValue(seqo.SequenceName, true, seqo);
                 return seqo;
             }
             else if (func != null)
@@ -338,17 +337,28 @@ namespace Qs.Runtime
             {
                 string varName = string.Empty;
 
-                if (line.IndexOf('=') > -1)
-                {
-                    string[] ls = line.Split('=');
-                    line = ls[1];
-                    varName = ls[0].Trim();
+                int AssignOperatorIndex = line.IndexOf('=');
 
-                    if (char.IsNumber(varName[0]))
+                if (AssignOperatorIndex > 0)  //assign operator should always have something behind it.
+                {
+                    if (line[AssignOperatorIndex - 1] == ':') // test for named argument :=  
                     {
-                        throw (new QsInvalidInputException("Variable must start with a letter"));
+                        //ignore
+                    }
+                    else
+                    {
+                        //split to variable name that will be assigned 
+                        varName = line.Substring(0, AssignOperatorIndex).Trim();
+
+                        if (char.IsNumber(varName[0]))
+                        {
+                            throw (new QsInvalidInputException("Variable must start with a letter"));
+                        }
+
+                        line = line.Substring(AssignOperatorIndex + 1, line.Length - AssignOperatorIndex - 1);
                     }
                 }
+
 
                 if (QsVar.IsMatch(line))
                 {
@@ -613,14 +623,14 @@ namespace Qs.Runtime
             if (string.IsNullOrEmpty(nameSpace))
             {
                 object q;
-                scope.TryGetName(SymbolTable.StringToCaseInsensitiveId(name), out q);
+                ((ScopeStorage)scope.Storage).TryGetValue(name, true, out q);
                 return q;
             }
             else
             {
                 object o;
 
-                scope.TryGetName(SymbolTable.StringToCaseInsensitiveId(nameSpace), out o);
+                ((ScopeStorage)scope.Storage).TryGetValue(nameSpace, true, out o);
 
                 QsNameSpace ns = o as QsNameSpace;
 
@@ -649,7 +659,7 @@ namespace Qs.Runtime
             {
                 object q;
 
-                scope.TryGetName(SymbolTable.StringToCaseInsensitiveId(name), out q);
+                ((ScopeStorage)scope.Storage).TryGetValue(name, true, out q);
 
                 if (q != null)
                 {
@@ -665,7 +675,7 @@ namespace Qs.Runtime
                 //get the variable from the name space
                 object o;
 
-                scope.TryGetName(SymbolTable.StringToCaseInsensitiveId(nameSpace), out o);
+                ((ScopeStorage)scope.Storage).TryGetValue(nameSpace, true, out o);
 
                 QsNameSpace ns = o as QsNameSpace;
 

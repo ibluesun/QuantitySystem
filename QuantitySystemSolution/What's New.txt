@@ -1,9 +1,18 @@
-[Qs 1.1.9.0]
-- all variables and namespaces with their functions or variables are CASE INSENSITIVE.
+[Qs 1.1.9.2]
+- Named argument in functions added.  f(y := 2, x := 3)
+- Support to the DLR 0.92 by including the new references that released in 22 October {they changed a lot of things}
+- Renamed [Pressure] to [Stress] and [Velocity] to [Speed].
+- Added Environment:TickCount Property  it is in milli second.
+
+
+[Qs 1.1.9.1]
 - Setting Seuquence negative index bug (FIXED)
 - Sequence range from bigger to smaller number (FIXED)
 - Getting Summation , Multiplication , or Average from Bigger to Smaller number in sequence (FIXED)
 - You can suppress the output by adding semi-colon ; at the end of the expression.
+
+[Qs 1.1.9.0]
+- all variables and namespaces with their functions or variables are CASE INSENSITIVE.
 
 
 [Quantity System 1.1.8.3] 

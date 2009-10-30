@@ -9,12 +9,12 @@ namespace QuantitySystem.Quantities
     public class Momentum<T> : DerivedQuantity<T>
     {
         public Momentum()
-            : base(1, new Mass<T>(), new Velocity<T>())
+            : base(1, new Mass<T>(), new Speed<T>())
         {
         }
 
         public Momentum(float exponent)
-            : base(exponent, new Mass<T>(exponent), new Velocity<T>(exponent))
+            : base(exponent, new Mass<T>(exponent), new Speed<T>(exponent))
         {
         }
 

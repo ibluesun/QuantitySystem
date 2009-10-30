@@ -94,7 +94,14 @@ namespace Qs
         public static AnyQuantity<double> ToQuantity(this double d, string unit)
         {
             Unit un = Unit.Parse(unit);
-            
+
+            return un.GetThisUnitQuantity<double>(d);
+        }
+
+        public static AnyQuantity<double> ToQuantity(this int d, string unit)
+        {
+            Unit un = Unit.Parse(unit);
+
             return un.GetThisUnitQuantity<double>(d);
         }
 

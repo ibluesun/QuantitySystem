@@ -1,12 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
-using Microsoft.Linq.Expressions;
 using Microsoft.Scripting.Ast;
 using QuantitySystem.Units;
 using Qs.RuntimeTypes;
+
+using Microsoft.Scripting.Utils;
+
 
 namespace Qs.Runtime
 {
@@ -83,10 +84,10 @@ namespace Qs.Runtime
         public QsValue Execute(int executionIndex)
         {
 
-            if (ElementValue.GetType() == typeof(Microsoft.Func<int, QsValue>))
+            if (ElementValue.GetType() == typeof(Func<int, QsValue>))
             {
 
-                return ((Microsoft.Func<int, QsValue>)ElementValue)(executionIndex);
+                return ((Func<int, QsValue>)ElementValue)(executionIndex);
                 
             }
             else if (ElementValue.GetType() == typeof(QsSequence))
@@ -109,19 +110,19 @@ namespace Qs.Runtime
                 case 0:
                     return Execute(executionIndex);
                 case 1:
-                    return ((Microsoft.Func<int, QsValue, QsValue>)ElementValue)(executionIndex, args[0]);
+                    return ((Func<int, QsValue, QsValue>)ElementValue)(executionIndex, args[0]);
                 case 2:
-                    return ((Microsoft.Func<int, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1]);
+                    return ((Func<int, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1]);
                 case 3:
-                    return ((Microsoft.Func<int, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2]);
+                    return ((Func<int, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2]);
                 case 4:
-                    return ((Microsoft.Func<int, QsValue, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3]);
+                    return ((Func<int, QsValue, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3]);
                 case 5:
-                    return ((Microsoft.Func<int, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4]);
+                    return ((Func<int, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4]);
                 case 6:
-                    return ((Microsoft.Func<int, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4], args[5]);
+                    return ((Func<int, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4], args[5]);
                 case 7:
-                    return ((Microsoft.Func<int, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+                    return ((Func<int, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
 
             }
             throw new QsException("Parameters Exeeded the limits");
@@ -176,7 +177,7 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="function"></param>
         /// <returns></returns>
-        public static QsSequenceElement FromDelegate(Microsoft.Func<int, QsValue> function)
+        public static QsSequenceElement FromDelegate(Func<int, QsValue> function)
         {
             QsSequenceElement el = new QsSequenceElement();
             el.ElementValue = function;
@@ -189,7 +190,7 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="function"></param>
         /// <returns></returns>
-        public static QsSequenceElement FromDelegate(Microsoft.Func<int, QsValue, QsValue> function)
+        public static QsSequenceElement FromDelegate(Func<int, QsValue, QsValue> function)
         {
             QsSequenceElement el = new QsSequenceElement();
             el.ElementValue = function;
@@ -201,7 +202,7 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="function"></param>
         /// <returns></returns>
-        public static QsSequenceElement FromDelegate(Microsoft.Func<int, QsValue, QsValue, QsValue> function)
+        public static QsSequenceElement FromDelegate(Func<int, QsValue, QsValue, QsValue> function)
         {
             QsSequenceElement el = new QsSequenceElement();
             el.ElementValue = function;
@@ -213,7 +214,7 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="function"></param>
         /// <returns></returns>
-        public static QsSequenceElement FromDelegate(Microsoft.Func<int, QsValue, QsValue, QsValue, QsValue> function)
+        public static QsSequenceElement FromDelegate(Func<int, QsValue, QsValue, QsValue, QsValue> function)
         {
             QsSequenceElement el = new QsSequenceElement();
             el.ElementValue = function;
@@ -279,7 +280,7 @@ namespace Qs.Runtime
 
             }
 
-            throw new Exception("Check me in sequence element :( :( :( ");
+            throw new QsException("Check me in sequence element :( :( :( ");
             
         }
 

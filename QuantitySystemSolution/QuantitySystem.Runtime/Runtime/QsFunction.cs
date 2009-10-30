@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Microsoft;
-using Microsoft.Linq.Expressions;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Ast;
 using Microsoft.Scripting.Runtime;
@@ -12,6 +11,9 @@ using System.Globalization;
 using Qs.RuntimeTypes;
 using System.Reflection;
 using System.Reflection.Emit;
+using System.Text;
+
+using Microsoft.Scripting.Utils;
 
 
 namespace Qs.Runtime
@@ -156,7 +158,7 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="vario"></param>
         /// <returns></returns>
-        public Expression GetInvokeExpression(QsVar vario, List<string> args)
+        public Expression GetInvokeExpression(QsVar vario, string[] args)
         {
             List<Expression> parameters = new List<Expression>();
 
@@ -368,7 +370,7 @@ namespace Qs.Runtime
         /// <summary>
         /// The function body text
         /// </summary>
-        public string FunctionBody { get; private set; }
+        public string FunctionBody { get; set; }
 
 
 
@@ -376,6 +378,7 @@ namespace Qs.Runtime
         /// Parameters of the functions.
         /// </summary>
         public QsParamInfo[] Parameters { get; set; }
+
 
 
         public QsFunction(string function)
@@ -547,6 +550,11 @@ namespace Qs.Runtime
                                           select new QsParamInfo { Name = c.Name, Type = QsParamType.Value }).ToArray();
 
                     QsModFunc.Parameters = prms;
+                    QsModFunc.FunctionBody += "(";
+                    StringBuilder sb = new StringBuilder();
+                    foreach (var p in prms) sb.Append(", " + p.Name);
+                    if (sb.Length > 0) QsModFunc.FunctionBody += sb.ToString().TrimStart(',', ' ');
+                    QsModFunc.FunctionBody += ")";
 
                     #region Delegate creation section
                     switch (QsFuncParamCount)

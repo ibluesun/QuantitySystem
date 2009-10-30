@@ -7,22 +7,22 @@ using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities
 {
-    public class Velocity<T> : DerivedQuantity<T>
+    public class Speed<T> : DerivedQuantity<T>
     {
-        public Velocity()
+        public Speed()
             : base(1, new Length<T>(), new Time<T>(-1))
         {
         }
 
-        public Velocity(float exponent)
+        public Speed(float exponent)
             : base(exponent, new Length<T>(exponent), new Time<T>(-1 * exponent))
         {
         }
 
 
-        public static implicit operator Velocity<T>(T value)
+        public static implicit operator Speed<T>(T value)
         {
-            Velocity<T> Q = new Velocity<T>();
+            Speed<T> Q = new Speed<T>();
 
             Q.Value = value;
 

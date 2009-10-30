@@ -7,22 +7,22 @@ using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities
 {
-    public class Pressure<T> : DerivedQuantity<T>
+    public class Stress<T> : DerivedQuantity<T>
     {
-        public Pressure()
+        public Stress()
             : base(1, new Force<T>(), new Area<T>(-1))
         {
         }
 
-        public Pressure(float exponent)
+        public Stress(float exponent)
             : base(exponent, new Force<T>(exponent), new Area<T>(-1 * exponent))
         {
         }
 
 
-        public static implicit operator Pressure<T>(T value)
+        public static implicit operator Stress<T>(T value)
         {
-            Pressure<T> Q = new Pressure<T>();
+            Stress<T> Q = new Stress<T>();
 
             Q.Value = value;
 

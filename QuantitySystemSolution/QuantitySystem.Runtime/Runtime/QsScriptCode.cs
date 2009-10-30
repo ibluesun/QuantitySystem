@@ -27,9 +27,12 @@ namespace Qs.Runtime
 
         public static string LastLine { get; set; }
 
+        
+        
         public override object Run(Scope scope)
         {
-            CodeContext cc = new CodeContext(scope, this.LanguageContext);
+
+
             
             string code = string.Empty;
             try
@@ -94,6 +97,8 @@ namespace Qs.Runtime
                         {
                             ret = qs.Evaluate(l2);
                         }
+
+
                     }
                 }
             }
