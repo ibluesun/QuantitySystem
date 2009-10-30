@@ -84,7 +84,11 @@ using Microsoft.Scripting;
 
             if (commands[0] == "new")
             {
-                scope.Clear();
+                ScopeStorage ss = (ScopeStorage)scope.Storage;
+                string[] names = (from name in ss.GetItems() select name.Key).ToArray();
+                foreach (var name in names)
+                    ss.DeleteValue(name, true);
+
                 CommandProcessed = true;
             }
 
@@ -244,8 +248,8 @@ using Microsoft.Scripting;
           
             if (scope != null)
             {
-                var varo = from item in scope.Items
-                           select SymbolTable.IdToString(item.Key);
+                var varo = from item in ((ScopeStorage)scope.Storage).GetItems()
+                           select item.Key;
                 return varo;
             }
 
@@ -259,7 +263,7 @@ using Microsoft.Scripting;
             if (scope != null)
             {
                 object q;
-                scope.TryGetName(SymbolTable.StringToId(varName), out q);
+                ((ScopeStorage)scope.Storage).TryGetValue(varName, true, out q);
                 return q;
             }
             else

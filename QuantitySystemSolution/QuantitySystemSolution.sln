@@ -20,6 +20,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantitySystemCalculator", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DLR", "DLR", "{BD2784D3-94C2-4F74-AF57-050ED12B6E5D}"
 	ProjectSection(SolutionItems) = preProject
+		DLR\Microsoft.Dynamic.dll = DLR\Microsoft.Dynamic.dll
 		DLR\Microsoft.Scripting.Core.dll = DLR\Microsoft.Scripting.Core.dll
 		DLR\Microsoft.Scripting.dll = DLR\Microsoft.Scripting.dll
 	EndProjectSection

@@ -277,7 +277,7 @@ namespace Qs.Runtime
             object q;
 
 
-            scope.TryGetName(SymbolTable.StringToCaseInsensitiveId(snName), out q);
+            ((ScopeStorage)scope.Storage).TryGetValue(snName, true, out q);
 
 
             return (QsSequence)q;
