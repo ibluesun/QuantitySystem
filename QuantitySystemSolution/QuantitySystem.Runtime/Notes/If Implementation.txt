@@ -1,0 +1,11 @@
+﻿the if statement will be simple simple simple
+
+
+
+consider this expression
+
+x = 20 if y>40 else 30 if y>60 else 40 if y+t>50 - 300
+
+
+
+

@@ -51,6 +51,14 @@ namespace Qs.RuntimeTypes
         /// <returns></returns>
         abstract public QsValue PowerOperation(QsValue value);
 
+
+        /// <summary>
+        /// QsValue % QsValue
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        abstract public QsValue ModuloOperation(QsValue value);
+
         /// <summary>
         /// QsValue . QsValue 
         /// </summary>
@@ -122,6 +130,7 @@ namespace Qs.RuntimeTypes
         #endregion
 
 
+        #region Overloaded operators
         public static QsValue operator +(QsValue a, QsValue b)
         {
             return a.AddOperation(b);
@@ -142,6 +151,14 @@ namespace Qs.RuntimeTypes
             return a.DivideOperation(b);
         }
 
+        public static QsValue operator %(QsValue a, QsValue b)
+        {
+            return a.ModuloOperation(b);
+        }
+
+        #endregion
+
+        #region QsValue Operations not found in C# operators [Called by the abstracted functions]
         public static QsValue Pow(QsValue a, QsValue b)
         {
             return a.PowerOperation(b);
@@ -166,8 +183,7 @@ namespace Qs.RuntimeTypes
         {
             return a.CrossProductOperation(b);
         }
-
-        
+        #endregion
 
         #region Helper Methods
 

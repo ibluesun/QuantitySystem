@@ -43,7 +43,7 @@ namespace Qs.Runtime
             {
                 //% indexes number.
                 //# parameters number.
-                return FormSequenceScopeName(sequenceName, 1, Parameters.Length);
+                return FormSequenceSymbolicName(sequenceName, 1, Parameters.Length);
             }
             private set
             {
@@ -176,7 +176,7 @@ namespace Qs.Runtime
 
                 t = t.MergeAllBut(3 + shift, typeof(SequenceElementToken), new SemiColonToken());
 
-                QsSequence seqo = GetSequence(qse.Scope, FormSequenceScopeName(sequenceName, indexes.Length, parameters.Length));
+                QsSequence seqo = GetSequence(qse.Scope, FormSequenceSymbolicName(sequenceName, indexes.Length, parameters.Length));
 
 
                 if (seqo == null)
@@ -284,7 +284,7 @@ namespace Qs.Runtime
 
         }
 
-        public static string FormSequenceScopeName(string name, int indexesCount, int parametersCount)
+        public static string FormSequenceSymbolicName(string name, int indexesCount, int parametersCount)
         {
             if (indexesCount == 0) indexesCount = 1;
             return name + "%" + indexesCount.ToString(CultureInfo.InvariantCulture) + "#" + parametersCount.ToString(CultureInfo.InvariantCulture);

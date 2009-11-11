@@ -618,7 +618,7 @@ namespace Qs.Runtime
                 }
             }
 
-            string seqo = QsSequence.FormSequenceScopeName(sequenceName, 1, parameters.Count);
+            string seqo = QsSequence.FormSequenceSymbolicName(sequenceName, 1, parameters.Count);
 
             //get the sequence dynamically because sequence can be recursive :)
 
@@ -770,7 +770,7 @@ namespace Qs.Runtime
         /// <returns></returns>
         public Expression FunctionCallExpression(string functionName, Token args)
         {
-            //fn(x,y,ff(y/x,e+fr(d)))     <== sample form :D
+            //fn(x, y, ff(y/x, e + fr(d)))     <== sample form :D
 
             List<string> paramsText = new List<string>();  //contains the parameters sent as text 
 
@@ -780,19 +780,112 @@ namespace Qs.Runtime
                 if (args[ai].TokenValue != ",") paramsText.Add(args[ai].TokenValue.Trim());
             }
 
+            // discover namespace
+            string functionNameSpace = "";
+
+            if (functionName.IndexOf(':') > -1) functionNameSpace = functionName.Substring(0, functionName.IndexOf(':'));
+
+            // function name part after namespace
+            string funcCallName = functionName.Substring(functionName.IndexOf(':') + 1);
 
             //now parameters separated
-            // specify the function real name 
-            string TargetFunctionRealName = 
-                QsFunction.FormFunctionScopeName(functionName, paramsText.Count); //to call the right function 
 
-            QsFunction TargetFunction = QsFunction.GetFunction(Scope, TargetFunctionRealName);
+            // search for suitable function to be called.
+            // 1- if the parameters are raw parameters without named argument then get the default function
+            // 2- if one of the parameters contain named argument then search for this function.
 
+            bool NamedArgumentOccured = false;
+            
 
+            List<string> argNames = new List<string>();
 
+            for (int i = 0; i < paramsText.Count; i++)
+            {
+                string namedParam = paramsText[i];
+
+                string[] pr = namedParam.Split(new string[] { ":=" }, StringSplitOptions.None);
+                if (pr.Length > 1)
+                {
+                    argNames.Add(pr[0]);
+                    NamedArgumentOccured = true;
+                }
+                else
+                {
+                    if (NamedArgumentOccured) throw new QsException("Normal argument after named argument is not permitted");
+                }
+            }
+
+            int FirstNamedArgumentIndex = paramsText.Count - argNames.Count; //point to the index of the first named argument in the caller.
+
+            QsFunction TargetFunction;
+
+            if (argNames.Count > 0)
+            {
+                #region Named Arguments discovery
+                // get all the functions that contain these named argument parameters.
+
+                var DiscoveredFunctions = QsFunction.FindFunctionByParameters(Scope, functionNameSpace, funcCallName, paramsText.Count, argNames.ToArray());
+
+                if (DiscoveredFunctions.Length == 0)
+                {
+                    throw new QsFunctionNotFoundException("No functions found at all, please review your parameters");
+                }
+                if (DiscoveredFunctions.Length > 1)
+                {
+
+                    //we need to make another filtering criteria to decrease the discovered numbers.
+
+                    List<QsFunction> Pass2Functions = new List<QsFunction>();
+
+                    foreach (var func in DiscoveredFunctions)
+                    {
+                        bool include = true;
+                        for (int ix = 0; ix < FirstNamedArgumentIndex; ix++)
+                        {
+                            string calleeParam = func.Parameters[ix].Name;
+
+                            //does this parameter lie in the named arguments one.
+
+                            // for example in case of f(4, U:=3, V:=1)
+                            //   and current called function is f(u, r, v)
+                            //    then u exist in the list of {U:=3, V:=1}
+                            //     which exclude this function from the Pass2Functions.
+
+                            if (argNames.Contains(calleeParam, StringComparer.OrdinalIgnoreCase))
+                            {
+                                include = false;
+                                break;
+                            }
+                        }
+
+                        if (include) Pass2Functions.Add(func);   
+                    }
+
+                    if (Pass2Functions.Count == 0)
+                        throw new QsFunctionNotFoundException("No function from the (" + DiscoveredFunctions.Length.ToString(CultureInfo.InvariantCulture) + ") discovered is having suitable parameters order");
+                    if (Pass2Functions.Count == 1)
+                        TargetFunction = Pass2Functions[0];
+                    else
+                        throw new QsFunctionNotFoundException("(" + Pass2Functions.Count.ToString(CultureInfo.InvariantCulture) + ") functions, please specify more named arguments. ");
+                #endregion
+
+                }
+                else
+                {
+                    TargetFunction = DiscoveredFunctions[0];
+                }
+
+            }
+            else
+            {
+                // specify the function real name 
+                string TargetFunctionRealName =
+                    QsFunction.FormFunctionSymbolicName(funcCallName, paramsText.Count); //to call the right function 
+
+                TargetFunction = QsFunction.GetFunction(Scope, functionNameSpace, TargetFunctionRealName);
+            }
 
             List<Expression> parameters = new List<Expression>();
-
 
             #region Helper delegates
             //delegate to check if the function name in the Function object of the current function expression formation or if parsemode = function
@@ -923,9 +1016,10 @@ namespace Qs.Runtime
                 }
 
 
+                #region Adjusting (ReArranging) the named arguments order to the real function parameter order
 
                 //Rearrange paramsText so it includes named arguments
-                //  named argument is on the format  x:20, j:30
+                //  named argument is on the format  x:=20, j:=30
 
                 Dictionary<string, string> fParameters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 Dictionary<string, bool> setParameters = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
@@ -937,8 +1031,10 @@ namespace Qs.Runtime
                     setParameters.Add(TargetFunction.Parameters[i].Name, false);
                 }
 
+
+                NamedArgumentOccured = false;
+
                 // second search for named arguments and replace the old values.
-                bool NamedArgumentOccured = false;
                 for (int i = 0; i < paramsText.Count; i++)
                 {
                     string namedParam = paramsText[i];
@@ -956,13 +1052,13 @@ namespace Qs.Runtime
                             if (!setParameters[paramName]) //check if the parameter was set before.
                                 fParameters[paramName] = paramVal;  //put the value in its corresponding parameter.
                             else
-                                throw new QsException("Parameter {" + paramName + "} was set before");
+                                throw new QsException("Parameter '" + paramName + "' was set before");
 
                             setParameters[paramName] = true;
                         }
                         else 
                         {
-                            throw new QsException("Named argument not found in the function: " + TargetFunction.FunctionBody);
+                            throw new QsException("Named parameter '" + paramName + "' not found in the function: " + TargetFunction.FunctionBody);
                         }
 
                         NamedArgumentOccured = true; //to prevent normal arguments after named arguments.
@@ -974,8 +1070,8 @@ namespace Qs.Runtime
                     }
 
                 }
-                
-                
+
+                #endregion
 
                 // Function exist in global heap of the scope 
                 //  send values of corrected ordinal (positions parameters)
@@ -985,13 +1081,14 @@ namespace Qs.Runtime
             {
                 //Why we can't find the function in the global heap.
 
-                if (this.ParseMode == QsVarParseModes.Function)
+                if (this.ParseMode == QsVarParseModes.Function) // are we in function parsing mode?
                 {
-                    Expression FunP = ParameterFunction(functionName);
+                    Expression FunP = ParameterFunction(functionName); //try to get the function from the parameter
+
                     if (FunP != null) return FunP;
                 }
 
-                throw new QsException(functionName + ": Can't be found in global heap");
+                throw new QsFunctionNotFoundException(functionName + " Can't be found.");
 
             }
 

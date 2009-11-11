@@ -100,7 +100,7 @@ namespace Qs.Runtime
         /// <returns></returns>
         public string GetTrueFunctionName(int paramCount)
         {
-            return QsFunction.FormFunctionScopeName(RawValue, paramCount);
+            return QsFunction.FormFunctionSymbolicName(RawValue, paramCount);
         }
 
     }

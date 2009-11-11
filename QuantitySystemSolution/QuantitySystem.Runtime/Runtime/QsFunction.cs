@@ -14,6 +14,7 @@ using System.Reflection.Emit;
 using System.Text;
 
 using Microsoft.Scripting.Utils;
+using System.Text.RegularExpressions;
 
 
 namespace Qs.Runtime
@@ -21,22 +22,63 @@ namespace Qs.Runtime
     /// <summary>
     /// Function that declared in Qs
     /// </summary>
-    public class QsFunction
+    public partial class QsFunction
     {
         private string functionName;
 
-        public string FunctionName { 
+        private readonly bool _IsDefault = false;
+
+        /// <summary>
+        /// if this is the first function declared then this flag will be set to true;
+        /// </summary>
+        public bool IsDefault
+        {
+            get { return _IsDefault; }
+        }
+
+
+        /// <summary>
+        /// The function name as stored in the program scope.
+        /// </summary>
+        public string FunctionSymbolicName 
+        { 
             get
             {
                 //the function name should be unique for the sake of multiple variables and not to hide 
                 //   other variables.
 
-                return functionName + "#" + Parameters.Length.ToString();
+                if (_IsDefault)
+                    return functionName + "#" + Parameters.Length.ToString(CultureInfo.InvariantCulture);
+                else
+                {
+                    //make the function naming include also parameter names.
+                    // i.e.   f#2_x_y_z
+
+                    StringBuilder sb = new StringBuilder(functionName + "#" + Parameters.Length.ToString(CultureInfo.InvariantCulture));
+
+                    foreach (var p in this.Parameters)
+                    {
+                        sb.Append("_");
+                        sb.Append(p.Name);
+                    }
+
+                    return sb.ToString();
+                }
             }
-            private set
+
+        }
+
+        internal string FunctionName
+        {
+            get
+            {
+                return functionName;
+            }
+            set
             {
                 functionName = value;
             }
+
         }
 
         /// <summary>
@@ -209,6 +251,8 @@ namespace Qs.Runtime
             }
 
             Expression DelegateProperty = Expression.Property(Expression.Constant(this), "FunctionDelegate_" + parameters.Count.ToString(CultureInfo.InvariantCulture));
+            //Expression DelegateProperty = Expression.Field(Expression.Constant(this), "_FunctionDelegate");
+
             return Expression.Invoke(DelegateProperty, parameters);
         }
 
@@ -256,11 +300,11 @@ namespace Qs.Runtime
             return Invoke(ProcessedParameters.ToArray());
         }
 
-        #region public delegate properties for the function with its number of parameters
+        #region private delegate properties for the function with its number of parameters
 
-        private object _FunctionDelegate;
+        internal System.Delegate _FunctionDelegate;
 
-        internal Func<QsValue> FunctionDelegate_0
+        private Func<QsValue> FunctionDelegate_0
         {
             get
             {
@@ -268,7 +312,7 @@ namespace Qs.Runtime
             }
         }
 
-        internal Func<QsParameter, QsValue> FunctionDelegate_1
+        private Func<QsParameter, QsValue> FunctionDelegate_1
         {
             get
             {
@@ -276,7 +320,7 @@ namespace Qs.Runtime
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsValue> FunctionDelegate_2
+        private Func<QsParameter, QsParameter, QsValue> FunctionDelegate_2
         {
             get
             {
@@ -284,7 +328,7 @@ namespace Qs.Runtime
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_3
+        private Func<QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_3
         {
             get
             {
@@ -292,7 +336,7 @@ namespace Qs.Runtime
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_4
+        private Func<QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_4
         {
             get
             {
@@ -300,7 +344,7 @@ namespace Qs.Runtime
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_5
+        private Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_5
         {
             get
             {
@@ -308,7 +352,7 @@ namespace Qs.Runtime
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_6
+        private Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_6
         {
             get
             {
@@ -316,7 +360,7 @@ namespace Qs.Runtime
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_7
+        private Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_7
         {
             get
             {
@@ -324,7 +368,7 @@ namespace Qs.Runtime
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_8
+        private Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_8
         {
             get
             {
@@ -332,7 +376,7 @@ namespace Qs.Runtime
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_9
+        private Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_9
         {
             get
             {
@@ -340,7 +384,7 @@ namespace Qs.Runtime
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_10
+        private Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_10
         {
             get
             {
@@ -348,7 +392,7 @@ namespace Qs.Runtime
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_11
+        private Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_11
         {
             get
             {
@@ -356,7 +400,7 @@ namespace Qs.Runtime
             }
         }
 
-        internal Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_12
+        private Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue> FunctionDelegate_12
         {
             get
             {
@@ -373,17 +417,80 @@ namespace Qs.Runtime
         public string FunctionBody { get; set; }
 
 
-
         /// <summary>
         /// Parameters of the functions.
         /// </summary>
         public QsParamInfo[] Parameters { get; set; }
 
 
-
-        public QsFunction(string function)
+        /// <summary>
+        /// returns 0 indexed parameter name location
+        /// -1 if not found
+        /// </summary>
+        /// <param name="parameterName"></param>
+        /// <returns></returns>
+        public int GetParameterOrdinal(string parameterName)
         {
-            FunctionBody = function;            
+            int idx = Parameters.FindIndex((vv) => vv.Name.Equals(parameterName, System.StringComparison.InvariantCultureIgnoreCase));
+            return idx;
+        }
+
+        /// <summary>
+        /// Test if parameter exist in the function.
+        /// </summary>
+        /// <param name="parameterName"></param>
+        /// <returns></returns>
+        public bool ContainsParameter(string parameterName)
+        {
+            if (GetParameterOrdinal(parameterName) > -1) return true;
+            else return false;
+        }
+
+        /// <summary>
+        /// Test if all of given parameters exist in this function.
+        /// </summary>
+        /// <param name="parametersNames"></param>
+        /// <returns></returns>
+        public bool ContainsParameters(params string[] parametersNames)
+        {
+            foreach (string paramName in parametersNames)
+            {
+                if (!ContainsParameter(paramName))
+                    return false; //parameter does not exist break and return false;
+            }
+
+            return true;
+        }
+
+
+
+        public QsFunction(string functionBody, bool isDefault)
+        {
+            FunctionBody = functionBody;
+            _IsDefault = isDefault;
+        }
+
+        public QsFunction(string functionBody)
+        {
+            FunctionBody = functionBody;
+            _IsDefault = false;
+        }
+
+        private readonly bool _IsReadOnly;
+
+        /// <summary>
+        /// means you shouldn't modify the value of this function.
+        /// </summary>
+        public bool IsReadOnly
+        {
+            get { return _IsReadOnly; }
+        }
+
+        public QsFunction(string functionBody, bool isDefault, bool isReadOnly)
+        {
+            FunctionBody = functionBody;
+            _IsDefault = isDefault;
+            _IsReadOnly = isReadOnly;
         }
 
         public override string ToString()
@@ -431,13 +538,73 @@ namespace Qs.Runtime
                                       where c.TokenType == typeof(WordToken)
                                       select new QsParamInfo { Name = c.TokenValue, Type = QsParamType.Value }).ToArray();
 
+                var textParams = from prm in prms select prm.Name;
 
-                QsFunction qf = new QsFunction(function)
+                QsFunction qf;
+
+                // 1- find the default function of this name.
+                // 2- if default function exist declare non default function
+                // 3- if default function does'nt exist declare default function.
+                // Default function: is function declared without specifying its parameters in its name  f#2 f#4  are default functions.
+
+                qf = QsFunction.GetDefaultFunction(qse.Scope, functionNamespace, functionName, textParams.Count());
+
+                if (qf == null)
                 {
-                    FunctionNamespace = functionNamespace,
-                    FunctionName = functionName,
-                    Parameters = prms
-                };
+                    //declared for first time a default function.
+                    qf = new QsFunction(function, true)
+                     {
+                         FunctionNamespace = functionNamespace,
+                         FunctionName = functionName,
+                         Parameters = prms
+                     };
+                }
+                else
+                {
+                    //declared before
+
+
+                    //if (textParams.Count() == 1)
+                    //{
+                    //    //function with one parameter there are no variations in parameters
+                    //    //   like  f(x) then f(z)  
+                    //    // the function is always default function.
+
+                    //    qf = new QsFunction(function, true)
+                    //    {
+                    //        FunctionNamespace = functionNamespace,
+                    //        FunctionName = functionName,
+                    //        Parameters = prms
+                    //    };
+                    //}
+                    //else
+                    {
+                        // function overloaded with parameters names.
+
+                        // 1- find if function with the same parameters and name exist 
+                        // 2- overwrite this function otherwise create new one.
+
+                        qf = GetExactFunctionWithParameters(qse.Scope,
+                            functionNamespace,
+                            functionName,
+                            textParams.ToArray());
+                        if (qf == null)
+                        {
+                            qf = new QsFunction(function, false)
+                            {
+                                FunctionNamespace = functionNamespace,
+                                FunctionName = functionName,
+                                Parameters = prms
+                            };
+                        }
+                        else
+                        {
+                            // do nothing we will only change the implementation.
+                            if (qf.IsReadOnly == false) qf.FunctionBody = function;
+                            else throw new QsException("Attempt to write into readonly function");
+                        }
+                    }
+                }
 
 
                 LambdaBuilder lb = Utils.Lambda(typeof(QsValue), functionName);
@@ -457,6 +624,7 @@ namespace Qs.Runtime
                 lb.Body = Expression.Block(statements);
 
                 LambdaExpression lbe = lb.MakeLambda();
+
                 qf.FunctionExpression = lbe;
 
                 return qf;
@@ -474,193 +642,104 @@ namespace Qs.Runtime
         /// <param name="scope"></param>
         /// <param name="realName"></param>
         /// <returns></returns>
-        public static QsFunction GetFunction(Scope scope, string realName)
+        public static QsFunction GetFunction(Scope scope, string qsNamespace, string functionName)
         {
-            //get the namespace part
-            string ns = "";
 
-            if (realName.IndexOf(':') > -1) ns = realName.Substring(0, realName.IndexOf(':'));
-
-            string funcName = realName.Substring(realName.IndexOf(':') + 1);
-
-            if (string.IsNullOrEmpty(ns))
+            if (string.IsNullOrEmpty(qsNamespace))
             {
                 // no namespace included then it is from the local scope.
 
-                var function = (QsFunction)QsEvaluator.GetScopeVariable(scope, ns, funcName);
+                var function = (QsFunction)QsEvaluator.GetScopeVariable(scope, qsNamespace, functionName);
 
                 return function;
                 
             }
             else
             {
-                //try the external module first 
-                //then try the local scope function
-                var func = GetFunctionFromExternalModule(realName);
-                if (func == null)
+
+                try
                 {
-                    func = (QsFunction)QsEvaluator.GetScopeVariable(scope, ns, funcName);
+
+                    QsNamespace ns = QsNamespace.GetNamespace(scope, qsNamespace);
+
+
+                    return (QsFunction)ns.GetValue(functionName);
 
                 }
-                return func;
-            }
-            
-        }
-
-
-
-        private static QsFunction GetFunctionFromExternalModule(string realName)
-        {
-            //get the namespace part
-            string ns = "";
-
-            if (realName.IndexOf(':') > -1) ns = realName.Substring(0, realName.IndexOf(':'));
-
-            string funcName = realName.Substring(realName.IndexOf(':') + 1);
-
-            //try another search in the Qs.Modules
-
-            string QsFuncName = funcName.Substring(0, funcName.IndexOf('#'));
-            int QsFuncParamCount = int.Parse(funcName.Substring(funcName.IndexOf('#') + 1));
-
-
-            QsFunction QsModFunc = new QsFunction("[Qs.Modules." + ns + "." + QsFuncName + "]");
-            QsModFunc.FunctionNamespace = ns;
-            QsModFunc.FunctionName = QsFuncName;
-
-
-            var module = QsEvaluator.GetQsNameSpace(ns);
-
-            if (module != null)
-            {
-                List<System.Type> paramTypes = new List<System.Type>(QsFuncParamCount);
-                for (int i = 0; i < QsFuncParamCount; i++) paramTypes.Add(typeof(QsParameter));
-
-                MethodInfo mi = module.GetMethod(QsFuncName,
-                    BindingFlags.IgnoreCase | BindingFlags.Static | BindingFlags.Public,
-                    System.Type.DefaultBinder,
-                    paramTypes.ToArray(),
-                    null);
-
-                if (mi != null)
+                catch(QsVariableNotFoundException)
                 {
-                    var miParameters = mi.GetParameters();
-
-                    QsParamInfo[] prms = (from c in miParameters
-                                          select new QsParamInfo { Name = c.Name, Type = QsParamType.Value }).ToArray();
-
-                    QsModFunc.Parameters = prms;
-                    QsModFunc.FunctionBody += "(";
-                    StringBuilder sb = new StringBuilder();
-                    foreach (var p in prms) sb.Append(", " + p.Name);
-                    if (sb.Length > 0) QsModFunc.FunctionBody += sb.ToString().TrimStart(',', ' ');
-                    QsModFunc.FunctionBody += ")";
-
-                    #region Delegate creation section
-                    switch (QsFuncParamCount)
-                    {
-                        case 0:
-                            QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
-                                typeof(Func<QsValue>),
-                                mi);
-                            break;
-                        case 1:
-                            QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
-                                typeof(Func<QsParameter, QsValue>),
-                                mi);
-                            break;
-                        case 2:
-                            QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
-                                typeof(Func<QsParameter, QsParameter, QsValue>),
-                                mi);
-                            break;
-                        case 3:
-                            QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
-                                typeof(Func<QsParameter, QsParameter, QsParameter, QsValue>),
-                                mi);
-                            break;
-                        case 4:
-                            QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
-                                typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
-                                mi);
-                            break;
-                        case 5:
-                            QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
-                                typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
-                                mi);
-                            break;
-                        case 6:
-                            QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
-                                typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
-                                mi);
-                            break;
-                        case 7:
-                            QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
-                                typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
-                                mi);
-                            break;
-                        case 8:
-                            QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
-                                typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
-                                mi);
-                            break;
-                        case 9:
-                            QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
-                                typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
-                                mi);
-                            break;
-                        case 10:
-                            QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
-                                typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
-                                mi);
-                            break;
-                        case 11:
-                            QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
-                                typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
-                                mi);
-                            break;
-                        case 12:
-                            QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
-                                typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
-                                mi);
-                            break;
-
-                    }
-                    #endregion
-
-                    return QsModFunc;
+                    return null;
                 }
-                else
-                {
-                    throw new QsException("Function " + realName + " not fount in external module.");  // no static function found
-                }
-            }
-            else
-            {
-                return null;   //no external or built in type found.
+                
+                
+
             }
         }
+
+
+
 
         /// <summary>
+        /// Called from Expressions.
         /// Get the function from the global heap or from namespace, and throw exception if not found.
         /// This function is used in building expression.
         /// </summary>
         /// <param name="scope"></param>
         /// <param name="realName"></param>
         /// <returns></returns>
-        public static QsFunction GetFunctionAndThrowIfNotFound(Scope scope, string realName)
+        public static QsFunction GetFunctionAndThrowIfNotFound(Scope scope, string functionFullName)
         {
-            var f = GetFunction(scope, realName);
-            if (f == null) throw new QsException("Function: '" + realName + "' Couldn't be found in global heap.");
+            string nameSpace = string.Empty;
+            string functionName = functionFullName;
+
+            if (functionFullName.Contains(':'))
+            {
+                nameSpace = functionFullName.Substring(0, functionFullName.IndexOf(':'));
+                functionName = functionFullName.Substring(functionFullName.IndexOf(':') + 1);
+            }
+
+
+            var f = GetFunction(scope, nameSpace, functionName);
+
+            if (f == null) throw new QsFunctionNotFoundException("Function: '" + functionName + "' Couldn't be found in " + nameSpace + ".");
             else return f;
         }
 
 
-        public static string FormFunctionScopeName(string functionName, int paramCount)
+        /// <summary>
+        /// Form a function symbolic name that can be stored into the program heap.
+        /// </summary>
+        /// <param name="functionName"></param>
+        /// <param name="paramCount"></param>
+        /// <returns></returns>
+        public static string FormFunctionSymbolicName(string functionName, int paramCount)
         {
             return functionName + "#" + paramCount.ToString(CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// Form a function symbolic name that can be stored into the program heap, but also include parameter names in the symbol.
+        /// </summary>
+        /// <param name="functionName"></param>
+        /// <param name="paramNames"></param>
+        /// <returns></returns>
+        public static string FormFunctionSymbolicName(string functionName, params string[] paramNames)
+        {
+            //make the function naming include also parameter names.
+            // i.e.   f#2_x_y_z
+
+            string symbol = functionName + "#" + paramNames.Length.ToString(CultureInfo.InvariantCulture);
+            foreach (var p in paramNames) symbol += "_" + p.ToLowerInvariant();
+            return symbol;
+        }
+
+        public static bool IsItFunctionSymbolicName(string name)
+        {
+            if (Regex.Match(name, @".+#.+").Success)
+                return true;
+            else 
+                return false;
+        }
 
         #endregion
 

@@ -11,6 +11,7 @@ namespace Qs.Modules
     public static class Math
     {
 
+        #region Functions
         public static QsValue Sinh(QsParameter val)
         {
             if (val.IsKnown)
@@ -404,6 +405,73 @@ namespace Qs.Modules
                 return null;
             }
         }
+
+
+        public static QsValue Log(QsParameter val, QsParameter newBase)
+        {
+            if (val.IsKnown)
+            {
+                if (val.Value is QsScalar)
+                {
+                    AnyQuantity<double> q = ((QsScalar)val.Value).Quantity;
+
+                    if (q.Dimension.IsDimensionless)
+                    {
+                        double r = System.Math.Log(q.Value, ((QsScalar)newBase.Value).Quantity.Value);
+                        return r.ToQuantity().ToScalarValue();
+                    }
+                    else
+                    {
+                        throw new QsInvalidInputException("Non dimensionless number");
+                    }
+                }
+                else if (val.Value is QsVector)
+                {
+                    QsVector vec = (QsVector)val.Value;
+
+                    QsVector rv = new QsVector(vec.Count);
+
+                    foreach (QsScalar var in vec)
+                    {
+                        if (var.Quantity.Dimension.IsDimensionless)
+                        {
+                            double r = System.Math.Log(var.Quantity.Value, ((QsScalar)newBase.Value).Quantity.Value);
+                            rv.AddComponent(r.ToQuantity().ToScalar());
+                        }
+                        else
+                        {
+                            throw new QsInvalidInputException("Non dimensionless component");
+                        }
+                    }
+
+                    return rv;
+                }
+                else if (val.Value is QsMatrix)
+                {
+                    QsMatrix mat = (QsMatrix)val.Value;
+                    QsMatrix rm = new QsMatrix();
+
+                    foreach (var vec in mat.Rows)
+                    {
+                        rm.AddVector((QsVector)Log(QsParameter.MakeParameter(vec, string.Empty)));
+
+                    }
+                    return rm;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                //not known may be ordinary string
+                return null;
+            }
+
+        }
+
+        #endregion
 
     }
 }

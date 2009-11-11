@@ -101,6 +101,11 @@ namespace QuantitySystem.Quantities.BaseQuantities
             return Divide(firstQuantity, secondQuantity);
         }
 
+        public static AnyQuantity<T> operator %(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            return Modulus(firstQuantity, secondQuantity);
+        }
+
         public static AnyQuantity<T> operator ^(AnyQuantity<T> quantity, AnyQuantity<double> exponent)
         {
             return Power(quantity, exponent);
@@ -265,7 +270,12 @@ namespace QuantitySystem.Quantities.BaseQuantities
             return result;
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="factor"></param>
+        /// <returns></returns>
         public static T RaiseGenericByScalar(T value, double factor)
         {
             if (typeof(T) == typeof(decimal) || typeof(T) == typeof(double) || typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(short))
@@ -326,6 +336,57 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
                 return result;
             }
+        }
+
+
+
+
+        /// <summary>
+        /// Remainder of two generic objects  a % b
+        /// </summary>
+        /// <param name="firstVal"></param>
+        /// <param name="secondVal"></param>
+        /// <returns></returns>
+        public static T ModuloGenericByGeneric(T firstVal, T secondVal)
+        {
+            DynamicMethod method = new DynamicMethod(
+                "Modulo_Method" + ":" + typeof(T).ToString(),
+                typeof(T),
+                new Type[] { typeof(T), typeof(T) });
+
+
+            //get generator to construct the function.
+
+            ILGenerator gen = method.GetILGenerator();
+
+
+            gen.Emit(OpCodes.Ldarg_0);  //load the first value
+            gen.Emit(OpCodes.Ldarg_1);  //load the second value
+
+
+            if (typeof(T).IsPrimitive)
+            {
+                gen.Emit(OpCodes.Rem);              //adding them if they were premitive
+            }
+            else
+            {
+                MethodInfo info = typeof(T).GetMethod
+                    (
+                    "op_Modulus",
+                    new Type[] { typeof(T), typeof(T) },
+                    null
+                    );
+
+                gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
+
+            }
+
+            gen.Emit(OpCodes.Ret);
+
+
+            T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
+
+            return result;
         }
 
         #endregion

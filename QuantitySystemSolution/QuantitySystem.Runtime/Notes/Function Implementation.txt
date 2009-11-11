@@ -1,0 +1,124 @@
+Functions in Qs:
+
+f(x,y) = x^2/y^3    stored as f#2
+
+and we can call the function with named arguments
+
+f(y:=2, x:=10)
+
+however I want to be able to call specific function with named arguments
+
+this is for supporting thermodynamic function I'll import from REFPROP  and also syntax of EES
+
+in EES  you can call for any thermodynamic property with only two properties
+
+consider Entropy
+
+EES:  Entropy(R22, u=3, t=20)
+      Entropy(R22, h=5, u=20)       
+      
+so as we can notice the function that accepts two parameters are only three parameters
+
+
+this means I want to make FUNCTION OVERLOADING in qs depends on parameter names not parameter types.
+
+\---------------------------\
+\ parameter types for now:  \
+\ QsValue                   \
+\ Plain Text                \  
+\---------------------------\
+
+so I can encode the function name into functionname and its parameters
+
+f(x,y)   ==>  f#2_x_y
+f(u,v)   ==>  f#2_u_v
+
+however the problem is lying in making the default function call
+what to choose between when calling f(4,3)???
+
+for this i'll assume that the first function declared is the default calling function
+lets make another round with declaring functions.
+
+f(x,g)  ==>  f#2        default function [first declared]
+f(x,y)  ==>  f#2_x_y    second function naming changed because there is f(x,g) before
+f(y,v)  ==>  f#2_v_y    third function naming changed because there is a default function declared.
+
+naming of parameters is ordered by name _p1_p2_p3 etc.
+
+f(9,2)  ==> call the default function
+
+f(y:=3, v:=2) call  f#2_v_y
+
+
+however the problem appears when calling function of two parameters
+with only one named argument
+
+lets recall this problem
+
+f(x,y) = x + y
+
+f(u,v) = u - v
+
+f(x,u) = x * u
+
+f(x,v) = x / v
+
+f(y,u) = (u + y) / (u*v)
+
+f(y,v) = (v * y) / (y+v)
+
+4 Cr 2  4 parameters to be formed in a set of twos equal === 6 different sets without repetion.
+
+when calling the function with its full parameters as named arguments 
+the queried functions will be ONE exact function with this parameter.
+
+f(4, u:=2)  
+
+pass 1 will discover 3 functions
+
+f(u,v) = u - v					#1
+f(x,u) = x * u					#2
+f(y,u) = (u + y) / (u*v)		#3
+
+pass 2 to map the free parameters into its ordinal location in the discovered function.
+
+free parameters always begin from the first argument.
+
+- get the first free argument.
+-  filter on the base that it is not one of the named arguments in the function
+ more clarification:
+	* Loop throug functions.
+	*	For every function:
+	*		Loop through free parameters in the Caller.
+	*			For every parameter:
+	*				map the Caller parameter with the Callee parameter.
+	*				If parameter name in callee == one of the parameters in named arguments
+	*				Then exclude this function.
+	*		End For Parameters.
+	*	Add the function into suggested functions.
+	* End Functions Loop
+	
+after this code 
+the discovered function are 2
+f(x,u) = x * u					#2
+f(y,u) = (u + y) / (u*v)		#3
+
+then there is no specific function to be called raise NotSufficientParametersSpecifiedException
+
+
+this leads to an important fact that 
+	[if the discovered functions count >= (Combinications of named arguments to total parameters) 
+	 then ambigous occured and NotSufficientParametersSpecifiedException Raised]
+	 {NOTE: this is true if we keep the order of parameters different but we can mess with the 
+	        order so this fact will be wrong in this case}
+	        
+	        
+	 
+I have included also the functions of single argument
+
+f(x) = x^2   //default function because it was declared first f#1
+f(y) = y^3   // f#1_y
+f(z) = z^3   // f#1_z
+
+
+

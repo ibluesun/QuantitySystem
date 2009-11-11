@@ -74,7 +74,7 @@ namespace QuantitySystemTestingProject
 
             var q = l / t;
 
-            var expected = new Velocity<double> { Value = 2 };
+            var expected = new Speed<double> { Value = 2 };
 
             //compare the quantities
             Assert.AreEqual(expected, q);
@@ -89,7 +89,7 @@ namespace QuantitySystemTestingProject
         {
             //testing the quantities in general
 
-            Velocity<double> l = 20;
+            Speed<double> l = 20;
             Time<double> t = 10;
 
             var q = l / t;
@@ -135,7 +135,7 @@ namespace QuantitySystemTestingProject
 
             var q = f / a;
 
-            var expected = new Pressure<double> { Value = 2 };
+            var expected = new Stress<double> { Value = 2 };
 
             //compare the quantities
             Assert.AreEqual(expected, q);
