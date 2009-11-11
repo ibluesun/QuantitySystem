@@ -529,6 +529,24 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
         }
 
+
+        public static AnyQuantity<T> Modulus(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            AnyQuantity<T> qresult = (AnyQuantity<T>)firstQuantity.Clone();
+
+
+            if (typeof(T) == typeof(decimal) || typeof(T) == typeof(double) || typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(short))
+            {
+                qresult.Value = (T)(object)(((double)(object)firstQuantity.Value) % ((double)(object)secondQuantity.Value));
+            }
+            else
+            {
+
+                qresult.Value = ModuloGenericByGeneric(firstQuantity.Value, secondQuantity.Value);
+            }
+
+            return qresult;
+        }
         #endregion
 
 

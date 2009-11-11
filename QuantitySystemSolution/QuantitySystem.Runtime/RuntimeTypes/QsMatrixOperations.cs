@@ -35,6 +35,24 @@ namespace Qs.RuntimeTypes
 
         }
 
+        private QsValue ModuloScalar(QsScalar scalar)
+        {
+            QsMatrix Total = new QsMatrix();
+            for (int IY = 0; IY < this.RowsCount; IY++)
+            {
+                List<QsScalar> row = new List<QsScalar>(ColumnsCount);
+
+                for (int IX = 0; IX < this.ColumnsCount; IX++)
+                {
+                    row.Add(this[IY, IX] % scalar);
+                }
+
+                Total.AddRow(row.ToArray());
+            }
+            return Total;
+        }
+
+
 
         /// <summary>
         /// Matrix - scalar
@@ -319,6 +337,28 @@ namespace Qs.RuntimeTypes
                 throw new NotSupportedException();
             }
         }
+
+        public override QsValue ModuloOperation(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                var s = value as QsScalar;
+                return this.ModuloScalar(s);
+            }
+            else if (value is QsVector)
+            {
+                throw new NotSupportedException();
+            }
+            else if (value is QsMatrix)
+            {
+                return this.ModuloMatrixByElements((QsMatrix)value);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
 
         public override QsValue PowerOperation(QsValue value)
         {

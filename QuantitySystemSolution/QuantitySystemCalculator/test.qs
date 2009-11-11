@@ -1,5 +1,5 @@
-﻿C(n,k) = n!/(k!*(n-k)!)			#Combinications
-P(n,r) = n!/(n-r)!				#Permutations
+﻿Cr(n,k) = n!/(k!*(n-k)!)			#Combinications
+Pr(n,r) = n!/(n-r)!					#Permutations
 
 # Radius length based functions
 #r must be radius length add ! to the length units i.e 2<mm!> or 4<in!>

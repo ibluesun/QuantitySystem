@@ -22,8 +22,6 @@ namespace Qs.RuntimeTypes
         }
 
 
-
-
         #region Operations
 
         #region Scalar Operations
@@ -52,6 +50,11 @@ namespace Qs.RuntimeTypes
         public QsScalar PowerScalar(QsScalar scalar)
         {
             return new QsScalar { Quantity = AnyQuantity<double>.Power(this.Quantity, scalar.Quantity) };
+        }
+
+        public QsScalar ModuloScalar(QsScalar scalar)
+        {
+            return new QsScalar { Quantity = this.Quantity % scalar.Quantity };
         }
 
         #endregion
@@ -180,25 +183,34 @@ namespace Qs.RuntimeTypes
 
 
         #region operators redifintion for scalar explicitly
-        public static QsScalar operator +(QsScalar a,QsScalar b)
+        public static QsScalar operator +(QsScalar a, QsScalar b)
         {
             return a.AddScalar(b);
         }
-        public static QsScalar operator -(QsScalar a,QsScalar b)
+
+        public static QsScalar operator -(QsScalar a, QsScalar b)
         {
             return a.SubtractScalar(b);
         }
-        public static QsScalar operator *(QsScalar a,QsScalar b)
+
+        public static QsScalar operator *(QsScalar a, QsScalar b)
         {
             return a.MultiplyScalar(b);
         }
+
         public static QsScalar operator /(QsScalar a, QsScalar b)
         {
             return a.DivideScalar(b);
         }
+
+        public static QsScalar operator %(QsScalar a, QsScalar b)
+        {
+            return a.ModuloScalar(b);
+        }
         #endregion
 
 
+        #region Special Values
         private static QsScalar one = "1".ToScalar();
 
         /// <summary>
@@ -211,6 +223,7 @@ namespace Qs.RuntimeTypes
                 return one;
             }
         }
+
         private static QsScalar zero = "0".ToScalar();
 
         /// <summary>
@@ -223,6 +236,7 @@ namespace Qs.RuntimeTypes
                 return zero;
             }
         }
+        #endregion
 
 
         #region QsValue Operations
@@ -360,6 +374,25 @@ namespace Qs.RuntimeTypes
         }
 
 
+        /// <summary>
+        /// Calculate the modulo of 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public override QsValue ModuloOperation(QsValue value)
+        {
+            // this is tricky because if you divide 5<m>/2<s> you got Speed 2.5<m/s>
+            //   but the modulus will be 5<m> / 2<s> = 2<m/s> + 1<m>
+
+            if (value is QsScalar)
+            {
+                return this.ModuloScalar((QsScalar)value);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
         #endregion
 
     }

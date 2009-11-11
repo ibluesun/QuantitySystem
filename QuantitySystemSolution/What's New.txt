@@ -1,3 +1,29 @@
+[Qs 1.1.9.3]
+- Modulus operator added to the framework and supported into Qs
+- Function overloading by parameter names:
+	so you can define the same function name with different parameter names
+	Qs> f(x) = x^2
+	Qs> f(y) = y^2
+	Qs> f(x,y) = x+y
+	Qs> f(u,v) = u - v
+	
+	
+	f(3)  call the default function
+	f(y:=4) call the function that have its parameter name y
+	
+	The first declared function is the default function that will be called when you don't specify 
+	named arguments when calling the function.
+	
+	when selecting named argument in calling the function the qs will try to map the desired function.
+	
+	NOTE: Passing functions as arguments deals only with the default function declaration.
+	
+- refactoring a great deal into the QsNamespace
+   the QsNamespace is for providing functions variables from user defined and hardcoded in c#.
+   
+   
+
+
 [Qs 1.1.9.2]
 - Named argument in functions added.  f(y := 2, x := 3)
 - Support to the DLR 0.92 by including the new references that released in 22 October {they changed a lot of things}

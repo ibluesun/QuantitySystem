@@ -116,40 +116,10 @@ namespace Qs.Runtime
             {
                 //try to set the property in the namespace
 
-                bool nbi = false;
+                QsNamespace ns = QsNamespace.GetNamespace(Scope, nameSpace, true);
 
-                {
-                    Type ns = GetQsNameSpace(nameSpace);
-                    if (ns != null)
-                    {
-                        var prop = ns.GetProperty(varName, BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase);
-                        if (prop != null)
-                        {
-                            prop.SetValue(null, varValue, null);
-                            nbi = true;
-                        }
-                    }
-                }
-
-                if (nbi == false)
-                {
-
-                    //get the namespace from the scope
-                    object o;
-
-                    ((ScopeStorage)Scope.Storage).TryGetValue(nameSpace, true, out o);
-
-                    QsNameSpace ns = o as QsNameSpace;
-
-                    if (ns == null)
-                    {
-                        //new name space so create it. and add it to the current scope
-                        ns = new QsNameSpace(nameSpace);
-                        ((ScopeStorage)Scope.Storage).SetValue(nameSpace, true, ns);
-                    }
-
-                    ns.SetName(varName, varValue);
-                }
+                ns.SetValue(varName, varValue);
+                
             }
             
         }
@@ -328,8 +298,7 @@ namespace Qs.Runtime
             {
                
                 //store the expression for later use 
-              
-                SetVariable(func.FunctionNamespace, func.FunctionName, func);
+                SetVariable(func.FunctionNamespace, func.FunctionSymbolicName, func);
            
                 return func;
             }
@@ -371,7 +340,7 @@ namespace Qs.Runtime
                             seq = seq.MergeTokens(new SpaceToken());
                             seq = seq.RemoveSpaceTokens();
                             seq = seq.MergeTokens(new WordToken());
-                            
+
                             seq = seq.MergeTokens(new ColonToken());
                             seq = seq.GroupBrackets();
 
@@ -379,7 +348,7 @@ namespace Qs.Runtime
 
                             bool IsSequence = false;
                             if (seq.Count >= 2)
-                                if (seq[1].TokenType == typeof(SquareBracketGroupToken)) 
+                                if (seq[1].TokenType == typeof(SquareBracketGroupToken))
                                     IsSequence = true;
 
                             if (IsSequence)
@@ -396,11 +365,11 @@ namespace Qs.Runtime
                                         int n = int.Parse(indexText[1]);
                                         string indexName = indexText[0];
 
-                                        
+
                                         if (seq.Count == 3)
                                         {
                                             //Parameterized indexed Sequence
-                                            
+
                                             string[] parameters = { }; //array with zero count :)
                                             if (seq[2].TokenType == typeof(ParenthesisGroupToken))
                                             {
@@ -413,7 +382,7 @@ namespace Qs.Runtime
                                                 throw new QsException("Expected Parenthesis for sequence element assignation");
                                             }
 
-                                            string sqname = QsSequence.FormSequenceScopeName(seq[0].TokenValue, 1, parameters.Length);
+                                            string sqname = QsSequence.FormSequenceSymbolicName(seq[0].TokenValue, 1, parameters.Length);
 
                                             QsSequence sq = QsSequence.GetSequence(Scope, sqname);
 
@@ -432,7 +401,7 @@ namespace Qs.Runtime
                                         else
                                         {
                                             // Parameterless indexed Sequence
-                                            string sqname = QsSequence.FormSequenceScopeName(seq[0].TokenValue, 1, 0);
+                                            string sqname = QsSequence.FormSequenceSymbolicName(seq[0].TokenValue, 1, 0);
                                             QsSequence sq = QsSequence.GetSequence(Scope, sqname);
 
                                             //replace the index name used with the real index of the sequence.
@@ -443,7 +412,7 @@ namespace Qs.Runtime
                                     }
                                     else
                                     {
-                                     
+
                                         //non indexed sequence
                                         //match for a[1]
                                         int n = int.Parse(seq[1].TokenValue.Trim('[', ']'));
@@ -464,7 +433,7 @@ namespace Qs.Runtime
                                                 throw new QsException("Expected Parenthesis for sequence element assignation");
                                             }
 
-                                            string sqname = QsSequence.FormSequenceScopeName(seq[0].TokenValue, 1, parameters.Length);
+                                            string sqname = QsSequence.FormSequenceSymbolicName(seq[0].TokenValue, 1, parameters.Length);
 
                                             QsSequence sq = QsSequence.GetSequence(Scope, sqname);
 
@@ -483,7 +452,7 @@ namespace Qs.Runtime
                                         {
 
                                             // Parameterless Sequence
-                                            string sqname = QsSequence.FormSequenceScopeName(seq[0].TokenValue, 1, 0);
+                                            string sqname = QsSequence.FormSequenceSymbolicName(seq[0].TokenValue, 1, 0);
 
                                             QsSequence sq = QsSequence.GetSequence(Scope, sqname);
 
@@ -542,7 +511,7 @@ namespace Qs.Runtime
                             QsVar qv = new QsVar(this, line);
                             //only print the result.
                             var q = qv.Execute();
-                            if(q!= null) PrintQuantity(q);
+                            if (q != null) PrintQuantity(q);
                             return q;
                         }
                     }
@@ -565,6 +534,10 @@ namespace Qs.Runtime
                     catch (OverflowException e)
                     {
                         throw new QsException("Overflow", e);
+                    }
+                    catch (QsException e)
+                    {
+                        throw e;
                     }
                     catch (Exception e)
                     {
@@ -632,11 +605,11 @@ namespace Qs.Runtime
 
                 ((ScopeStorage)scope.Storage).TryGetValue(nameSpace, true, out o);
 
-                QsNameSpace ns = o as QsNameSpace;
+                QsNamespace ns = o as QsNamespace;
 
                 if (ns != null)
                 {
-                    return ns.GetName(name);
+                    return ns.GetValue(name);
                 }
                 else
                 {
@@ -652,10 +625,10 @@ namespace Qs.Runtime
         /// <param name="nameSpace"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static QsValue GetScopeQsValue(Scope scope, string nameSpace, string name)
+        public static QsValue GetScopeQsValue(Scope scope, string qsNamespace, string name)
         {
 
-            if (string.IsNullOrEmpty(nameSpace))
+            if (string.IsNullOrEmpty(qsNamespace))
             {
                 object q;
 
@@ -673,75 +646,17 @@ namespace Qs.Runtime
             else
             {
                 //get the variable from the name space
-                object o;
 
-                ((ScopeStorage)scope.Storage).TryGetValue(nameSpace, true, out o);
+                var module = QsNamespace.GetNamespace(scope, qsNamespace);
 
-                QsNameSpace ns = o as QsNameSpace;
-
-                QsValue r = null;
-
-                if (ns != null)
-                {
-                    r = (QsValue)ns.GetName(name);
-                }
-
-                if (r == null)
-                {
-                    //try to get it from the Qs.Modules.QsModule property
-                    try
-                    {
-                        var module = GetQsNameSpace(nameSpace);
-                        var prop = module.GetProperty(name, BindingFlags.IgnoreCase | BindingFlags.Static | BindingFlags.Public);
-                        r = (QsValue)prop.GetValue(null, null);
-                    }
-                    catch (Exception e)
-                    {
-                        throw new QsVariableNotFoundException("Variable '" + name + "' Not Found In Namespace '" + nameSpace + "'", e);
-                    }
-                }
-
-                return r;
+                return (QsValue)module.GetValue(name);
+                    
             }
 
         }
         #endregion
 
 
-        #region Helpers for getting qsnampespaces
-
-        /// <summary>
-        /// The namespace is a static C# class under Qs.Modules.*
-        /// </summary>
-        /// <param name="nameSpace"></param>
-        /// <returns></returns>
-        public static Type GetQsNameSpace(string nameSpace)
-        {
-            string cls = "Qs.Modules." + nameSpace;
-
-
-            //try the current assembly
-
-            Type ns = Type.GetType(cls, false, true);
-
-            if (ns == null)
-            {
-                // try  another search in the Qs*.dll dlls
-
-                DirectoryInfo di = new DirectoryInfo(Environment.CurrentDirectory + "\\Modules");
-                var files = di.GetFiles("Qs*.dll");
-                foreach (var file in files)
-                {
-                    var a = Assembly.LoadFrom(file.FullName);
-                    ns = a.GetType(cls, false, true);//+ ", " + file.Name.TrimEnd('.', 'd', 'l', 'l'));
-                    if (ns != null) break;  //found the break and pop out from the loop.
-                }
-            }
-
-            return ns;
-
-        }
-        #endregion
 
     }
 

@@ -24,6 +24,19 @@ namespace Qs.RuntimeTypes
 
         }
 
+        private QsValue ModuloScalar(QsScalar scalar)
+        {
+            QsVector v = new QsVector(this.Count);
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                v.AddComponent(this[i] % scalar);
+            }
+
+            return v;
+        }
+
+
         public QsVector PowerScalar(QsScalar scalar)
         {
 
@@ -120,6 +133,21 @@ namespace Qs.RuntimeTypes
 
             return v;
         }
+
+        private QsValue ModuloVector(QsVector vector)
+        {
+            if (this.Count != vector.Count) throw new QsException("Vectors are not equal");
+
+            QsVector v = new QsVector(this.Count);
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                v.AddComponent(this[i] % vector[i]);
+            }
+
+            return v;
+        }
+
 
 
         /*
@@ -349,6 +377,23 @@ namespace Qs.RuntimeTypes
         public override QsValue AbsOperation()
         {
             throw new NotSupportedException();
+        }
+
+        public override QsValue ModuloOperation(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                var s = value as QsScalar;
+                return this.ModuloScalar(s);
+            }
+            else if (value is QsVector)
+            {
+                return this.ModuloVector((QsVector)value);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
 
 

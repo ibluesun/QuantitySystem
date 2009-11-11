@@ -18,9 +18,9 @@ using Microsoft.Scripting;
         public static ScriptEngine Engine { get; set; }
         public static ScriptScope ScriptScope { get; set; }
 
-        public const ConsoleColor BackgroundColor = ConsoleColor.DarkMagenta;
+        public const ConsoleColor BackgroundColor = ConsoleColor.Black;
         public const ConsoleColor ForegroundColor = ConsoleColor.White;
-        public const ConsoleColor HelpColor = ConsoleColor.Gray;
+        public const ConsoleColor HelpColor = ConsoleColor.Green;
         public const ConsoleColor ValuesColor = ConsoleColor.Yellow;
 
 
@@ -286,12 +286,12 @@ using Microsoft.Scripting;
             {
                 var v = GetVariable(scope, var);
                 Console.WriteLine("    " + var + " = " + v.ToString());
-                if (v is QsNameSpace)
+                if (v is QsNamespace)
                 {
-                    QsNameSpace ns = (QsNameSpace)v;
+                    QsNamespace ns = (QsNamespace)v;
                     foreach (string nsvar in ns.GetVariablesKeys())
                     {
-                        Console.WriteLine("        " + nsvar + " = " + ns.GetName(nsvar).ToString());
+                        Console.WriteLine("        " + nsvar + " = " + ns.GetValue(nsvar).ToString());
                     }                    
                 }
 

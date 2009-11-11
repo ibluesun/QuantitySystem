@@ -249,6 +249,37 @@ namespace Qs.RuntimeTypes
         }
 
 
+        public QsValue ModuloMatrixByElements(QsMatrix matrix)
+        {
+            if (this.DimensionEquals(matrix))
+            {
+                QsMatrix Total = new QsMatrix();
+                for (int IY = 0; IY < this.RowsCount; IY++)
+                {
+                    List<QsScalar> row = new List<QsScalar>(ColumnsCount);
+
+                    for (int IX = 0; IX < this.ColumnsCount; IX++)
+                    {
+                        row.Add(this[IY, IX] % matrix[IY, IX]);
+                    }
+
+                    Total.AddRow(row.ToArray());
+                }
+                return Total;
+            }
+            else
+            {
+
+                throw new QsMatrixException("Matrix 1 [" + this.RowsCount.ToString(CultureInfo.InvariantCulture)
+                    + "x" + this.ColumnsCount.ToString(CultureInfo.InvariantCulture) +
+                    "] is not dimensional equal with Materix 2 [" + matrix.RowsCount.ToString(CultureInfo.InvariantCulture)
+                    + "x" + matrix.ColumnsCount.ToString(CultureInfo.InvariantCulture) + "]");
+            }
+        }
+
+
+
+
         /// <summary>
         /// Matrix - Matrix
         /// </summary>
