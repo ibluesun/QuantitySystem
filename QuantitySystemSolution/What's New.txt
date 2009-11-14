@@ -1,3 +1,6 @@
+[Qs 1.1.9.4]
+- Namespace support to sequence has been added.
+
 [Qs 1.1.9.3]
 - Modulus operator added to the framework and supported into Qs
 - Function overloading by parameter names:
