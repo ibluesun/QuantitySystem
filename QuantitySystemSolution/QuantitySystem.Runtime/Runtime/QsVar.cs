@@ -557,29 +557,6 @@ namespace Qs.Runtime
             return result;
         }
 
-        #region checks
-        public static bool IsMatch(string line)
-        {
-            Match c1 = Regex.Match(line, SimpleArithmatic);
-            Match c2 = Regex.Match(line, UnitizedNumber);
-            Match c3 = Regex.Match(line, DoubleNumber);
-            Match c4 = Regex.Match(line, VariableNameExpression);
-
-            return c1.Success | c2.Success | c3.Success;
-
-        }
-        bool isUnitizedNumber(string str)
-        {
-            Match siso = Regex.Match(str, UnitizedNumber);
-            return siso.Success;
-        }
-
-        bool isNumber(string str)
-        {
-            Match siso = Regex.Match(str, "^" + DoubleNumber + "$");
-            return siso.Success;
-        }
-        #endregion
 
         public Microsoft.Scripting.Runtime.Scope Scope
         {
@@ -618,12 +595,20 @@ namespace Qs.Runtime
                 }
             }
 
-            string seqo = QsSequence.FormSequenceSymbolicName(sequenceName, 1, parameters.Count);
+            // discover namespace
+
+            string sequenceNamespace = string.Empty;
+            if (sequenceName.IndexOf(':') > -1) sequenceNamespace = sequenceName.Substring(0, sequenceName.IndexOf(':'));
+
+            string seqCallName = sequenceName.Substring(sequenceName.IndexOf(':') + 1);
+
+            string seqo = QsSequence.FormSequenceSymbolicName(seqCallName, 1, parameters.Count);
 
             //get the sequence dynamically because sequence can be recursive :)
 
             Expression QsSequExpression = Expression.Call(typeof(QsSequence).GetMethod("GetSequence"),
                 Expression.Constant(this.Evaluator.Scope),
+                Expression.Constant(sequenceNamespace),
                 Expression.Constant(seqo)
                 );
 

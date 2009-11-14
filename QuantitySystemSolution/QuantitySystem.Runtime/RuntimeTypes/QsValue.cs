@@ -11,8 +11,6 @@ namespace Qs.RuntimeTypes
     public abstract class QsValue
     {
 
-
-
         #region the must inherit functions.
         abstract public QsValue Identity{get;}
 

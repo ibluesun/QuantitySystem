@@ -516,25 +516,25 @@ namespace Qs.Runtime
 
             t = t.MergeTokens(new AssignmentOperatorToken());
 
-            int tidx = 0; // surve as a base for indexing token if there is namespace it will be 1 otherwise remain 0
+            int nsidx = 0; // surve as a base for indexing token if there is namespace it will be 1 otherwise remain 0
 
-            if (t[0].TokenType == typeof(NameSpaceToken)) tidx = 1; //the function begin with namespace.
+            if (t[0].TokenType == typeof(NameSpaceToken)) nsidx = 1; //the function begin with namespace.
 
             if (
-                t[tidx].TokenType == typeof(WordToken)
-                && (t.Count > (tidx + 1) ? t[tidx + 1].TokenType == typeof(ParenthesisGroupToken) : false)
-                && (t.Count > (tidx + 2) ? t[tidx + 2].TokenType == typeof(AssignmentOperatorToken) : false)
+                t[nsidx].TokenType == typeof(WordToken)
+                && (t.Count > (nsidx + 1) ? t[nsidx + 1].TokenType == typeof(ParenthesisGroupToken) : false)
+                && (t.Count > (nsidx + 2) ? t[nsidx + 2].TokenType == typeof(AssignmentOperatorToken) : false)
                 )
             {
                 //get function name
                 // will be the first token after excluding namespace.
-                string functionName = t[tidx].TokenValue;
+                string functionName = t[nsidx].TokenValue;
 
                 string functionNamespace = "";
-                if (tidx == 1) functionNamespace = t[0][0].TokenValue;
+                if (nsidx == 1) functionNamespace = t[0][0].TokenValue;
 
                 //get parameters
-                QsParamInfo[] prms = (from c in t[tidx + 1]
+                QsParamInfo[] prms = (from c in t[nsidx + 1]
                                       where c.TokenType == typeof(WordToken)
                                       select new QsParamInfo { Name = c.TokenValue, Type = QsParamType.Value }).ToArray();
 
@@ -617,7 +617,7 @@ namespace Qs.Runtime
 
                 List<Expression> statements = new List<Expression>();
 
-                QsVar qv = new QsVar(qse, function.Substring(t[tidx + 2].IndexInText + t[tidx + 2].TokenValueLength), qf, lb);
+                QsVar qv = new QsVar(qse, function.Substring(t[nsidx + 2].IndexInText + t[nsidx + 2].TokenValueLength), qf, lb);
 
                 statements.Add(qv.ResultExpression);   //making the variable expression itself make it the return value of the function.
 

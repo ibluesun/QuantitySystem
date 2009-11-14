@@ -17,6 +17,11 @@ namespace Qs.Runtime
     {
 
         /// <summary>
+        /// if the function has a namespace then the value of it is here.
+        /// </summary>
+        public string SequenceNamespace { get; set; }
+
+        /// <summary>
         /// Minimum decalred index in the sequence.
         /// </summary>
         public int MinimumIndex { get; set; }
