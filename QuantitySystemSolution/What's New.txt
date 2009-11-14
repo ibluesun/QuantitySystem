@@ -1,3 +1,7 @@
+[Qs 1.1.9.5]
+- Fixed namespace:variable  =  expression   assignation problem
+- fast checking in function and sequence parsing to ignore the extra un-needed processing.
+
 [Qs 1.1.9.4]
 - Namespace support to sequence has been added.
 
