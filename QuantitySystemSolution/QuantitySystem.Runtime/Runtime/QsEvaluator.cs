@@ -281,21 +281,10 @@ namespace Qs.Runtime
 
         internal object ExtraEvaluate(string line)
         {
-            //try to get sequence.
-            QsSequence seqo = QsSequence.ParseSequence(this, line);
-
-            //test for lambda expression 
             // f(x,y,z) = x + y + (z/2.04 * 32<kg>)
             QsFunction func = QsFunction.ParseFunction(this, line);
 
-            if (seqo != null)
-            {
-                //store the expression for later use 
-                SetVariable(seqo.SequenceNamespace, seqo.SequenceSymbolicName, seqo);
-                
-                return seqo;
-            }
-            else if (func != null)
+            if (func != null)
             {
                
                 //store the expression for later use 
@@ -303,276 +292,285 @@ namespace Qs.Runtime
            
                 return func;
             }
-            else
+
+
+            //try to get sequence.
+            QsSequence seqo = QsSequence.ParseSequence(this, line);
+            if (seqo != null)
             {
-                #region expression evaluation with assignation or no assignation
-                string varName = string.Empty;
+                //store the expression for later use 
+                SetVariable(seqo.SequenceNamespace, seqo.SequenceSymbolicName, seqo);
+                
+                return seqo;
+            }
+            
+            #region expression evaluation with assignation or no assignation
+            string varName = string.Empty;
 
-                int AssignOperatorIndex = line.IndexOf('=');
+            int AssignOperatorIndex = line.IndexOf('=');
 
-                if (AssignOperatorIndex > 0)  //assign operator should always have something behind it.
+            if (AssignOperatorIndex > 0)  //assign operator should always have something behind it.
+            {
+                if (line[AssignOperatorIndex - 1] == ':') // test for named argument :=  
                 {
-                    if (line[AssignOperatorIndex - 1] == ':') // test for named argument :=  
-                    {
-                        //ignore
-                    }
-                    else
-                    {
-                        //split to variable name that will be assigned 
-                        varName = line.Substring(0, AssignOperatorIndex).Trim();
-
-                        if (char.IsNumber(varName[0]))
-                        {
-                            throw (new QsInvalidInputException("Variable must start with a letter"));
-                        }
-
-                        line = line.Substring(AssignOperatorIndex + 1, line.Length - AssignOperatorIndex - 1);
-                    }
+                    //ignore
                 }
-
-
-                try
+                else
                 {
-                    if (!string.IsNullOrEmpty(varName))
+                    //split to variable name that will be assigned 
+                    varName = line.Substring(0, AssignOperatorIndex).Trim();
+
+                    if (char.IsNumber(varName[0]))
                     {
-                        // May be variable or sequence element.
-                        Token seq = Token.ParseText(varName);
-                        seq = seq.MergeTokens(new SpaceToken());
-                        seq = seq.RemoveSpaceTokens();
-                        seq = seq.MergeTokens(new WordToken());
+                        throw (new QsInvalidInputException("Variable must start with a letter"));
+                    }
 
-                        seq = seq.MergeTokens(new ColonToken());
-                        seq = seq.GroupBrackets();
+                    line = line.Substring(AssignOperatorIndex + 1, line.Length - AssignOperatorIndex - 1);
+                }
+            }
 
-                        seq = seq.MergeTokens(new NameSpaceToken()); //discover namespace tokens
 
-                        string seqNamespace = string.Empty;
-                        int nsidx = 0;
-                        if (seq[0].TokenType == typeof(NameSpaceToken))
+            try
+            {
+                if (!string.IsNullOrEmpty(varName))
+                {
+                    // May be variable or sequence element.
+                    Token seq = Token.ParseText(varName);
+                    seq = seq.MergeTokens(new SpaceToken());
+                    seq = seq.RemoveSpaceTokens();
+                    seq = seq.MergeTokens(new WordToken());
+
+                    seq = seq.MergeTokens(new ColonToken());
+                    seq = seq.GroupBrackets();
+
+                    seq = seq.MergeTokens(new NameSpaceToken()); //discover namespace tokens
+
+                    string seqNamespace = string.Empty;
+                    int nsidx = 0;
+                    if (seq[0].TokenType == typeof(NameSpaceToken))
+                    {
+                        nsidx = 1; //the function begin with namespace.
+                        seqNamespace = seq[0][0].TokenValue;
+                    }
+
+
+                    bool IsSequence = false;
+                    if (seq.Count >= nsidx + 2)
+                    {
+                        if (seq[nsidx + 1].TokenType == typeof(SquareBracketGroupToken))
                         {
-                            nsidx = 1; //the function begin with namespace.
-                            seqNamespace = seq[0][0].TokenValue;
+                            IsSequence = true;
                         }
+                    }
 
+                    if (IsSequence)
+                    {
+                        #region Sequence element operation
+                        // Sequence element assignation.
 
-                        bool IsSequence = false;
-                        if (seq.Count >= 2)
+                        if (seq[nsidx + 1].TokenType == typeof(SquareBracketGroupToken))
                         {
-                            if (seq[nsidx + 1].TokenType == typeof(SquareBracketGroupToken))
+                            if (seq[nsidx + 1].Contains(typeof(ColonToken)))
                             {
-                                IsSequence = true;
-                            }
-                        }
+                                #region indexed sequence.
+                                //a[n:1] = n!    the form that we expect.
+                                string[] indexText = seq[nsidx + 1].TokenValue.Trim('[', ']').Split(':');
+                                int n = int.Parse(indexText[1]);
+                                string indexName = indexText[0];
 
-                        if (IsSequence)
-                        {
-                            #region Sequence element operation
-                            // Sequence element assignation.
 
-                            if (seq[nsidx + 1].TokenType == typeof(SquareBracketGroupToken))
-                            {
-                                if (seq[nsidx + 1].Contains(typeof(ColonToken)))
+                                if (seq.Count == nsidx + 3)
                                 {
-                                    #region indexed sequence.
-                                    //a[n:1] = n!    the form that we expect.
-                                    string[] indexText = seq[nsidx + 1].TokenValue.Trim('[', ']').Split(':');
-                                    int n = int.Parse(indexText[1]);
-                                    string indexName = indexText[0];
+                                    #region Parameterized indexed Sequence
 
-
-                                    if (seq.Count == nsidx + 3)
+                                    string[] parameters = { }; //array with zero count :)
+                                    if (seq[nsidx + 2].TokenType == typeof(ParenthesisGroupToken))
                                     {
-                                        #region Parameterized indexed Sequence
-
-                                        string[] parameters = { }; //array with zero count :)
-                                        if (seq[nsidx + 2].TokenType == typeof(ParenthesisGroupToken))
-                                        {
-                                            parameters = (from c in seq[nsidx + 2]
-                                                          where c.TokenType == typeof(WordToken)
-                                                          select c.TokenValue).ToArray();
-                                        }
-                                        else
-                                        {
-                                            throw new QsException("Expected Parenthesis for sequence element assignation");
-                                        }
-
-                                        string sqname = QsSequence.FormSequenceSymbolicName(seq[nsidx + 0].TokenValue, 1, parameters.Length);
-
-                                        QsSequence sq = QsSequence.GetSequence(Scope, seqNamespace, sqname);
-
-                                        //replace the index name used with the real index of the sequence.
-                                        string evline = line.Replace(indexName, sq.SequenceIndexName);
-
-
-                                        //replace the parameter names with parameters with the real parameter names of sequence
-                                        for (int i = 0; i < parameters.Length; i++)
-                                        {
-                                            evline = evline.Replace(parameters[i], sq.Parameters[i].Name);
-                                        }
-
-                                        sq[n] = QsSequenceElement.Parse(evline, this, sq);
-                                        #endregion
+                                        parameters = (from c in seq[nsidx + 2]
+                                                      where c.TokenType == typeof(WordToken)
+                                                      select c.TokenValue).ToArray();
                                     }
                                     else
                                     {
-                                        #region Parameterless indexed Sequence
-                                        string sqname = QsSequence.FormSequenceSymbolicName(seq[nsidx + 0].TokenValue, 1, 0);
-                                        QsSequence sq = QsSequence.GetSequence(Scope, seqNamespace, sqname);
-
-                                        //replace the index name used with the real index of the sequence.
-                                        string evline = line.Replace(indexName, sq.SequenceIndexName);
-
-                                        sq[n] = QsSequenceElement.Parse(evline, this, sq);
-                                        #endregion
+                                        throw new QsException("Expected Parenthesis for sequence element assignation");
                                     }
+
+                                    string sqname = QsSequence.FormSequenceSymbolicName(seq[nsidx + 0].TokenValue, 1, parameters.Length);
+
+                                    QsSequence sq = QsSequence.GetSequence(Scope, seqNamespace, sqname);
+
+                                    //replace the index name used with the real index of the sequence.
+                                    string evline = line.Replace(indexName, sq.SequenceIndexName);
+
+
+                                    //replace the parameter names with parameters with the real parameter names of sequence
+                                    for (int i = 0; i < parameters.Length; i++)
+                                    {
+                                        evline = evline.Replace(parameters[i], sq.Parameters[i].Name);
+                                    }
+
+                                    sq[n] = QsSequenceElement.Parse(evline, this, sq);
                                     #endregion
                                 }
                                 else
                                 {
+                                    #region Parameterless indexed Sequence
+                                    string sqname = QsSequence.FormSequenceSymbolicName(seq[nsidx + 0].TokenValue, 1, 0);
+                                    QsSequence sq = QsSequence.GetSequence(Scope, seqNamespace, sqname);
 
-                                    #region Non indexed sequence
+                                    //replace the index name used with the real index of the sequence.
+                                    string evline = line.Replace(indexName, sq.SequenceIndexName);
 
-                                    //match for a[1]
-                                    int n = int.Parse(seq[nsidx + 1].TokenValue.Trim('[', ']'));
+                                    sq[n] = QsSequenceElement.Parse(evline, this, sq);
+                                    #endregion
+                                }
+                                #endregion
+                            }
+                            else
+                            {
 
-                                    if (seq.Count == nsidx + 3)
+                                #region Non indexed sequence
+
+                                //match for a[1]
+                                int n = int.Parse(seq[nsidx + 1].TokenValue.Trim('[', ']'));
+
+                                if (seq.Count == nsidx + 3)
+                                {
+                                    #region Parametrized non indexed sequence
+
+                                    string[] parameters = { }; //array with zero count :)
+                                    if (seq[nsidx + 2].TokenType == typeof(ParenthesisGroupToken))
                                     {
-                                        #region Parametrized non indexed sequence
-
-                                        string[] parameters = { }; //array with zero count :)
-                                        if (seq[nsidx + 2].TokenType == typeof(ParenthesisGroupToken))
-                                        {
-                                            parameters = (from c in seq[nsidx + 2]
-                                                          where c.TokenType == typeof(WordToken)
-                                                          select c.TokenValue).ToArray();
-                                        }
-                                        else
-                                        {
-                                            throw new QsException("Expected Parenthesis for sequence element assignation");
-                                        }
-
-                                        string sqname = QsSequence.FormSequenceSymbolicName(seq[nsidx + 0].TokenValue, 1, parameters.Length);
-
-                                        QsSequence sq = QsSequence.GetSequence(Scope, seqNamespace, sqname);
-
-                                        string evline = line;
-
-                                        //replace the parameter names with parameters with the real parameter names of sequence
-                                        for (int i = 0; i < parameters.Length; i++)
-                                        {
-                                            evline = evline.Replace(parameters[i], sq.Parameters[i].Name);
-                                        }
-
-                                        sq[n] = QsSequenceElement.Parse(evline, this, sq);
-                                        #endregion
-
+                                        parameters = (from c in seq[nsidx + 2]
+                                                      where c.TokenType == typeof(WordToken)
+                                                      select c.TokenValue).ToArray();
                                     }
                                     else
                                     {
-
-                                        #region Parameterless Sequence
-                                        string sqname = QsSequence.FormSequenceSymbolicName(seq[nsidx + 0].TokenValue, 1, 0);
-
-                                        QsSequence sq = QsSequence.GetSequence(Scope, seqNamespace, sqname);
-
-                                        sq[n] = QsSequenceElement.Parse(line, this, sq);
-                                        #endregion
-
+                                        throw new QsException("Expected Parenthesis for sequence element assignation");
                                     }
-                                    #endregion
-                                }
 
-                                return null;
+                                    string sqname = QsSequence.FormSequenceSymbolicName(seq[nsidx + 0].TokenValue, 1, parameters.Length);
+
+                                    QsSequence sq = QsSequence.GetSequence(Scope, seqNamespace, sqname);
+
+                                    string evline = line;
+
+                                    //replace the parameter names with parameters with the real parameter names of sequence
+                                    for (int i = 0; i < parameters.Length; i++)
+                                    {
+                                        evline = evline.Replace(parameters[i], sq.Parameters[i].Name);
+                                    }
+
+                                    sq[n] = QsSequenceElement.Parse(evline, this, sq);
+                                    #endregion
+
+                                }
+                                else
+                                {
+
+                                    #region Parameterless Sequence
+                                    string sqname = QsSequence.FormSequenceSymbolicName(seq[nsidx + 0].TokenValue, 1, 0);
+
+                                    QsSequence sq = QsSequence.GetSequence(Scope, seqNamespace, sqname);
+
+                                    sq[n] = QsSequenceElement.Parse(line, this, sq);
+                                    #endregion
+
+                                }
+                                #endregion
                             }
-                            else
-                            {
-                                // not sequence.
-                                //do nothing
-                                return null;
-                            }
-                            #endregion
+
+                            return null;
                         }
                         else
                         {
-                            #region Normal Variable
-                            //Normal Variable.
-                            // get the after assign expression value
-                            QsVar qv = new QsVar(this, line);
-
-
-                            Token vnToken = Token.ParseText(varName);
-                            vnToken = vnToken.MergeTokens(new SpaceToken());
-                            vnToken = vnToken.RemoveSpaceTokens();
-                            vnToken = vnToken.MergeTokens(new WordToken());
-                            vnToken = vnToken.MergeTokens(new ColonToken());
-                            vnToken = vnToken.MergeTokens(new NameSpaceToken());
-
-                            if (vnToken.Contains(typeof(NameSpaceToken)))
-                            {
-                                SetVariable(vnToken[0][0].TokenValue, vnToken[1].TokenValue, qv.Execute());
-
-                                var q = GetScopeQsValue(this.Scope, vnToken[0][0].TokenValue, vnToken[1].TokenValue);
-                                PrintQuantity(q);
-                                return q;
-                            }
-                            else
-                            {
-                                //assign the variable
-                                SetVariable(varName, qv.Execute());
-
-                                var q = GetScopeQsValue(this.Scope, "", varName);
-                                PrintQuantity(q);
-                                return q;
-                            }
-                            #endregion
+                            // not sequence.
+                            //do nothing
+                            return null;
                         }
-                            
+                        #endregion
                     }
                     else
                     {
-                        // there is no assignation here  
-                        // the code goes here when we don't find '=' equal sign.
-
+                        #region Normal Variable
+                        //Normal Variable.
+                        // get the after assign expression value
                         QsVar qv = new QsVar(this, line);
-                        //only print the result.
-                        var q = qv.Execute();
-                        if (q != null) PrintQuantity(q);
-                        return q;
-                    }
-                }
-                #region Catch region
-                catch (NullReferenceException e)
-                {
-                    throw new QsException(e.Message, e);
-                }
-                catch (QuantitiesNotDimensionallyEqualException e)
-                {
-                    throw new QsException("Quantities Not Dimensionally Equal", e);
-                }
-                catch (UnitNotFoundException e)
-                {
-                    throw new QsException("Unit Not Found", e);
-                }
-                catch (QuantityException qe)
-                {
-                    throw new QsException(qe.Message, qe);
-                }
-                catch (OverflowException e)
-                {
-                    throw new QsException("Overflow", e);
-                }
-                catch (QsException e)
-                {
-                    throw e;
-                }
-                catch (Exception e)
-                {
-                    throw new QsException("Unhandled", e);
-                }
-                #endregion
 
-                #endregion
-            }            
+
+                        Token vnToken = Token.ParseText(varName);
+                        vnToken = vnToken.MergeTokens(new SpaceToken());
+                        vnToken = vnToken.RemoveSpaceTokens();
+                        vnToken = vnToken.MergeTokens(new WordToken());
+                        vnToken = vnToken.MergeTokens(new ColonToken());
+                        vnToken = vnToken.MergeTokens(new NameSpaceToken());
+
+                        if (vnToken.Contains(typeof(NameSpaceToken)))
+                        {
+                            SetVariable(vnToken[0][0].TokenValue, vnToken[1].TokenValue, qv.Execute());
+
+                            var q = GetScopeQsValue(this.Scope, vnToken[0][0].TokenValue, vnToken[1].TokenValue);
+                            PrintQuantity(q);
+                            return q;
+                        }
+                        else
+                        {
+                            //assign the variable
+                            SetVariable(varName, qv.Execute());
+
+                            var q = GetScopeQsValue(this.Scope, "", varName);
+                            PrintQuantity(q);
+                            return q;
+                        }
+                        #endregion
+                    }
+                        
+                }
+                else
+                {
+                    // there is no assignation here  
+                    // the code goes here when we don't find '=' equal sign.
+
+                    QsVar qv = new QsVar(this, line);
+                    //only print the result.
+                    var q = qv.Execute();
+                    if (q != null) PrintQuantity(q);
+                    return q;
+                }
+            }
+            #region Catch region
+            catch (NullReferenceException e)
+            {
+                throw new QsException(e.Message, e);
+            }
+            catch (QuantitiesNotDimensionallyEqualException e)
+            {
+                throw new QsException("Quantities Not Dimensionally Equal", e);
+            }
+            catch (UnitNotFoundException e)
+            {
+                throw new QsException("Unit Not Found", e);
+            }
+            catch (QuantityException qe)
+            {
+                throw new QsException(qe.Message, qe);
+            }
+            catch (OverflowException e)
+            {
+                throw new QsException("Overflow", e);
+            }
+            catch (QsException e)
+            {
+                throw e;
+            }
+            catch (Exception e)
+            {
+                throw new QsException("Unhandled", e);
+            }
+            #endregion
+
+            #endregion
         }
 
 

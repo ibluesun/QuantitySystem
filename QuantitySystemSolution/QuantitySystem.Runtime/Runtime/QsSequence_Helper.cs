@@ -81,6 +81,17 @@ namespace Qs.Runtime
         /// <returns></returns>
         public static QsSequence ParseSequence(QsEvaluator qse, string sequence)
         {
+
+            if (sequence.IndexOf("..>") < 0)
+            {
+                // no forward operator
+                if (sequence.IndexOf("<..") < 0)
+                {
+                    // no backward operator.
+                    return null;    //fast check because sequence have
+                }
+            }
+
             Token t = Token.ParseText(sequence);
 
 

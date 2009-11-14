@@ -25,26 +25,29 @@ pi() = 1/(12*pi_Ch[0++20])
 
 
 #Normal sequences 
-a[] ..> 2; 3; 5; 7; 9; 11
-b[] ..> 4; 6; 8; 10; 12; 14
-c[] ..> b[]/a[]
+fun:a[] ..> 2; 3; 5; 7; 9; 11
+fun:b[] ..> 4; 6; 8; 10; 12; 14
+fun:c[] ..> fun:b[] / fun:a[]
 
 # Function as argument into another function
-g(x) = x^2
+fun:g(x) = x^2
+fun:g(y) = fun:g(x:=y) + y^3
+fun:g(z) = fun:g(y:=z) + z^4
 
-c(x,y) = x(y/2)
-d(x,y) = x+y
-v(l1,l2,h) = l1(l2,h)
+fun:c(x,y) = x(y/2)
+fun:d(x,y) = x+y
+fun:v(l1,l2,h) = l1(l2,h)
 
 # v called with function d and 3,4
 
-v(d,3,4)
+fun:a = fun:v(fun:d,3,4);
 
 # v called with c as a function in first parameter, however c also needs function parameter
 # that was passed to v in the next parameter.
 
-v(c,sin,8)
+fun:b = fun:v(fun:c,sin,8);
 
+fun:a + fun:b
 
 
 #Please Accept my deepest regards 

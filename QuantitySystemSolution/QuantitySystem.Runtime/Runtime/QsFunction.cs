@@ -502,6 +502,28 @@ namespace Qs.Runtime
 
         public static QsFunction ParseFunction(QsEvaluator qse, string function)
         {
+            // fast check for function as = and ) before it.
+            int eqIdx = function.IndexOf('=');
+            if (eqIdx > 0)
+            {
+                // check if ')' exist before the equal '=' sign.
+                while (eqIdx > 0)
+                {
+                    eqIdx--;
+                    if (function[eqIdx] == ' ') continue;   // ignore spaces.
+                    if (function[eqIdx] == '\t') continue;  // ignore tabs
+                    if (function[eqIdx] == ')') goto GoParseFunction;
+                    else return null;
+                }
+            }
+            else
+            {
+                // equal sign exist.
+                return null;
+            }
+
+
+            GoParseFunction:
 
             Token t = Token.ParseText(function);
             t = t.MergeTokens(new SpaceToken());
@@ -561,48 +583,27 @@ namespace Qs.Runtime
                 }
                 else
                 {
-                    //declared before
+                    // 1- find if function with the same parameters and name exist 
+                    // 2- overwrite this function otherwise create new one.
 
-
-                    //if (textParams.Count() == 1)
-                    //{
-                    //    //function with one parameter there are no variations in parameters
-                    //    //   like  f(x) then f(z)  
-                    //    // the function is always default function.
-
-                    //    qf = new QsFunction(function, true)
-                    //    {
-                    //        FunctionNamespace = functionNamespace,
-                    //        FunctionName = functionName,
-                    //        Parameters = prms
-                    //    };
-                    //}
-                    //else
+                    qf = GetExactFunctionWithParameters(qse.Scope,
+                        functionNamespace,
+                        functionName,
+                        textParams.ToArray());
+                    if (qf == null)
                     {
-                        // function overloaded with parameters names.
-
-                        // 1- find if function with the same parameters and name exist 
-                        // 2- overwrite this function otherwise create new one.
-
-                        qf = GetExactFunctionWithParameters(qse.Scope,
-                            functionNamespace,
-                            functionName,
-                            textParams.ToArray());
-                        if (qf == null)
+                        qf = new QsFunction(function, false)
                         {
-                            qf = new QsFunction(function, false)
-                            {
-                                FunctionNamespace = functionNamespace,
-                                FunctionName = functionName,
-                                Parameters = prms
-                            };
-                        }
-                        else
-                        {
-                            // do nothing we will only change the implementation.
-                            if (qf.IsReadOnly == false) qf.FunctionBody = function;
-                            else throw new QsException("Attempt to write into readonly function");
-                        }
+                            FunctionNamespace = functionNamespace,
+                            FunctionName = functionName,
+                            Parameters = prms
+                        };
+                    }
+                    else
+                    {
+                        // do nothing we will only change the implementation.
+                        if (qf.IsReadOnly == false) qf.FunctionBody = function;
+                        else throw new QsException("Attempt to write into readonly function");
                     }
                 }
 
