@@ -209,6 +209,16 @@ namespace ParticleLexer
         }
 
         /// <summary>
+        /// After merging words and grouping brackets
+        /// this function try to discover the calls to sequences and functions.
+        /// </summary>
+        /// <returns></returns>
+        public Token DiscoverCalls()
+        {
+            return DiscoverCalls(StringComparer.OrdinalIgnoreCase, new string[] { });
+        }
+
+        /// <summary>
         /// Should be used after merging by word
         /// and grouping brackets
         /// The function tries to find Word followed by complete parenthesis group or square brackets group.
@@ -220,8 +230,9 @@ namespace ParticleLexer
         ///            -    Indexes   -
         ///            -              Sequence Call             -
         /// </summary>
+        /// <param name="ignoreWords">list of words that should be ignored when discovering calls </param>
         /// <returns></returns>
-        public Token DiscoverCalls()
+        public Token DiscoverCalls(StringComparer stringComparer, params string[] ignoreWords)
         {
             Token first = new Token();
             Token current = first;
@@ -240,7 +251,13 @@ namespace ParticleLexer
                 else
                 {
                     //sub groups then test this token 
-                    if (c.TokenType == typeof(WordToken) || c.TokenType==typeof(NameSpaceAndValueToken))
+                    if (
+                        (
+                              c.TokenType == typeof(WordToken)               // word token
+                           || c.TokenType == typeof(NameSpaceAndValueToken)  // or namespace:value token
+                        )
+                        && ignoreWords.Contains(c.TokenValue, stringComparer)==false         // and the whole value is not in  the ignore words
+                        )
                     {
                         //check if the next token is group
                         if (ci < this.Count-1)

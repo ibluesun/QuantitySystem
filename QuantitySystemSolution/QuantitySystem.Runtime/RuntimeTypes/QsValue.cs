@@ -57,6 +57,16 @@ namespace Qs.RuntimeTypes
         /// <returns></returns>
         abstract public QsValue ModuloOperation(QsValue value);
 
+
+        #region Relational operations
+        abstract public bool LessThan(QsValue value);
+        abstract public bool GreaterThan(QsValue value);
+        abstract public bool LessThanOrEqual(QsValue value);
+        abstract public bool GreaterThanOrEqual(QsValue value);
+        abstract public bool Equality(QsValue value);
+        abstract public bool Inequality(QsValue value);
+        #endregion
+
         /// <summary>
         /// QsValue . QsValue 
         /// </summary>
@@ -153,6 +163,35 @@ namespace Qs.RuntimeTypes
         {
             return a.ModuloOperation(b);
         }
+
+
+        #region Relational operators
+        public static bool operator <(QsValue a, QsValue b)
+        {
+            return a.LessThan(b);
+        }
+        public static bool operator <=(QsValue a, QsValue b)
+        {
+            return a.LessThanOrEqual(b);
+        }
+        public static bool operator >(QsValue a, QsValue b)
+        {
+            return a.GreaterThan(b);
+        }
+        public static bool operator >=(QsValue a, QsValue b)
+        {
+            return a.GreaterThanOrEqual(b);
+        }
+        public static bool operator ==(QsValue a, QsValue b)
+        {
+            return a.Equality(b);
+        }
+        public static bool operator !=(QsValue a, QsValue b)
+        {
+            return a.Inequality(b);
+        }
+
+        #endregion
 
         #endregion
 

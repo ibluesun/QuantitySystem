@@ -311,7 +311,14 @@ namespace Qs.Runtime
 
             if (AssignOperatorIndex > 0)  //assign operator should always have something behind it.
             {
-                if (line[AssignOperatorIndex - 1] == ':') // test for named argument :=  
+                if (   
+                       line[AssignOperatorIndex - 1] == ':' // test for named argument :=  
+                    || line[AssignOperatorIndex - 1] == '>'  // >=
+                    || line[AssignOperatorIndex - 1] == '<'  // <=
+                    || line[AssignOperatorIndex - 1] == '!'  // !=
+                    || line[AssignOperatorIndex + 1] == '='  // ==
+
+                    ) 
                 {
                     //ignore
                 }
@@ -324,6 +331,9 @@ namespace Qs.Runtime
                     {
                         throw (new QsInvalidInputException("Variable must start with a letter"));
                     }
+
+                    if (varName.Contains(" ") || varName.Contains("\t"))
+                        throw (new QsInvalidInputException("Variable shouldn't contain spaces"));
 
                     line = line.Substring(AssignOperatorIndex + 1, line.Length - AssignOperatorIndex - 1);
                 }

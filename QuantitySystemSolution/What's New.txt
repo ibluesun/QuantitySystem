@@ -1,3 +1,19 @@
+[Qs 1.1.9.7]
+- Added Relational Operators in QuantitySystem Framework
+- Added the when-othwerwise statement to evaluate conditions
+
+  sgn(x) = -1 when x<0 otherwise 0 when x==0 otherwise 1
+  
+  [Success Expression] when [Test Expression] otherwise [Fail Expression]
+  
+  
+  This is a great new feature in making conditions and it is pure function flavor in a new syntactic form.
+  
+  
+- Planning The next major release will be 1.2  version which will hold all things together
+   but after testing and making sure that there are no errors.
+  
+
 [Qs 1.1.9.5]
 - Fixed namespace:variable  =  expression   assignation problem
 - fast checking in function and sequence parsing to ignore the extra un-needed processing.
@@ -6,7 +22,7 @@
 - Namespace support to sequence has been added.
 
 [Qs 1.1.9.3]
-- Modulus operator added to the framework and supported into Qs
+- Modulus operator '%' added to the framework and supported into Qs
 - Function overloading by parameter names:
 	so you can define the same function name with different parameter names
 	Qs> f(x) = x^2

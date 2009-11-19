@@ -19,7 +19,7 @@ namespace Qs.Modules
 
             DialogResult d =
                 System.Windows.Forms.MessageBox.Show(
-                ForegroundWindow.Instance, text.Value == null ? text.RawValue : text.Value.ToString(),
+                ForegroundWindow.Instance, text.RawValue,
                     "Quantity System"
                 );
 
@@ -31,8 +31,8 @@ namespace Qs.Modules
             DialogResult d =
                 System.Windows.Forms.MessageBox.Show(
                 ForegroundWindow.Instance, 
-                text.Value == null ? text.RawValue : text.Value.ToString(),
-                caption.Value== null ?caption.RawValue : caption.Value.ToString()
+                text.RawValue,
+                caption.RawValue
                 );
 
             return ((int)d).ToScalarValue();

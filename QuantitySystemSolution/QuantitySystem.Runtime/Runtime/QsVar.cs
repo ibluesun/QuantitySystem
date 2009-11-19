@@ -153,6 +153,27 @@ namespace Qs.Runtime
             return tok;
         }
 
+        internal Token ConditionsTokenize(Token token)
+        {
+            var tokens = token.MergeTokens(new WhenStatementToken());
+
+            tokens = tokens.MergeTokens(new OtherwiseStatementToken());
+
+            tokens = tokens.MergeTokens(new AndStatementToken());
+            tokens = tokens.MergeTokens(new OrStatementToken());
+            tokens = tokens.MergeTokens(new EqualToken());
+            tokens = tokens.MergeTokens(new NotEqualToken());
+            tokens = tokens.MergeTokens(new LessThanToken());
+            tokens = tokens.MergeTokens(new LessThanOrEqualToken());
+            tokens = tokens.MergeTokens(new GreaterThanToken());
+            tokens = tokens.MergeTokens(new GreaterThanOrEqualToken());
+
+
+            return tokens;
+
+
+
+        }
 
         /// <summary>
         /// Main parsing method.
@@ -161,9 +182,12 @@ namespace Qs.Runtime
         /// <returns></returns>
         internal Expression ParseArithmatic(string line)
         {
-            var tokens = Token.ParseText(line);
+            var tokens = Token.ParseText(line);            
 
-            tokens = tokens.MergeTokens(new SpaceToken());                 
+            tokens = tokens.MergeTokens(new SpaceToken());
+
+            tokens = ConditionsTokenize(tokens);   // make tokens of conditional statements
+
             tokens = tokens.MergeTokens(new WordToken());                 //discover words
             tokens = tokens.MergeTokens(new NumberToken());               //discover the numbers
             tokens = tokens.MergeTokens(new UnitizedNumberToken());   //discover the unitized numbers
@@ -183,14 +207,15 @@ namespace Qs.Runtime
 
             tokens = tokens.RemoveSpaceTokens();                           //remove all spaces
 
-            tokens = tokens.DiscoverCalls();
+            tokens = tokens.DiscoverCalls(StringComparer.OrdinalIgnoreCase, "When", "Otherwise", "and", "or"); //ignore reserved words 
 
             Expression quantityExpression = null;
             ExprOp eop = null;
 
             ExprOp FirstEop = null;
 
-            int ix = 0;
+            int ix = 0;                 //this is the index in the discovered tokens
+            
             while (ix < tokens.Count)
             {
                 string q = tokens[ix].TokenValue;
@@ -270,6 +295,7 @@ namespace Qs.Runtime
                     // Word token:  means variable 
                     if (ParseMode == QsVarParseModes.Function)
                     {
+                        #region Variabl in Function Parsing
                         //get it from the parameters of the lambda
                         //  :) if it is found here then it will not be obtained from the global heap :)
                         //      now I understand how variable scopes occur :D
@@ -283,9 +309,9 @@ namespace Qs.Runtime
                             Expression directQuantity = Expression.Property(eu, "Quantity");
 
                             // another expression for getting the quantity from the variable passed 
-                            //   this case only occur if I called a function declated like this   f(a) = a(5,3)+a
+                            //   this case only occure if I called a function declared like this   f(a) = a(5,3)+a
                             //      because when calling f(u)  where u=50 and u(x,y)=x+y  then I want the evaluation to get the calculations right
-                            //      because a alone is expressing single global variable.
+                            //      because 'a' alone is expressing single global variable.
 
                             // in this expression the RawValue were set because u had marked as function argument. 
                             Expression indirectQuantity = Expression.Property(eu, "RawValue");
@@ -316,9 +342,11 @@ namespace Qs.Runtime
                             //quantity variable  //get it from evaluator  global heap
                             quantityExpression = GetVariable(q);
                         }
+                        #endregion
                     }
                     else if (ParseMode == QsVarParseModes.Sequence)
                     {
+                        #region Variable in Sequence Parsing
                         //try to get the variable from the sequence index
                         try
                         {
@@ -343,6 +371,7 @@ namespace Qs.Runtime
                             quantityExpression = GetVariable(q);
                             Sequence.CachingEnabled = false;  //because when evaluating external variable the external variable may change without knowing
                         }
+                        #endregion
 
                     }
                     else
@@ -1087,8 +1116,14 @@ namespace Qs.Runtime
         /// <param name="op"></param>
         /// <param name="right"></param>
         /// <returns></returns>
-        private Expression ArithExpression(Expression left, string op, Expression right)
+        private Expression ArithExpression(ExprOp eop, out short skip)
         {
+            Expression left = eop.QuantityExpression;
+            string op = eop.Operation;
+            Expression right = eop.Next.QuantityExpression;
+
+            skip = 1;
+
             Type aqType = typeof(QsValue);
 
             if (op == "^") return Expression.Power(left, right, aqType.GetMethod("Pow"));
@@ -1101,6 +1136,59 @@ namespace Qs.Runtime
             if (op == "%") return Expression.Modulo(left, right);
             if (op == "+") return Expression.Add(left, right);
             if (op == "-") return Expression.Subtract(left, right);
+
+            if (op == "<") return Expression.LessThan(left, right);
+            if (op == ">") return Expression.GreaterThan(left, right);
+            if (op == "<=") return Expression.LessThanOrEqual(left, right);
+            if (op == ">=") return Expression.GreaterThanOrEqual(left, right);
+
+            if (op == "==") return Expression.Equal(left, right);
+            if (op == "!=") return Expression.NotEqual(left, right);
+
+            if (op.Equals("and", StringComparison.OrdinalIgnoreCase)) 
+                return Expression.And(left, right);
+
+            if (op.Equals("or", StringComparison.OrdinalIgnoreCase)) 
+                return Expression.Or(left, right);
+
+            if (op.Equals("when", StringComparison.OrdinalIgnoreCase))
+            {
+                // when -> condition -> otherwise -> result
+                // here we must consume another expression for the false evaluation.
+                //   if there are more expression on the linked list
+
+
+                if (eop.Next.Next == null)
+                {
+                    throw new QsException("syntax error: When without Otherwise");
+                }
+                else
+                {
+                    skip = 2;
+
+                    //eop:=when .Next=Expression .Next=otherwise .Net=expression
+
+                    //There is a node test if it is a when node.
+                    if (eop.Next.Next.Operation.Equals("when", StringComparison.OrdinalIgnoreCase))
+                    {
+                        // yes there is a node when that should its body processed 
+                        short innerSkip;
+
+                        var CompoundWhenExpression = ArithExpression(eop.Next.Next, out innerSkip);  //send the next when node
+
+                        skip += innerSkip;  // to know how many nodes we skipped.
+
+                        var WhenExpression = Expression.Condition(right, left, CompoundWhenExpression, typeof(QsValue));
+                        return WhenExpression;
+                    }
+                    else
+                    {
+                        var WhenExpression = Expression.Condition(right, left, eop.Next.Next.QuantityExpression, typeof(QsValue));
+                        return WhenExpression;
+                    }
+                
+                }
+            }
 
             throw new NotSupportedException("Not Supported Operator '" + op + "'");
         }
@@ -1134,7 +1222,16 @@ namespace Qs.Runtime
 
             string[] Group2 = { "+", "-" };
 
-            string[][] OperatorGroups = { Group, Group1, Group2 };
+            string[] RelationalGroup = { "<", ">", "<=", ">=" };
+            string[] EqualityGroup = { "==", "!=" };
+            string[] AndGroup = { "and" };
+            string[] OrGroup = { "or" };
+
+            string[] WhenOtherwiseGroup = { "when", "otherwise"};
+
+
+            string[][] OperatorGroups = { Group, Group1, Group2, RelationalGroup, EqualityGroup, AndGroup, OrGroup, WhenOtherwiseGroup };
+
 
 
             foreach (var opg in OperatorGroups)
@@ -1148,20 +1245,27 @@ namespace Qs.Runtime
 
                     if (opg.Count(c => c.Equals(eop.Operation)) > 0)
                     {
-
-                        eop.QuantityExpression = ArithExpression(eop.QuantityExpression, eop.Operation, eop.Next.QuantityExpression);
+                        short skip;
+                        eop.QuantityExpression = ArithExpression(eop, out skip);
 
                         //drop eop.Next
                         if (eop.Next.Next != null)
                         {
-                            eop.Operation = eop.Next.Operation;
+                            while (skip > 0)
+                            {
+                                eop.Operation = eop.Next.Operation;
 
-                            eop.Next = eop.Next.Next;
+                                eop.Next = eop.Next.Next;
+
+                                skip--;
+                            }
                         }
                         else
                         {
                             //no more nodes exit the loop
-                            eop = eop.Next;   //this will be always null.
+
+                            eop.Next = null;      //last item were processed.
+                            eop.Operation = string.Empty;
                         }
                     }
                     else
@@ -1171,9 +1275,7 @@ namespace Qs.Runtime
                 }
             }
 
-
             return FirstEop.QuantityExpression;
-
         }
 
 

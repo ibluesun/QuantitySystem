@@ -353,11 +353,19 @@ namespace Qs.RuntimeTypes
         }
 
 
+        /// <summary>
+        /// ||Scalar||
+        /// </summary>
+        /// <returns></returns>
         public override QsValue NormOperation()
         {
-            return this;
+            return AbsOperation();
         }
 
+        /// <summary>
+        /// |Scalar|
+        /// </summary>
+        /// <returns></returns>
         public override QsValue AbsOperation()
         {
             var q = this.Quantity;
@@ -395,5 +403,148 @@ namespace Qs.RuntimeTypes
         }
         #endregion
 
+
+        #region Relational Operation
+
+        public override bool LessThan(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                QsScalar scalar = (QsScalar)value;
+                return this.Quantity < scalar.Quantity;
+            }
+            else if (value is QsVector)
+            {
+                var vector = (QsVector)value;
+                throw new NotSupportedException();
+            }
+            else if (value is QsMatrix)
+            {
+                var matrix = (QsMatrix)value;
+                throw new NotSupportedException();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+            
+        }
+
+        public override bool GreaterThan(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                QsScalar scalar = (QsScalar)value;
+                return this.Quantity > scalar.Quantity;
+            }
+            else if (value is QsVector)
+            {
+                var vector = (QsVector)value;
+                throw new NotSupportedException();
+            }
+            else if (value is QsMatrix)
+            {
+                var matrix = (QsMatrix)value;
+                throw new NotSupportedException();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        public override bool LessThanOrEqual(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                QsScalar scalar = (QsScalar)value;
+                return this.Quantity <= scalar.Quantity;
+            }
+            else if (value is QsVector)
+            {
+                var vector = (QsVector)value;
+                throw new NotSupportedException();
+            }
+            else if (value is QsMatrix)
+            {
+                var matrix = (QsMatrix)value;
+                throw new NotSupportedException();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        public override bool GreaterThanOrEqual(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                QsScalar scalar = (QsScalar)value;
+                return this.Quantity >= scalar.Quantity;
+            }
+            else if (value is QsVector)
+            {
+                var vector = (QsVector)value;
+                throw new NotSupportedException();
+            }
+            else if (value is QsMatrix)
+            {
+                var matrix = (QsMatrix)value;
+                throw new NotSupportedException();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        public override bool Equality(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                QsScalar scalar = (QsScalar)value;
+                return this.Quantity == scalar.Quantity;
+            }
+            else if (value is QsVector)
+            {
+                var vector = (QsVector)value;
+                throw new NotSupportedException();
+            }
+            else if (value is QsMatrix)
+            {
+                var matrix = (QsMatrix)value;
+                throw new NotSupportedException();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        public override bool Inequality(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                QsScalar scalar = (QsScalar)value;
+                return this.Quantity != scalar.Quantity;
+            }
+            else if (value is QsVector)
+            {
+                var vector = (QsVector)value;
+                throw new NotSupportedException();
+            }
+            else if (value is QsMatrix)
+            {
+                var matrix = (QsMatrix)value;
+                throw new NotSupportedException();
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        #endregion
     }
 }

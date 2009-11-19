@@ -11,7 +11,7 @@ namespace Qs.RuntimeTypes
     /// Matrix that hold quantities
     /// and the basic matrix calculations.
     /// </summary>
-    public partial class QsMatrix: QsValue
+    public partial class QsMatrix : QsValue
     {
         public List<QsVector> Rows = new List<QsVector>();
 

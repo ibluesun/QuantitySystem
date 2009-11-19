@@ -69,53 +69,6 @@ namespace QuantitySystem.Quantities.BaseQuantities
         #endregion
 
 
-        #region Quantity Operations
-
-
-        #region Overloaded Operators
-
-
-        
-
-        public static AnyQuantity<T> operator +(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
-        {
-            return Add(firstQuantity, secondQuantity);
-        }
-
-
-
-        public static AnyQuantity<T> operator -(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
-        {
-            return Subtract(firstQuantity, secondQuantity);
-        }
-
-
-        public static AnyQuantity<T> operator *(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
-        {
-            return Multiply(firstQuantity, secondQuantity);
-        }
-
-
-        public static AnyQuantity<T> operator /(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
-        {
-            return Divide(firstQuantity, secondQuantity);
-        }
-
-        public static AnyQuantity<T> operator %(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
-        {
-            return Modulus(firstQuantity, secondQuantity);
-        }
-
-        public static AnyQuantity<T> operator ^(AnyQuantity<T> quantity, AnyQuantity<double> exponent)
-        {
-            return Power(quantity, exponent);
-        }
-
-
-        #endregion
-
-
-        #endregion
 
 
         #region Helper Functions
