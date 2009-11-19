@@ -6,7 +6,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 
 namespace Qs.RuntimeTypes
 {
-    public partial class QsMatrix
+    public partial class QsMatrix : QsValue
     {
 
         #region Scalar operations
@@ -417,5 +417,35 @@ namespace Qs.RuntimeTypes
 
         #endregion
 
+
+        public override bool LessThan(QsValue value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool GreaterThan(QsValue value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool LessThanOrEqual(QsValue value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool GreaterThanOrEqual(QsValue value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Equality(QsValue value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Inequality(QsValue value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

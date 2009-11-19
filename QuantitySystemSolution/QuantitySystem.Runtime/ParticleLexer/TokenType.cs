@@ -37,7 +37,7 @@ namespace ParticleLexer.TokenTypes
 
                 if (TPA != null)
                 {
-                    Regex = new Regex("^" + TPA.RegexPattern + "$", RegexOptions.Compiled);
+                    Regex = new Regex("^" + TPA.RegexPattern + "$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
                 }
 
                 regexes.Add(tclass, Regex);
@@ -133,6 +133,14 @@ namespace ParticleLexer.TokenTypes
     {
     }
 
+
+
+    /// <summary>
+    /// Unitized number is
+    /// 90, 90.9
+    /// 90.9e2, 90.9e+2, 90.9e-2
+    /// 90.09&lt;m&gt;, 90.2e+2&lt;m&gt;, etc.
+    /// </summary>
     [TokenPattern(
         RegexPattern = @"\d+(\.|\.\d+)?([eE][-+]?\d+)?"                       //floating number
         + "\\s*<(°?\\w+!?(\\^\\d+)?\\.?)+(/(°?\\w+!?(\\^\\d+)?\\.?)+)?>"          // unit itself.
@@ -140,16 +148,8 @@ namespace ParticleLexer.TokenTypes
     ]
     public class UnitizedNumberToken : TokenType
     {
-
+        
     }
-
-
-    [TokenPattern(RegexPattern = "=")]
-    public class AssignmentOperatorToken : TokenType
-    {
-    }
-
-
 
     [TokenPattern(RegexPattern = ",")]
     public class CommaToken : TokenType
@@ -316,6 +316,64 @@ namespace ParticleLexer.TokenTypes
 
     [TokenPattern(RegexPattern = @"\/")]
     public class DivideToken : TokenType
+    {
+    }
+
+    #endregion
+
+    #region mathmatical operators (for conditions
+    [TokenPattern(RegexPattern = "=")]
+    public class AssignmentOperatorToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = "when")]
+    public class WhenStatementToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = "otherwise")]
+    public class OtherwiseStatementToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = "and")]
+    public class AndStatementToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = "or")]
+    public class OrStatementToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = "<")]
+    public class LessThanToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = ">")]
+    public class GreaterThanToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = "==")]
+    public class EqualToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = "!=")]
+    public class NotEqualToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = "<=")]
+    public class LessThanOrEqualToken : TokenType
+    {
+    }
+
+    [TokenPattern(RegexPattern = ">=")]
+    public class GreaterThanOrEqualToken : TokenType
     {
     }
 

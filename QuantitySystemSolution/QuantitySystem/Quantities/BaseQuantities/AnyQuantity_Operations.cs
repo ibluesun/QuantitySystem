@@ -73,7 +73,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
         #endregion
 
-        #region Quantity By Quantity Operators
+        #region Operation Methods
 
         public static AnyQuantity<T> Add(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
         {
@@ -547,8 +547,636 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
             return qresult;
         }
+
+
+        #region Relation methods
+        public static bool LessThan(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            if (firstQuantity.Equals(secondQuantity))
+            {
+                if (typeof(T) == typeof(decimal) || typeof(T) == typeof(double) || typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(short))
+                {
+                    #region Premitive
+                    //use direct calculations
+
+                    double firstVal = (double)(object)firstQuantity.Value;
+
+                    double secondVal = (double)(object)secondQuantity.Value;
+
+
+                    //correct the values according to left unit or first unit.
+                    //the resulted quantity has the values of the first unit.
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //factor from second unit to first unit
+                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+                        //secondVal =  stof.ConversionFactor * secondVal;  //original line without shift
+
+                        secondVal = stof.ConversionFactor * secondVal;
+
+                    }
+
+                    return firstVal < secondVal;
+                    #endregion
+                }
+                else
+                {
+                    #region Custom Types
+                    //define the new dynamically created method
+                    //with the return type and the input types
+
+                    DynamicMethod method = new DynamicMethod(
+                        "Relation_Method" + ":" + typeof(T).ToString(),
+                        typeof(bool),
+                        new Type[] { typeof(T), typeof(T) });
+
+
+                    //get generator to construct the function.
+
+                    ILGenerator gen = method.GetILGenerator();
+
+
+                    gen.Emit(OpCodes.Ldarg_0);  //load the first value
+                    gen.Emit(OpCodes.Ldarg_1);  //load the second value
+
+
+                    MethodInfo info = typeof(T).GetMethod
+                        (
+                        "op_LessThan",
+                        new Type[] { typeof(T), typeof(T) },
+                        null
+                        );
+
+                    gen.EmitCall(OpCodes.Call, info, null);
+
+
+                    gen.Emit(OpCodes.Ret);
+
+
+
+                    T firstVal = (firstQuantity.Value);
+
+                    T secondVal = (secondQuantity.Value);
+
+                    //correct the values according to left unit or first unit.
+                    //the resulted quantity has the values of the first unit.
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //factor from second unit to first unit
+                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+
+                        secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
+                    }
+
+                    return (bool)method.Invoke(null, new object[] { firstVal, secondVal });
+                    #endregion
+
+                }
+            }
+            else
+            {
+                throw new QuantitiesNotDimensionallyEqualException();
+            }
+        }
+        public static bool LessThanOrEqual(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            if (firstQuantity.Equals(secondQuantity))
+            {
+                if (typeof(T) == typeof(decimal) || typeof(T) == typeof(double) || typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(short))
+                {
+                    #region Premitive
+                    //use direct calculations
+
+                    double firstVal = (double)(object)firstQuantity.Value;
+
+                    double secondVal = (double)(object)secondQuantity.Value;
+
+
+                    //correct the values according to left unit or first unit.
+                    //the resulted quantity has the values of the first unit.
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //factor from second unit to first unit
+                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+                        //secondVal =  stof.ConversionFactor * secondVal;  //original line without shift
+
+                        secondVal = stof.ConversionFactor * secondVal;
+
+                    }
+
+                    return firstVal <= secondVal;
+                    #endregion
+                }
+                else
+                {
+                    #region Custom Types
+                    //define the new dynamically created method
+                    //with the return type and the input types
+
+                    DynamicMethod method = new DynamicMethod(
+                        "Relation_Method" + ":" + typeof(T).ToString(),
+                        typeof(bool),
+                        new Type[] { typeof(T), typeof(T) });
+
+
+                    //get generator to construct the function.
+
+                    ILGenerator gen = method.GetILGenerator();
+
+
+                    gen.Emit(OpCodes.Ldarg_0);  //load the first value
+                    gen.Emit(OpCodes.Ldarg_1);  //load the second value
+
+
+                    MethodInfo info = typeof(T).GetMethod
+                        (
+                        "op_LessThanOrEqual",
+                        new Type[] { typeof(T), typeof(T) },
+                        null
+                        );
+
+                    gen.EmitCall(OpCodes.Call, info, null);
+
+
+                    gen.Emit(OpCodes.Ret);
+
+
+
+                    T firstVal = (firstQuantity.Value);
+
+                    T secondVal = (secondQuantity.Value);
+
+                    //correct the values according to left unit or first unit.
+                    //the resulted quantity has the values of the first unit.
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //factor from second unit to first unit
+                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+
+                        secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
+                    }
+
+                    return (bool)method.Invoke(null, new object[] { firstVal, secondVal });
+                    #endregion
+
+                }
+            }
+            else
+            {
+                throw new QuantitiesNotDimensionallyEqualException();
+            }
+        }
+        public static bool GreaterThan(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            if (firstQuantity.Equals(secondQuantity))
+            {
+                if (typeof(T) == typeof(decimal) || typeof(T) == typeof(double) || typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(short))
+                {
+                    #region Premitive
+                    //use direct calculations
+
+                    double firstVal = (double)(object)firstQuantity.Value;
+
+                    double secondVal = (double)(object)secondQuantity.Value;
+
+
+                    //correct the values according to left unit or first unit.
+                    //the resulted quantity has the values of the first unit.
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //factor from second unit to first unit
+                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+                        //secondVal =  stof.ConversionFactor * secondVal;  //original line without shift
+
+                        secondVal = stof.ConversionFactor * secondVal;
+
+                    }
+
+                    return firstVal > secondVal;
+                    #endregion
+                }
+                else
+                {
+                    #region Custom Types
+                    //define the new dynamically created method
+                    //with the return type and the input types
+
+                    DynamicMethod method = new DynamicMethod(
+                        "Relation_Method" + ":" + typeof(T).ToString(),
+                        typeof(bool),
+                        new Type[] { typeof(T), typeof(T) });
+
+
+                    //get generator to construct the function.
+
+                    ILGenerator gen = method.GetILGenerator();
+
+
+                    gen.Emit(OpCodes.Ldarg_0);  //load the first value
+                    gen.Emit(OpCodes.Ldarg_1);  //load the second value
+
+
+                    MethodInfo info = typeof(T).GetMethod
+                        (
+                        "op_GreaterThan",
+                        new Type[] { typeof(T), typeof(T) },
+                        null
+                        );
+
+                    gen.EmitCall(OpCodes.Call, info, null);
+
+
+                    gen.Emit(OpCodes.Ret);
+
+
+
+                    T firstVal = (firstQuantity.Value);
+
+                    T secondVal = (secondQuantity.Value);
+
+                    //correct the values according to left unit or first unit.
+                    //the resulted quantity has the values of the first unit.
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //factor from second unit to first unit
+                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+
+                        secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
+                    }
+
+                    return (bool)method.Invoke(null, new object[] { firstVal, secondVal });
+                    #endregion
+
+                }
+            }
+            else
+            {
+                throw new QuantitiesNotDimensionallyEqualException();
+            }
+        }
+        public static bool GreaterThanOrEqual(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            if (firstQuantity.Equals(secondQuantity))
+            {
+                if (typeof(T) == typeof(decimal) || typeof(T) == typeof(double) || typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(short))
+                {
+                    #region Premitive
+                    //use direct calculations
+
+                    double firstVal = (double)(object)firstQuantity.Value;
+
+                    double secondVal = (double)(object)secondQuantity.Value;
+
+
+                    //correct the values according to left unit or first unit.
+                    //the resulted quantity has the values of the first unit.
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //factor from second unit to first unit
+                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+                        //secondVal =  stof.ConversionFactor * secondVal;  //original line without shift
+
+                        secondVal = stof.ConversionFactor * secondVal;
+
+                    }
+
+                    return firstVal >= secondVal;
+                    #endregion
+                }
+                else
+                {
+                    #region Custom Types
+                    //define the new dynamically created method
+                    //with the return type and the input types
+
+                    DynamicMethod method = new DynamicMethod(
+                        "Relation_Method" + ":" + typeof(T).ToString(),
+                        typeof(bool),
+                        new Type[] { typeof(T), typeof(T) });
+
+
+                    //get generator to construct the function.
+
+                    ILGenerator gen = method.GetILGenerator();
+
+
+                    gen.Emit(OpCodes.Ldarg_0);  //load the first value
+                    gen.Emit(OpCodes.Ldarg_1);  //load the second value
+
+
+                    MethodInfo info = typeof(T).GetMethod
+                        (
+                        "op_GreaterThanOrEqual",
+                        new Type[] { typeof(T), typeof(T) },
+                        null
+                        );
+
+                    gen.EmitCall(OpCodes.Call, info, null);
+
+
+                    gen.Emit(OpCodes.Ret);
+
+
+
+                    T firstVal = (firstQuantity.Value);
+
+                    T secondVal = (secondQuantity.Value);
+
+                    //correct the values according to left unit or first unit.
+                    //the resulted quantity has the values of the first unit.
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //factor from second unit to first unit
+                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+
+                        secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
+                    }
+
+                    return (bool)method.Invoke(null, new object[] { firstVal, secondVal });
+                    #endregion
+
+                }
+            }
+            else
+            {
+                throw new QuantitiesNotDimensionallyEqualException();
+            }
+        }
+        public static bool Equality(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            if (firstQuantity.Equals(secondQuantity))
+            {
+                if (typeof(T) == typeof(decimal) || typeof(T) == typeof(double) || typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(short))
+                {
+                    #region Premitive
+                    //use direct calculations
+
+                    double firstVal = (double)(object)firstQuantity.Value;
+
+                    double secondVal = (double)(object)secondQuantity.Value;
+
+
+                    //correct the values according to left unit or first unit.
+                    //the resulted quantity has the values of the first unit.
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //factor from second unit to first unit
+                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+                        //secondVal =  stof.ConversionFactor * secondVal;  //original line without shift
+
+                        secondVal = stof.ConversionFactor * secondVal;
+
+                    }
+
+                    return firstVal == secondVal;
+                    #endregion
+                }
+                else
+                {
+                    #region Custom Types
+                    //define the new dynamically created method
+                    //with the return type and the input types
+
+                    DynamicMethod method = new DynamicMethod(
+                        "Relation_Method" + ":" + typeof(T).ToString(),
+                        typeof(bool),
+                        new Type[] { typeof(T), typeof(T) });
+
+
+                    //get generator to construct the function.
+
+                    ILGenerator gen = method.GetILGenerator();
+
+
+                    gen.Emit(OpCodes.Ldarg_0);  //load the first value
+                    gen.Emit(OpCodes.Ldarg_1);  //load the second value
+
+
+                    MethodInfo info = typeof(T).GetMethod
+                        (
+                        "op_Equality",
+                        new Type[] { typeof(T), typeof(T) },
+                        null
+                        );
+
+                    gen.EmitCall(OpCodes.Call, info, null);
+
+
+                    gen.Emit(OpCodes.Ret);
+
+
+
+                    T firstVal = (firstQuantity.Value);
+
+                    T secondVal = (secondQuantity.Value);
+
+                    //correct the values according to left unit or first unit.
+                    //the resulted quantity has the values of the first unit.
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //factor from second unit to first unit
+                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+
+                        secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
+                    }
+
+                    return (bool)method.Invoke(null, new object[] { firstVal, secondVal });
+                    #endregion
+
+                }
+            }
+            else
+            {
+                throw new QuantitiesNotDimensionallyEqualException();
+            }
+        }
+        public static bool Inequality(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            if (firstQuantity.Equals(secondQuantity))
+            {
+                if (typeof(T) == typeof(decimal) || typeof(T) == typeof(double) || typeof(T) == typeof(float) || typeof(T) == typeof(int) || typeof(T) == typeof(short))
+                {
+                    #region Premitive
+                    //use direct calculations
+
+                    double firstVal = (double)(object)firstQuantity.Value;
+
+                    double secondVal = (double)(object)secondQuantity.Value;
+
+
+                    //correct the values according to left unit or first unit.
+                    //the resulted quantity has the values of the first unit.
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //factor from second unit to first unit
+                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+                        //secondVal =  stof.ConversionFactor * secondVal;  //original line without shift
+
+                        secondVal = stof.ConversionFactor * secondVal;
+
+                    }
+
+                    return firstVal != secondVal;
+                    #endregion
+                }
+                else
+                {
+                    #region Custom Types
+                    //define the new dynamically created method
+                    //with the return type and the input types
+
+                    DynamicMethod method = new DynamicMethod(
+                        "Relation_Method" + ":" + typeof(T).ToString(),
+                        typeof(bool),
+                        new Type[] { typeof(T), typeof(T) });
+
+
+                    //get generator to construct the function.
+
+                    ILGenerator gen = method.GetILGenerator();
+
+
+                    gen.Emit(OpCodes.Ldarg_0);  //load the first value
+                    gen.Emit(OpCodes.Ldarg_1);  //load the second value
+
+
+                    MethodInfo info = typeof(T).GetMethod
+                        (
+                        "op_Inequality",
+                        new Type[] { typeof(T), typeof(T) },
+                        null
+                        );
+
+                    gen.EmitCall(OpCodes.Call, info, null);
+
+
+                    gen.Emit(OpCodes.Ret);
+
+
+
+                    T firstVal = (firstQuantity.Value);
+
+                    T secondVal = (secondQuantity.Value);
+
+                    //correct the values according to left unit or first unit.
+                    //the resulted quantity has the values of the first unit.
+
+                    if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                    {
+                        //factor from second unit to first unit
+                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+
+
+                        secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
+                    }
+
+                    return (bool)method.Invoke(null, new object[] { firstVal, secondVal });
+                    #endregion
+
+                }
+            }
+            else
+            {
+                throw new QuantitiesNotDimensionallyEqualException();
+            }
+        }
+
+        #endregion
         #endregion
 
+
+
+        #region Overloaded Operators
+
+
+        public static AnyQuantity<T> operator +(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            return Add(firstQuantity, secondQuantity);
+        }
+
+        public static AnyQuantity<T> operator -(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            return Subtract(firstQuantity, secondQuantity);
+        }
+
+
+        public static AnyQuantity<T> operator *(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            return Multiply(firstQuantity, secondQuantity);
+        }
+
+
+        public static AnyQuantity<T> operator /(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            return Divide(firstQuantity, secondQuantity);
+        }
+
+        public static AnyQuantity<T> operator %(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            return Modulus(firstQuantity, secondQuantity);
+        }
+
+        public static AnyQuantity<T> operator ^(AnyQuantity<T> quantity, AnyQuantity<double> exponent)
+        {
+            return Power(quantity, exponent);
+        }
+
+
+        #region Relations Operators
+        public static bool operator <(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            return LessThan(firstQuantity, secondQuantity);
+        }
+
+        public static bool operator <=(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            return LessThanOrEqual(firstQuantity, secondQuantity);
+        }
+
+        public static bool operator >(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            return GreaterThan(firstQuantity, secondQuantity);
+        }
+
+        public static bool operator >=(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            return GreaterThanOrEqual(firstQuantity, secondQuantity);
+        }
+
+        public static bool operator ==(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            return Equality(firstQuantity, secondQuantity);
+        }
+
+        public static bool operator !=(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        {
+            return Inequality(firstQuantity, secondQuantity);
+        }
+        #endregion
+
+        #endregion
 
 
     }

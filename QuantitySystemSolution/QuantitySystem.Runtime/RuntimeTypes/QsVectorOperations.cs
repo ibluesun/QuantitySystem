@@ -369,14 +369,27 @@ namespace Qs.RuntimeTypes
             }
         }
 
+        /// <summary>
+        /// ||vector||
+        /// </summary>
+        /// <returns></returns>
         public override QsValue NormOperation()
         {
             return this.Magnitude();
         }
 
+        /// <summary>
+        /// |vector|
+        /// </summary>
+        /// <returns></returns>
         public override QsValue AbsOperation()
         {
-            throw new NotSupportedException();
+            return this.Magnitude();  
+            
+            //this is according to wikipedia that |x| if x is vector is valid but discouraged
+            //  the norm of vector should be ||x|| notation.
+
+
         }
 
         public override QsValue ModuloOperation(QsValue value)
@@ -400,5 +413,35 @@ namespace Qs.RuntimeTypes
         #endregion
 
 
+
+        public override bool LessThan(QsValue value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool GreaterThan(QsValue value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool LessThanOrEqual(QsValue value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool GreaterThanOrEqual(QsValue value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Equality(QsValue value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override bool Inequality(QsValue value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
