@@ -1243,7 +1243,7 @@ namespace Qs.Runtime
                 {
                     //if the operator in node found in the opg (current operator group) then execute the logic
 
-                    if (opg.Count(c => c.Equals(eop.Operation)) > 0)
+                    if (opg.Count(c => c.Equals(eop.Operation, StringComparison.OrdinalIgnoreCase)) > 0)
                     {
                         short skip;
                         eop.QuantityExpression = ArithExpression(eop, out skip);
