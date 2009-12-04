@@ -1,3 +1,21 @@
+[Qs 1.1.9.8]
+- fixed casing error in when otherwise  statement
+
+- fixed an exception of accessing delegate property in MONO
+    replaced the call to property into a function call.
+    
+- Enhancing passing arguments to functions
+    frankly fixed f(a) = Windows:MessageBox(a) 
+    that resulted in displaying a when f(hello)
+    now it shows hello :)
+    
+- [MassFlowRate] Quantity Added.
+
+- Comparing Scalars with vectors is calculated based on Magnitude of the vectors.
+- Comparing Vector with Vector also rely on the magnitude of vectors.
+    
+        
+    
 [Qs 1.1.9.7]
 - Added Relational Operators in QuantitySystem Framework
 - Added the when-othwerwise statement to evaluate conditions

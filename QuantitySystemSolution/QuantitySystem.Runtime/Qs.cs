@@ -141,6 +141,33 @@ namespace Qs
         }
 
 
+        /// <summary>
+        /// The function try to convert the passed array into an array of scalars.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public static QsScalar[] ToScalars<T>(this T[] data) 
+        {
+            QsScalar[] ss = new QsScalar[data.Length];
+
+            for (int i = 0; i < data.Length; i++)
+            {
+                double d = Convert.ToDouble(data[i]);
+
+                ss[i] = d.ToQuantity().ToScalar();
+            }
+            return ss;
+
+        }
+
+        public static QsVector ToQsVector<T>(this T[] data)
+        {
+            var scs = ToScalars(data);
+            QsVector vector = new QsVector(scs);
+            return vector;
+        }
+
         
         #endregion
     }
