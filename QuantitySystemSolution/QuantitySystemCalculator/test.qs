@@ -61,7 +61,9 @@ math:sgn(x) = -1 when x<0 otherwise 0 when x==0 otherwise 1 	#http://en.wikipedi
 
 wave:Square(x) = math:sgn(math:sin(x))  						#http://en.wikipedia.org/wiki/Square_wave
 
-										
+MsgBox(text) = Windows:MessageBox(text)
+
+MsgBox(Loading Completed.);
 
 
 #Please Accept my deepest regards 

@@ -416,7 +416,12 @@ namespace Qs.RuntimeTypes
             else if (value is QsVector)
             {
                 var vector = (QsVector)value;
-                throw new NotSupportedException();
+
+                //compare with the magnitude of the vector
+                var mag = vector.Magnitude();
+
+                return this.Quantity < mag.Quantity;
+                
             }
             else if (value is QsMatrix)
             {
@@ -440,7 +445,11 @@ namespace Qs.RuntimeTypes
             else if (value is QsVector)
             {
                 var vector = (QsVector)value;
-                throw new NotSupportedException();
+
+                //compare with the magnitude of the vector
+                var mag = vector.Magnitude();
+
+                return this.Quantity > mag.Quantity;
             }
             else if (value is QsMatrix)
             {
@@ -463,7 +472,10 @@ namespace Qs.RuntimeTypes
             else if (value is QsVector)
             {
                 var vector = (QsVector)value;
-                throw new NotSupportedException();
+                //compare with the magnitude of the vector
+                var mag = vector.Magnitude();
+
+                return this.Quantity <= mag.Quantity;
             }
             else if (value is QsMatrix)
             {
@@ -486,7 +498,10 @@ namespace Qs.RuntimeTypes
             else if (value is QsVector)
             {
                 var vector = (QsVector)value;
-                throw new NotSupportedException();
+                //compare with the magnitude of the vector
+                var mag = vector.Magnitude();
+
+                return this.Quantity >= mag.Quantity;
             }
             else if (value is QsMatrix)
             {
@@ -509,7 +524,10 @@ namespace Qs.RuntimeTypes
             else if (value is QsVector)
             {
                 var vector = (QsVector)value;
-                throw new NotSupportedException();
+                //compare with the magnitude of the vector
+                var mag = vector.Magnitude();
+
+                return this.Quantity == mag.Quantity;
             }
             else if (value is QsMatrix)
             {
@@ -532,7 +550,10 @@ namespace Qs.RuntimeTypes
             else if (value is QsVector)
             {
                 var vector = (QsVector)value;
-                throw new NotSupportedException();
+                //compare with the magnitude of the vector
+                var mag = vector.Magnitude();
+
+                return this.Quantity != mag.Quantity;
             }
             else if (value is QsMatrix)
             {

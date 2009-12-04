@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 using Qs.RuntimeTypes;
+using Microsoft.Scripting.Runtime;
 
 namespace Qs.Runtime
 {
@@ -18,14 +19,14 @@ namespace Qs.Runtime
         /// <summary>
         /// Original value before evaluation.
         /// </summary>
-        public string RawValue { get; private set; }
+        public string ParameterRawText { get; private set; }
 
 
-        public string Namespace
+        public string NamespaceName
         {
             get
             {
-                string[] rv = RawValue.Split(':');
+                string[] rv = ParameterRawText.Split(':');
                 if (rv.Length == 2)
                     return rv[0];
                 else
@@ -34,11 +35,11 @@ namespace Qs.Runtime
             }
         }
 
-        public string NamespaceValue
+        public string NamespaceVariableName
         {
             get
             {
-                string[] rv = RawValue.Split(':');
+                string[] rv = ParameterRawText.Split(':');
                 if (rv.Length == 2)
                     return rv[1];
                 else
@@ -52,7 +53,7 @@ namespace Qs.Runtime
 
             qp.Value = value;
 
-            qp.RawValue = rawValue;
+            qp.ParameterRawText = rawValue;
 
             return qp;
         }
@@ -68,31 +69,56 @@ namespace Qs.Runtime
 
 
         /// <summary>
+        /// Get the quantity from the parameter body on the form  ([namespace:]variable)  x:var or var
+        /// </summary>
+        public QsValue GetIndirectQuantity(Scope scope)
+        {
+            try
+            {
+                var q = QsEvaluator.GetScopeQsValue(scope, NamespaceName, NamespaceVariableName);
+                return q;
+            }
+            catch (QsVariableNotFoundException e)
+            {
+                // add extra data to the exception about the parameter name itself.
+                //  its like accumulating information on the same exception.
+
+                e.ExtraData = ParameterRawText;
+
+                // and throw it again
+                throw e;
+            }
+        }
+
+
+        /// <summary>
         /// if there are a value other than string then return true.
         /// </summary>
-        public bool IsKnown
+        public bool IsQsValue
         {
             get
             {
-                if (Value == null) return false;
-                return !(Value is string);
+                if (Value is QsValue) return true;
+                else return false;
             }
         }
 
         /// <summary>
-        /// Unknown is something that was sent to the function as a parameter. with text I don't know it
-        /// 
+        /// Get the parameter value string if exist or the parameter body itself
         /// </summary>
-        public string Unknown
+        public string UnknownValueText
         {
             get
             {
-                return Value as string;
+                if (Value != null)
+                    return Value.ToString();
+                else
+                    return ParameterRawText;
             }
         }
 
         /// <summary>
-        /// if we consider the <see cref="RawValue"/> as a function name.
+        /// if we consider the <see cref="ParameterRawText"/> as a function name.
         /// then this function will get the actual function name which include parameters count.
         /// This function is only used in making expressions.
         /// </summary>
@@ -100,7 +126,7 @@ namespace Qs.Runtime
         /// <returns></returns>
         public string GetTrueFunctionName(int paramCount)
         {
-            return QsFunction.FormFunctionSymbolicName(RawValue, paramCount);
+            return QsFunction.FormFunctionSymbolicName(ParameterRawText, paramCount);
         }
 
     }

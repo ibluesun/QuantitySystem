@@ -126,7 +126,7 @@ namespace Qs.Runtime
                          select 
                          QsParameter.MakeParameter(arg.ToScalarValue(), arg.ToShortString())).ToArray();
 
-            return ((QsScalar)Invoke(parms)).Quantity;
+            return ((QsScalar)InvokeByQsParameters(parms)).Quantity;
         }
 
         /// <summary>
@@ -140,25 +140,25 @@ namespace Qs.Runtime
                          select
                          QsParameter.MakeParameter(arg, arg.ToString())).ToArray();
 
-            return (QsScalar)Invoke(parms);
+            return (QsScalar)InvokeByQsParameters(parms);
             
         }
 
-        /// <summary>
-        /// Invoke parameterless function
-        /// </summary>
-        /// <returns></returns>
-        public AnyQuantity<double> Invoke()
-        {
-            return ((QsScalar)FunctionDelegate_0()).Quantity;
-        }
+        ///// <summary>
+        ///// Invoke parameterless function
+        ///// </summary>
+        ///// <returns></returns>
+        //public AnyQuantity<double> Invoke()
+        //{
+        //    return ((QsScalar)FunctionDelegate_0()).Quantity;
+        //}
 
         /// <summary>
         /// Invoke function with any number of parameters up to 12 parameter
         /// </summary>
         /// <param name="args"></param>
         /// <returns></returns>
-        public QsValue Invoke(params QsParameter[] args)
+        public QsValue InvokeByQsParameters(params QsParameter[] args)
         {
             switch (args.Length)
             {
@@ -233,14 +233,18 @@ namespace Qs.Runtime
                         nakedParameter,
                         rawParameter);
 
+                    
+                    // -> Catch(QsVariableNotFoundException e) {QsParameter.MakeParameter(e.ExtraData, args[ip])}
+
+                    var e = Expression.Parameter(typeof(QsVariableNotFoundException), "e");
                     Expression catchBody = Expression.Call(typeof(QsParameter).GetMethod("MakeParameter"),
-                        Expression.Constant(null),
+                        Expression.Property(e, "ExtraData"),
                         rawParameter);
 
                     // The try catch block when catch exception will execute the call but by passing the parameter as text only
                     var tt = Utils.Try(tryBody);
-                    //tt.Catch(typeof(QsVariableNotFoundException), catchBody);
-                    tt.Catch(typeof(System.Exception), catchBody);
+
+                    tt.Catch(e, catchBody);
 
                     
 
@@ -250,10 +254,13 @@ namespace Qs.Runtime
 
             }
 
-            Expression DelegateProperty = Expression.Property(Expression.Constant(this), "FunctionDelegate_" + parameters.Count.ToString(CultureInfo.InvariantCulture));
+            //Expression DelegateProperty = Expression.Property(Expression.Constant(this), "FunctionDelegate_" + parameters.Count.ToString(CultureInfo.InvariantCulture));
+            //return Expression.Invoke(DelegateProperty, parameters);
+
+            var qsParamArray = Expression.NewArrayInit(typeof(QsParameter), parameters);
+            return Expression.Call(Expression.Constant(this), this.GetType().GetMethod("InvokeByQsParameters"), qsParamArray);
             //Expression DelegateProperty = Expression.Field(Expression.Constant(this), "_FunctionDelegate");
 
-            return Expression.Invoke(DelegateProperty, parameters);
         }
 
 
@@ -276,20 +283,20 @@ namespace Qs.Runtime
                     //Handle to function.
                     if (parameters[ip].Value != null)
                     {
-                        nakedParameter = QsParameter.MakeParameter(parameters[ip].Unknown, parameters[ip].RawValue);  // and I will postpone the evaluation untill we process the function.
+                        nakedParameter = QsParameter.MakeParameter(parameters[ip].Value, parameters[ip].ParameterRawText);  // and I will postpone the evaluation untill we process the function.
                     }
                     else
                     {
                         //look for the raw value , this is the trick to keep the passed function name in the parameters if it wasn't evaluated
 
-                        nakedParameter = QsParameter.MakeParameter(parameters[ip].RawValue, parameters[ip].RawValue);
+                        nakedParameter = QsParameter.MakeParameter(parameters[ip].ParameterRawText, parameters[ip].ParameterRawText);
                     }
                 }
                 else
                 {
 
                     //normal variable
-                    nakedParameter = QsParameter.MakeParameter(parameters[ip].Quantity, parameters[ip].RawValue);
+                    nakedParameter = QsParameter.MakeParameter(parameters[ip].Quantity, parameters[ip].ParameterRawText);
 
                 }
 
@@ -297,7 +304,7 @@ namespace Qs.Runtime
 
             }
 
-            return Invoke(ProcessedParameters.ToArray());
+            return InvokeByQsParameters(ProcessedParameters.ToArray());
         }
 
         #region private delegate properties for the function with its number of parameters

@@ -100,6 +100,7 @@
     <Compile Include="Quantities\LuminousFlux.cs" />
     <Compile Include="Quantities\MagneticFlux.cs" />
     <Compile Include="Quantities\MagneticFluxDensity.cs" />
+    <Compile Include="Quantities\MassFlowRate.cs" />
     <Compile Include="Quantities\MassMomentOfInertia.cs">
       <SubType>Code</SubType>
     </Compile>

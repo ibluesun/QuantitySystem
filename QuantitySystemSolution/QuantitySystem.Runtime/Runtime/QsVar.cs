@@ -313,20 +313,15 @@ namespace Qs.Runtime
                             //      because when calling f(u)  where u=50 and u(x,y)=x+y  then I want the evaluation to get the calculations right
                             //      because 'a' alone is expressing single global variable.
 
-                            // in this expression the RawValue were set because u had marked as function argument. 
-                            Expression indirectQuantity = Expression.Property(eu, "RawValue");
 
-                            Expression rawValueNameSpace = Expression.Property(eu, "Namespace");
-                            Expression rawValueNameSpaceValue = Expression.Property(eu, "NamespaceValue");
 
-                            indirectQuantity = Expression.Call(
-                                                    typeof(QsEvaluator).GetMethod("GetScopeQsValue"),
-                                                    Expression.Constant(Scope),
-                                                    rawValueNameSpace,
-                                                    rawValueNameSpaceValue
+                            Expression indirectQuantity = Expression.Call(
+                                                    eu,
+                                                    typeof(QsParameter).GetMethod("GetIndirectQuantity"),
+                                                    Expression.Constant(Scope)
                                                     );
 
-                            //exression to test if quantity is null or not
+                            //if the quantity in parameter == null then get it as indirect quantity from the scope of the variables
 
                             quantityExpression = Expression.Condition(
                                 Expression.Equal(directQuantity, Expression.Constant(null)),
@@ -963,7 +958,7 @@ namespace Qs.Runtime
                         try
                         {
                             rw = lambdaBuilder.Parameters.Single(c => c.Name == prm);
-                            rw = Expression.Property(rw, "RawValue");  //raw value that was send with this parameter.
+                            rw = Expression.Property(rw, "ParameterRawText");  //raw value that was send with this parameter.
                         }
                         catch
                         {

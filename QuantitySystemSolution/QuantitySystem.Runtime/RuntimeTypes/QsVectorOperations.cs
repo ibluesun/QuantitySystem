@@ -416,32 +416,127 @@ namespace Qs.RuntimeTypes
 
         public override bool LessThan(QsValue value)
         {
-            throw new NotImplementedException();
+            if (value is QsScalar)
+            {
+                var s = (QsScalar)value;
+
+                return this.Magnitude().Quantity < s.Quantity;
+            }
+            else if (value is QsVector)
+            {
+                //the comparison will be based on the vector magnitudes.
+                var v = (QsVector)value;
+                return (this.Magnitude().Quantity < v.Magnitude().Quantity);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
 
         public override bool GreaterThan(QsValue value)
         {
-            throw new NotImplementedException();
+            if (value is QsScalar)
+            {
+                var s = (QsScalar)value;
+                return this.Magnitude().Quantity > s.Quantity;
+
+            }
+            else if (value is QsVector)
+            {
+                //the comparison will be based on the vector magnitudes.
+                var v = (QsVector)value;
+                return (this.Magnitude().Quantity > v.Magnitude().Quantity);
+
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
 
         public override bool LessThanOrEqual(QsValue value)
         {
-            throw new NotImplementedException();
+            if (value is QsScalar)
+            {
+                var s = (QsScalar)value;
+                return this.Magnitude().Quantity <= s.Quantity;
+
+            }
+            else if (value is QsVector)
+            {
+                //the comparison will be based on the vector magnitudes.
+                var v = (QsVector)value;
+                return (this.Magnitude().Quantity <= v.Magnitude().Quantity);
+
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
 
         public override bool GreaterThanOrEqual(QsValue value)
         {
-            throw new NotImplementedException();
+            if (value is QsScalar)
+            {
+                var s = (QsScalar)value;
+                return this.Magnitude().Quantity >= s.Quantity;
+
+            }
+            else if (value is QsVector)
+            {
+                //the comparison will be based on the vector magnitudes.
+                var v = (QsVector)value;
+                return (this.Magnitude().Quantity >= v.Magnitude().Quantity);
+
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
 
         public override bool Equality(QsValue value)
         {
-            throw new NotImplementedException();
+            if (value is QsScalar)
+            {
+                var s = (QsScalar)value;
+                return this.Magnitude().Quantity == s.Quantity;
+
+            }
+            else if (value is QsVector)
+            {
+                //the comparison will be based on the vector magnitudes.
+                var v = (QsVector)value;
+                return (this.Magnitude().Quantity == v.Magnitude().Quantity);
+
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
 
         public override bool Inequality(QsValue value)
         {
-            throw new NotImplementedException();
+            if (value is QsScalar)
+            {
+                var s = (QsScalar)value;
+                return this.Magnitude().Quantity != s.Quantity;
+
+            }
+            else if (value is QsVector)
+            {
+                //the comparison will be based on the vector magnitudes.
+                var v = (QsVector)value;
+                return (this.Magnitude().Quantity != v.Magnitude().Quantity);
+
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
         }
     }
 }

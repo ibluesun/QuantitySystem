@@ -674,7 +674,11 @@ namespace Qs.Runtime
                 }
                 else
                 {
-                    throw new QsVariableNotFoundException("Variable '" + name + "' Not Found.");
+                    throw new QsVariableNotFoundException("Variable '" + name + "' Not Found.")
+                        {
+                            Namespace = qsNamespace,
+                            Variable = name
+                        };
                 }
             }
             else

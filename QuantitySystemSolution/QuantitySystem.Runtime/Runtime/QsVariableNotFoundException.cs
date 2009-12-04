@@ -27,6 +27,11 @@ namespace Qs.Runtime
          StreamingContext context) : base(info, context)
       {
          // Implement type-specific serialization constructor logic.
-      }    
+      }
+
+
+
+      public string Namespace { get; set; }
+      public string Variable { get; set; }
     }
 }
