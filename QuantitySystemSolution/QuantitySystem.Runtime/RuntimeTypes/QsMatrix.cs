@@ -588,10 +588,9 @@ namespace Qs.RuntimeTypes
         /// <returns></returns>
         public bool DimensionEquals(QsMatrix matrix)
         {
-            if (matrix == null) return false;
+            if (matrix== null) return false;
             else
             {
-
                 if (this.RowsCount == matrix.RowsCount)
                 {
                     if (this.ColumnsCount == matrix.ColumnsCount)

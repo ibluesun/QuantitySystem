@@ -440,11 +440,13 @@ namespace Qs.RuntimeTypes
 
         public override bool Equality(QsValue value)
         {
+            if ((object)value == null) return false;
             throw new NotImplementedException();
         }
 
         public override bool Inequality(QsValue value)
         {
+            
             throw new NotImplementedException();
         }
     }

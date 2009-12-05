@@ -499,6 +499,7 @@ namespace Qs.RuntimeTypes
 
         public override bool Equality(QsValue value)
         {
+            if ((object)value == null) return false;
             if (value is QsScalar)
             {
                 var s = (QsScalar)value;
