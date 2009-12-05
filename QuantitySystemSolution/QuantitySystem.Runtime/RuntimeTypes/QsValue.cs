@@ -63,7 +63,9 @@ namespace Qs.RuntimeTypes
         abstract public bool GreaterThan(QsValue value);
         abstract public bool LessThanOrEqual(QsValue value);
         abstract public bool GreaterThanOrEqual(QsValue value);
+
         abstract public bool Equality(QsValue value);
+
         abstract public bool Inequality(QsValue value);
         #endregion
 
