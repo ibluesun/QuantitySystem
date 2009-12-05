@@ -420,7 +420,7 @@ namespace Qs.RuntimeTypes
                 //compare with the magnitude of the vector
                 var mag = vector.Magnitude();
 
-                return this.Quantity < mag.Quantity;
+                return ((QsScalar)this.AbsOperation()).Quantity < mag.Quantity;
                 
             }
             else if (value is QsMatrix)
@@ -449,7 +449,7 @@ namespace Qs.RuntimeTypes
                 //compare with the magnitude of the vector
                 var mag = vector.Magnitude();
 
-                return this.Quantity > mag.Quantity;
+                return ((QsScalar)this.AbsOperation()).Quantity > mag.Quantity;
             }
             else if (value is QsMatrix)
             {
@@ -475,7 +475,7 @@ namespace Qs.RuntimeTypes
                 //compare with the magnitude of the vector
                 var mag = vector.Magnitude();
 
-                return this.Quantity <= mag.Quantity;
+                return ((QsScalar)this.AbsOperation()).Quantity <= mag.Quantity;
             }
             else if (value is QsMatrix)
             {
@@ -501,7 +501,7 @@ namespace Qs.RuntimeTypes
                 //compare with the magnitude of the vector
                 var mag = vector.Magnitude();
 
-                return this.Quantity >= mag.Quantity;
+                return ((QsScalar)this.AbsOperation()).Quantity >= mag.Quantity;
             }
             else if (value is QsMatrix)
             {
@@ -529,7 +529,7 @@ namespace Qs.RuntimeTypes
                 //compare with the magnitude of the vector
                 var mag = vector.Magnitude();
 
-                return this.Quantity == mag.Quantity;
+                return ((QsScalar)this.AbsOperation()).Quantity == mag.Quantity;
             }
             else if (value is QsMatrix)
             {
@@ -555,7 +555,7 @@ namespace Qs.RuntimeTypes
                 //compare with the magnitude of the vector
                 var mag = vector.Magnitude();
 
-                return this.Quantity != mag.Quantity;
+                return ((QsScalar)this.AbsOperation()).Quantity != mag.Quantity;
             }
             else if (value is QsMatrix)
             {

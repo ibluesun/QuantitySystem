@@ -418,7 +418,7 @@ namespace Qs.RuntimeTypes
         {
             if (value is QsScalar)
             {
-                var s = (QsScalar)value;
+                var s = (QsScalar)value.AbsOperation();
 
                 return this.Magnitude().Quantity < s.Quantity;
             }
@@ -438,7 +438,7 @@ namespace Qs.RuntimeTypes
         {
             if (value is QsScalar)
             {
-                var s = (QsScalar)value;
+                var s = (QsScalar)value.AbsOperation();
                 return this.Magnitude().Quantity > s.Quantity;
 
             }
@@ -459,7 +459,7 @@ namespace Qs.RuntimeTypes
         {
             if (value is QsScalar)
             {
-                var s = (QsScalar)value;
+                var s = (QsScalar)value.AbsOperation();
                 return this.Magnitude().Quantity <= s.Quantity;
 
             }
@@ -480,7 +480,7 @@ namespace Qs.RuntimeTypes
         {
             if (value is QsScalar)
             {
-                var s = (QsScalar)value;
+                var s = (QsScalar)value.AbsOperation();
                 return this.Magnitude().Quantity >= s.Quantity;
 
             }
@@ -500,9 +500,10 @@ namespace Qs.RuntimeTypes
         public override bool Equality(QsValue value)
         {
             if ((object)value == null) return false;
+
             if (value is QsScalar)
             {
-                var s = (QsScalar)value;
+                var s = (QsScalar)value.AbsOperation();
                 return this.Magnitude().Quantity == s.Quantity;
 
             }
@@ -523,7 +524,7 @@ namespace Qs.RuntimeTypes
         {
             if (value is QsScalar)
             {
-                var s = (QsScalar)value;
+                var s = (QsScalar)value.AbsOperation();
                 return this.Magnitude().Quantity != s.Quantity;
 
             }
