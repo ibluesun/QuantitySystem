@@ -71,6 +71,7 @@
     <Compile Include="Modules\Math.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Modules\Matrix.cs" />
     <Compile Include="Modules\Windows.cs" />
     <Compile Include="QsInvalidInputException.cs" />
     <Compile Include="ParticleLexer\Token.cs" />

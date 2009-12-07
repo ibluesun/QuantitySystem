@@ -515,7 +515,10 @@ namespace Qs.RuntimeTypes
             }
         }
 
-        public bool IsDeterminant
+        /// <summary>
+        /// Check if the matrix is n x n dimensions
+        /// </summary>
+        public bool IsSquared
         {
             get
             {
@@ -530,7 +533,7 @@ namespace Qs.RuntimeTypes
         /// <returns></returns>
         public QsVector Determinant()
         {
-            if (IsDeterminant)
+            if (IsSquared)
             {
                 if(IsScalar)
                 {
@@ -608,7 +611,7 @@ namespace Qs.RuntimeTypes
 
 
         /// <summary>
-        /// Make identity matrix bases on dimention
+        /// Make identity matrix bases on dimension
         /// </summary>
         /// <param name="n">dimension or n * n matrix</param>
         /// <returns></returns>

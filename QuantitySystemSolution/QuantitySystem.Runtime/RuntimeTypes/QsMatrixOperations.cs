@@ -216,7 +216,7 @@ namespace Qs.RuntimeTypes
         {
             get
             {
-                if (IsDeterminant)
+                if (IsSquared)
                 {
                     return MakeIdentity(this.RowsCount);
                 }
@@ -330,7 +330,7 @@ namespace Qs.RuntimeTypes
             }
             else if (value is QsMatrix)
             {
-                return this.DivideMatrixByElements((QsMatrix)value);
+                throw new NotSupportedException();
             }
             else
             {
@@ -351,7 +351,7 @@ namespace Qs.RuntimeTypes
             }
             else if (value is QsMatrix)
             {
-                return this.ModuloMatrixByElements((QsMatrix)value);
+                throw new NotSupportedException();
             }
             else
             {
@@ -418,6 +418,7 @@ namespace Qs.RuntimeTypes
         #endregion
 
 
+        #region Relational Operations
         public override bool LessThan(QsValue value)
         {
             throw new NotImplementedException();
@@ -449,5 +450,14 @@ namespace Qs.RuntimeTypes
             
             throw new NotImplementedException();
         }
+
+        #endregion
+
+
+        #region Decomposition
+
+        // To write composition code here.
+
+        #endregion
     }
 }
