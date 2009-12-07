@@ -33,6 +33,10 @@ fun:c[] ..> fun:b[] / fun:a[]
 fun:g(x) = x^2
 fun:g(y) = fun:g(x:=y) + y^3
 fun:g(z) = fun:g(y:=z) + z^4
+fun:g(z:=fun:g(y:=fun:g(x:=2)))
+fun:ec(c) = c when c<=10 otherwise c^2 when c<=20 othwerwise c^3 when c<=30 otherwise c^4 when c<=40 otherwise c^5
+
+
 
 fun:c(x,y) = x(y/2)
 fun:d(x,y) = x+y
@@ -63,7 +67,6 @@ wave:Square(x) = math:sgn(math:sin(x))  						#http://en.wikipedia.org/wiki/Squa
 
 MsgBox(text) = Windows:MessageBox(text)
 
-MsgBox(Loading Completed.);
 
 
 #Please Accept my deepest regards 

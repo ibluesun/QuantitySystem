@@ -144,14 +144,14 @@ namespace Qs.Runtime
             
         }
 
-        ///// <summary>
-        ///// Invoke parameterless function
-        ///// </summary>
-        ///// <returns></returns>
-        //public AnyQuantity<double> Invoke()
-        //{
-        //    return ((QsScalar)FunctionDelegate_0()).Quantity;
-        //}
+        /// <summary>
+        /// Invoke parameterless function
+        /// </summary>
+        /// <returns></returns>
+        public AnyQuantity<double> Invoke()
+        {
+            return ((QsScalar)FunctionDelegate_0()).Quantity;
+        }
 
         /// <summary>
         /// Invoke function with any number of parameters up to 12 parameter
@@ -220,10 +220,18 @@ namespace Qs.Runtime
                         nakedParameter,
                         rawParameter));
                 }
+                else if (this.Parameters[ip].Type == QsParamType.Raw)
+                {
+                    //don't evaluate the parameter 
+                    // just take the text and pass it to the function as it is.
+                    nakedParameter = Expression.Constant(QsParameter.MakeParameter(args[ip], args[ip]));
+
+                    parameters.Add(nakedParameter);
+                }
                 else
                 {
                     //normal variable
-                    
+
                     nakedParameter = vario.ParseArithmatic(args[ip]);
 
                     // if this was another function name without like  v(c,g,8)  where g is a function name will be passed to c
@@ -233,7 +241,7 @@ namespace Qs.Runtime
                         nakedParameter,
                         rawParameter);
 
-                    
+
                     // -> Catch(QsVariableNotFoundException e) {QsParameter.MakeParameter(e.ExtraData, args[ip])}
 
                     var e = Expression.Parameter(typeof(QsVariableNotFoundException), "e");
@@ -246,7 +254,7 @@ namespace Qs.Runtime
 
                     tt.Catch(e, catchBody);
 
-                    
+
 
                     parameters.Add(tt.ToExpression());
                 }
@@ -291,6 +299,10 @@ namespace Qs.Runtime
 
                         nakedParameter = QsParameter.MakeParameter(parameters[ip].ParameterRawText, parameters[ip].ParameterRawText);
                     }
+                }
+                else if (this.Parameters[ip].Type == QsParamType.Raw)
+                {
+                    nakedParameter = QsParameter.MakeParameter(parameters[ip].ParameterRawText, parameters[ip].ParameterRawText);
                 }
                 else
                 {
@@ -562,12 +574,31 @@ namespace Qs.Runtime
                 string functionNamespace = "";
                 if (nsidx == 1) functionNamespace = t[0][0].TokenValue;
 
-                //get parameters
-                QsParamInfo[] prms = (from c in t[nsidx + 1]
-                                      where c.TokenType == typeof(WordToken)
-                                      select new QsParamInfo { Name = c.TokenValue, Type = QsParamType.Value }).ToArray();
+                List<string> textParams = new List<string>();
+                List<QsParamInfo> prms = new List<QsParamInfo>();
+                foreach (var c in t[nsidx + 1])
+                {
+                    if (
+                            c.TokenValue.StartsWith("(") || 
+                            c.TokenValue.StartsWith(")") || 
+                            c.TokenValue.StartsWith(",") ||
+                            c.TokenType==typeof(SpaceToken)
+                        )
+                    {
+                        //ignore these things.
+                    }
+                    else
+                    {
 
-                var textParams = from prm in prms select prm.Name;
+                        if (char.IsLetter(c.TokenValue[0]))
+                        {
+                            textParams.Add(c.TokenValue);
+                            prms.Add(new QsParamInfo { Name = c.TokenValue, Type = QsParamType.Value });
+                        }
+                        else
+                            throw new QsSyntaxErrorException("Parameter name must statrt with a letter");
+                    }
+                }
 
                 QsFunction qf;
 
@@ -585,7 +616,7 @@ namespace Qs.Runtime
                      {
                          FunctionNamespace = functionNamespace,
                          FunctionName = functionName,
-                         Parameters = prms
+                         Parameters = prms.ToArray()
                      };
                 }
                 else
@@ -603,7 +634,7 @@ namespace Qs.Runtime
                         {
                             FunctionNamespace = functionNamespace,
                             FunctionName = functionName,
-                            Parameters = prms
+                            Parameters = prms.ToArray()
                         };
                     }
                     else

@@ -1,3 +1,15 @@
+[Qs 1.1.9.85]  (Released)
+- Fixed some bugs:
+	Equality operator in matrix result in bad behaviour  when comparing to null.
+	parsing of inner functions with named arguments.
+
+- Scalar and Vector comparison operators is working with the norm values {absolute in scalar and magnitude in vector}
+
+- Added checking for variable names and to prevent treating numbers as variable names.
+
+- This will be released as attempt one before 1.2 release if things is good i'll release 1.2 soon.
+
+
 [Qs 1.1.9.8]
 - fixed casing error in when otherwise  statement
 
