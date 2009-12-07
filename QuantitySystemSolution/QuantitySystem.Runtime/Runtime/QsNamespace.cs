@@ -150,6 +150,7 @@ namespace Qs.Runtime
                     QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
                         typeof(Func<QsParameter, QsParameter, QsValue>),
                         methodInfo);
+                    
                     break;
                 case 3:
                     QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(

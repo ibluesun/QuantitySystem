@@ -812,16 +812,19 @@ namespace Qs.Runtime
             {
                 string namedParam = paramsText[i];
 
-                string[] pr = namedParam.Split(new string[] { ":=" }, StringSplitOptions.None);
-                if (pr.Length > 1)
+                int NamedAssignOperatorIndex = namedParam.IndexOf(":=");
+
+                if (NamedAssignOperatorIndex >= 1)
                 {
-                    argNames.Add(pr[0]);
+                    argNames.Add(namedParam.Substring(0, NamedAssignOperatorIndex));
                     NamedArgumentOccured = true;
                 }
                 else
                 {
                     if (NamedArgumentOccured) throw new QsException("Normal argument after named argument is not permitted");
                 }
+
+                
             }
 
             int FirstNamedArgumentIndex = paramsText.Count - argNames.Count; //point to the index of the first named argument in the caller.
@@ -1048,13 +1051,12 @@ namespace Qs.Runtime
                 {
                     string namedParam = paramsText[i];
 
-                    string[] pr = namedParam.Split(new string[] { ":=" }, StringSplitOptions.None);
+                    int NamedAssignOperatorIndex = namedParam.IndexOf(":=");
 
-
-                    if (pr.Length > 1)
+                    if (NamedAssignOperatorIndex >= 1)
                     {
-                        string paramName = pr[0].Trim();
-                        string paramVal = pr[1].Trim();
+                        string paramName = namedParam.Substring(0, NamedAssignOperatorIndex).Trim();
+                        string paramVal = namedParam.Substring(NamedAssignOperatorIndex + 2).Trim();
 
                         if (fParameters.ContainsKey(paramName))
                         {
