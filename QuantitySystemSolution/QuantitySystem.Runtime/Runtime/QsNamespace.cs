@@ -52,12 +52,19 @@ namespace Qs.Runtime
 
         public void SetValue(string name, object value)
         {
-            if (_NamespaceType != null)
+            if (char.IsLetter(name[0]))
             {
-                var prop = _NamespaceType.GetProperty(name, BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase);
-                if (prop != null)
+                if (_NamespaceType != null)
                 {
-                    prop.SetValue(null, value, null);
+                    var prop = _NamespaceType.GetProperty(name, BindingFlags.Public | BindingFlags.Static | BindingFlags.IgnoreCase);
+                    if (prop != null)
+                    {
+                        prop.SetValue(null, value, null);
+                    }
+                    else
+                    {
+                        Values[name] = value;
+                    }
                 }
                 else
                 {
@@ -66,7 +73,7 @@ namespace Qs.Runtime
             }
             else
             {
-                Values[name] = value;
+                throw new QsSyntaxErrorException("Variable name must start with a letter.");
             }
         }
 
@@ -123,10 +130,27 @@ namespace Qs.Runtime
             QsModFunc.FunctionNamespace = qsNamespace;
             QsModFunc.FunctionName = qsFuncName;
 
-            QsParamInfo[] prms = (from c in miParameters
-                                  select new QsParamInfo { Name = c.Name, Type = QsParamType.Value }).ToArray();
+            List<QsParamInfo> prms = new List<QsParamInfo>(miParameters.Length);
 
-            QsModFunc.Parameters = prms;
+            foreach (var miParam in miParameters)
+            {
+                QsParamInfo prm = new QsParamInfo();
+
+                //parameter name
+                prm.Name = miParam.Name;
+
+                var pis = miParam.GetCustomAttributes(typeof(QsParamInfoAttribute), true);
+
+                if (pis.Length > 0)
+                    prm.Type = ((QsParamInfoAttribute)pis[0]).ParameterType;
+                else
+                    prm.Type = QsParamType.Value;
+
+                prms.Add(prm);
+            }
+
+            
+            QsModFunc.Parameters = prms.ToArray();
             QsModFunc.FunctionBody += "(";
             StringBuilder sb = new StringBuilder();
             foreach (var p in prms) sb.Append(", " + p.Name);

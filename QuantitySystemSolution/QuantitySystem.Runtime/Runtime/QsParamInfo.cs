@@ -35,13 +35,13 @@ namespace Qs.Runtime
     /// Function Parameter Information Attribute.
     /// </summary>
     [AttributeUsage(AttributeTargets.Parameter, AllowMultiple = false)]
-    public class QsParamInfoAttribute : Attribute
+    public sealed class QsParamInfoAttribute : Attribute
     {
-        public string Name { get; private set; }
-        
-        public QsParamInfoAttribute(string name)
+        public QsParamType ParameterType { get; set; }
+
+        public QsParamInfoAttribute(QsParamType parameterType)
         {
-            Name = name;
+            ParameterType = parameterType;
         }
     }
 }

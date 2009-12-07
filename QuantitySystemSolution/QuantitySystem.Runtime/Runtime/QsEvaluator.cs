@@ -329,11 +329,11 @@ namespace Qs.Runtime
 
                     if (char.IsNumber(varName[0]))
                     {
-                        throw (new QsInvalidInputException("Variable must start with a letter"));
+                        throw (new QsSyntaxErrorException("Variable must start with a letter"));
                     }
 
                     if (varName.Contains(" ") || varName.Contains("\t"))
-                        throw (new QsInvalidInputException("Variable shouldn't contain spaces"));
+                        throw (new QsSyntaxErrorException("Variable shouldn't contain spaces"));
 
                     line = line.Substring(AssignOperatorIndex + 1, line.Length - AssignOperatorIndex - 1);
                 }

@@ -17,13 +17,13 @@ namespace Qs.Modules
         public static QsValue MessageBox(QsParameter text)
         {
 
-            IWin32Window  fw = null;
+            IWin32Window fw = null;
             try { fw = ForegroundWindow.Instance; }
             catch { }
-            
+
             DialogResult d =
                 System.Windows.Forms.MessageBox.Show(
-                fw, 
+                fw,
                 text.UnknownValueText,
                     "Quantity System"
                 );
@@ -31,7 +31,7 @@ namespace Qs.Modules
             return ((int)d).ToScalarValue();
         }
 
-        public static QsValue MessageBox(QsParameter text, QsParameter caption)
+        public static QsValue MessageBox(QsParameter text, [QsParamInfo(QsParamType.Raw)]QsParameter caption)
         {
             IWin32Window fw = null;
             try { fw = ForegroundWindow.Instance; }
@@ -39,12 +39,18 @@ namespace Qs.Modules
 
             DialogResult d =
                 System.Windows.Forms.MessageBox.Show(
-                fw, 
+                fw,
                 text.UnknownValueText,
                 caption.UnknownValueText
                 );
 
             return ((int)d).ToScalarValue();
+        }
+
+        public static QsValue Beep()
+        {
+            System.Media.SystemSounds.Beep.Play();
+            return null;
         }
     }
 

@@ -9,9 +9,16 @@ namespace Qs.Modules
 {
     public static class Matrix
     {
-        public static QsValue L(QsParameter m)
+
+        public static QsValue Transpose(QsParameter matrix)
         {
-            return m.Quantity;
+            if (matrix.Quantity is QsMatrix)
+            {
+                return ((QsMatrix)matrix.Quantity).Transpose();
+            }
+            else
+                throw new QsInvalidInputException("Expected matrix input");
         }
+
     }
 }

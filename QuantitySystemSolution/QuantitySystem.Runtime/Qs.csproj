@@ -79,6 +79,7 @@
     <Compile Include="ParticleLexer\TokenType.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Qs.cs" />
+    <Compile Include="QsSyntaxErrorException.cs" />
     <Compile Include="Runtime\QsFunctionNotFoundException.cs" />
     <Compile Include="Runtime\QsFunction_Helper.cs" />
     <Compile Include="Runtime\Operators\QsGamma.cs" />
