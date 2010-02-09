@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Qs.RuntimeTypes
+
+namespace Qs.Types
 {
     /// <summary>
     /// Base class for all QsValues Scalar, Vector, and Matrix, and later Tensor.
@@ -170,6 +171,7 @@ namespace Qs.RuntimeTypes
         #region Relational operators
         public static bool operator <(QsValue a, QsValue b)
         {
+            
             return a.LessThan(b);
         }
         public static bool operator <=(QsValue a, QsValue b)
@@ -186,11 +188,24 @@ namespace Qs.RuntimeTypes
         }
         public static bool operator ==(QsValue a, QsValue b)
         {
+            // If both are null, or both are same instance, return true.
+            if (System.Object.ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            // If one is null, but not both, return false.
+            if (((object)a == null) || ((object)b == null))
+            {
+                return false;
+            }
+
             return a.Equality(b);
         }
         public static bool operator !=(QsValue a, QsValue b)
         {
-            return a.Inequality(b);
+            return !(a == b);
+
         }
 
         #endregion

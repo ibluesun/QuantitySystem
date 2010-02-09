@@ -6,7 +6,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 using System.Globalization;
 using QuantitySystem.Units;
 using Microsoft.Scripting.Ast;
-using Qs.RuntimeTypes;
+using Qs.Types;
 
 namespace Qs.Runtime
 {
@@ -143,7 +143,34 @@ namespace Qs.Runtime
                 }
             }
 
-            val = (QsValue)GetElement(index).Execute(index);
+            
+            if (this.Parameters.Length > 0)
+            {
+                // this is a call to form symbolic element
+                // like g[n](x) ..> x^n
+                // and calling g[2] 
+                //  the output should be x^2
+                //  and be parsed into function  (QsFunction)
+                var e = GetElement(index);
+
+                var FunctionBody= e.ElementDeclaration.Replace(this.SequenceIndexName, index.ToString(CultureInfo.InvariantCulture));
+
+                string porma = string.Empty;  // the parameters separated by comma ','
+                foreach (var prm in this.Parameters)
+                {
+                    porma += prm.Name + ", ";
+                }
+                porma = porma.TrimEnd(',', ' ');
+
+                string FunctionDeclaration = "_(" + porma + ") = " + FunctionBody;
+
+                QsFunction qs = QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, FunctionDeclaration);
+                return qs;
+            }
+            else
+            {
+                val = GetElement(index).Execute(index);
+            }
 
             if (CachingEnabled) CachedValues[index] = val;
 
@@ -214,22 +241,76 @@ namespace Qs.Runtime
             }
         }
 
+        public string FormFunctions(int fromIndex, int toIndex, string operation)
+        {
+            string FunctionBody = string.Empty;
+            int counterIndex = fromIndex;
+            bool still = true;
+            while (still)
+            {
+                var e = GetElement(counterIndex);
+
+                FunctionBody += "(" + e.ElementDeclaration.Replace(this.SequenceIndexName, counterIndex.ToString(CultureInfo.InvariantCulture)) + ")";
+
+                if (fromIndex > toIndex)
+                {
+                    counterIndex--;
+                    if (counterIndex < toIndex) still = false;
+                }
+                else
+                {
+                    counterIndex++;
+                    if (counterIndex > toIndex) still = false;
+                }
+                if (still)
+                    FunctionBody += " " + operation + " ";
+            }
+            return FunctionBody;
+        }
+
         /// <summary>
         /// The method sum all elements in the sequence between the supplied indexes.
         /// Correspondes To: S[i++k]
         /// </summary>
         public QsValue SumElements(int fromIndex, int toIndex)
         {
-            FixIndices(ref fromIndex, ref toIndex);
 
-            QsValue Total = GetElementValue(fromIndex);
-
-            for (int i = fromIndex + 1; i <= toIndex; i++)
+            if (this.Parameters.Length > 0)
             {
-                Total = Total + GetElementValue(i);
-            }
+                // this is a call to form symbolic element
+                // like g[n](x) ..> x^n
+                // and calling g[0++2] 
+                //  the output should be x^0 + x^1 + x^2
+                //  and be parsed into function  (QsFunction)
 
-            return Total;
+                
+                string porma = string.Empty;  // the parameters separated by comma ','
+                foreach (var prm in this.Parameters)
+                {
+                    porma += prm.Name + ", ";
+                }
+                porma = porma.TrimEnd(',', ' ');
+
+                string FunctionBody = FormFunctions(fromIndex, toIndex, "+");
+
+                string FunctionDeclaration = "_(" + porma + ") = " + FunctionBody;
+
+                QsFunction qs = QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, FunctionDeclaration);
+                return qs;
+            }
+            else
+            {
+                FixIndices(ref fromIndex, ref toIndex);
+
+                QsValue Total = GetElementValue(fromIndex);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total = Total + GetElementValue(i);
+                }
+
+                return Total;
+            }
         }
 
         #region SumElements Functions
@@ -321,12 +402,39 @@ namespace Qs.Runtime
         /// <returns></returns>
         public QsValue Average(int fromIndex, int toIndex)
         {
-            FixIndices(ref fromIndex, ref toIndex);
-
-            var tot = SumElements(fromIndex, toIndex);
             var n = toIndex - fromIndex + 1;
-            var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
-            return tot / count;
+            if (this.Parameters.Length > 0)
+            {
+                // this is a call to form symbolic element
+                // like g[n](x) ..> x^n
+                // and calling g[0++2] 
+                //  the output should be x^0 + x^1 + x^2
+                //  and be parsed into function  (QsFunction)
+
+
+                string porma = string.Empty;  // the parameters separated by comma ','
+                foreach (var prm in this.Parameters)
+                {
+                    porma += prm.Name + ", ";
+                }
+                porma = porma.TrimEnd(',', ' ');
+
+                string FunctionBody = "(" + FormFunctions(fromIndex, toIndex, "+") + ")/" + n.ToString(CultureInfo.InvariantCulture);
+
+                string FunctionDeclaration = "_(" + porma + ") = " + FunctionBody;
+
+                QsFunction qs = QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, FunctionDeclaration);
+                return qs;
+            }
+            else
+            {
+                FixIndices(ref fromIndex, ref toIndex);
+
+                var tot = SumElements(fromIndex, toIndex);
+                
+                var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
+                return tot / count;
+            }
         }
 
 
@@ -405,16 +513,42 @@ namespace Qs.Runtime
         /// </summary>
         public QsValue MulElements(int fromIndex, int toIndex)
         {
-            FixIndices(ref fromIndex, ref toIndex);
-
-            QsValue Total = GetElementValue(fromIndex);
-
-            for (int i = fromIndex + 1; i <= toIndex; i++)
+            if (this.Parameters.Length > 0)
             {
-                Total = Total * GetElementValue(i);
-            }
+                // this is a call to form symbolic element
+                // like g[n](x) ..> x^n
+                // and calling g[0++2] 
+                //  the output should be x^0 + x^1 + x^2
+                //  and be parsed into function  (QsFunction)
 
-            return Total;
+
+                string porma = string.Empty;  // the parameters separated by comma ','
+                foreach (var prm in this.Parameters)
+                {
+                    porma += prm.Name + ", ";
+                }
+                porma = porma.TrimEnd(',', ' ');
+
+                string FunctionBody = FormFunctions(fromIndex, toIndex, "*");
+
+                string FunctionDeclaration = "_(" + porma + ") = " + FunctionBody;
+
+                QsFunction qs = QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, FunctionDeclaration);
+                return qs;
+            }
+            else
+            {
+                FixIndices(ref fromIndex, ref toIndex);
+
+                QsValue Total = (QsValue)GetElementValue(fromIndex);
+
+                for (int i = fromIndex + 1; i <= toIndex; i++)
+                {
+                    Total = Total * (QsValue)GetElementValue(i);
+                }
+
+                return Total;
+            }
         }
 
         #region MulElements Functions
@@ -509,7 +643,7 @@ namespace Qs.Runtime
         /// <returns></returns>
         public QsValue QsValueElements(int fromIndex, int toIndex)
         {
-            QsValue firstElement = GetElementValue(fromIndex);
+            QsValue firstElement = (QsValue)GetElementValue(fromIndex);
             if (firstElement is QsScalar)
             {
                 //return vector
@@ -523,7 +657,6 @@ namespace Qs.Runtime
                     {
                         Total.AddComponent((QsScalar)GetElementValue(i));
                     }
-
                 }
                 else
                 {
@@ -532,8 +665,6 @@ namespace Qs.Runtime
                         Total.AddComponent((QsScalar)GetElementValue(i));
                     }
                 }
-
-
                 return Total;
             }
             else if(firstElement is QsVector)
@@ -996,7 +1127,7 @@ namespace Qs.Runtime
             while (((QsScalar)q).Quantity.Value < double.MaxValue)
             {
 
-                yield return q;
+                yield return (QsValue)q;
 
                 i++;
                 q = this.GetElementValue(i);

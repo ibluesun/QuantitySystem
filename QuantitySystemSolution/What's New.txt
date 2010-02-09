@@ -1,3 +1,26 @@
+[Qs 1.1.9.9]
+- Removed ^x (PowerCross) Operator (it was annoying)
+- Sequence can return function  when calling without parameters.
+  so if you define g[n](x) ..> x^n  you can get x^2 by calling g[2]
+  or better you can get a function that hold a series by calling g[0++6]
+- by introducing the new Sequence functionality we are here making a small step into the symbolic algebra world.
+
+- breaking change named argument now is with  equal sign only not ':=' so that
+   f(x) = x
+   f(y) = y^2
+   f(z) = z^3
+   
+   vv = f(z = f(y = f(x = 10)))  
+  
+- Paticle Lexer Separated into independent library.
+
+- No referencing for global variables in functions
+   functions only depend on parameters.
+   
+- Bug Fixed: Relation between parameters and parameters in function body are case insensetive.
+
+   
+
 [Qs 1.1.9.85]  (Released)
 - Fixed some bugs:
 	Equality operator in matrix result in bad behaviour  when comparing to null.

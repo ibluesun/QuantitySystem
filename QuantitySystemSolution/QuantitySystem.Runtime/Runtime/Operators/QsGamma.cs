@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
-using Qs.RuntimeTypes;
+using Qs.Types;
 
 namespace Qs.Runtime.Operators
 {

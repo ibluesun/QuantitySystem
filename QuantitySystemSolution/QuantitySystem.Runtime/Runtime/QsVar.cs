@@ -7,7 +7,7 @@ using Microsoft.Scripting;
 using Microsoft.Scripting.Ast;
 
 using ParticleLexer;
-using ParticleLexer.TokenTypes;
+using ParticleLexer.StandardTokens;
 using QuantitySystem;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Quantities.DimensionlessQuantities;
@@ -15,8 +15,9 @@ using QuantitySystem.Units;
 using System.Globalization;
 using Qs.Modules;
 using System.Reflection;
-using Qs.RuntimeTypes;
+using Qs.Types;
 using Qs.Runtime.Operators;
+using ParticleConsole.QsTokens;
 
 
 namespace Qs.Runtime
@@ -147,7 +148,8 @@ namespace Qs.Runtime
         internal Token MergeOperators(Token token)
         {
             Token tok = token.MergeTokens(new PowerDotToken());
-            tok = tok.MergeTokens(new PowerCrossToken());
+
+            //tok = tok.MergeTokens(new PowerCrossToken()); removed
             
 
             return tok;
@@ -161,7 +163,7 @@ namespace Qs.Runtime
 
             tokens = tokens.MergeTokens(new AndStatementToken());
             tokens = tokens.MergeTokens(new OrStatementToken());
-            tokens = tokens.MergeTokens(new EqualToken());
+            tokens = tokens.MergeTokens(new EqualityToken());
             tokens = tokens.MergeTokens(new NotEqualToken());
             tokens = tokens.MergeTokens(new LessThanToken());
             tokens = tokens.MergeTokens(new LessThanOrEqualToken());
@@ -184,7 +186,7 @@ namespace Qs.Runtime
         {
             var tokens = Token.ParseText(line);            
 
-            tokens = tokens.MergeTokens(new SpaceToken());
+            tokens = tokens.MergeTokens(new MultipleSpaceToken());
 
             tokens = ConditionsTokenize(tokens);   // make tokens of conditional statements
 
@@ -197,17 +199,36 @@ namespace Qs.Runtime
             tokens = tokens.MergeTokens(new NameSpaceToken());
             tokens = tokens.MergeTokens(new NameSpaceAndValueToken());
 
-            tokens = tokens.GroupBrackets();                             // group (--()-) parenthesis
+            tokens = tokens.MergeTokensInGroups(
+                new ParenthesisGroupToken(),                // group (--()-) parenthesis
+                new SquareBracketsGroupToken(),             // [[][][]]
+                new CurlyBracketGroupToken()                //  {{}}{}
+                );     
 
 
-            tokens = tokens.MergeTokens(new MagnitudeToken());
-            tokens = tokens.MergeTokens(new AbsoluteToken());
+            tokens = tokens.MergeTokens<MagnitudeToken>();
+            tokens = tokens.MergeTokens<AbsoluteToken>();
 
-
+            //s[n](x)  is word+SquareBracketsCallToken+Parentthesiscalltoken
+            
 
             tokens = tokens.RemoveSpaceTokens();                           //remove all spaces
 
-            tokens = tokens.DiscoverCalls(StringComparer.OrdinalIgnoreCase, "When", "Otherwise", "and", "or"); //ignore reserved words 
+            
+            //tokens = tokens.DiscoverCalls(StringComparer.OrdinalIgnoreCase,
+            //    new CallTokenClass[] { 
+            //        new ParenthesisCallToken(), 
+            //        new SquareBracketsCallToken() 
+            //    },   
+            //    new Type[] { typeof(WordToken), typeof(NameSpaceAndValueToken) },
+            //    new string[] { "When", "Otherwise", "and", "or" } //ignore reserved words 
+            //    );
+
+            tokens = tokens.DiscoverQsCalls(StringComparer.OrdinalIgnoreCase,
+                new string[] { "When", "Otherwise", "and", "or" }
+                );
+
+
 
             Expression quantityExpression = null;
             ExprOp eop = null;
@@ -239,7 +260,7 @@ namespace Qs.Runtime
                     }
 
                 }
-                if(tokens[ix].TokenType == typeof(SequenceCallToken))
+                if(tokens[ix].TokenClassType == typeof(SequenceCallToken))
                 {
                     quantityExpression = SequenceCallExpression(
                         tokens[ix][0].TokenValue,
@@ -248,7 +269,7 @@ namespace Qs.Runtime
                         );
 
                 }
-                else if (tokens[ix].TokenType == typeof(FunctionCallToken))
+                else if (tokens[ix].TokenClassType == typeof(ParenthesisCallToken))
                 {
 
                     quantityExpression = FunctionCallExpression(
@@ -256,37 +277,37 @@ namespace Qs.Runtime
                         tokens[ix][1]
                         );
                 }
-                else if (tokens[ix].TokenType == typeof(ParenthesisGroupToken))
+                else if (tokens[ix].TokenClassType == typeof(ParenthesisGroupToken))
                 {
                     quantityExpression = ParseArithmatic(q.Substring(1, q.Length - 2));
                 }
-                else if (tokens[ix].TokenType == typeof(UnitizedNumberToken))
+                else if (tokens[ix].TokenClassType == typeof(UnitizedNumberToken))
                 {
                     //unitized number                    
                     quantityExpression = Expression.Constant(QsValue.ParseScalar(q), typeof(QsValue)); //you have to explicitly tell expression the type because it searches for the operators and can't find them
                 }
-                else if (tokens[ix].TokenType == typeof(NumberToken))
+                else if (tokens[ix].TokenClassType == typeof(NumberToken))
                 {
                     //ordinary number
 
                     quantityExpression = Expression.Constant(QsValue.ParseScalar(q), typeof(QsValue));
 
                 }
-                else if (tokens[ix].TokenType == typeof(CurlyBracketGroupToken))
+                else if (tokens[ix].TokenClassType == typeof(CurlyBracketGroupToken))
                 {
                     // Vector declaration.
                     quantityExpression = ParseVector(tokens[ix]);
                 }
-                else if (tokens[ix].TokenType == typeof(SquareBracketGroupToken))
+                else if (tokens[ix].TokenClassType == typeof(SquareBracketsGroupToken))
                 {
                     // Matrix declaration.
                     quantityExpression = ParseMatrix(tokens[ix]);
                 }
-                else if (tokens[ix].TokenType == typeof(MagnitudeToken))
+                else if (tokens[ix].TokenClassType == typeof(MagnitudeToken))
                 {
                     quantityExpression = ValueNorm(tokens[ix]);
                 }
-                else if (tokens[ix].TokenType == typeof(AbsoluteToken))
+                else if (tokens[ix].TokenClassType == typeof(AbsoluteToken))
                 {
                     quantityExpression = ValueAbsolute(tokens[ix]);
                 }
@@ -295,14 +316,14 @@ namespace Qs.Runtime
                     // Word token:  means variable 
                     if (ParseMode == QsVarParseModes.Function)
                     {
-                        #region Variabl in Function Parsing
+                        #region Variable in Function Parsing
                         //get it from the parameters of the lambda
                         //  :) if it is found here then it will not be obtained from the global heap :)
-                        //      now I understand how variable scopes occur :D
+                        //      now I understand how variable scopes occure :D
 
                         try
                         {
-                            Expression eu = lambdaBuilder.Parameters.Single(c => c.Name == q);
+                            Expression eu = lambdaBuilder.Parameters.Single(c => c.Name.Equals(q, StringComparison.OrdinalIgnoreCase));
 
 
                             // parameter is having quantity in normal cases
@@ -335,7 +356,8 @@ namespace Qs.Runtime
                             System.Diagnostics.Debug.Print(e.ToString());
 
                             //quantity variable  //get it from evaluator  global heap
-                            quantityExpression = GetVariable(q);
+                            //quantityExpression = GetVariable(q);
+                            throw new QsParameterNotFoundException(q);
                         }
                         #endregion
                     }
@@ -460,13 +482,13 @@ namespace Qs.Runtime
             Token token = tok.TrimStart(typeof(LeftCurlyBracketToken));
             token = token.TrimEnd(typeof(RightCurlyBracketToken));
 
-            token = token.MergeAllBut(typeof(WordToken), new CommaToken(), new SpaceToken());
-            token = token.RemoveTokens(typeof(CommaToken), typeof(SpaceToken));
+            token = token.MergeAllBut(typeof(WordToken), new CommaToken(), new MultipleSpaceToken());
+            token = token.RemoveTokens(typeof(CommaToken), typeof(MultipleSpaceToken));
             
 
             for (int i = 0; i < token.Count ;i++ )
             {
-                if (token[i].TokenType==typeof(WordToken))
+                if (token[i].TokenClassType==typeof(WordToken))
                 {
                     qtyExpressions.Add(ParseArithmatic(token[i].TokenValue));
                 }
@@ -506,7 +528,7 @@ namespace Qs.Runtime
 
             for (int i = 0; i < token.Count; i++)
             {
-                if (token[i].TokenType == typeof(WordToken))
+                if (token[i].TokenClassType == typeof(WordToken))
                 {
 
                     vctExpressions.Add(ParseArithmatic("{" + token[i].TokenValue + "}"));
@@ -653,7 +675,7 @@ namespace Qs.Runtime
             
             itok = itok.MergeAllBut(typeof(WordToken), new SequenceRangeToken());
 
-            if (itok.Count == 3 && itok[1].TokenType == typeof(SequenceRangeToken))
+            if (itok.Count == 3 && itok[1].TokenClassType == typeof(SequenceRangeToken))
             {
                 FromExpression = Expression.Call(typeof(Qs).GetMethod("IntegerFromQsValue"), ParseArithmatic(itok[0].TokenValue));
                 ToExpression = Expression.Call(typeof(Qs).GetMethod("IntegerFromQsValue"), ParseArithmatic(itok[2].TokenValue));
@@ -770,6 +792,8 @@ namespace Qs.Runtime
 
         }
 
+
+
         /// <summary>
         /// Used to build the function call expression 
         /// either if called directly or called from another function 
@@ -781,12 +805,17 @@ namespace Qs.Runtime
         {
             //fn(x, y, ff(y/x, e + fr(d)))     <== sample form :D
 
-            List<string> paramsText = new List<string>();  //contains the parameters sent as text 
+            //List<string> paramsText = new List<string>();  //contains the parameters sent as text 
+            List<Token> ArgumentTokens = new List<Token>();
 
             //discover parameters
             for (int ai = 1; ai < args.Count - 1; ai++ )
             {
-                if (args[ai].TokenValue != ",") paramsText.Add(args[ai].TokenValue.Trim());
+                if (args[ai].TokenValue != ",")
+                {
+                    //paramsText.Add(args[ai].TokenValue.Trim());
+                    ArgumentTokens.Add(args[ai]);
+                }
             }
 
             // discover namespace
@@ -805,30 +834,26 @@ namespace Qs.Runtime
 
             bool NamedArgumentOccured = false;
             
-
             List<string> argNames = new List<string>();
+            
+            foreach (var argToken in ArgumentTokens)
+            {                
+                var paraToken = argToken.RemoveSpaceTokens();
 
-            for (int i = 0; i < paramsText.Count; i++)
-            {
-                string namedParam = paramsText[i];
-
-                int NamedAssignOperatorIndex = namedParam.IndexOf(":=");
-
-                if (NamedAssignOperatorIndex >= 1)
+                if (paraToken.Contains<EqualToken>())
                 {
-                    argNames.Add(namedParam.Substring(0, NamedAssignOperatorIndex));
+                    argNames.Add(paraToken[0].TokenValue);  //trim the argument name ;)
                     NamedArgumentOccured = true;
                 }
                 else
                 {
                     if (NamedArgumentOccured) throw new QsException("Normal argument after named argument is not permitted");
                 }
-
-                
             }
 
-            int FirstNamedArgumentIndex = paramsText.Count - argNames.Count; //point to the index of the first named argument in the caller.
+            int FirstNamedArgumentIndex = ArgumentTokens.Count - argNames.Count; //point to the index of the first named argument in the caller.
 
+            #region Specifing the target function
             QsFunction TargetFunction;
 
             if (argNames.Count > 0)
@@ -836,7 +861,7 @@ namespace Qs.Runtime
                 #region Named Arguments discovery
                 // get all the functions that contain these named argument parameters.
 
-                var DiscoveredFunctions = QsFunction.FindFunctionByParameters(Scope, functionNameSpace, funcCallName, paramsText.Count, argNames.ToArray());
+                var DiscoveredFunctions = QsFunction.FindFunctionByParameters(Scope, functionNameSpace, funcCallName, ArgumentTokens.Count, argNames.ToArray());
 
                 if (DiscoveredFunctions.Length == 0)
                 {
@@ -892,10 +917,12 @@ namespace Qs.Runtime
             {
                 // specify the function real name 
                 string TargetFunctionRealName =
-                    QsFunction.FormFunctionSymbolicName(funcCallName, paramsText.Count); //to call the right function 
+                    QsFunction.FormFunctionSymbolicName(funcCallName, ArgumentTokens.Count); //to call the right function 
 
                 TargetFunction = QsFunction.GetFunction(Scope, functionNameSpace, TargetFunctionRealName);
             }
+            #endregion
+
 
             List<Expression> parameters = new List<Expression>();
 
@@ -908,9 +935,9 @@ namespace Qs.Runtime
                 //but may be the function name should be retrieved from a parameter.
                 int parametersCount;
                 if (ParseMode == QsVarParseModes.Function)
-                    parametersCount = Function.Parameters.Count(c => c.Name == funcName);
+                    parametersCount = Function.Parameters.Count(c => c.Name.Equals(funcName, StringComparison.OrdinalIgnoreCase));
                 else if (ParseMode == QsVarParseModes.Sequence)
-                    parametersCount = Sequence.Parameters.Count(c => c.Name == funcName);
+                    parametersCount = Sequence.Parameters.Count(c => c.Name.Equals(funcName, StringComparison.OrdinalIgnoreCase));
                 else
                     throw new QsException("Parse mode is not known to evaluate this function");
 
@@ -918,9 +945,9 @@ namespace Qs.Runtime
                 {
                     QsParamInfo pinfo; //the parameter in the parent function that hold the function name.
                     if (ParseMode == QsVarParseModes.Function)
-                        pinfo = Function.Parameters.Single(c => c.Name == funcName);
+                        pinfo = Function.Parameters.Single(c => c.Name.Equals( funcName, StringComparison.OrdinalIgnoreCase));
                     else if (ParseMode == QsVarParseModes.Sequence)
-                        pinfo = Sequence.Parameters.Single(c => c.Name == funcName);
+                        pinfo = Sequence.Parameters.Single(c => c.Name.Equals(funcName, StringComparison.OrdinalIgnoreCase));
                     else
                         throw new QsException("Parse mode is not known to evaluate this function");
 
@@ -934,11 +961,11 @@ namespace Qs.Runtime
                     // Prepare the expression that will execute this function dynamically
 
                     // Get the function name from the parameter
-                    Expression FunctionParameter = lambdaBuilder.Parameters.Single(c => c.Name == functionName);
+                    Expression FunctionParameter = lambdaBuilder.Parameters.Single(c => c.Name.Equals(functionName, StringComparison.OrdinalIgnoreCase));
 
                     Expression FunctionParameterName = Expression.Call(FunctionParameter,
                         typeof(QsParameter).GetMethod("GetTrueFunctionName"),
-                        Expression.Constant(paramsText.Count)
+                        Expression.Constant(ArgumentTokens.Count)
                         );
 
                     // Get the Function object.
@@ -954,13 +981,14 @@ namespace Qs.Runtime
                     //   x/4
                     //   40
                     List<Expression> FunctorParams = new List<Expression>();
-                    foreach (string prm in paramsText)
+                    foreach (Token tk in ArgumentTokens)
                     {
+                        var prm = tk.TokenValue;
                         Expression q = ParseArithmatic(prm); // evaluate the parameter
                         Expression rw;
                         try
                         {
-                            rw = lambdaBuilder.Parameters.Single(c => c.Name == prm);
+                            rw = lambdaBuilder.Parameters.Single(c => c.Name.Equals( prm, StringComparison.OrdinalIgnoreCase));
                             rw = Expression.Property(rw, "ParameterRawText");  //raw value that was send with this parameter.
                         }
                         catch
@@ -1031,32 +1059,35 @@ namespace Qs.Runtime
                 #region Adjusting (ReArranging) the named arguments order to the real function parameter order
 
                 //Rearrange paramsText so it includes named arguments
-                //  named argument is on the format  x:=20, j:=30
+                //  named argument is on the format  x=20, j=30
 
+
+                // fParameters is the parameters array that will be sent to the function
                 Dictionary<string, string> fParameters = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+
+                // setParameters ensure that the parameter wasn't set before.
                 Dictionary<string, bool> setParameters = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
 
                 // first add all values of parameters in dictionary of ParameterName: Value
-                for (int i = 0; i < paramsText.Count;i++ )
+                for (int i = 0; i < ArgumentTokens.Count; i++)
                 {
-                    fParameters.Add(TargetFunction.Parameters[i].Name, paramsText[i]);
+                    fParameters.Add(TargetFunction.Parameters[i].Name, ArgumentTokens[i].TokenValue);
                     setParameters.Add(TargetFunction.Parameters[i].Name, false);
                 }
 
-
+                #region loop and put named argument in its correct position.
                 NamedArgumentOccured = false;
 
                 // second search for named arguments and replace the old values.
-                for (int i = 0; i < paramsText.Count; i++)
+                for (int i = 0; i < ArgumentTokens.Count; i++)
                 {
-                    string namedParam = paramsText[i];
 
-                    int NamedAssignOperatorIndex = namedParam.IndexOf(":=");
+                    var paraToken = ArgumentTokens[i].RemoveSpaceTokens();
 
-                    if (NamedAssignOperatorIndex >= 1)
+                    if (paraToken.Contains<EqualToken>())
                     {
-                        string paramName = namedParam.Substring(0, NamedAssignOperatorIndex).Trim();
-                        string paramVal = namedParam.Substring(NamedAssignOperatorIndex + 2).Trim();
+                        string paramName = paraToken[0].TokenValue;
+                        string paramVal = paraToken.SubTokensValue(2);   //take the rest of parameter after = sign
 
                         if (fParameters.ContainsKey(paramName))
                         {
@@ -1067,20 +1098,22 @@ namespace Qs.Runtime
 
                             setParameters[paramName] = true;
                         }
-                        else 
+                        else
                         {
-                            throw new QsException("Named parameter '" + paramName + "' not found in the function: " + TargetFunction.FunctionBody);
+                            throw new QsException("Named parameter '" + paramName + "' not found in the function: " + TargetFunction.FunctionDeclaration);
                         }
 
-                        NamedArgumentOccured = true; //to prevent normal arguments after named arguments.
+                        NamedArgumentOccured = true;
                     }
                     else
                     {
-                        if (NamedArgumentOccured) throw new QsException("Normal argument after named argument");
+                        if (NamedArgumentOccured) throw new QsException("Normal argument after named argument is not permitted");
                         setParameters[TargetFunction.Parameters[i].Name] = true;
                     }
 
+
                 }
+                #endregion
 
                 #endregion
 

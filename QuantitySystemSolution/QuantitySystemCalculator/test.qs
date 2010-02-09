@@ -31,10 +31,10 @@ fun:c[] ..> fun:b[] / fun:a[]
 
 # Function as argument into another function
 fun:g(x) = x^2
-fun:g(y) = fun:g(x:=y) + y^3
-fun:g(z) = fun:g(y:=z) + z^4
-fun:g(z:=fun:g(y:=fun:g(x:=2)))
-fun:ec(c) = c when c<=10 otherwise c^2 when c<=20 othwerwise c^3 when c<=30 otherwise c^4 when c<=40 otherwise c^5
+fun:g(y) = fun:g(x=y) + y^3
+fun:g(z) = fun:g(y=z) + z^4
+fun:g(z = fun:g(y = fun:g(x = 2)))
+fun:ec(c) = c when c<=10 otherwise c^2 when c<=20 otherwise c^3 when c<=30 otherwise c^4 when c<=40 otherwise c^5
 
 
 
@@ -49,7 +49,7 @@ fun:a = fun:v(fun:d,3,4);
 # v called with c as a function in first parameter, however c also needs function parameter
 # that was passed to v in the next parameter.
 
-fun:b = fun:v(fun:c,sin,8);
+fun:b = fun:v(fun:c, sin, 8);
 
 fun:a + fun:b
 
@@ -66,6 +66,11 @@ math:sgn(x) = -1 when x<0 otherwise 0 when x==0 otherwise 1 	#http://en.wikipedi
 wave:Square(x) = math:sgn(math:sin(x))  						#http://en.wikipedia.org/wiki/Square_wave
 
 MsgBox(text) = Windows:MessageBox(text)
+
+ec = e[0++10]
+
+ec(x=1)
+
 
 
 

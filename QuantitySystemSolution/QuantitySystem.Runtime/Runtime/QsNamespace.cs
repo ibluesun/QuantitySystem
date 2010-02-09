@@ -5,10 +5,11 @@ using System.Text;
 using Microsoft.Scripting;
 using System.IO;
 using System.Reflection;
-using Qs.RuntimeTypes;
+using Qs.Types;
 using Microsoft.Scripting.Utils;
 using Microsoft.Scripting.Runtime;
 using System.Text.RegularExpressions;
+using Qs.Types.Attributes;
 
 namespace Qs.Runtime
 {
@@ -115,6 +116,12 @@ namespace Qs.Runtime
         }
 
 
+        /// <summary>
+        /// Decorate a native C# function with QsFunction
+        /// </summary>
+        /// <param name="methodInfo"></param>
+        /// <param name="funcAttribute"></param>
+        /// <returns></returns>
         public QsFunction GetQsFunctionFromTypeMethod(MethodInfo methodInfo, QsFunctionAttribute funcAttribute)
         {
             string qsNamespace = this._NamespaceType.Name;
@@ -125,8 +132,7 @@ namespace Qs.Runtime
             int qsFuncParamCount = miParameters.Length;
 
 
-            QsFunction QsModFunc = new QsFunction("[Qs.Modules." + qsNamespace + "." + qsFuncName + "]", 
-                funcAttribute == null ? true : funcAttribute.DefaultScopeFunction, true);
+            QsFunction QsModFunc = new QsFunction("[Qs.Modules." + qsNamespace + "." + qsFuncName + "]", true);
             QsModFunc.FunctionNamespace = qsNamespace;
             QsModFunc.FunctionName = qsFuncName;
 
@@ -151,78 +157,78 @@ namespace Qs.Runtime
 
             
             QsModFunc.Parameters = prms.ToArray();
-            QsModFunc.FunctionBody += "(";
+            QsModFunc.FunctionDeclaration += "(";
             StringBuilder sb = new StringBuilder();
             foreach (var p in prms) sb.Append(", " + p.Name);
-            if (sb.Length > 0) QsModFunc.FunctionBody += sb.ToString().TrimStart(',', ' ');
-            QsModFunc.FunctionBody += ")";
+            if (sb.Length > 0) QsModFunc.FunctionDeclaration += sb.ToString().TrimStart(',', ' ');
+            QsModFunc.FunctionDeclaration += ")";
 
             #region Delegate creation section
             switch (qsFuncParamCount)
             {
                 case 0:
-                    QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                    QsModFunc.InternalFunctionDelegate = System.Delegate.CreateDelegate(
                         typeof(Func<QsValue>),
                         methodInfo);
                     break;
                 case 1:
-                    QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                    QsModFunc.InternalFunctionDelegate = System.Delegate.CreateDelegate(
                         typeof(Func<QsParameter, QsValue>),
                         methodInfo);
                     break;
                 case 2:
-                    QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                    QsModFunc.InternalFunctionDelegate = System.Delegate.CreateDelegate(
                         typeof(Func<QsParameter, QsParameter, QsValue>),
                         methodInfo);
                     
                     break;
                 case 3:
-                    QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                    QsModFunc.InternalFunctionDelegate = System.Delegate.CreateDelegate(
                         typeof(Func<QsParameter, QsParameter, QsParameter, QsValue>),
                         methodInfo);
                     break;
                 case 4:
-                    QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                    QsModFunc.InternalFunctionDelegate = System.Delegate.CreateDelegate(
                         typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
                         methodInfo);
                     break;
                 case 5:
-                    QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                    QsModFunc.InternalFunctionDelegate = System.Delegate.CreateDelegate(
                         typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
                         methodInfo);
                     break;
                 case 6:
-                    QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                    QsModFunc.InternalFunctionDelegate = System.Delegate.CreateDelegate(
                         typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
                         methodInfo);
                     break;
                 case 7:
-                    QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                    QsModFunc.InternalFunctionDelegate = System.Delegate.CreateDelegate(
                         typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
                         methodInfo);
                     break;
                 case 8:
-                    QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                    QsModFunc.InternalFunctionDelegate = System.Delegate.CreateDelegate(
                         typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
                         methodInfo);
                     break;
                 case 9:
-                    QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                    QsModFunc.InternalFunctionDelegate = System.Delegate.CreateDelegate(
                         typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
                         methodInfo);
                     break;
                 case 10:
-                    QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                    QsModFunc.InternalFunctionDelegate = System.Delegate.CreateDelegate(
                         typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
                         methodInfo);
                     break;
                 case 11:
-                    QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                    QsModFunc.InternalFunctionDelegate = System.Delegate.CreateDelegate(
                         typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
                         methodInfo);
                     break;
                 case 12:
-                    QsModFunc._FunctionDelegate = System.Delegate.CreateDelegate(
+                    QsModFunc.InternalFunctionDelegate = System.Delegate.CreateDelegate(
                         typeof(Func<QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>),
                         methodInfo);
                     break;

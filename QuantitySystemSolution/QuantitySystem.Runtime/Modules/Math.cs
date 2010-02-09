@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Qs.RuntimeTypes;
+using Qs.Types;
 using Qs.Runtime;
 using QuantitySystem.Quantities.BaseQuantities;
 

@@ -4,7 +4,7 @@ using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 using Microsoft.Scripting.Ast;
 using QuantitySystem.Units;
-using Qs.RuntimeTypes;
+using Qs.Types;
 
 using Microsoft.Scripting.Utils;
 
@@ -55,7 +55,7 @@ namespace Qs.Runtime
 
         /// <summary>
         /// The value of the sequence element.
-        /// - AnyQuantity%lt;double>
+        /// - AnyQuantity &lt;double>
         /// - Another Sequence
         /// - Delegate to code passing index.
         /// - Delegate to code passing index and parameters.
@@ -94,7 +94,7 @@ namespace Qs.Runtime
             {
                 QsSequence seq = (QsSequence)ElementValue;
 
-                return seq.GetElementValue(executionIndex);
+                return (QsValue)seq.GetElementValue(executionIndex);
             }
             else
                 return (QsValue)ElementValue;

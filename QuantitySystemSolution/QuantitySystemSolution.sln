@@ -24,6 +24,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DLR", "DLR", "{BD2784D3-94C
 		DLR\Microsoft.Scripting.Core.dll = DLR\Microsoft.Scripting.Core.dll
 		DLR\Microsoft.Scripting.dll = DLR\Microsoft.Scripting.dll
 		DLR\Microsoft.Scripting.ExtensionAttribute.dll = DLR\Microsoft.Scripting.ExtensionAttribute.dll
+		DLR\ParticleLexer.dll = DLR\ParticleLexer.dll
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qs", "QuantitySystem.Runtime\Qs.csproj", "{615A100B-4890-434E-8869-2A9B3200D664}"

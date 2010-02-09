@@ -8,10 +8,11 @@ using QuantitySystem;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
 using ParticleLexer;
-using ParticleLexer.TokenTypes;
-using Qs.RuntimeTypes;
+using ParticleLexer.StandardTokens;
+using Qs.Types;
 using System.Reflection;
 using System.IO;
+using ParticleConsole.QsTokens;
 
 
 namespace Qs.Runtime
@@ -142,6 +143,7 @@ namespace Qs.Runtime
 
         public object Evaluate(string expr)
         {
+
             if (string.IsNullOrEmpty(expr)) return null;
             Match m = null;
 
@@ -288,7 +290,9 @@ namespace Qs.Runtime
             {
                
                 //store the expression for later use 
-                SetVariable(func.FunctionNamespace, func.FunctionSymbolicName, func);
+                //SetVariable(func.FunctionNamespace, func.FunctionSymbolicName, func);
+
+                StoreFunction(func);
            
                 return func;
             }
@@ -307,7 +311,24 @@ namespace Qs.Runtime
             #region expression evaluation with assignation or no assignation
             string varName = string.Empty;
 
-            int AssignOperatorIndex = line.IndexOf('=');
+            // check of existance of = inside bracket
+            Token tt = Token.ParseText(line);
+            tt = tt.MergeTokens(new WordToken());
+            tt = tt.MergeTokens(new MultipleSpaceToken());
+            tt = tt.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
+            tt = tt.DiscoverCalls();
+            
+
+
+            int AssignOperatorIndex = -1;
+            foreach (var t in tt)
+            {
+                if (t.TokenValue == "=")
+                {
+                    AssignOperatorIndex = t.IndexInText;
+                    break;
+                }
+            }
 
             if (AssignOperatorIndex > 0)  //assign operator should always have something behind it.
             {
@@ -317,7 +338,7 @@ namespace Qs.Runtime
                     || line[AssignOperatorIndex - 1] == '<'  // <=
                     || line[AssignOperatorIndex - 1] == '!'  // !=
                     || line[AssignOperatorIndex + 1] == '='  // ==
-
+                    
                     ) 
                 {
                     //ignore
@@ -346,18 +367,18 @@ namespace Qs.Runtime
                 {
                     // May be variable or sequence element.
                     Token seq = Token.ParseText(varName);
-                    seq = seq.MergeTokens(new SpaceToken());
+                    seq = seq.MergeTokens(new MultipleSpaceToken());
                     seq = seq.RemoveSpaceTokens();
                     seq = seq.MergeTokens(new WordToken());
 
                     seq = seq.MergeTokens(new ColonToken());
-                    seq = seq.GroupBrackets();
+                    seq = seq.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
 
                     seq = seq.MergeTokens(new NameSpaceToken()); //discover namespace tokens
 
                     string seqNamespace = string.Empty;
                     int nsidx = 0;
-                    if (seq[0].TokenType == typeof(NameSpaceToken))
+                    if (seq[0].TokenClassType == typeof(NameSpaceToken))
                     {
                         nsidx = 1; //the function begin with namespace.
                         seqNamespace = seq[0][0].TokenValue;
@@ -367,7 +388,7 @@ namespace Qs.Runtime
                     bool IsSequence = false;
                     if (seq.Count >= nsidx + 2)
                     {
-                        if (seq[nsidx + 1].TokenType == typeof(SquareBracketGroupToken))
+                        if (seq[nsidx + 1].TokenClassType == typeof(SquareBracketsGroupToken))
                         {
                             IsSequence = true;
                         }
@@ -378,7 +399,7 @@ namespace Qs.Runtime
                         #region Sequence element operation
                         // Sequence element assignation.
 
-                        if (seq[nsidx + 1].TokenType == typeof(SquareBracketGroupToken))
+                        if (seq[nsidx + 1].TokenClassType == typeof(SquareBracketsGroupToken))
                         {
                             if (seq[nsidx + 1].Contains(typeof(ColonToken)))
                             {
@@ -394,10 +415,10 @@ namespace Qs.Runtime
                                     #region Parameterized indexed Sequence
 
                                     string[] parameters = { }; //array with zero count :)
-                                    if (seq[nsidx + 2].TokenType == typeof(ParenthesisGroupToken))
+                                    if (seq[nsidx + 2].TokenClassType == typeof(ParenthesisGroupToken))
                                     {
                                         parameters = (from c in seq[nsidx + 2]
-                                                      where c.TokenType == typeof(WordToken)
+                                                      where c.TokenClassType == typeof(WordToken)
                                                       select c.TokenValue).ToArray();
                                     }
                                     else
@@ -449,10 +470,10 @@ namespace Qs.Runtime
                                     #region Parametrized non indexed sequence
 
                                     string[] parameters = { }; //array with zero count :)
-                                    if (seq[nsidx + 2].TokenType == typeof(ParenthesisGroupToken))
+                                    if (seq[nsidx + 2].TokenClassType == typeof(ParenthesisGroupToken))
                                     {
                                         parameters = (from c in seq[nsidx + 2]
-                                                      where c.TokenType == typeof(WordToken)
+                                                      where c.TokenClassType == typeof(WordToken)
                                                       select c.TokenValue).ToArray();
                                     }
                                     else
@@ -510,7 +531,7 @@ namespace Qs.Runtime
 
 
                         Token vnToken = Token.ParseText(varName);
-                        vnToken = vnToken.MergeTokens(new SpaceToken());
+                        vnToken = vnToken.MergeTokens(new MultipleSpaceToken());
                         vnToken = vnToken.RemoveSpaceTokens();
                         vnToken = vnToken.MergeTokens(new WordToken());
                         vnToken = vnToken.MergeTokens(new ColonToken());
@@ -518,20 +539,45 @@ namespace Qs.Runtime
 
                         if (vnToken.Contains(typeof(NameSpaceToken)))
                         {
-                            SetVariable(vnToken[0][0].TokenValue, vnToken[1].TokenValue, qv.Execute());
+                            var qvResult = qv.Execute();
+                            if (qvResult is QsFunction)
+                            {
+                                var qf = (QsFunction)qvResult;
+                                qf.FunctionNamespace = vnToken[0][0].TokenValue;
+                                qf.FunctionName = vnToken[1].TokenValue;
 
-                            var q = GetScopeQsValue(this.Scope, vnToken[0][0].TokenValue, vnToken[1].TokenValue);
-                            PrintQuantity(q);
-                            return q;
+                                StoreFunction(qf);
+                                return qvResult;
+                            }
+                            else
+                            {
+                                SetVariable(vnToken[0][0].TokenValue, vnToken[1].TokenValue, qvResult);
+
+                                var q = GetScopeQsValue(this.Scope, vnToken[0][0].TokenValue, vnToken[1].TokenValue);
+                                PrintQuantity(q);
+                                return q;
+                            }
                         }
                         else
                         {
                             //assign the variable
-                            SetVariable(varName, qv.Execute());
+                            var qvResult = qv.Execute();
+                            if (qvResult is QsFunction)
+                            {
+                                var qf = (QsFunction)qvResult;
+                                qf.FunctionName = varName;
+                                StoreFunction(qf);
+                                return qvResult;
+                            }
+                            else
+                            {
+                                SetVariable(varName, qvResult);
 
-                            var q = GetScopeQsValue(this.Scope, "", varName);
-                            PrintQuantity(q);
-                            return q;
+                                var q = GetScopeQsValue(this.Scope, "", varName);
+                                PrintQuantity(q);
+
+                                return q;
+                            }
                         }
                         #endregion
                     }
@@ -695,6 +741,98 @@ namespace Qs.Runtime
         #endregion
 
 
+
+        #region  singleton pattern
+        private QsEvaluator()
+        {
+        }
+
+        private static QsEvaluator _CurrentEvaluator;
+        public static QsEvaluator CurrentEvaluator
+        {
+            get
+            {
+                if (_CurrentEvaluator == null)
+                    _CurrentEvaluator = new QsEvaluator();
+                return _CurrentEvaluator;
+            }
+        }
+
+        #endregion
+
+
+
+
+        #region Function Storage 
+
+
+        /// <summary>
+        /// Store the function in the scope by choosing the suitable symbolic name for the function.
+        /// </summary>
+        /// <param name="function"></param>
+        public void StoreFunction(QsFunction qsFunction)
+        {
+            
+            // 1- find the default function of this name.
+            // 2- if default function exist declare non default function
+            // 3- if default function does'nt exist declare default function.
+            // Default function: is function declared without specifying its parameters in its name  f#2 f#4  are default functions.
+
+            QsFunction DefaultFunction = QsFunction.GetDefaultFunction(this.Scope, qsFunction.FunctionNamespace, 
+                qsFunction.FunctionName, qsFunction.Parameters.Length);
+
+            if (DefaultFunction == null)
+            {
+                // then store the function
+                SetVariable(qsFunction.FunctionNamespace, 
+                    QsFunction.FormFunctionSymbolicName(qsFunction.FunctionName, qsFunction.Parameters.Length),
+                    qsFunction);
+            }
+            else
+            {
+                // 1- find if function with the same parameters and name exist 
+                // 2- overwrite this function otherwise create new one.
+
+                var OverLoadedFunction = QsFunction.GetExactFunctionWithParameters(this.Scope,
+                    qsFunction.FunctionNamespace,
+                    qsFunction.FunctionName,
+                    qsFunction.ParametersNames);
+
+                if (OverLoadedFunction == null)
+                {
+                    // store new overloaded function with parameters.
+                    SetVariable(qsFunction.FunctionNamespace,
+                        QsFunction.FormFunctionSymbolicName(qsFunction.FunctionName, qsFunction.ParametersNames),
+                        qsFunction);
+                }
+                else
+                {
+                    //overwrite  the old function.
+
+
+                    if (OverLoadedFunction.FunctionDeclaration.Equals(DefaultFunction.FunctionDeclaration))
+                    {
+                        //overwrite default function.
+
+                        SetVariable(DefaultFunction.FunctionNamespace,
+                            QsFunction.FormFunctionSymbolicName(qsFunction.FunctionName, DefaultFunction.ParametersNames.Length),
+                            qsFunction);
+                    }
+                    else
+                    {
+                        // overwrite overloaded function
+
+                        SetVariable(DefaultFunction.FunctionNamespace,
+                            QsFunction.FormFunctionSymbolicName(qsFunction.FunctionName, OverLoadedFunction.ParametersNames),
+                            qsFunction);
+                    }
+
+                }
+            }
+
+        }
+
+        #endregion
 
     }
 
