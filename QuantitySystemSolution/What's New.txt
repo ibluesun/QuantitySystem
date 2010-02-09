@@ -1,3 +1,7 @@
+[Qs 1.1.9.9.1]
+- Fixed Vector - Scalar operation (it was a shame and it was wrong :( )
+- added graph:plot(vector, vevtor)  function to QsStudio (Experimental)
+
 [Qs 1.1.9.9]
 - Removed ^x (PowerCross) Operator (it was annoying)
 - Sequence can return function  when calling without parameters.
