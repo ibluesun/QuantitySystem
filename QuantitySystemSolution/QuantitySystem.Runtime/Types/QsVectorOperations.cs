@@ -261,12 +261,27 @@ namespace Qs.Types
             }
         }
 
+
+        private QsVector SubtractScalar(QsScalar s)
+        {
+            QsVector v = new QsVector(this.Count);
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                v.AddComponent(this[i] - s);
+            }
+
+            return v;
+
+        }
+
         public override QsValue SubtractOperation(QsValue value)
         {
             if (value is QsScalar)
             {
                 var s = value as QsScalar;
-                return s.SubtractVector(this);
+                
+                return SubtractScalar(s);
             }
             else if (value is QsVector)
             {
