@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
+using Qs.Runtime;
 
-namespace Qs.RuntimeTypes
+namespace Qs.Types
 {
     public partial class QsMatrix : QsValue
     {
@@ -441,7 +442,7 @@ namespace Qs.RuntimeTypes
 
         public override bool Equality(QsValue value)
         {
-            if ((object)value == null) return false;
+            //if ((object)value == null) return false;
             throw new NotImplementedException();
         }
 

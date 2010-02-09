@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 using System.Globalization;
+using Qs.Runtime;
 
-namespace Qs.RuntimeTypes
+namespace Qs.Types
 {
     /// <summary>
     /// Matrix that hold quantities

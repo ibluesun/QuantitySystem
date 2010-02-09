@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Qs.Runtime;
-using Qs.RuntimeTypes;
+using Qs.Types;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
 

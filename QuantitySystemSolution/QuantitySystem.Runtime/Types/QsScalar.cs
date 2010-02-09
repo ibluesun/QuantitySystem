@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
+using Qs.Runtime;
 
-namespace Qs.RuntimeTypes
+namespace Qs.Types
 {
     /// <summary>
     /// Wrapper for AnyQuantit&lt;double&gt; and it serve the basic number in the Qs

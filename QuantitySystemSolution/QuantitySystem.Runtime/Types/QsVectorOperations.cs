@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
+using Qs.Runtime;
 
-namespace Qs.RuntimeTypes
+namespace Qs.Types
 {
     public partial class QsVector : QsValue, IEnumerable<QsScalar>
     {

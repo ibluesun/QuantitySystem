@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
-using Qs.RuntimeTypes;
+using Qs.Types;
 using Microsoft.Scripting.Runtime;
+using Qs.Runtime;
 
-namespace Qs.Runtime
+namespace Qs.Types
 {
 
     /// <summary>

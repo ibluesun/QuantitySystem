@@ -5,7 +5,7 @@ using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Actions;
 using System.Dynamic;
 using Microsoft.Scripting.Ast;
-using Qs.RuntimeTypes;
+using Qs.Types;
 
 namespace Qs.Runtime
 {

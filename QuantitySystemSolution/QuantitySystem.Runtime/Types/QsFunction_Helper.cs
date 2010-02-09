@@ -4,13 +4,13 @@ using System.Linq;
 using System.Text;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting;
+using Qs.Runtime;
 
-namespace Qs.Runtime
+namespace Qs.Types
 {
 
     public partial class QsFunction
     {
-
 
 
         /// <summary>
@@ -88,7 +88,8 @@ namespace Qs.Runtime
 
 
         /// <summary>
-        /// Get the default function 
+        /// Get the default function.
+        /// Default function is on the form f#2 f#3  without decoration for parameters.
         /// </summary>
         /// <param name="scope"></param>
         /// <param name="nameSpace"></param>
@@ -115,20 +116,6 @@ namespace Qs.Runtime
 
 
 
-    /// <summary>
-    /// Quantity System Function Attribute.
-    /// </summary>
-    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
-    public class QsFunctionAttribute : Attribute
-    {
-        public string FunctionName { get; private set; }
-        public bool DefaultScopeFunction { get; set; }
-        public QsFunctionAttribute(string functionName)
-        {
-            FunctionName = functionName;
-            DefaultScopeFunction = false;
-        }
 
-    }
 
 }

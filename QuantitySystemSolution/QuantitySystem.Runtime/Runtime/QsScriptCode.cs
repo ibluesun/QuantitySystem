@@ -44,7 +44,7 @@ namespace Qs.Runtime
                 code = LastLine;   //workaround because Host have something weird in SourceTextReader that don't work linux mono
             } 
 
-            QsEvaluator qs = new QsEvaluator();
+            QsEvaluator qs = QsEvaluator.CurrentEvaluator;
 
             qs.Scope = scope;
 

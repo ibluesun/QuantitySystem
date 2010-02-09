@@ -34,4 +34,7 @@ namespace Qs.Runtime
       public string Namespace { get; set; }
       public string Variable { get; set; }
     }
+
+
+
 }

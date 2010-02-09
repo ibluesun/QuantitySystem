@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 
-namespace Qs.RuntimeTypes
+namespace Qs.Types
 {
     [Serializable()]
     public class QsMatrixException : QsException

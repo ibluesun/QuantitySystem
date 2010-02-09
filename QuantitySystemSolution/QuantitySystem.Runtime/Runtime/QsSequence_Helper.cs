@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using ParticleLexer;
-using ParticleLexer.TokenTypes;
+using ParticleLexer.StandardTokens;
 using QuantitySystem.Units;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting;
 using System.Globalization;
+using ParticleConsole.QsTokens;
 
 namespace Qs.Runtime
 {
@@ -95,7 +96,7 @@ namespace Qs.Runtime
             Token t = Token.ParseText(sequence);
 
 
-            t = t.MergeTokens(new SpaceToken());
+            t = t.MergeTokens(new MultipleSpaceToken());
 
             t = t.MergeTokens(new PositiveSequenceToken());  //    ..>  start from 0 index to +ve
             t = t.MergeTokens(new NegativeSequenceToken());  //    <..  start from -1 index to -ve
@@ -103,11 +104,11 @@ namespace Qs.Runtime
 
             if (t.IndexOf(typeof(PositiveSequenceToken)) > -1)
             {
-                t = t.RemoveTokenUntil(typeof(SpaceToken), typeof(PositiveSequenceToken));
+                t = t.RemoveTokenUntil(typeof(MultipleSpaceToken), typeof(PositiveSequenceToken));
             }
             else if (t.IndexOf(typeof(NegativeSequenceToken)) > -1)
             {
-                t = t.RemoveTokenUntil(typeof(SpaceToken), typeof(PositiveSequenceToken));
+                t = t.RemoveTokenUntil(typeof(MultipleSpaceToken), typeof(PositiveSequenceToken));
             }
             else
             {
@@ -120,23 +121,21 @@ namespace Qs.Runtime
 
             t = t.MergeTokens(new NameSpaceToken());
 
-            t = t.GroupBrackets();
-
-            t = t.MergeTokens(new SemiColonToken());
+            t = t.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
 
 
             int nsidx = 0; // surve as a base for indexing token if there is namespace it will be 1 otherwise remain 0
 
             string declaredNamespace = string.Empty;
-            if (t[0].TokenType == typeof(NameSpaceToken))
+            if (t[0].TokenClassType == typeof(NameSpaceToken))
             {
                 nsidx = 1; //the function begin with namespace.
                 declaredNamespace = t[0][0].TokenValue;
             }
 
 
-            if (t[nsidx + 0].TokenType == typeof(WordToken)
-                && (t.Count > 1 ? t[nsidx + 1].TokenType == typeof(SquareBracketGroupToken) : false)     // test for second tokek to be [] group
+            if (t[nsidx + 0].TokenClassType == typeof(WordToken)
+                && (t.Count > 1 ? t[nsidx + 1].TokenClassType == typeof(SquareBracketsGroupToken) : false)     // test for second tokek to be [] group
                 )
             {
 
@@ -147,17 +146,17 @@ namespace Qs.Runtime
                 if ((nsidx + t.Count) > 2)
                 {
                     //check for sequence operator
-                    if (t[nsidx + 2].TokenType == typeof(PositiveSequenceToken) || t[nsidx + 2].TokenType == typeof(NegativeSequenceToken))
+                    if (t[nsidx + 2].TokenClassType == typeof(PositiveSequenceToken) || t[nsidx + 2].TokenClassType == typeof(NegativeSequenceToken))
                     {
                         //reaching here means the sequence doesn't have parameters only indexers.
-                        SequenceTokenType = t[nsidx + 2].TokenType;
+                        SequenceTokenType = t[nsidx + 2].TokenClassType;
                     }
                     else if ((nsidx + t.Count) > 4)
                     {
-                        if (t[nsidx + 3].TokenType == typeof(PositiveSequenceToken) || t[nsidx + 3].TokenType == typeof(NegativeSequenceToken))
+                        if (t[nsidx + 3].TokenClassType == typeof(PositiveSequenceToken) || t[nsidx + 3].TokenClassType == typeof(NegativeSequenceToken))
                         {
                             //reaching here means the sequence has parameterized arguments.
-                            SequenceTokenType = t[nsidx + 3].TokenType;
+                            SequenceTokenType = t[nsidx + 3].TokenClassType;
                             shift = nsidx + 1;
                         }
                         else return null;
@@ -178,7 +177,7 @@ namespace Qs.Runtime
 
                 // get indexes
                 string[] indexes = (from c in t[nsidx + 1]
-                                    where c.TokenType == typeof(WordToken)
+                                    where c.TokenClassType == typeof(WordToken)
                                     select c.TokenValue).ToArray();
 
 
@@ -187,10 +186,10 @@ namespace Qs.Runtime
 
                 // get parameters
                 string[] parameters = {}; //array with zero count :)
-                if (t[nsidx + 2].TokenType == typeof(ParenthesisGroupToken))
+                if (t[nsidx + 2].TokenClassType == typeof(ParenthesisGroupToken))
                 {
                     parameters = (from c in t[nsidx + 2]
-                                  where c.TokenType == typeof(WordToken)
+                                  where c.TokenClassType == typeof(WordToken)
                                   select c.TokenValue).ToArray();
                 }
 
@@ -262,7 +261,7 @@ namespace Qs.Runtime
 
                 while ((nsidx + seqoIndex) < t.Count)
                 {
-                    if (t[nsidx + seqoIndex].TokenType != typeof(SemiColonToken))
+                    if (t[nsidx + seqoIndex].TokenClassType != typeof(SemiColonToken))
                     {
                         //assuming for now all entered values are quantities.
                         QsSequenceElement seqoElement = QsSequenceElement.Parse(t[nsidx + seqoIndex].TokenValue, qse, seqo);
@@ -327,10 +326,21 @@ namespace Qs.Runtime
 
         }
 
+
+        /// <summary>
+        /// Helper function to create the name of the sequence.
+        /// </summary>
+        /// <param name="name"></param>
+        /// <param name="indexesCount"></param>
+        /// <param name="parametersCount"></param>
+        /// <returns></returns>
         public static string FormSequenceSymbolicName(string name, int indexesCount, int parametersCount)
         {
             if (indexesCount == 0) indexesCount = 1;
-            return name + "%" + indexesCount.ToString(CultureInfo.InvariantCulture) + "#" + parametersCount.ToString(CultureInfo.InvariantCulture);
+
+            string sn = name + "%" + indexesCount.ToString(CultureInfo.InvariantCulture); // +"#" + parametersCount.ToString(CultureInfo.InvariantCulture);
+            return sn;
+
 
         }
     }

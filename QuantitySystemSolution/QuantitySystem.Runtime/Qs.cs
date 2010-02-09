@@ -6,8 +6,9 @@ using Microsoft.Scripting.Hosting;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
 using QuantitySystem;
-using Qs.RuntimeTypes;
+using Qs.Types;
 using System.Diagnostics;
+using Qs.Runtime;
 
 namespace Qs
 {
