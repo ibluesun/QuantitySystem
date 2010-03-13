@@ -416,6 +416,11 @@ namespace Qs.Types
         }
 
 
+        public override QsValue TensorProductOperation(QsValue value)
+        {
+            throw new NotImplementedException();
+        }
+
         #endregion
 
 

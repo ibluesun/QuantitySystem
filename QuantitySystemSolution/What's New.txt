@@ -1,8 +1,31 @@
-[Qs 1.1.9.9.1]
-- Fixed Vector - Scalar operation (it was a shame and it was wrong :( )
-- added graph:plot(vector, vevtor)  function to QsStudio (Experimental)
+[Qs 1.1.9.92]
+- Enhancing the parsing and tokenization speed.
 
-[Qs 1.1.9.9]
+- Meet the tensor product '(*)' operator
+
+- [Qs Framework 1.1.9.4] 
+	Fixed <km^2.m>  in investigating the correct prefix the result was error
+   thanks to Luc http://www.codeplex.com/site/users/view/Luc who report that issue 
+   http://quantitysystem.codeplex.com/WorkItem/View.aspx?WorkItemId=5556
+   
+   now <km^2.m> produce <hm^3>  :)
+   
+- added the function value for first time
+  by preceding '@' before function name the function returned with its object itself
+  u(x) = x^2
+  v(x) = 2*x
+  w = @u+@v  # which make w(x) = x^2 + 2*x
+  
+  and you can select the function with its argument like @f(u,v) for example
+  
+     
+   
+
+[Qs 1.1.9.91]
+- Fixed Vector - Scalar operation (it was a shame and it was wrong :( )
+- added graph:plot(vector, vector)  function to QsStudio (Experimental)
+
+[Qs 1.1.9.90]
 - Removed ^x (PowerCross) Operator (it was annoying)
 - Sequence can return function  when calling without parameters.
   so if you define g[n](x) ..> x^n  you can get x^2 by calling g[2]

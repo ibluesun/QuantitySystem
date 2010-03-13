@@ -105,6 +105,15 @@ namespace Qs.Types
         /// <returns></returns>
         abstract public QsValue CrossProductOperation(QsValue value);
 
+
+
+        /// <summary>
+        /// Perform the tensor product (tensor outer product)
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        abstract public QsValue TensorProductOperation(QsValue value);
+
         /// <summary>
         /// QsValue ^x QsValue
         /// Power of multiple cross product operations
@@ -237,6 +246,12 @@ namespace Qs.Types
         {
             return a.CrossProductOperation(b);
         }
+
+        public static QsValue TensorProduct(QsValue a, QsValue b)
+        {
+            return a.TensorProductOperation(b);
+        }
+
         #endregion
 
         #region Helper Methods
@@ -313,6 +328,13 @@ namespace Qs.Types
                 if (val is QsVector)
                 {
                     mat.AddVector((QsVector)val);
+                } 
+                else if (val is QsMatrix)
+                {
+                    foreach (var vc in ((QsMatrix)val))
+                    {
+                        mat.AddVector((QsVector)vc);
+                    }
                 }
                 else
                 {
@@ -321,6 +343,31 @@ namespace Qs.Types
             }
 
             return mat;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="values">Matrices</param>
+        /// <returns></returns>
+        public static QsValue TensorFromValues(params QsValue[] values)
+        {
+            QsTensor tens = new QsTensor();
+
+            foreach (var val in values)
+            {
+                if (val is QsMatrix)
+                {
+                    tens.AddMatrix((QsMatrix)val);
+                }
+                else
+                {
+                    throw new QsException("Component is not a matrix value.");
+                }
+            }
+
+            return tens;
         }
 
 

@@ -576,14 +576,18 @@ namespace QuantitySystem.Units
                 throw new QuantityException("Couldn't parse to quantity");
         }
 
+
+        private const string DoubleNumber = @"[-+]?\d+(\.\d+)*([eE][-+]?\d+)*";
+
+        private const string UnitizedNumber = "^(?<num>" + DoubleNumber + @")\s*<(?<unit>([0-9a-zA-Z\.\^/]+)?)>$";
+        private static Regex UnitizedNumberRegex = new Regex(UnitizedNumber, RegexOptions.Compiled);
+
         public static bool TryParseQuantity(string quantity, out AnyQuantity<double> qty)
         {
-            string DoubleNumber = @"[-+]?\d+(\.\d+)*([eE][-+]?\d+)*";
-
-            string UnitizedNumber = "^(?<num>" + DoubleNumber + ")\\s*<(?<unit>.+?)>$";
-
+            
             double val;
-            Match um = Regex.Match(quantity.Trim(), UnitizedNumber);
+
+            Match um = UnitizedNumberRegex.Match(quantity.Trim());
             if (um.Success)
             {
                 string varUnit = um.Groups["unit"].Value;
@@ -597,7 +601,7 @@ namespace QuantitySystem.Units
             else if (double.TryParse(quantity, out val))
             {
                 qty = Unit.DiscoverUnit(QuantityDimension.Dimensionless).GetThisUnitQuantity<double>(val);
-                
+
                 return true;
             }
             else
@@ -605,6 +609,7 @@ namespace QuantitySystem.Units
                 qty = default(AnyQuantity<double>);
                 return false;
             }
+            
         }
 
 

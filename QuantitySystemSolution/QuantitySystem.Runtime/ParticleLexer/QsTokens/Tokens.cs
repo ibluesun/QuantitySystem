@@ -12,11 +12,15 @@ namespace ParticleConsole.QsTokens
     {
     }
 
-    [TokenPattern(RegexPattern = "|")]
-    public class MatrixBracketToken : TokenClass
+
+
+    /// <summary>
+    /// unit token form &lt;unit&gt;
+    /// </summary>
+    [TokenPattern(RegexPattern = "<(°?\\w+!?(\\^\\d+)?\\.?)+(/(°?\\w+!?(\\^\\d+)?\\.?)+)?>")]
+    public class UnitToken : TokenClass
     {
     }
-
 
     /// <summary>
     /// Unitized number is
@@ -26,7 +30,7 @@ namespace ParticleConsole.QsTokens
     /// </summary>
     [TokenPattern(
         RegexPattern = @"\d+(\.|\.\d+)?([eE][-+]?\d+)?"                       //floating number
-        + "\\s*<(°?\\w+!?(\\^\\d+)?\\.?)+(/(°?\\w+!?(\\^\\d+)?\\.?)+)?>"          // unit itself.
+        + "(\\s*<(°?\\w+!?(\\^\\d+)?\\.?)+(/(°?\\w+!?(\\^\\d+)?\\.?)+)?>)?"          // unit itself.
         )
     ]
     public class UnitizedNumberToken : TokenClass
@@ -37,12 +41,15 @@ namespace ParticleConsole.QsTokens
 
 
     #region Sequence tokens
-    [TokenPattern(RegexPattern = "..>")]
+    /// <summary>
+    /// ..>  token
+    /// </summary>
+    [TokenPattern(RegexPattern = "\\.\\.>", ExactWord = true)]
     public class PositiveSequenceToken : TokenClass
     {
     }
 
-    [TokenPattern(RegexPattern = "<..")]
+    [TokenPattern(RegexPattern = "<\\.\\.", ExactWord = true)]
     public class NegativeSequenceToken : TokenClass
     {
     }
@@ -102,6 +109,14 @@ namespace ParticleConsole.QsTokens
     {
     }
 
+    /// <summary>
+    /// Adding '@' before function name like @f(x)  return the function body
+    /// </summary>
+    [TokenPattern(RegexPattern = @"(@\w+|@\w+\([\sa-zA-Z0-9,]*\)|@\w+:\w+|@\w+:\w+\([\sa-zA-Z0-9,]*\))")]
+    public class FunctionValueToken : TokenClass
+    {
+    }
+
 
     /// <summary>
     /// | x |
@@ -119,69 +134,83 @@ namespace ParticleConsole.QsTokens
     {
     }
 
-    [TokenPattern(RegexPattern = "when")]
+
+    /// <summary>
+    /// When
+    /// </summary>
+    [TokenPattern(RegexPattern = "when", ExactWord = true)]
     public class WhenStatementToken : TokenClass
     {
     }
 
-    [TokenPattern(RegexPattern = "otherwise")]
+    /// <summary>
+    /// Otherwise
+    /// </summary>
+    [TokenPattern(RegexPattern = "otherwise", ExactWord = true)]
     public class OtherwiseStatementToken : TokenClass
     {
     }
 
-    [TokenPattern(RegexPattern = @"\.")]
-    public class DotMultiplyToken : TokenClass
-    {
-    }
-
-    [TokenPattern(RegexPattern = @"\x")]
-    public class CrossMultiplyToken : TokenClass
-    {
-    }
 
 
-
-    [TokenPattern(RegexPattern = @"\^\.")]
+    [TokenPattern(RegexPattern = @"\^\.", ExactWord = true)]
     public class PowerDotToken : TokenClass
     {
     }
 
-    [TokenPattern(RegexPattern = @"\^x")]
+    [TokenPattern(RegexPattern = @"\^x", ExactWord = true)]
     public class PowerCrossToken : TokenClass
     {
     }
 
-
-
-    [TokenPattern(RegexPattern = "!=")]
-    public class NotEqualToken : TokenClass
+    [TokenPattern(RegexPattern = @"\(\*\)", ExactWord = true)]
+    public class TensorProductToken : TokenClass
     {
     }
 
-    [TokenPattern(RegexPattern = "==")]
+
+    [TokenPattern(RegexPattern = "!=", ExactWord = true)]
+    public class InEqualityToken : TokenClass
+    {
+    }
+
+    [TokenPattern(RegexPattern = "==", ExactWord = true)]
     public class EqualityToken : TokenClass
     {
     }
 
-    [TokenPattern(RegexPattern = "and")]
+    [TokenPattern(RegexPattern = "and", ExactWord = true)]
     public class AndStatementToken : TokenClass
     {
     }
 
-    [TokenPattern(RegexPattern = "or")]
+    [TokenPattern(RegexPattern = "or", ExactWord = true)]
     public class OrStatementToken : TokenClass
     {
     }
 
+
+    [TokenPattern(RegexPattern = "<<", ExactWord = true)]
+    public class LTToken : TokenClass
+    {
+    }
+
+    [TokenPattern(RegexPattern = ">>", ExactWord = true)]
+    public class GTToken : TokenClass
+    {
+    }
+
+
+    public class TensorGroupToken : GroupTokenClass
+    {
+        public TensorGroupToken()
+            : base(new LTToken(), new GTToken())
+        {
+        }
+    }
+
     public static class TokenExtensions
     {
-        //public static Token GroupBrackets(this Token token)
-        //{
-        //    var t = token.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
-
-        //    return t;
-        //}
-
 
 
         /// <summary>
@@ -247,7 +276,7 @@ namespace ParticleConsole.QsTokens
                                     cnext = cnext.DiscoverQsCalls(stringComparer, ignoreWords);
                                 }
 
-                                
+
                                 cnext = token.SplitParamerers(cnext, new CommaToken());
 
 
@@ -347,7 +376,69 @@ namespace ParticleConsole.QsTokens
             return total;
 
         }
-    
+
+
+        /// <summary>
+        /// Get inner tokens from leftIndex to the rightIndex 
+        /// --->   tokens &lt; -- 
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="leftIndex"></param>
+        /// <param name="rightIndex"></param>
+        /// <returns>Return new token with sub tokens trimmed</returns>
+        public static Token TrimTokens(this Token token, int leftIndex, int rightIndex)
+        {
+            int count = token.Count;
+
+
+            Token rtk = new Token();
+            for (int b = leftIndex; b < count - rightIndex; b++)
+            {
+                rtk.AppendSubToken(token[b]);
+            }
+
+            return rtk;
+
+        }
+
+
+        
+
+        /// <summary>
+        /// Extend Tokens from Left and Right and Fuse them into one Token with specific token class
+        /// </summary>
+        /// <param name="token"></param>
+        /// <param name="leftText"></param>
+        /// <param name="rightText"></param>
+        /// <returns>Return token with sub tokens extended and fused</returns>
+        public static Token FuseTokens<FusedTokenClass>(this Token token, string leftText, string rightText) 
+            where FusedTokenClass : TokenClass
+        {
+            int count = token.Count;
+
+            Token rtk = new Token();
+
+            foreach (var t in Token.ParseText(leftText))
+            {
+                rtk.AppendSubToken(t);
+            }
+
+            for (int b = 0; b < count; b++)
+            {
+                rtk.AppendSubToken(token[b]);
+            }
+            foreach (var t in Token.ParseText(rightText))
+            {
+                rtk.AppendSubToken(t);
+            }
+
+            rtk.TokenClassType = typeof(FusedTokenClass);
+
+            Token tk = new Token();
+            tk.AppendSubToken(rtk);
+
+            return tk;
+        }
     }
 
 }

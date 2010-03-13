@@ -12,7 +12,7 @@ namespace Qs.Types
     /// Matrix that hold quantities
     /// and the basic matrix calculations.
     /// </summary>
-    public partial class QsMatrix : QsValue
+    public partial class QsMatrix : QsValue, IEnumerable<QsVector>
     {
         public List<QsVector> Rows = new List<QsVector>();
 
@@ -635,5 +635,23 @@ namespace Qs.Types
 
             return m;
         }
+
+        #region IEnumerable<QsVector> Members
+
+        public IEnumerator<QsVector> GetEnumerator()
+        {
+            return Rows.GetEnumerator();
+        }
+
+        #endregion
+
+        #region IEnumerable Members
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return Rows.GetEnumerator();
+        }
+
+        #endregion
     }
 }

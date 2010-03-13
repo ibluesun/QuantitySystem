@@ -369,11 +369,7 @@ namespace QuantitySystem.Units
 
             foreach (Unit un in units)
             {
-                //include only the units that isn't dimensionless
-                //if (un.QuantityType != typeof(DimensionlessQuantity<>))
-                {
-                    SubUnits.Add(un);
-                }
+                SubUnits.Add(un);
             }
            
 
@@ -497,21 +493,23 @@ namespace QuantitySystem.Units
                             // km / cm = ?<1>
                             // k/c = ?   or in exponent k-c=?
 
-                           
-                            double sourceExponent = sourcePrefix.Exponent;
-                            double accumExponent = accumPrefix.Exponent;
+
+                            double targetExponent = us[un.GetType()].unitExponent + un.unitExponent;
+
+                            double accumExponent = accumPrefix.Exponent * us[un.GetType()].unitExponent;
+                            double sourceExponent = sourcePrefix.Exponent * un.unitExponent;
 
                             double resultExponent = (accumExponent + sourceExponent);
 
                             if (!(us[un.GetType()].IsInverted ^ un.IsInverted))
                             {
                                 //multiplication
-                                
 
-                                if (resultExponent % 2 == 0)
+
+                                if (resultExponent % targetExponent == 0)
                                 {
                                     //we can get the symbol of the sqrt of this
-                                    double unknown = resultExponent / 2;
+                                    double unknown = resultExponent / targetExponent;
 
                                     ((MetricUnit)us[un.GetType()]).UnitPrefix = MetricPrefix.FromExponent(unknown);
                                 }
@@ -537,10 +535,6 @@ namespace QuantitySystem.Units
                                 isOverflowed = true;
 
                             }
-
-                             
-
-
                         }
                         catch(MetricPrefixException mpe)
                         {
