@@ -579,7 +579,7 @@ namespace QuantitySystem.Units
 
         private const string DoubleNumber = @"[-+]?\d+(\.\d+)*([eE][-+]?\d+)*";
 
-        private const string UnitizedNumber = "^(?<num>" + DoubleNumber + @")\s*<(?<unit>([0-9a-zA-Z\.\^/]+)?)>$";
+        private const string UnitizedNumber = "^(?<num>" + DoubleNumber + @")\s*<(?<unit>([\w\.\^/!]+)?)>$";
         private static Regex UnitizedNumberRegex = new Regex(UnitizedNumber, RegexOptions.Compiled);
 
         public static bool TryParseQuantity(string quantity, out AnyQuantity<double> qty)
