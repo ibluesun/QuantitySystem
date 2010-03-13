@@ -15,16 +15,6 @@ namespace QuantitySystem.Quantities.DimensionlessQuantities
         {
         }
 
-        //public Angle()
-        //    : base(1, new Length<T>(), new RadiusLength<T>(-1))
-        //{
-        //}
-
-        //public Angle(int exponent)
-        //    : base(exponent, new Length<T>(), new RadiusLength<T>(-1))
-        //{
-        //}
-
 
         public static implicit operator Angle<T>(T value)
         {

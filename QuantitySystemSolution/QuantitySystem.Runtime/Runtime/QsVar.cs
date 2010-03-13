@@ -43,26 +43,12 @@ namespace Qs.Runtime
         }
 
 
-        #region regular expressions
-
-        public const string VariableNameExpression = @"^\s*(\w+)\s*$";
-
-        const string DoubleNumber = @"[-+]?\d+(\.\d+)*([eE][-+]?\d+)*";
-
-        const string UnitizedNumber = "(?<num>" + DoubleNumber + ")\\s*<(?<unit>.+?)>";
-
-        const string SimpleArithmatic = "\\s*(?<q>(" + UnitizedNumber + ")|(" + DoubleNumber + ")|\\w+)\\s*(?<op>[\\+\\-\\/\\*])?";
-
-        #endregion
-
-
         public class ExprOp
         {
             public Expression QuantityExpression { get; set; }
             public string Operation { get; set; }
             public ExprOp Next { get; set; }
         }
-
 
 
         public QsVarParseModes ParseMode { get; set; }
@@ -150,7 +136,8 @@ namespace Qs.Runtime
             Token tok = token.MergeTokens(new PowerDotToken());
 
             //tok = tok.MergeTokens(new PowerCrossToken()); removed
-            
+
+            tok = tok.MergeTokens<TensorProductToken>();
 
             return tok;
         }
@@ -158,22 +145,69 @@ namespace Qs.Runtime
         internal Token ConditionsTokenize(Token token)
         {
             var tokens = token.MergeTokens(new WhenStatementToken());
-
+            
             tokens = tokens.MergeTokens(new OtherwiseStatementToken());
-
+            
             tokens = tokens.MergeTokens(new AndStatementToken());
+            
             tokens = tokens.MergeTokens(new OrStatementToken());
+            
             tokens = tokens.MergeTokens(new EqualityToken());
-            tokens = tokens.MergeTokens(new NotEqualToken());
-            tokens = tokens.MergeTokens(new LessThanToken());
+            
+            tokens = tokens.MergeTokens(new InEqualityToken());
+            
             tokens = tokens.MergeTokens(new LessThanOrEqualToken());
-            tokens = tokens.MergeTokens(new GreaterThanToken());
+            
             tokens = tokens.MergeTokens(new GreaterThanOrEqualToken());
 
-
             return tokens;
+        }
+
+        internal Expression ParseArithmatic(string codeLine)
+        {
+            var tokens = Token.ParseText(codeLine);
+
+            tokens = tokens.MergeTokens<LTToken>();
+            tokens = tokens.MergeTokens<GTToken>();
+
+            tokens = tokens.MergeTokens(new MultipleSpaceToken());
+
+            tokens = ConditionsTokenize(tokens);   // make tokens of conditional statements
+
+            tokens = tokens.MergeTokens(new WordToken());                 //discover words
+            tokens = tokens.MergeTokens(new NumberToken());               //discover the numbers
+            tokens = tokens.MergeTokens<UnitToken>();
+            tokens = tokens.MergeTokens(new UnitizedNumberToken());   //discover the unitized numbers
+
+            tokens = MergeOperators(tokens);
+
+            tokens = tokens.MergeTokens(new NameSpaceToken());
+            tokens = tokens.MergeTokens(new NameSpaceAndValueToken());
+
+            tokens = tokens.MergeTokens<FunctionValueToken>();
 
 
+            tokens = tokens.MergeTokens<MagnitudeToken>();
+
+            tokens = tokens.MergeTokens<AbsoluteToken>();
+
+
+            tokens = tokens.MergeTokensInGroups(
+                new ParenthesisGroupToken(),                // group (--()-) parenthesis
+                new SquareBracketsGroupToken(),             // [[][][]]
+                new CurlyBracketGroupToken(),               //  {{}}{}
+                new TensorGroupToken()                      //  << <<>> >>
+                );
+
+
+
+            tokens = tokens.RemoveSpaceTokens();                           //remove all spaces
+
+            tokens = tokens.DiscoverQsCalls(StringComparer.OrdinalIgnoreCase,
+                new string[] { "When", "Otherwise", "And", "Or" }
+                );
+
+            return ParseArithmatic(tokens);
 
         }
 
@@ -182,53 +216,8 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="line"></param>
         /// <returns></returns>
-        internal Expression ParseArithmatic(string line)
+        internal Expression ParseArithmatic(Token tokens)
         {
-            var tokens = Token.ParseText(line);            
-
-            tokens = tokens.MergeTokens(new MultipleSpaceToken());
-
-            tokens = ConditionsTokenize(tokens);   // make tokens of conditional statements
-
-            tokens = tokens.MergeTokens(new WordToken());                 //discover words
-            tokens = tokens.MergeTokens(new NumberToken());               //discover the numbers
-            tokens = tokens.MergeTokens(new UnitizedNumberToken());   //discover the unitized numbers
-
-            tokens = MergeOperators(tokens);
-
-            tokens = tokens.MergeTokens(new NameSpaceToken());
-            tokens = tokens.MergeTokens(new NameSpaceAndValueToken());
-
-            tokens = tokens.MergeTokensInGroups(
-                new ParenthesisGroupToken(),                // group (--()-) parenthesis
-                new SquareBracketsGroupToken(),             // [[][][]]
-                new CurlyBracketGroupToken()                //  {{}}{}
-                );     
-
-
-            tokens = tokens.MergeTokens<MagnitudeToken>();
-            tokens = tokens.MergeTokens<AbsoluteToken>();
-
-            //s[n](x)  is word+SquareBracketsCallToken+Parentthesiscalltoken
-            
-
-            tokens = tokens.RemoveSpaceTokens();                           //remove all spaces
-
-            
-            //tokens = tokens.DiscoverCalls(StringComparer.OrdinalIgnoreCase,
-            //    new CallTokenClass[] { 
-            //        new ParenthesisCallToken(), 
-            //        new SquareBracketsCallToken() 
-            //    },   
-            //    new Type[] { typeof(WordToken), typeof(NameSpaceAndValueToken) },
-            //    new string[] { "When", "Otherwise", "and", "or" } //ignore reserved words 
-            //    );
-
-            tokens = tokens.DiscoverQsCalls(StringComparer.OrdinalIgnoreCase,
-                new string[] { "When", "Otherwise", "and", "or" }
-                );
-
-
 
             Expression quantityExpression = null;
             ExprOp eop = null;
@@ -240,16 +229,30 @@ namespace Qs.Runtime
             while (ix < tokens.Count)
             {
                 string q = tokens[ix].TokenValue;
+                string op = ix + 1 < tokens.Count ? tokens[ix + 1].TokenValue : string.Empty;
+
                 if (q == "+" || q == "-")
                 {
                     // unary prefix operator.
 
                     //consume another token for number
-                    ix++;
-                    q = q + tokens[ix].TokenValue;
+                    
+                    if (q == "+")
+                    {
+                        //q = tokens[ix].TokenValue;
+                        quantityExpression = Expression.Constant(QsScalar.One, typeof(QsValue));
+                    }
+                    else
+                    {
+                        quantityExpression = Expression.Constant(QsScalar.MinusOne, typeof(QsValue));
+                    }
+
+                    op = "*";
+                    ix--;
+                    goto ExpressionCompleted;
+                    
                 }
 
-                string op = ix + 1 < tokens.Count ? tokens[ix + 1].TokenValue : string.Empty;
 
                 bool FactorialPostfix = false;
                 if (!string.IsNullOrEmpty(op))
@@ -279,7 +282,9 @@ namespace Qs.Runtime
                 }
                 else if (tokens[ix].TokenClassType == typeof(ParenthesisGroupToken))
                 {
-                    quantityExpression = ParseArithmatic(q.Substring(1, q.Length - 2));
+                    // take the inner tokens and send it to be parsed again.
+                    quantityExpression = ParseArithmatic(tokens[ix].RemoveSpaceTokens().TrimTokens(1, 1));
+                    
                 }
                 else if (tokens[ix].TokenClassType == typeof(UnitizedNumberToken))
                 {
@@ -303,6 +308,10 @@ namespace Qs.Runtime
                     // Matrix declaration.
                     quantityExpression = ParseMatrix(tokens[ix]);
                 }
+                else if (tokens[ix].TokenClassType == typeof(TensorGroupToken))
+                {
+                    quantityExpression = ParseTensor(tokens[ix]);
+                }
                 else if (tokens[ix].TokenClassType == typeof(MagnitudeToken))
                 {
                     quantityExpression = ValueNorm(tokens[ix]);
@@ -310,6 +319,10 @@ namespace Qs.Runtime
                 else if (tokens[ix].TokenClassType == typeof(AbsoluteToken))
                 {
                     quantityExpression = ValueAbsolute(tokens[ix]);
+                }
+                else if (tokens[ix].TokenClassType == typeof(FunctionValueToken))
+                {
+                    quantityExpression = GetFunctionValue(tokens[ix]);
                 }
                 else
                 {
@@ -387,6 +400,7 @@ namespace Qs.Runtime
                             //quantity variable  //get it from evaluator  global heap
                             quantityExpression = GetVariable(q);
                             Sequence.CachingEnabled = false;  //because when evaluating external variable the external variable may change without knowing
+                            throw new QsParameterNotFoundException("Global variable (" + q + ") are not permitted");
                         }
                         #endregion
 
@@ -411,7 +425,8 @@ namespace Qs.Runtime
 
                     FactorialPostfix = false;
                 }
-
+                
+            ExpressionCompleted:
                 if (eop == null)
                 {
                     //firs time creation
@@ -446,7 +461,7 @@ namespace Qs.Runtime
         /// <returns></returns>
         private Expression ValueAbsolute(Token token)
         {
-            Expression rr = ParseArithmatic(token.TokenValue.Trim('|'));
+            Expression rr = ParseArithmatic(token.TrimTokens(1, 1));
 
             rr = Expression.Call(rr, typeof(QsValue).GetMethod("AbsOperation"));
 
@@ -462,7 +477,7 @@ namespace Qs.Runtime
         {
             //the token is holding the vector or the expression that will lead to the vector.
 
-            Expression rr = ParseArithmatic(token.TokenValue.Trim('|'));
+            Expression rr = ParseArithmatic(token.TrimTokens(2, 2));
 
             rr = Expression.Call(rr, typeof(QsValue).GetMethod("NormOperation"));
             
@@ -490,7 +505,7 @@ namespace Qs.Runtime
             {
                 if (token[i].TokenClassType==typeof(WordToken))
                 {
-                    qtyExpressions.Add(ParseArithmatic(token[i].TokenValue));
+                    qtyExpressions.Add(ParseArithmatic(token[i]));
                 }
             }
 
@@ -531,7 +546,18 @@ namespace Qs.Runtime
                 if (token[i].TokenClassType == typeof(WordToken))
                 {
 
-                    vctExpressions.Add(ParseArithmatic("{" + token[i].TokenValue + "}"));
+                    string w = token[i].TokenValue.Trim();
+                    if (w.StartsWith("["))
+                    {
+                        //don't alter '{' token if already start with '['
+                        vctExpressions.Add(ParseArithmatic(token[i]));
+                    }
+                    else
+                    {
+                        var vtk = token[i].FuseTokens<CurlyBracketGroupToken>("{", "}");
+
+                        vctExpressions.Add(ParseArithmatic(vtk));
+                    }
                     
                 }
             }
@@ -545,6 +571,39 @@ namespace Qs.Runtime
             return matrixExpression;
         }
 
+
+        public Expression ParseTensor(Token tok)
+        {
+            List<Expression> vctExpressions = new List<Expression>();
+
+            Token token = tok.TrimStart(typeof(LTToken));
+
+            token = token.TrimEnd(typeof(GTToken));
+
+            // first split between semi colon tokens.
+            // then use every splitted token to 
+
+            token = token.MergeAllBut(typeof(WordToken), new VerticalBarToken());
+
+            for (int i = 0; i < token.Count; i++)
+            {
+                if (token[i].TokenClassType == typeof(WordToken))
+                {
+                    var vtk = token[i].FuseTokens<SquareBracketsGroupToken>("[", "]");
+                    vctExpressions.Add(ParseArithmatic(vtk));
+                }
+            }
+
+            var valuesArray = Expression.NewArrayInit(typeof(QsValue), vctExpressions);
+
+            var tensorExpression = Expression.Call(
+                typeof(QsValue).GetMethod("TensorFromValues"),
+                valuesArray);
+
+            return tensorExpression;
+
+
+        }
 
 
         /// <summary>
@@ -583,6 +642,82 @@ namespace Qs.Runtime
 
 
                 return fe;
+            }
+        }
+
+
+
+
+        /// <summary>
+        /// gets the function as a value.
+        /// </summary>
+        /// <param name="function"></param>
+        /// <returns></returns>
+        public Expression GetFunctionValue(Token functionValueToken)
+        {
+
+            QsFunction f;
+
+            if (functionValueToken.Count == 2)
+            {
+                if (functionValueToken[1].TokenClassType == typeof(WordToken))
+                {
+                    f = QsFunction.GetFirstDeclaredFunction(
+                    this.Scope,
+                        string.Empty,
+                        functionValueToken[1].TokenValue);
+
+                }
+                else
+                {
+                    //namespace included
+                    f = QsFunction.GetFirstDeclaredFunction(this.Scope,
+                        functionValueToken[1][0][0].TokenValue,
+                        functionValueToken[1][1].TokenValue);
+                }
+            }
+            else if (functionValueToken.Count > 2)
+            {
+                string fpp = functionValueToken.SubTokensValue(2);
+
+                string[] pp = (from p in (fpp.Substring(1, fpp.Length - 2).Split(','))
+                                  select p.Trim()).ToArray();
+
+                if (pp.Length == 1 && string.IsNullOrEmpty(pp[0]))
+                    pp = null;
+
+                
+                if (functionValueToken[1].TokenClassType == typeof(WordToken))
+                {
+                    //specify parameters
+                    f = QsFunction.GetExactFunctionWithParameters(
+                        this.Scope,
+                        string.Empty,
+                        functionValueToken[1].TokenValue, 
+                        pp
+                        );
+
+                }
+                else
+                {
+                    //namespace included
+                    f = QsFunction.GetExactFunctionWithParameters(
+                        this.Scope,
+                        functionValueToken[1][0][0].TokenValue,
+                        functionValueToken[1][1].TokenValue, 
+                        pp);
+                }
+            }
+            else
+            {
+                throw new QsException("function value syntax error");
+            }
+
+            if (f != null)
+                return Expression.Constant(f, typeof(QsValue));
+            else
+            {
+                throw new QsVariableNotFoundException("Function (" + functionValueToken.TokenValue + ") not found");
             }
         }
 
@@ -637,7 +772,9 @@ namespace Qs.Runtime
                 for (int ai = 1; ai < args.Count - 1; ai++)
                 {
                     if (args[ai].TokenValue != ",")
-                        parameters.Add(ParseArithmatic(args[ai].TokenValue));
+                    {
+                        parameters.Add(ParseArithmatic(args[ai]));
+                    }
                 }
             }
 
@@ -1156,12 +1293,25 @@ namespace Qs.Runtime
 
             Type aqType = typeof(QsValue);
 
+            if (op.Equals("(x)", StringComparison.OrdinalIgnoreCase))
+                return Expression.Multiply(left, right, aqType.GetMethod("TensorProduct"));
+
             if (op == "^") return Expression.Power(left, right, aqType.GetMethod("Pow"));
             if (op == "^.") return Expression.Power(left, right, aqType.GetMethod("PowDot"));
-            if (op == "^x") return Expression.Power(left, right, aqType.GetMethod("PowCross"));
+
+            if (op.Equals("^x", StringComparison.OrdinalIgnoreCase))
+                return Expression.Power(left, right, aqType.GetMethod("PowCross"));
+
             if (op == "*") return Expression.Multiply(left, right);
+
             if (op == ".") return Expression.Multiply(left, right, aqType.GetMethod("DotProduct"));
-            if (op == "x") return Expression.Multiply(left, right, aqType.GetMethod("CrossProduct"));
+
+            if (op.Equals("x", StringComparison.OrdinalIgnoreCase)) 
+                return Expression.Multiply(left, right, aqType.GetMethod("CrossProduct"));
+
+            if (op.Equals("(*)", StringComparison.OrdinalIgnoreCase))
+                return Expression.Multiply(left, right, aqType.GetMethod("TensorProduct"));
+
             if (op == "/") return Expression.Divide(left, right);
             if (op == "%") return Expression.Modulo(left, right);
             if (op == "+") return Expression.Add(left, right);
@@ -1240,15 +1390,16 @@ namespace Qs.Runtime
             //  + and - are in the same pass
 
 
-            string[] Group = { "^" /* Power for normal product '*' */, 
-                               "^." /* Power for dot product */ ,
-                               "^x" /* Power for cross product */ };
+            string[] Group = { "^"    /* Power for normal product '*' */, 
+                               "^."   /* Power for dot product */ ,
+                               "^x"   /* Power for cross product */ };
 
-            string[] Group1 = { "*" /* normal multiplication */, 
-                                "." /* dot product */, 
-                                "x" /* cross product */, 
-                                "/" /* normal division */, 
-                                "%" /*modulus*/ };
+            string[] Group1 = { "*"   /* normal multiplication */, 
+                                "."   /* dot product */, 
+                                "x"   /* cross product */, 
+                                "(*)" /* Tensor product */,
+                                "/"   /* normal division */, 
+                                "%"   /* modulus */ };
 
             string[] Group2 = { "+", "-" };
 

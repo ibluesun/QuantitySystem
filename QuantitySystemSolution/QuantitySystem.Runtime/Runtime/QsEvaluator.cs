@@ -24,8 +24,14 @@ namespace Qs.Runtime
     public class QsEvaluator
     {
 
-        public const string UnitExpression = @"^\s*<(.+?)>\s*$";
+        /// <summary>
+        /// Match unit 
+        /// </summary>
+        public const string UnitExpression = @"^\s*<([\w\.\^\/!]+)>\s*$";
 
+        /// <summary>
+        /// Match unit to unit 
+        /// </summary>
         public const string UnitToUnitExpression = @"^\s*<(.+)>\s*[tT][oO]\s*<(.+)>\s*$";
 
         public const string DoubleNumber = @"[-+]?\d+(\.\d+)*([eE][-+]?\d+)*?";

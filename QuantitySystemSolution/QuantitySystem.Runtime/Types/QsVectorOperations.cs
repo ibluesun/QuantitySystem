@@ -425,6 +425,41 @@ namespace Qs.Types
             }
         }
 
+        /// <summary>
+        /// Form a matrix from two vectors
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public override QsValue TensorProductOperation(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                throw new NotSupportedException();
+            }
+            else if (value is QsVector)
+            {
+                
+                var vec = (QsVector)value;
+
+                if (vec.Count != this.Count) throw new QsException("Not equal vector components");
+
+                List<QsVector> vcs = new List<QsVector>();
+                foreach (var c in this)
+                {
+                    QsVector v = (QsVector)(c * vec);
+                    vcs.Add(v);
+
+                }
+
+                return new QsMatrix(vcs.ToArray());
+
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+            
+        }
 
         #endregion
 

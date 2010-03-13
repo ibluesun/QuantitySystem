@@ -34,7 +34,6 @@ namespace Qs.Types
             {
                 functionName = value;
             }
-
         }
 
         /// <summary>
@@ -212,12 +211,8 @@ namespace Qs.Types
 
                     tt.Catch(e, catchBody);
 
-
-
                     parameters.Add(tt.ToExpression());
                 }
-
-
             }
 
             //Expression DelegateProperty = Expression.Property(Expression.Constant(this), "FunctionDelegate_" + parameters.Count.ToString(CultureInfo.InvariantCulture));
@@ -401,7 +396,20 @@ namespace Qs.Types
         #endregion
 
 
+
+        /// <summary>
+        /// Function text after '=' equal sign.
+        /// </summary>
         public string FunctionBody
+        {
+            get;
+            private set;
+        }
+
+        /// <summary>
+        /// Hold the tokens of function after '=' equal sign
+        /// </summary>
+        public Token FunctionBodyToken
         {
             get;
             private set;
@@ -498,6 +506,22 @@ namespace Qs.Types
         #region Helper Functions
 
 
+        public static Token TokenizeFunction(string functionCode)
+        {
+            Token functionToken = Token.ParseText(functionCode);
+            functionToken = functionToken.MergeTokens(new MultipleSpaceToken());
+            functionToken = functionToken.MergeTokens(new WordToken());
+            functionToken = functionToken.MergeTokens(new NumberToken());
+            functionToken = functionToken.MergeTokens(new UnitizedNumberToken());
+
+            functionToken = functionToken.MergeTokens(new NameSpaceToken());
+
+            functionToken = functionToken.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
+            functionToken = functionToken.RemoveSpaceTokens();
+
+            return functionToken;
+        }
+
         public static QsFunction ParseFunction(QsEvaluator qse, string functionDeclaration)
         {
             // fast check for function as = and ) before it.
@@ -520,29 +544,25 @@ namespace Qs.Types
                 return null;
             }
 
-            GoParseFunction:
+        GoParseFunction:
 
-            Token t = Token.ParseText(functionDeclaration);
-            t = t.MergeTokens(new MultipleSpaceToken());
-            t = t.MergeTokens(new WordToken());
-            t = t.MergeTokens(new NumberToken());
-            t = t.MergeTokens(new UnitizedNumberToken());
 
-            t = t.MergeTokens(new NameSpaceToken());
-
-            t = t.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
-            t = t.RemoveSpaceTokens();
-
+            var functionToken = TokenizeFunction(functionDeclaration);
+            return ParseFunction(qse, functionDeclaration, functionToken);
             
+        }
+
+        public static QsFunction ParseFunction(QsEvaluator qse, string functionDeclaration, Token functionToken)
+        {
 
             int nsidx = 0; // surve as a base for indexing token if there is namespace it will be 1 otherwise remain 0
 
-            if (t[0].TokenClassType == typeof(NameSpaceToken)) nsidx = 1; //the function begin with namespace.
+            if (functionToken[0].TokenClassType == typeof(NameSpaceToken)) nsidx = 1; //the function begin with namespace.
 
             if (
-                t[nsidx].TokenClassType == typeof(WordToken) &&
-                (t.Count > (nsidx + 1) ? t[nsidx + 1].TokenClassType == typeof(ParenthesisGroupToken) : false) &&
-                (t.Count > (nsidx + 2) ? t[nsidx + 2].TokenClassType == typeof(EqualToken) : false)
+                functionToken[nsidx].TokenClassType == typeof(WordToken) &&
+                (functionToken.Count > (nsidx + 1) ? functionToken[nsidx + 1].TokenClassType == typeof(ParenthesisGroupToken) : false) &&
+                (functionToken.Count > (nsidx + 2) ? functionToken[nsidx + 2].TokenClassType == typeof(EqualToken) : false)
                 )
             {
                 //get function name
@@ -550,14 +570,14 @@ namespace Qs.Types
 
                 string functionName  = string.Empty;
                 
-                functionName = t[nsidx].TokenValue;
+                functionName = functionToken[nsidx].TokenValue;
                 
                 string functionNamespace = "";
-                if (nsidx == 1) functionNamespace = t[0][0].TokenValue;
+                if (nsidx == 1) functionNamespace = functionToken[0][0].TokenValue;
 
                 List<string> textParams = new List<string>();
                 List<QsParamInfo> prms = new List<QsParamInfo>();
-                foreach (var c in t[nsidx + 1])
+                foreach (var c in functionToken[nsidx + 1])
                 {
                     if (
                             c.TokenValue.StartsWith("(") || 
@@ -598,7 +618,7 @@ namespace Qs.Types
 
                 List<Expression> statements = new List<Expression>();
 
-                qf.FunctionBody = functionDeclaration.Substring(t[nsidx + 2].IndexInText + t[nsidx + 2].TokenValueLength).Trim();
+                qf.FunctionBody = functionDeclaration.Substring(functionToken[nsidx + 2].IndexInText + functionToken[nsidx + 2].TokenValueLength).Trim();
 
                 QsVar qv = new QsVar(qse, qf.FunctionBody, qf, lb);
 
@@ -609,6 +629,8 @@ namespace Qs.Types
                 LambdaExpression lbe = lb.MakeLambda();
 
                 qf.FunctionExpression = lbe;
+
+                qf.FunctionBodyToken = functionToken.TrimTokens(3, 0);
 
                 return qf;
 

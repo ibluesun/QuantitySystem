@@ -2,6 +2,8 @@
 using Qs.Runtime;
 using System.Collections.Generic;
 using System.Linq;
+using ParticleLexer;
+using ParticleConsole.QsTokens;
 
 namespace Qs.Types
 {
@@ -16,7 +18,7 @@ namespace Qs.Types
         /// </summary>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        private string RemoveRedundantParameters(params string[] parameters)
+        private static string RemoveRedundantParameters(params string[] parameters)
         {
             Dictionary<string, bool> rp = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
             foreach (var prm in parameters)
@@ -37,17 +39,92 @@ namespace Qs.Types
             get { throw new NotImplementedException(); }
         }
 
+
+        internal static Token JoinFunctionsArrayTokensWithOperation(string operation, out string functionDeclaration, params QsFunction[] functions)
+        {
+            var fname = "_";
+
+            var fbody = "";
+            List<string> fparamList = new List<string>();
+            foreach (var f in functions)
+            {
+                fbody += " " + f.FunctionBody + " " + operation;
+                fparamList.AddRange(f.ParametersNames);
+            }
+            fbody = fbody.TrimEnd(operation.ToCharArray());
+
+            string[] fparam = fparamList.ToArray();
+
+            var fNameParamPart = fname + "(" + RemoveRedundantParameters(fparam) + ") =";
+            functionDeclaration = fNameParamPart + fbody;
+
+            Token fTokens = new Token();
+
+            // add first part tokens
+            foreach (var t in QsFunction.TokenizeFunction(fNameParamPart))
+            {
+                fTokens.AppendSubToken(t);
+            }
+
+            for (int i = 0; i < functions.Length; i++ )
+            {
+                // prepare function body tokens
+                foreach (var t in functions[i].FunctionBodyToken)
+                {
+                    fTokens.AppendSubToken(t);
+                }
+
+                if (i < functions.Length - 1) fTokens.AppendSubToken(Token.ParseText(operation.Trim())[0]);  //operation is only one charachter
+            }
+
+
+            return fTokens;
+        }
+
+        internal static Token JoinFunctionTokensWithOperation(string operation, out string functionDeclaration, QsFunction functionOne, QsFunction functionTwo)
+        {
+            var fname = "_";
+            var fbody = "" + functionOne.FunctionBody + " " + operation + " " + functionTwo.FunctionBody + "";
+
+
+            var fparam = functionOne.ParametersNames.Union(functionTwo.ParametersNames).ToArray();
+            var fNameParamPart = fname + "(" + RemoveRedundantParameters(fparam) + ") = ";
+            functionDeclaration = fNameParamPart + fbody;
+
+            Token fTokens = new Token();
+
+            // add first part tokens
+            foreach (var t in QsFunction.TokenizeFunction(fNameParamPart))
+            {
+                fTokens.AppendSubToken(t);
+            }
+
+            // prepare function body tokens
+            foreach (var t in functionOne.FunctionBodyToken)
+            {
+                fTokens.AppendSubToken(t);
+            }
+            fTokens.AppendSubToken(Token.ParseText(operation.Trim())[0]);   //operation is only one charachter
+            
+            foreach (var t in functionTwo.FunctionBodyToken)
+            {
+                fTokens.AppendSubToken(t);
+            }
+
+            return fTokens;
+        }
+
         private QsFunction FOperation(QsValue value ,string operation)
         {
             if (value is QsFunction)
             {
                 QsFunction fn2 = (QsFunction)value;
-                var fname = "_";
-                var fbody = "" + this.FunctionBody + " " + operation + " " + fn2.FunctionBody + "";
 
-                var fparam = this.ParametersNames.Union(fn2.ParametersNames).ToArray();
-                var f = fname + "(" + RemoveRedundantParameters(fparam) + ") = " + fbody;
-                return QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, f);
+                string fDeclaration;
+
+                var fTokens = JoinFunctionsArrayTokensWithOperation(operation, out fDeclaration, this, fn2);
+
+                return QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, fDeclaration, fTokens);
             }
             else if (value is QsScalar)
             {
@@ -134,6 +211,11 @@ namespace Qs.Types
         public override QsValue CrossProductOperation(QsValue value)
         {
             return FOperation(value, " x ");
+        }
+
+        public override QsValue TensorProductOperation(QsValue value)
+        {
+            return FOperation(value, "(x)");
         }
 
         public override QsValue NormOperation()

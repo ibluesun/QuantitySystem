@@ -241,7 +241,15 @@ namespace Qs.Runtime
             }
         }
 
-        public string FormFunctions(int fromIndex, int toIndex, string operation)
+
+        /// <summary>
+        /// Replace elements with operation and replace index variable with indexing number.
+        /// </summary>
+        /// <param name="fromIndex"></param>
+        /// <param name="toIndex"></param>
+        /// <param name="operation"></param>
+        /// <returns></returns>
+        private string JoinElementsWithOperation(int fromIndex, int toIndex, string operation)
         {
             string FunctionBody = string.Empty;
             int counterIndex = fromIndex;
@@ -268,6 +276,41 @@ namespace Qs.Runtime
             return FunctionBody;
         }
 
+
+        /// <summary>
+        /// returns elements in array
+        /// </summary>
+        /// <param name="fromIndex"></param>
+        /// <param name="toIndex"></param>
+        /// <returns></returns>
+        public QsSequenceElement[] GetElementsValuesInArray(int fromIndex, int toIndex)
+        {
+            List<QsSequenceElement> Elements = new List<QsSequenceElement>();
+
+            int counterIndex = fromIndex;
+            bool still = true;
+            while (still)
+            {
+                Elements.Add(GetElement(counterIndex));
+
+                if (fromIndex > toIndex)
+                {
+                    counterIndex--;
+                    if (counterIndex < toIndex) still = false;
+                }
+                else
+                {
+                    counterIndex++;
+                    if (counterIndex > toIndex) still = false;
+                }
+                if (still)
+                {
+                }
+            }
+
+            return Elements.ToArray();
+        }
+
         /// <summary>
         /// The method sum all elements in the sequence between the supplied indexes.
         /// Correspondes To: S[i++k]
@@ -283,7 +326,7 @@ namespace Qs.Runtime
                 //  the output should be x^0 + x^1 + x^2
                 //  and be parsed into function  (QsFunction)
 
-                
+
                 string porma = string.Empty;  // the parameters separated by comma ','
                 foreach (var prm in this.Parameters)
                 {
@@ -291,9 +334,15 @@ namespace Qs.Runtime
                 }
                 porma = porma.TrimEnd(',', ' ');
 
-                string FunctionBody = FormFunctions(fromIndex, toIndex, "+");
+                string FunctionBody = JoinElementsWithOperation(fromIndex, toIndex, "+");
 
                 string FunctionDeclaration = "_(" + porma + ") = " + FunctionBody;
+                
+                
+                //string FunctionDeclaration;
+                //var fTokens = QsFunction.JoinFunctionsArrayTokensWithOperation("+", FunctionDeclaration);
+
+                
 
                 QsFunction qs = QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, FunctionDeclaration);
                 return qs;
@@ -419,7 +468,7 @@ namespace Qs.Runtime
                 }
                 porma = porma.TrimEnd(',', ' ');
 
-                string FunctionBody = "(" + FormFunctions(fromIndex, toIndex, "+") + ")/" + n.ToString(CultureInfo.InvariantCulture);
+                string FunctionBody = "(" + JoinElementsWithOperation(fromIndex, toIndex, "+") + ")/" + n.ToString(CultureInfo.InvariantCulture);
 
                 string FunctionDeclaration = "_(" + porma + ") = " + FunctionBody;
 
@@ -529,7 +578,7 @@ namespace Qs.Runtime
                 }
                 porma = porma.TrimEnd(',', ' ');
 
-                string FunctionBody = FormFunctions(fromIndex, toIndex, "*");
+                string FunctionBody = JoinElementsWithOperation(fromIndex, toIndex, "*");
 
                 string FunctionDeclaration = "_(" + porma + ") = " + FunctionBody;
 

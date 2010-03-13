@@ -74,16 +74,25 @@ namespace Qs.Types
             string functionName,
             params string[] parametersNames)
         {
-            var funcs = FindFunctionByParameters(scope, nameSpace, functionName, parametersNames.Length, parametersNames);
-
-            foreach (var func in funcs)
+            if (parametersNames == null)
             {
-                //double check parameters and their length to get the exact function.
-                if (func.Parameters.Length == parametersNames.Length)
-                    if (func.ContainsParameters(parametersNames)) return func;
+                return GetDefaultFunction(scope, nameSpace, functionName, 0);
             }
+            else
+            {
+                var funcs = FindFunctionByParameters(scope, 
+                    nameSpace, functionName, 
+                    parametersNames.Length, parametersNames);
 
-            return null;
+                foreach (var func in funcs)
+                {
+                    //double check parameters and their length to get the exact function.
+                    if (func.Parameters.Length == parametersNames.Length)
+                        if (func.ContainsParameters(parametersNames)) return func;
+                }
+
+                return null;
+            }
         }
 
 
@@ -109,6 +118,47 @@ namespace Qs.Types
 
             return func;
 
+
+        }
+
+
+        /// <summary>
+        /// Get the first declared function of this undecorated name.
+        /// </summary>
+        /// <param name="scope"></param>
+        /// <param name="nameSpace"></param>
+        /// <param name="functionName"></param>
+        /// <returns></returns>
+        public static QsFunction GetFirstDeclaredFunction(
+            Scope scope,
+            string nameSpace,
+            string functionName)
+        {
+
+            ScopeStorage storage = (ScopeStorage)scope.Storage;
+
+            IEnumerable<KeyValuePair<string, object>> Items = null;
+
+            if (!string.IsNullOrEmpty(nameSpace))
+            {
+                var ns = QsNamespace.GetNamespace(scope, nameSpace);
+                Items = ns.GetItems();
+            }
+            else
+            {
+                Items = storage.GetItems();
+            }
+
+            var func_Pass1 = from item in Items
+                             where item.Value is QsFunction
+                             select (QsFunction)item.Value;
+
+            var qf = from fun in func_Pass1
+                     where fun.FunctionName.Equals(functionName,StringComparison.OrdinalIgnoreCase)
+                     select fun;
+                     
+
+            return qf.ElementAtOrDefault(0);
 
         }
     }

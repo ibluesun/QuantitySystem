@@ -18,10 +18,13 @@ using Microsoft.Scripting;
         public static ScriptEngine Engine { get; set; }
         public static ScriptScope ScriptScope { get; set; }
 
-        public const ConsoleColor BackgroundColor = ConsoleColor.Black;
+        public const ConsoleColor BackgroundColor = ConsoleColor.DarkBlue;
         public const ConsoleColor ForegroundColor = ConsoleColor.White;
-        public const ConsoleColor HelpColor = ConsoleColor.Green;
+        public const ConsoleColor HelpColor = ConsoleColor.Gray;
+        
         public const ConsoleColor ValuesColor = ConsoleColor.Yellow;
+
+        public const ConsoleColor ExceptionColor = ConsoleColor.Red;
 
 
         /// <summary>

@@ -58,6 +58,7 @@ namespace Qs.Types
             return new QsScalar { Quantity = this.Quantity % scalar.Quantity };
         }
 
+
         #endregion
 
         #region Vector Operations
@@ -213,6 +214,19 @@ namespace Qs.Types
 
         #region Special Values
         private static QsScalar one = "1".ToScalar();
+        private static QsScalar minusOne = "-1".ToScalar();
+
+        
+        /// <summary>
+        /// Returns -1 as dimensionless quantity scalar.
+        /// </summary>
+        public static QsScalar MinusOne
+        {
+            get 
+            { 
+                return QsScalar.minusOne; 
+            }
+        }
 
         /// <summary>
         /// return 1 as dimensionless quantity scalar.
@@ -401,6 +415,11 @@ namespace Qs.Types
             {
                 throw new NotSupportedException();
             }
+        }
+
+        public override QsValue TensorProductOperation(QsValue value)
+        {
+            throw new NotImplementedException();
         }
         #endregion
 

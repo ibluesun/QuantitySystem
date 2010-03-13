@@ -60,7 +60,7 @@ public class QsCommandLine : CommandLine
         
         ConsoleColor cc = System.Console.ForegroundColor;
 
-        System.Console.ForegroundColor = ConsoleColor.Red;
+        System.Console.ForegroundColor = QsCommands.ExceptionColor;
 
         
         
@@ -71,7 +71,7 @@ public class QsCommandLine : CommandLine
             Console.ErrorOutput.WriteLine("{0}: {1}", e.InnerException.GetType().Name, e.InnerException.Message);
         }
         
-        System.Console.ForegroundColor = ConsoleColor.White;
+        System.Console.ForegroundColor = QsCommands.ForegroundColor;
     }
 
 }

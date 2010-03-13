@@ -44,7 +44,7 @@ fun:v(l1,l2,h) = l1(l2,h)
 
 # v called with function d and 3,4
 
-fun:a = fun:v(fun:d,3,4);
+fun:a = fun:v(fun:d, 3, 4);
 
 # v called with c as a function in first parameter, however c also needs function parameter
 # that was passed to v in the next parameter.
@@ -62,14 +62,15 @@ wave:tri(t) = 1-|t| when |t|<1 otherwise 0						#http://en.wikipedia.org/wiki/Tr
 wave:saw(t) = t - math:floor(t)									#http://en.wikipedia.org/wiki/Sawtooth_wave
 
 math:sgn(x) = -1 when x<0 otherwise 0 when x==0 otherwise 1 	#http://en.wikipedia.org/wiki/Sign_function
+math:sgna(x) = x/|x|												# also the same but include more range of numbers
 
 wave:Square(x) = math:sgn(math:sin(x))  						#http://en.wikipedia.org/wiki/Square_wave
 
 MsgBox(text) = Windows:MessageBox(text)
 
-ec = e[0++10]
+exp = e[0++20]
 
-ec(x=1)
+exp(x=1)
 
 
 
