@@ -73,7 +73,10 @@ exp = e[0++20]
 exp(x=1)
 
 
-
+#The torque magic
+tor = 10<N> * 5<m!>
+torWork = 0<J> + tor*20<rad>
+torPower = 0<W> + tor * 10<rpm>
 
 #Please Accept my deepest regards 
 #	Ahmed Sadek

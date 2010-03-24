@@ -590,6 +590,70 @@ namespace Qs.Modules
             }
         }
 
+
+        public static QsValue Exp(QsParameter val)
+        {
+            if (val.IsQsValue)
+            {
+                if (val.Value is QsScalar)
+                {
+                    AnyQuantity<double> q = ((QsScalar)val.Value).Quantity;
+
+                    if (q.Dimension.IsDimensionless)
+                    {
+                        double r = System.Math.Exp(q.Value);
+                        return r.ToQuantity().ToScalarValue();
+                    }
+                    else
+                    {
+                        throw new QsInvalidInputException("Non dimensionless number");
+                    }
+                }
+                else if (val.Value is QsVector)
+                {
+                    QsVector vec = (QsVector)val.Value;
+
+                    QsVector rv = new QsVector(vec.Count);
+
+                    foreach (QsScalar var in vec)
+                    {
+                        if (var.Quantity.Dimension.IsDimensionless)
+                        {
+                            double r = System.Math.Exp(var.Quantity.Value);
+                            rv.AddComponent(r.ToQuantity().ToScalar());
+                        }
+                        else
+                        {
+                            throw new QsInvalidInputException("Non dimensionless component");
+                        }
+                    }
+
+                    return rv;
+                }
+                else if (val.Value is QsMatrix)
+                {
+                    QsMatrix mat = (QsMatrix)val.Value;
+                    QsMatrix rm = new QsMatrix();
+
+                    foreach (var vec in mat.Rows)
+                    {
+                        rm.AddVector((QsVector)Exp(QsParameter.MakeParameter(vec, string.Empty)));
+
+                    }
+                    return rm;
+                }
+                else
+                {
+                    return null;
+                }
+            }
+            else
+            {
+                //not known may be ordinary string
+                return null;
+            }
+        }
+
         #endregion
 
     }

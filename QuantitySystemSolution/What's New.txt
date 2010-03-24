@@ -1,3 +1,16 @@
+[Qs 1.1.9.93]   (Released)
+- Added Text support as QsText and adjusting functions that accept strings for the new way.
+
+- Another fix for the Metric prefixes calculations.
+    now the prefixes should be final 
+    Qs> List Prefixes               #To list all Metric prefixes
+    
+- Introducing the Tensor parsing concept
+   T =  << 5 4; 3 2 | 9 1; 2 4 >>  
+   The Tensor is up to the 3rd rank tensor
+   no tensor calculation implementation is given.
+
+
 [Qs 1.1.9.92]
 - Enhancing the parsing and tokenization speed.
 
@@ -18,8 +31,7 @@
   
   and you can select the function with its argument like @f(u,v) for example
   
-     
-   
+
 
 [Qs 1.1.9.91]
 - Fixed Vector - Scalar operation (it was a shame and it was wrong :( )

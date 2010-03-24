@@ -319,6 +319,8 @@ namespace Qs.Runtime
 
             // check of existance of = inside bracket
             Token tt = Token.ParseText(line);
+            tt = tt.DiscoverQsTextTokens();
+
             tt = tt.MergeTokens(new WordToken());
             tt = tt.MergeTokens(new MultipleSpaceToken());
             tt = tt.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());

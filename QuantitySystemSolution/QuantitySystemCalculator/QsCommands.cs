@@ -80,6 +80,11 @@ using Microsoft.Scripting;
                             ListUnits(commands[2]);
                         }
                     }
+
+                    if (commands[1] == "prefixes")
+                    {
+                        ListMetricPrefixes();
+                    }
                 }
 
                 CommandProcessed = true;
@@ -126,6 +131,22 @@ using Microsoft.Scripting;
             return true;
         }
 
+        private static void ListMetricPrefixes()
+        {
+            Console.ForegroundColor = HelpColor;
+
+            int[] exo = { 24, 21, 18, 15, 12, 9, 6, 3, 2, 1, 0, -1, -2, -3, -6, -9, -12, -15, -18, -21, -24 };
+            foreach (int e in exo)
+            {
+                MetricPrefix pr = MetricPrefix.FromExponent(e);
+                Console.WriteLine("     {0}         {1}        10^{2}", pr.Prefix.PadRight(10), pr.Symbol.PadRight(10), pr.Exponent);
+
+            }
+
+            Console.ForegroundColor = ForegroundColor;
+
+        }
+
 
 
         #region Console commands
@@ -168,7 +189,7 @@ using Microsoft.Scripting;
 
             Console.WriteLine("Email: Ahmed.Sadek@LostParticles.net; Ahmed.Amara@gmail.com");
 
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ForegroundColor;
 
         }
 
@@ -188,10 +209,11 @@ using Microsoft.Scripting;
 
             Console.WriteLine("       - Vector");
             Console.WriteLine("           vec = {3 4 5}");
-            Console.WriteLine("           ||vec||   to get magnitude");
+            Console.WriteLine("           |vec|, or ||vec||   to get magnitude");
             Console.WriteLine("           v1 * v2   vector multiplication");
             Console.WriteLine("           v1 . v2   dot product.");
             Console.WriteLine("           v1 x v2   use x letter for cross product.");
+            Console.WriteLine("           v1 (*) v2   use (*) letters for tensor product.");
             Console.WriteLine();
 
             Console.WriteLine("       - Matrix");
@@ -204,7 +226,10 @@ using Microsoft.Scripting;
 
 
             Console.WriteLine();
-            Console.WriteLine("       - \"f(x,y,z) = x+y+z\" to make a function");
+            Console.WriteLine("       - \"f(x,y,z) = x+y+z\" to make a function.");
+            Console.WriteLine("         \"f(u,v,w) = u/v*w\" to make a function with the same name and different parameters.");
+            Console.WriteLine("         \"ro = f(v=10, w=3, u=3)\" to call specific function.");
+            Console.WriteLine("         \"@f\" return the function body as a value.");
 
             Console.WriteLine();
             Console.WriteLine("       - Sequence:");
@@ -213,11 +238,16 @@ using Microsoft.Scripting;
             Console.WriteLine("           \"S[10]+S[20] to sum element 10 and 20");
 
             Console.WriteLine();
-            Console.WriteLine("       - \"Sequence operators:");
+            Console.WriteLine("       - Sequence operators:");
             Console.WriteLine("             Series         [n++m]: S[0++40](args)  to get series from 0 to 40.");
             Console.WriteLine("             Multiplication [n**m]: S[1**20)(args) to get products.");
             Console.WriteLine("             Average        [n!!m]: S[1!!20] sum from 1 to 20 and divide by 20-1");
             Console.WriteLine("             Range          [n..m]: S[0..20] Returns Vector or Matrix.");
+
+            Console.WriteLine();
+            Console.WriteLine("       - Calling parametererized series without specifying parameter return a function");
+            Console.WriteLine("             \"g[n](x) ..> x^n");
+            Console.WriteLine("             \"gf = g[2++5]  # returns x^2+x^3+x^4+x^5 as a function of _(x)");
 
             Console.WriteLine();
             Console.WriteLine("       - \"var = number[Quantity Name]\" ");
@@ -230,6 +260,7 @@ using Microsoft.Scripting;
             Console.WriteLine("       - \"List \" for list of variables");
             Console.WriteLine("         \"List [Quantities]\" for list of available Quantities");
             Console.WriteLine("         \"List [[Units] [Quantity Name]]\" for list of available Units ");
+            Console.WriteLine("         \"List [Prefixes]\" list of available metric prefixes. ");
             Console.WriteLine();
             Console.WriteLine("       - \"New\" to clear all variables.");
             Console.WriteLine();

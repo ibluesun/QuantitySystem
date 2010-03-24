@@ -5,36 +5,24 @@ using System.Text;
 
 namespace Qs.Types
 {
-
-    /// <summary>
-    /// Represeneted by &lt;&lt; list &gt;&gt;
-    /// </summary>
-    public partial class QsTensor : QsValue
+    public partial class QsText : QsValue
     {
+        public string Text { get; set; }
 
-        public List<QsMatrix> Layers = new List<QsMatrix>();
-
-
-
-        public QsTensor()
+        public QsText(string text)
         {
+            Text = text.Replace("\\\"", "\"");
         }
 
-        
-        /// <summary>
-        /// Form tensor from group of matrices.
-        /// </summary>
-        /// <param name="matrices"></param>
-        public QsTensor(params QsMatrix[] matrices)
+
+        public override string ToString()
         {
-            Layers.AddRange(matrices);
+
+            return  Text ;
         }
 
-        
 
-
-
-        #region QsValue operations
+        #region QsValue Operations
         public override QsValue Identity
         {
             get { throw new NotImplementedException(); }
@@ -42,7 +30,9 @@ namespace Qs.Types
 
         public override QsValue AddOperation(QsValue value)
         {
-            throw new NotImplementedException();
+            
+            QsText t = new QsText(Text + value.ToString());
+            return t;
         }
 
         public override QsValue SubtractOperation(QsValue value)
@@ -126,85 +116,5 @@ namespace Qs.Types
         }
 
         #endregion
-
-
-
-        /// <summary>
-        /// Count of the face matrix rows {m}
-        /// </summary>
-        public int FaceRowsCount
-        {
-            get
-            {
-                return Layers[0].RowsCount;
-            }
-        }
-
-        /// <summary>
-        /// Count of the face matrix columns {n}
-        /// </summary>
-        public int FaceColumnsCount
-        {
-            get
-            {
-                return Layers[0].ColumnsCount;
-            }
-        }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="qsMatrix"></param>
-        public void AddMatrix(QsMatrix qsMatrix)
-        {
-            if (Layers.Count > 0)
-            {
-                if (qsMatrix.RowsCount == FaceRowsCount && qsMatrix.ColumnsCount == FaceColumnsCount)
-                { }
-                else
-                {
-                    throw new QsException("The matrix about to be added is not in the same dimension");
-                }
-            }
-
-            Layers.Add(qsMatrix);
-        }
-
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="row"></param>
-        /// <param name="column"></param>
-        /// <returns></returns>
-        public QsScalar this[int row, int column, int z]
-        {
-            get
-            {
-                
-                return Layers[z][row,column];
-            }
-            set
-            {
-                Layers[z][row, column] = value;
-            }
-        }
-
-
-        public override string ToString()
-        {
-            StringBuilder sb = new StringBuilder();
-
-            sb.Append("QsTensor:");
-            sb.AppendLine();
-
-            foreach (var mat in Layers)
-            {
-                sb.Append(mat.MatrixText);
-                sb.AppendLine();
-            }
-            return sb.ToString();
-        }
-
     }
 }

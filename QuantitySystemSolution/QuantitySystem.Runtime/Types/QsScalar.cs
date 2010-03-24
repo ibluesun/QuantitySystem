@@ -214,6 +214,7 @@ namespace Qs.Types
 
         #region Special Values
         private static QsScalar one = "1".ToScalar();
+        private static QsScalar zero = "0".ToScalar();
         private static QsScalar minusOne = "-1".ToScalar();
 
         
@@ -231,7 +232,7 @@ namespace Qs.Types
         /// <summary>
         /// return 1 as dimensionless quantity scalar.
         /// </summary>
-        public static  QsScalar One
+        public static QsScalar One
         {
             get
             {
@@ -239,7 +240,6 @@ namespace Qs.Types
             }
         }
 
-        private static QsScalar zero = "0".ToScalar();
 
         /// <summary>
         /// Returns zero as dimensionless quantity.

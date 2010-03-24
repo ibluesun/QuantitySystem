@@ -167,16 +167,27 @@ namespace Qs.Runtime
         {
             var tokens = Token.ParseText(codeLine);
 
+            tokens = tokens.DiscoverQsTextTokens();
+
+
+            // assemble all spaces
+            tokens = tokens.MergeTokens(new MultipleSpaceToken());
+
+
+            // assemble all units <*>
+            tokens = tokens.MergeTokens<UnitToken>();
+
+            // assemble '<<'
             tokens = tokens.MergeTokens<LTToken>();
+            
+            // assemble '>>'
             tokens = tokens.MergeTokens<GTToken>();
 
-            tokens = tokens.MergeTokens(new MultipleSpaceToken());
 
             tokens = ConditionsTokenize(tokens);   // make tokens of conditional statements
 
             tokens = tokens.MergeTokens(new WordToken());                 //discover words
             tokens = tokens.MergeTokens(new NumberToken());               //discover the numbers
-            tokens = tokens.MergeTokens<UnitToken>();
             tokens = tokens.MergeTokens(new UnitizedNumberToken());   //discover the unitized numbers
 
             tokens = MergeOperators(tokens);
@@ -187,9 +198,6 @@ namespace Qs.Runtime
             tokens = tokens.MergeTokens<FunctionValueToken>();
 
 
-            tokens = tokens.MergeTokens<MagnitudeToken>();
-
-            tokens = tokens.MergeTokens<AbsoluteToken>();
 
 
             tokens = tokens.MergeTokensInGroups(
@@ -199,6 +207,9 @@ namespace Qs.Runtime
                 new TensorGroupToken()                      //  << <<>> >>
                 );
 
+            tokens = tokens.MergeTokens<MagnitudeToken>();
+
+            tokens = tokens.MergeTokens<AbsoluteToken>();
 
 
             tokens = tokens.RemoveSpaceTokens();                           //remove all spaces
@@ -311,6 +322,10 @@ namespace Qs.Runtime
                 else if (tokens[ix].TokenClassType == typeof(TensorGroupToken))
                 {
                     quantityExpression = ParseTensor(tokens[ix]);
+                }
+                else if (tokens[ix].TokenClassType == typeof(TextToken))
+                {
+                    quantityExpression = ParseText(tokens[ix]);
                 }
                 else if (tokens[ix].TokenClassType == typeof(MagnitudeToken))
                 {
@@ -448,6 +463,18 @@ namespace Qs.Runtime
 
             }
 
+            if (eop.Next == null && string.IsNullOrEmpty(eop.Operation)==false)
+            { 
+                //eop hold the last node to be evaluated
+                // if the next of eop is null then it means an operation without right term
+                //    to do the operation on it.
+                // 
+                //  so raise an exception
+
+                throw new QsException("Incomplete expression");
+
+            }
+
             //then form the calculation expression
             return  ConstructExpression(FirstEop);
 
@@ -485,6 +512,8 @@ namespace Qs.Runtime
 
         }
 
+
+        #region QsValue Parsers
 
         /// <summary>
         /// Vector of the format { 40, 20, f(2), S[10], 23}
@@ -606,6 +635,14 @@ namespace Qs.Runtime
         }
 
 
+        public Expression ParseText(Token tok)
+        {
+            var tx = Expression.Constant( tok.TrimTokens(1,1).TokenValue);
+            var texte = Expression.New(typeof(QsText).GetConstructor(new Type[] {typeof(string)}), tx);
+            return Expression.Convert(texte, typeof(QsValue));
+        }
+
+        #endregion
         /// <summary>
         /// Obtain variable value by expression in the current scope
         /// </summary>
