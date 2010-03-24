@@ -469,12 +469,6 @@ namespace QuantitySystem.Units
                         MetricPrefix accumPrefix = ((MetricUnit)us[un.GetType()]).UnitPrefix;
                         MetricPrefix sourcePrefix = ((MetricUnit)un).UnitPrefix;
 
-                        //because prefixes in metric are alwayis postitive regardless of the state of the unit
-                        //  when we sum them we must consider the unit state
-                        //   so I invert them if the host unit is inverted for the sake of computation.
-                        if (us[un.GetType()].IsInverted) accumPrefix = ((MetricUnit)us[un.GetType()]).UnitPrefix.Invert();
-                        if (un.IsInverted) sourcePrefix = ((MetricUnit)un).UnitPrefix.Invert();
-
                         try
                         {
                             //Word about MetricPrefix

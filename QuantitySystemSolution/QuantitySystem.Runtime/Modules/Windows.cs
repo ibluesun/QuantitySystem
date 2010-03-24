@@ -31,8 +31,12 @@ namespace Qs.Modules
             return ((int)d).ToScalarValue();
         }
 
-        public static QsValue MessageBox(QsParameter text, [QsParamInfo(QsParamType.Raw)]QsParameter caption)
+        public static QsValue MessageBox(
+            QsParameter text, 
+            [QsParamInfo(QsParamType.Text)]QsParameter caption
+            )
         {
+
             IWin32Window fw = null;
             try { fw = ForegroundWindow.Instance; }
             catch { }

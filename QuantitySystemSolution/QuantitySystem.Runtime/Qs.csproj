@@ -76,6 +76,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Modules\Matrix.cs" />
+    <Compile Include="Modules\Vector.cs" />
     <Compile Include="Modules\Windows.cs" />
     <Compile Include="ParticleLexer\QsTokens\Tokens.cs" />
     <Compile Include="ParticleSymbolic\SymbolicOperations.cs" />
@@ -96,6 +97,7 @@
     <Compile Include="Types\QsTensor.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Types\QsText.cs" />
     <Compile Include="Types\QsValue.cs" />
     <Compile Include="Types\QsVector.cs" />
     <Compile Include="Types\QsVectorOperations.cs" />

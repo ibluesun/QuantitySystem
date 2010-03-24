@@ -35,16 +35,16 @@ f(y,v) = (v * y) / (y+v)
 #      H = enthalpy [J/mol]
 #      S = entropy [J/mol-K]
 
-Thermo:Entropy(fluid, T, P) = Windows:MessageBox(T-P)
-Thermo:Entropy(fluid, T, D) = Windows:MessageBox(T-D)
-Thermo:Entropy(fluid, T, E) = Windows:MessageBox(T-E)
-Thermo:Entropy(fluid, T, H) = Windows:MessageBox(T-H)
-Thermo:Entropy(fluid, P, D) = Windows:MessageBox(P-D)
-Thermo:Entropy(fluid, P, E) = Windows:MessageBox(P-E)
-Thermo:Entropy(fluid, P, H) = Windows:MessageBox(P-H)
-Thermo:Entropy(fluid, D, E) = Windows:MessageBox(D-E)
-Thermo:Entropy(fluid, D, H) = Windows:MessageBox(D-H)
-Thermo:Entropy(fluid, E, H) = Windows:MessageBox(E-H)
+Thermo:Entropy(fluid, T, P) = Windows:MessageBox("T-P ("+ T +", "+ P +")")
+Thermo:Entropy(fluid, T, D) = Windows:MessageBox("T-D ("+ T +", "+ D +")")
+Thermo:Entropy(fluid, T, E) = Windows:MessageBox("T-E ("+ T +", "+ E +")")
+Thermo:Entropy(fluid, T, H) = Windows:MessageBox("T-H ("+ T +", "+ H +")")
+Thermo:Entropy(fluid, P, D) = Windows:MessageBox("P-D ("+ P +", "+ D +")")
+Thermo:Entropy(fluid, P, E) = Windows:MessageBox("P-E ("+ P +", "+ E +")")
+Thermo:Entropy(fluid, P, H) = Windows:MessageBox("P-H ("+ P +", "+ H +")")
+Thermo:Entropy(fluid, D, E) = Windows:MessageBox("D-E ("+ D +", "+ E +")")
+Thermo:Entropy(fluid, D, H) = Windows:MessageBox("D-H ("+ D +", "+ H +")")
+Thermo:Entropy(fluid, E, H) = Windows:MessageBox("E-H ("+ E +", "+ H +")")
 
 
 

@@ -91,7 +91,8 @@ namespace Qs.Runtime
                         //check the last charachter
                         if (l2.EndsWith(";"))
                         {
-                            ret = qs.SilentEvaluate(l2);
+                            //trim the ';' and silent evaluate the expression.
+                            ret = qs.SilentEvaluate(l2.Trim(';'));
                         }
                         else
                         {

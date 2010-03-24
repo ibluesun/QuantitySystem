@@ -464,6 +464,27 @@ namespace Qs.Types
 
         #endregion
 
+        internal string MatrixText
+        {
+            get
+            {
+                StringBuilder sb = new StringBuilder();
+                for (int IY = 0; IY < this.RowsCount; IY++)
+                {
+                    //sb.Append("\t");   
+                    for (int IX = 0; IX < this.ColumnsCount; IX++)
+                    {
+                        string cell = this[IY, IX].Quantity.ToShortString();
+
+                        sb.Append(cell.PadLeft(13));
+                        sb.Append(" ");
+                    }
+
+                    sb.AppendLine();
+                }
+                return sb.ToString();
+            }
+        }
         public override string ToString()
         {
 
@@ -471,19 +492,7 @@ namespace Qs.Types
             sb.Append("QsMatrix:");
             sb.AppendLine();
 
-            for (int IY = 0; IY < this.RowsCount; IY++)
-            {
-                //sb.Append("\t");   
-                for (int IX = 0; IX < this.ColumnsCount; IX++)
-                {
-                    string cell = this[IY,IX].Quantity.ToShortString();
-                    
-                    sb.Append(cell.PadLeft(13));
-                    sb.Append(" ");
-                }
-
-                sb.AppendLine();
-            }
+            sb.Append(MatrixText);
 
             return sb.ToString();
         }

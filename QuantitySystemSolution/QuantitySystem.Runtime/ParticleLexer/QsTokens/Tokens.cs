@@ -17,7 +17,9 @@ namespace ParticleConsole.QsTokens
     /// <summary>
     /// unit token form &lt;unit&gt;
     /// </summary>
-    [TokenPattern(RegexPattern = "<(°?\\w+!?(\\^\\d+)?\\.?)+(/(°?\\w+!?(\\^\\d+)?\\.?)+)?>")]
+    [TokenPattern(
+        RegexPattern = "<(°?\\w+!?(\\^\\d+)?\\.?)+(/(°?\\w+!?(\\^\\d+)?\\.?)+)?>")
+    ]
     public class UnitToken : TokenClass
     {
     }
@@ -200,7 +202,9 @@ namespace ParticleConsole.QsTokens
     {
     }
 
-
+    /// <summary>
+    /// 
+    /// </summary>
     public class TensorGroupToken : GroupTokenClass
     {
         public TensorGroupToken()
@@ -209,10 +213,26 @@ namespace ParticleConsole.QsTokens
         }
     }
 
+
+    /// <summary>
+    /// Mathches \"    
+    /// </summary>
+    [TokenPattern(RegexPattern = @"\\""", ExactWord = true)]
+    public class QuotationMarkEscapeToken : TokenClass
+    {
+        
+    }
+
+    /// <summary>
+    /// Text between two single qutation.
+    /// </summary>
+    public class TextToken : TokenClass
+    {
+    }
+
+
     public static class TokenExtensions
     {
-
-
         /// <summary>
         /// Should be used after merging by word
         /// and grouping brackets
@@ -438,6 +458,64 @@ namespace ParticleConsole.QsTokens
             tk.AppendSubToken(rtk);
 
             return tk;
+        }
+
+
+
+
+
+        public static Token DiscoverQsTextTokens(this Token tokens)
+        {
+
+            // merge \" to be one charachter after this
+            
+            tokens = tokens.MergeTokens<QuotationMarkEscapeToken>();
+
+            Token root = new Token();
+
+            Token runner = root;
+
+            //add every token until you encounter '
+
+
+            int ix = 0;
+            bool TextMode = false;
+            while (ix < tokens.Count)
+            {
+                if (tokens[ix].TokenClassType == typeof(QuotationMarkToken))
+                {
+                    TextMode = !TextMode;
+
+                    if (TextMode)
+                    {
+                        //true create the token
+                        runner = new Token();
+                        runner.TokenClassType = typeof(TextToken);
+                        root.AppendSubToken(runner);
+
+                        runner.AppendSubToken(tokens[ix]);
+
+                    }
+                    else
+                    {
+                        //false: return to root tokens
+                        runner.AppendSubToken(tokens[ix]);
+
+                        runner = root;
+                    }
+                }
+                else
+                {
+                    runner.AppendSubToken(tokens[ix]);
+                }
+
+
+                ix++;
+            
+            }
+
+
+            return root;
         }
     }
 

@@ -6,11 +6,11 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Quantity System Runtime")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Qs Dynamic Language that encompasses the Quantity System Framework")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Lost Particles Network (http://www.lostparticles.net)")]
 [assembly: AssemblyProduct("Quantity System Runtime")]
-[assembly: AssemblyCopyright("Copyright (c) 2009 at Lost Particles Network by Ahmed Sadek")]
+[assembly: AssemblyCopyright("Copyright (c) 2008-2010 at Lost Particles Network by Ahmed Sadek")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.1.9.92")]
-[assembly: AssemblyFileVersion("1.1.9.92")]
+[assembly: AssemblyVersion("1.1.9.93")]
+[assembly: AssemblyFileVersion("1.1.9.93")]

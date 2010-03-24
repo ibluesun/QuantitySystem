@@ -35,6 +35,11 @@ namespace Qs.Types
             ListStorage.AddRange(scalars);
         }
 
+        public void AddComponent(double value)
+        {
+            ListStorage.Add(value.ToQuantity().ToScalar());
+        }
+
         public void AddComponent(QsScalar scalar)
         {
             ListStorage.Add(scalar);
