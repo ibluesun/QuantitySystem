@@ -8,7 +8,7 @@ using QuantitySystem.Units;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting;
 using System.Globalization;
-using ParticleConsole.QsTokens;
+using ParticleLexer.QsTokens;
 
 namespace Qs.Runtime
 {

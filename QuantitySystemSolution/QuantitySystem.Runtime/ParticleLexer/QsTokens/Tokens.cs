@@ -3,7 +3,7 @@ using ParticleLexer.StandardTokens;
 using System;
 using System.Linq;
 
-namespace ParticleConsole.QsTokens
+namespace ParticleLexer.QsTokens
 {
     /// <summary>
     /// || Groups
@@ -129,9 +129,17 @@ namespace ParticleConsole.QsTokens
     }
 
     /// <summary>
+    /// 
+    /// </summary>
+    [TokenPattern(RegexPattern = @"\|\|")]
+    public class DoubleVerticalBarToken : TokenClass
+    {
+    }
+
+    /// <summary>
     /// || x ||
     /// </summary>
-    [TokenPattern(RegexPattern = @"\|\|[^\|]+\|\|")]
+    [TokenPattern(RegexPattern = @"\|\|.+\|\|")]
     public class MagnitudeToken : TokenClass
     {
     }
@@ -193,14 +201,28 @@ namespace ParticleConsole.QsTokens
 
 
     [TokenPattern(RegexPattern = "<<", ExactWord = true)]
-    public class LTToken : TokenClass
+    public class LeftShiftToken : TokenClass
     {
     }
 
     [TokenPattern(RegexPattern = ">>", ExactWord = true)]
-    public class GTToken : TokenClass
+    public class RightShiftToken : TokenClass
     {
     }
+
+
+    [TokenPattern(RegexPattern = @"<\|", ExactWord = true)]
+    public class LeftTensorToken : TokenClass
+    {
+    }
+
+    [TokenPattern(RegexPattern = @"\|>", ExactWord = true)]
+    public class RightTensorToken : TokenClass
+    {
+    }
+
+
+
 
     /// <summary>
     /// 
@@ -208,7 +230,7 @@ namespace ParticleConsole.QsTokens
     public class TensorGroupToken : GroupTokenClass
     {
         public TensorGroupToken()
-            : base(new LTToken(), new GTToken())
+            : base(new LeftTensorToken(), new RightTensorToken())
         {
         }
     }

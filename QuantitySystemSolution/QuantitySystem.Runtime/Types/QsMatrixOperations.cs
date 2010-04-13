@@ -421,6 +421,26 @@ namespace Qs.Types
             throw new NotImplementedException();
         }
 
+        public override QsValue LeftShiftOperation(QsValue times)
+        {
+            QsMatrix ShiftedMatrix = new QsMatrix();
+            foreach (var vec in this)
+            {
+                ShiftedMatrix.AddVector((QsVector)vec.LeftShiftOperation(times));
+            }
+            return ShiftedMatrix;
+        }
+
+        public override QsValue RightShiftOperation(QsValue times)
+        {
+            QsMatrix ShiftedMatrix = new QsMatrix();
+            foreach (var vec in this)
+            {
+                ShiftedMatrix.AddVector((QsVector)vec.RightShiftOperation(times));
+            }
+            return ShiftedMatrix;
+        }
+
         #endregion
 
 
@@ -456,6 +476,9 @@ namespace Qs.Types
             
             throw new NotImplementedException();
         }
+
+
+
 
         #endregion
 

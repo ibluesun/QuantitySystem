@@ -58,22 +58,25 @@ namespace Qs.Runtime
                 {
                     if (!line.StartsWith("#"))
                     {
-
                         //I want to exclude # if it was between parentthesis.
                         //  oo(ferwe#kd adflk ) # 
 
                         // first pass (from left to right): find the # char which is the comment.
-                        int pc = 0;
+                        int pc = 0; // for ()
+                        
+                        bool qcOpened = false;
 
                         StringBuilder sb = new StringBuilder();
                         foreach (char c in line)
                         {
                             if (c == '(') pc++;
+                            if (c == '"') qcOpened = !qcOpened;
+                                
 
                             // is it a comment charachter.
                             if (c == '#')
                             {
-                                if (pc == 0)
+                                if (pc == 0 && qcOpened == false)
                                 {
                                     // found the comment 
                                     //  break

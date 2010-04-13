@@ -20,7 +20,7 @@ namespace Qs.Types
         {
         }
 
-        
+
         /// <summary>
         /// Form tensor from group of matrices.
         /// </summary>
@@ -69,6 +69,17 @@ namespace Qs.Types
         {
             throw new NotImplementedException();
         }
+
+        public override QsValue LeftShiftOperation(QsValue times)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override QsValue RightShiftOperation(QsValue times)
+        {
+            throw new NotImplementedException();
+        }
+
 
         public override bool LessThan(QsValue value)
         {

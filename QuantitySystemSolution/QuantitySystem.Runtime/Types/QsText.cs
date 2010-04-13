@@ -60,6 +60,16 @@ namespace Qs.Types
             throw new NotImplementedException();
         }
 
+        public override QsValue LeftShiftOperation(QsValue times)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override QsValue RightShiftOperation(QsValue times)
+        {
+            throw new NotImplementedException();
+        }
+
         public override bool LessThan(QsValue value)
         {
             throw new NotImplementedException();
