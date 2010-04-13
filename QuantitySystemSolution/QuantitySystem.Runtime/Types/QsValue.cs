@@ -147,6 +147,11 @@ namespace Qs.Types
         /// <returns></returns>
         abstract public QsValue AbsOperation();
 
+
+
+        abstract public QsValue RightShiftOperation(QsValue times);
+        abstract public QsValue LeftShiftOperation(QsValue times);
+
         #endregion
 
 
@@ -175,6 +180,17 @@ namespace Qs.Types
         {
             return a.ModuloOperation(b);
         }
+
+        public static QsValue LeftShiftOperator(QsValue a, QsValue b)
+        {
+            return a.LeftShiftOperation(b);
+        }
+
+        public static QsValue RightShiftOperator(QsValue a, QsValue b)
+        {
+            return a.RightShiftOperation(b);
+        }
+
 
 
         #region Relational operators
@@ -382,7 +398,6 @@ namespace Qs.Types
         {
             return this;
         }
-
 
     }
 }

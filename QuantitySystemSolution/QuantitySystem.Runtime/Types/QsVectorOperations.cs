@@ -461,6 +461,55 @@ namespace Qs.Types
             
         }
 
+
+        public override QsValue LeftShiftOperation(QsValue times)
+        {
+            int itimes = Qs.IntegerFromQsValue((QsScalar)times);
+
+            if (itimes > this.Count) itimes = itimes % this.Count;
+
+            
+            QsVector vec = new QsVector(this.Count);
+            
+            for (int i = itimes; i < this.Count; i++)
+            {
+                vec.AddComponent(this[i]);
+            }
+
+            for (int i = 0; i < itimes; i++)
+            {
+                vec.AddComponent(this[i]);
+            }
+
+
+            return vec;
+        }
+
+        public override QsValue RightShiftOperation(QsValue times)
+        {
+            int itimes = Qs.IntegerFromQsValue((QsScalar)times);
+
+            if (itimes > this.Count) itimes = itimes % this.Count;
+
+            // 1 2 3 4 5 >> 2  == 4 5 1 2 3
+
+            QsVector vec = new QsVector(this.Count);
+
+            for (int i = this.Count - itimes; i < this.Count; i++)
+            {
+                vec.AddComponent(this[i]);
+            }
+
+            for (int i = 0; i < (this.Count - itimes); i++)
+            {
+                vec.AddComponent(this[i]);
+            }
+
+
+            return vec;
+        }
+
+
         #endregion
 
 

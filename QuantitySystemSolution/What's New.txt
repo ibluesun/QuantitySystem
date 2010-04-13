@@ -1,3 +1,26 @@
+[Qs 1.1.9.94]
+- breaking Change the tesnor parsing groups into '<|' and '|>'
+ so that the tensor should be written as 
+   T =  <| 5 4; 3 2 | 9 1; 2 4 |>
+   
+- Adding Shift Operators '<<' '>>'  
+  the shift operator works on vector and matrix.
+  
+- Enhancing the binding of external functions
+  so that now you can use a native c# function without the need to reference Qs library
+  only by using native parameters.
+  {this is still in developement however}
+  
+NOTE: I Do a lot of things in the architecture and I don't have a clear vision sometimes about what I am doing
+       I am sorry for this :S
+       
+- Fixed '#' inside qoutation marks {old behaviour was truncating any thing after hash even if it was in text.
+  this was discovered when I was playing with play command
+  Music:Play("C# D#");
+  
+       
+ 
+
 [Qs 1.1.9.93]   (Released)
 - Added Text support as QsText and adjusting functions that accept strings for the new way.
 

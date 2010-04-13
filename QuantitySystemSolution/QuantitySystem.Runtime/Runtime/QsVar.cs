@@ -17,7 +17,7 @@ using Qs.Modules;
 using System.Reflection;
 using Qs.Types;
 using Qs.Runtime.Operators;
-using ParticleConsole.QsTokens;
+using ParticleLexer.QsTokens;
 
 
 namespace Qs.Runtime
@@ -174,15 +174,24 @@ namespace Qs.Runtime
             tokens = tokens.MergeTokens(new MultipleSpaceToken());
 
 
-            // assemble all units <*>
+            // assemble all units <*>    //before tokenization of tensor operator
             tokens = tokens.MergeTokens<UnitToken>();
 
-            // assemble '<<'
-            tokens = tokens.MergeTokens<LTToken>();
-            
-            // assemble '>>'
-            tokens = tokens.MergeTokens<GTToken>();
+            // assemble '<|'
+            tokens = tokens.MergeTokens<LeftTensorToken>();
 
+            // assemble '|>'
+            tokens = tokens.MergeTokens<RightTensorToken>();
+
+            // assemble '<<'
+            tokens = tokens.MergeTokens<LeftShiftToken>();
+
+            // assemble '>>'
+            tokens = tokens.MergeTokens<RightShiftToken>();
+
+
+            // assemble '||'  after assembling tensor group token
+            tokens = tokens.MergeTokens<DoubleVerticalBarToken>();
 
             tokens = ConditionsTokenize(tokens);   // make tokens of conditional statements
 
@@ -207,9 +216,9 @@ namespace Qs.Runtime
                 new TensorGroupToken()                      //  << <<>> >>
                 );
 
+            tokens = tokens.MergeTokens<AbsoluteToken>();
             tokens = tokens.MergeTokens<MagnitudeToken>();
 
-            tokens = tokens.MergeTokens<AbsoluteToken>();
 
 
             tokens = tokens.RemoveSpaceTokens();                           //remove all spaces
@@ -229,6 +238,12 @@ namespace Qs.Runtime
         /// <returns></returns>
         internal Expression ParseArithmatic(Token tokens)
         {
+
+            // I remove the spaces here because the function called here sometimes have extra unneeded spaces
+            // one scenario is ||{3 4 5} >> 1 ||  
+            // the magnitude token will take the inner tokens as it is then send it for evaluation again.
+
+            tokens = tokens.RemoveSpaceTokens();                           //remove all spaces
 
             Expression quantityExpression = null;
             ExprOp eop = null;
@@ -488,6 +503,7 @@ namespace Qs.Runtime
         /// <returns></returns>
         private Expression ValueAbsolute(Token token)
         {
+            // parsing within absolute will re-execute the parsing
             Expression rr = ParseArithmatic(token.TrimTokens(1, 1));
 
             rr = Expression.Call(rr, typeof(QsValue).GetMethod("AbsOperation"));
@@ -504,7 +520,8 @@ namespace Qs.Runtime
         {
             //the token is holding the vector or the expression that will lead to the vector.
 
-            Expression rr = ParseArithmatic(token.TrimTokens(2, 2));
+            // parsing within absolute will re-execute the parsing
+            Expression rr = ParseArithmatic(token.TrimTokens(1, 1));
 
             rr = Expression.Call(rr, typeof(QsValue).GetMethod("NormOperation"));
             
@@ -605,9 +622,9 @@ namespace Qs.Runtime
         {
             List<Expression> vctExpressions = new List<Expression>();
 
-            Token token = tok.TrimStart(typeof(LTToken));
+            Token token = tok.TrimStart(typeof(LeftTensorToken));
 
-            token = token.TrimEnd(typeof(GTToken));
+            token = token.TrimEnd(typeof(RightTensorToken));
 
             // first split between semi colon tokens.
             // then use every splitted token to 
@@ -1330,8 +1347,6 @@ namespace Qs.Runtime
 
             Type aqType = typeof(QsValue);
 
-            if (op.Equals("(x)", StringComparison.OrdinalIgnoreCase))
-                return Expression.Multiply(left, right, aqType.GetMethod("TensorProduct"));
 
             if (op == "^") return Expression.Power(left, right, aqType.GetMethod("Pow"));
             if (op == "^.") return Expression.Power(left, right, aqType.GetMethod("PowDot"));
@@ -1353,6 +1368,9 @@ namespace Qs.Runtime
             if (op == "%") return Expression.Modulo(left, right);
             if (op == "+") return Expression.Add(left, right);
             if (op == "-") return Expression.Subtract(left, right);
+
+            if (op == "<<") return Expression.LeftShift(left, right, aqType.GetMethod("LeftShiftOperator"));
+            if (op == ">>") return Expression.RightShift(left, right, aqType.GetMethod("RightShiftOperator"));
 
             if (op == "<") return Expression.LessThan(left, right);
             if (op == ">") return Expression.GreaterThan(left, right);
@@ -1426,6 +1444,8 @@ namespace Qs.Runtime
             //  means * and /  are in the same pass
             //  + and - are in the same pass
 
+            // passes depends on priorities of operators.
+
 
             string[] Group = { "^"    /* Power for normal product '*' */, 
                                "^."   /* Power for dot product */ ,
@@ -1440,6 +1460,8 @@ namespace Qs.Runtime
 
             string[] Group2 = { "+", "-" };
 
+            string[] Shift = { "<<", ">>" };
+
             string[] RelationalGroup = { "<", ">", "<=", ">=" };
             string[] EqualityGroup = { "==", "!=" };
             string[] AndGroup = { "and" };
@@ -1448,7 +1470,8 @@ namespace Qs.Runtime
             string[] WhenOtherwiseGroup = { "when", "otherwise"};
 
 
-            string[][] OperatorGroups = { Group, Group1, Group2, RelationalGroup, EqualityGroup, AndGroup, OrGroup, WhenOtherwiseGroup };
+            /// Operator Groups Ordered by Priorities.
+            string[][] OperatorGroups = { Group, Group1, Group2, Shift, RelationalGroup, EqualityGroup, AndGroup, OrGroup, WhenOtherwiseGroup };
 
 
 

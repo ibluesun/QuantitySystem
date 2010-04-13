@@ -12,7 +12,7 @@ using ParticleLexer.StandardTokens;
 using Qs.Types;
 using System.Reflection;
 using System.IO;
-using ParticleConsole.QsTokens;
+using ParticleLexer.QsTokens;
 
 
 namespace Qs.Runtime

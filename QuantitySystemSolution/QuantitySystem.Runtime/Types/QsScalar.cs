@@ -278,6 +278,12 @@ namespace Qs.Types
                 return this.AddVector(b);
 
             }
+            else if (value is QsText)
+            {
+                var text = value as QsText;
+                var qt = QsEvaluator.CurrentEvaluator.SilentEvaluate(text.Text) as QsValue;
+                return AddOperation(qt);
+            }
             else
             {
                 throw new NotSupportedException();
@@ -301,6 +307,12 @@ namespace Qs.Types
             {
                 var m = value as QsMatrix;
                 return this.SubtractMatrix(m);
+            }
+            else if (value is QsText)
+            {
+                var text = value as QsText;
+                var qt = QsEvaluator.CurrentEvaluator.SilentEvaluate(text.Text) as QsValue;
+                return SubtractOperation(qt);
             }
             else
             {
@@ -327,6 +339,12 @@ namespace Qs.Types
                 var m = value as QsMatrix;
                 return this.MultiplyMatrix(m);
             }
+            else if (value is QsText)
+            {
+                var text = value as QsText;
+                var qt = QsEvaluator.CurrentEvaluator.SilentEvaluate(text.Text) as QsValue;
+                return MultiplyOperation(qt);
+            }
             else
             {
                 throw new NotSupportedException();
@@ -348,6 +366,12 @@ namespace Qs.Types
             if (value is QsScalar)
             {
                 return this.DivideScalar((QsScalar)value);
+            }
+            else if (value is QsText)
+            {
+                var text = value as QsText;
+                var qt = QsEvaluator.CurrentEvaluator.SilentEvaluate(text.Text) as QsValue;
+                return DivideOperation(qt);
             }
             else
             {
@@ -418,6 +442,16 @@ namespace Qs.Types
         }
 
         public override QsValue TensorProductOperation(QsValue value)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override QsValue LeftShiftOperation(QsValue times)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override QsValue RightShiftOperation(QsValue times)
         {
             throw new NotImplementedException();
         }
@@ -589,5 +623,6 @@ namespace Qs.Types
         }
 
         #endregion
+
     }
 }

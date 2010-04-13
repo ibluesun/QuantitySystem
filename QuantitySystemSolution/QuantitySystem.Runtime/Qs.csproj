@@ -54,7 +54,11 @@
     </Reference>
     <Reference Include="ParticleLexer, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\DLR\ParticleLexer.dll</HintPath>
+      <HintPath>..\Libraries\ParticleLexer.dll</HintPath>
+    </Reference>
+    <Reference Include="SymbolicAlgebra, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\Libraries\SymbolicAlgebra.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core">
@@ -71,6 +75,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modules\Basic.cs" />
     <Compile Include="Modules\Environment.cs" />
     <Compile Include="Modules\Math.cs">
       <SubType>Code</SubType>
@@ -78,13 +83,15 @@
     <Compile Include="Modules\Matrix.cs" />
     <Compile Include="Modules\Vector.cs" />
     <Compile Include="Modules\Windows.cs" />
+    <Compile Include="Operator.cs" />
     <Compile Include="ParticleLexer\QsTokens\Tokens.cs" />
-    <Compile Include="ParticleSymbolic\SymbolicOperations.cs" />
     <Compile Include="QsInvalidInputException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Qs.cs" />
     <Compile Include="QsSyntaxErrorException.cs" />
     <Compile Include="Runtime\QsParameterNotFoundException.cs" />
+    <Compile Include="SymbolicAlgebra\SymbolicParser.cs" />
+    <Compile Include="SymbolicAlgebra\SymbolicVariableExtensions.cs" />
     <Compile Include="Types\Attributes\QsFunctionAttribute.cs" />
     <Compile Include="Types\QsFunction_Operations.cs" />
     <Compile Include="Types\QsMatrixException.cs">

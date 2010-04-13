@@ -11,6 +11,8 @@ m2 = [b; a; c]
 
 
 # Tensors
-T1 = << a;b;c | b;c;a | c;a;b >>
+T1 = <| a;b;c | b;c;a | c;a;b |>
+
+
 
  

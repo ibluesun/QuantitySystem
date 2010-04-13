@@ -11,7 +11,7 @@ using ParticleLexer.StandardTokens;
 using Qs.Types;
 using QuantitySystem.Quantities.BaseQuantities;
 using Qs.Runtime;
-using ParticleConsole.QsTokens;
+using ParticleLexer.QsTokens;
 
 
 namespace Qs.Types
@@ -215,12 +215,9 @@ namespace Qs.Types
                 }
             }
 
-            //Expression DelegateProperty = Expression.Property(Expression.Constant(this), "FunctionDelegate_" + parameters.Count.ToString(CultureInfo.InvariantCulture));
-            //return Expression.Invoke(DelegateProperty, parameters);
 
             var qsParamArray = Expression.NewArrayInit(typeof(QsParameter), parameters);
             return Expression.Call(Expression.Constant(this), this.GetType().GetMethod("InvokeByQsParameters"), qsParamArray);
-            //Expression DelegateProperty = Expression.Field(Expression.Constant(this), "_FunctionDelegate");
 
         }
 
