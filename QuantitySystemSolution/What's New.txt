@@ -1,3 +1,46 @@
+[Qs 1.1.9.95]
+- The usage of DLR 1.0  final release 
+	DLR 1.0 released with the release of visual studio 2010 
+	and I adopted it immediately
+	thank god it didn't break my build :) (although I don't what's new ) DLR Team should write a lot of documentation
+- Enhancing the parsing of Matrix (to behave like matlab again) in order to think about how will I enhance the Tensor parsing.
+- Adding shifting to Text 
+	"Ahmed" >> 1  result it "hmedA"  :)
+- Transfered the development into Visual Studio 2010 to use C# 4.0
+	for future I am going to use the Parallel in .NET 4.0
+	this will be so useful in matrix and tensor calculations
+- Introducing the Symbolic Quantity type :)
+    When you add dollar sign followed by letters it will form a Symbolic Quantity
+
+	$x+$x = 2*x  
+	Great isn't it 
+	I really liked it and imagine it is a scalar value (that means it will find its way in vector, matrix, and tensor)
+
+	the calculation is based on my Symbolic Algebra project :)
+	http://SymbolicAlgebra.CodePlex.com
+
+	however not all calculations still going right :)  (bear with me, I am only one person in this)
+
+	may be I should leak some thoughts also 
+	the Scalar architecture will hold 4 primary types (Any one remember the Variant type in old visual basic)
+	the same idea goes here
+	a- Double Number Quantity                    'AnyQuantity<double>
+	b- Complex Number Quantity                   'AnyQuantity<Complex>               # Two Terms
+	c- Quaternion Number Quantity                'AnyQuantity<Quaternion>            # Four Terms
+	d- Symbol                                    'AnyQuantity<SymbolicVariable>       
+
+	:) Imagine that you have a 4-D Tensor with quaternion components 
+	it will be amazing :D {I don't know how}
+	
+	[Quantity System Framework 1.1.9.6]  {don't mix the framework with the DLR part :) }
+	- Some caching here and there  
+
+ok another news is that I am begining to study for the master thesis
+I am researching the pulse combustor to put it into gas turbine cycle and to see what is the performance and all other charachterisistics
+if you have any (and I really need it ) any data about its usage and its design and its importance life please don't hestiate to help me
+even you could change my mind to change the subject to other thing :)
+
+
 [Qs 1.1.9.94]
 - breaking Change the tesnor parsing groups into '<|' and '|>'
  so that the tensor should be written as 

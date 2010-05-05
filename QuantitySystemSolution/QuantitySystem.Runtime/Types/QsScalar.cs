@@ -4,53 +4,155 @@ using System.Linq;
 using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 using Qs.Runtime;
+using SymbolicAlgebra;
 
 namespace Qs.Types
 {
     /// <summary>
     /// Wrapper for AnyQuantit&lt;double&gt; and it serve the basic number in the Qs
     /// </summary>
-    public sealed class QsScalar : QsValue
+    public sealed class QsScalar : QsValue, ICloneable
     {
+
+
+        /// <summary>
+        /// Tells the current storage type of the scalar.
+        /// </summary>
+        private readonly ScalarTypes _ScalarType;
+
+        public ScalarTypes ScalarType
+        {
+            get { return _ScalarType; }
+        } 
+
+
+        
+
+        /// <summary>
+        /// Quantity that its storage is symbol.
+        /// </summary>
+        public AnyQuantity<SymbolicVariable> SymbolicQuantity
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Double Number Quantity 
+        /// Default behaviour.
+        /// </summary>
         public AnyQuantity<double> Quantity
         {
-            get; set;
+            get;
+            set;
+        }
+
+
+        public QsScalar()
+        {
+            _ScalarType = ScalarTypes.DoubleNumberQuantity;
+        }
+
+        public QsScalar(ScalarTypes scalarType)
+        {
+            _ScalarType = scalarType;
         }
 
         public override string ToString()
         {
-            return Quantity.ToString();
+            switch (_ScalarType)
+            {
+                case ScalarTypes.DoubleNumberQuantity:
+                    return Quantity.ToString();
+                case ScalarTypes.SymbolicQuantity:
+                    return SymbolicQuantity.ToString();
+                default:
+                    throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
+            }
         }
 
+        public string ToShortString()
+        {
+            switch (_ScalarType)
+            {
+                case ScalarTypes.DoubleNumberQuantity:
+                    return Quantity.ToShortString();
+                case ScalarTypes.SymbolicQuantity:
+                    return SymbolicQuantity.ToShortString();
+                default:
+                    throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
+            }
+        }
 
         #region Operations
 
         #region Scalar Operations
         public QsScalar AddScalar(QsScalar scalar)
         {
-            return new QsScalar { Quantity = this.Quantity + scalar.Quantity };
+            switch (_ScalarType)
+            {
+                case ScalarTypes.DoubleNumberQuantity:
+                    return new QsScalar { Quantity = this.Quantity + scalar.Quantity };
+                case ScalarTypes.SymbolicQuantity:
+                    return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.SymbolicQuantity + scalar.SymbolicQuantity };
+                default:
+                    throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
+            }
+        
 
         }
         public QsScalar SubtractScalar(QsScalar scalar)
         {
-            return new QsScalar { Quantity = this.Quantity - scalar.Quantity };
+            switch (_ScalarType)
+            {
+                case ScalarTypes.DoubleNumberQuantity:
+                    return new QsScalar { Quantity = this.Quantity - scalar.Quantity };
+                case ScalarTypes.SymbolicQuantity:
+                    return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.SymbolicQuantity - scalar.SymbolicQuantity };
+                default:
+                    throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
+            }
 
         }
         public QsScalar MultiplyScalar(QsScalar scalar)
         {
-            return new QsScalar { Quantity = this.Quantity * scalar.Quantity };
+            switch (_ScalarType)
+            {
+                case ScalarTypes.DoubleNumberQuantity:
+                    return new QsScalar { Quantity = this.Quantity * scalar.Quantity };
+                case ScalarTypes.SymbolicQuantity:
+                    return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.SymbolicQuantity * scalar.SymbolicQuantity };
+                default:
+                    throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
+            }
 
         }
 
         public QsScalar DivideScalar(QsScalar scalar)
         {
-            return new QsScalar { Quantity = this.Quantity / scalar.Quantity };
+            switch (_ScalarType)
+            {
+                case ScalarTypes.DoubleNumberQuantity:
+                    return new QsScalar { Quantity = this.Quantity / scalar.Quantity };
+                case ScalarTypes.SymbolicQuantity:
+                    return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.SymbolicQuantity / scalar.SymbolicQuantity };
+                default:
+                    throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
+            }
 
         }
 
         public QsScalar PowerScalar(QsScalar scalar)
         {
-            return new QsScalar { Quantity = AnyQuantity<double>.Power(this.Quantity, scalar.Quantity) };
+            switch (_ScalarType)
+            {
+                case ScalarTypes.DoubleNumberQuantity:
+                    return new QsScalar { Quantity = AnyQuantity<double>.Power(this.Quantity, scalar.Quantity) };
+                case ScalarTypes.SymbolicQuantity:
+                    return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = AnyQuantity<SymbolicVariable>.Power(this.SymbolicQuantity, scalar.SymbolicQuantity) };
+                default:
+                    throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
+            }
         }
 
         public QsScalar ModuloScalar(QsScalar scalar)
@@ -624,5 +726,19 @@ namespace Qs.Types
 
         #endregion
 
+
+        #region ICloneable Members
+
+        public object Clone()
+        {
+            QsScalar n = new QsScalar(this._ScalarType);
+
+            n.Quantity = this.Quantity;
+            n.SymbolicQuantity = this.SymbolicQuantity;
+
+            return n;
+        }
+
+        #endregion
     }
 }

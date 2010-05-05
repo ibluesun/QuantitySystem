@@ -127,5 +127,24 @@ namespace UnitsTestingProject
 
 
         }
+
+
+
+        [TestMethod]
+        public void TestPrefixMultiplication()
+        {
+
+            var l1 = Unit.ParseQuantity("5<km>");
+            var l2 = Unit.ParseQuantity("2<km>");
+            var l3 = Unit.ParseQuantity("20<m>");
+
+            var v = l1 * l2 * l3;
+
+            Assert.AreEqual<double>(actual: v.Value, expected: 200);
+            Assert.AreEqual(actual: v.Unit.Symbol, expected: "<hm^3>");
+
+        }
+    
+    
     }
 }

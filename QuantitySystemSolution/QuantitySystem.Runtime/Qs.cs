@@ -9,6 +9,7 @@ using QuantitySystem;
 using Qs.Types;
 using System.Diagnostics;
 using Qs.Runtime;
+using SymbolicAlgebra;
 
 namespace Qs
 {
@@ -115,9 +116,43 @@ namespace Qs
         {
             return Unit.ParseQuantity(s);
         }
+
+        /// <summary>
+        /// Wrap AnyQuantity of double storage into qs scalar object.
+        /// </summary>
+        /// <param name="qty"></param>
+        /// <returns></returns>
         public static QsScalar ToScalar(this AnyQuantity<double> qty)
         {
             return new QsScalar { Quantity = qty };
+        }
+
+        /// <summary>
+        /// Returns Quantity of the symbolic variable based on the unit
+        /// </summary>
+        /// <param name="sv"></param>
+        /// <param name="unit"></param>
+        /// <returns></returns>
+        public static AnyQuantity<SymbolicVariable> ToQuantity(this SymbolicVariable sv, string unit="1")
+        {
+            Unit sunit = Unit.Parse(unit);
+            AnyQuantity<SymbolicVariable> SymbolicQuantity = sunit.GetThisUnitQuantity<SymbolicVariable>(sv);
+
+            return SymbolicQuantity;
+        }
+
+        /// <summary>
+        /// Wrap AnyQuantity of Symbolic Variable object into qs scalar object.
+        /// </summary>
+        /// <param name="qty"></param>
+        /// <returns></returns>
+        public static QsScalar ToScalar(this AnyQuantity<SymbolicVariable> qty)
+        {
+            QsScalar symscalar = new QsScalar(ScalarTypes.SymbolicQuantity)
+            {
+                SymbolicQuantity = qty
+            };
+            return symscalar;
         }
 
         public static QsValue ToScalarValue(this AnyQuantity<double> qty)
@@ -136,6 +171,11 @@ namespace Qs
         }
 
 
+        /// <summary>
+        /// Parse the string into quantity and wrap it into QsScalar object.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
         public static QsScalar ToScalar(this string s)
         {
             return new QsScalar { Quantity = s.ToQuantity() };

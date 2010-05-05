@@ -11,11 +11,13 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
         public AmountOfSubstance(float exponent) : base(exponent) { }
 
+
+        private static QuantityDimension _Dimension = new QuantityDimension(0, 0, 0, 0, 0, 1, 0);
         public override QuantityDimension Dimension
         {
             get
             {
-                return new QuantityDimension(0, 0, 0, 0, 0, 1, 0) * Exponent;
+                return _Dimension * Exponent;
             }
         }
 

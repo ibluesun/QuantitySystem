@@ -148,7 +148,6 @@ namespace Qs.Types
         abstract public QsValue AbsOperation();
 
 
-
         abstract public QsValue RightShiftOperation(QsValue times);
         abstract public QsValue LeftShiftOperation(QsValue times);
 
@@ -323,11 +322,71 @@ namespace Qs.Types
                 }
                 else
                 {
-                    throw new QsException("Component is not a scalar value.");
+                    throw new QsException("Component is not a scalar or vector value.");
                 }
             }
 
             return vec;
+        }
+
+
+        /// <summary>
+        /// Create A matrix from a row values by aligning values to the left in
+        /// </summary>
+        /// <param name="values"></param>
+        /// <returns></returns>
+        public static QsValue MatrixRowFromValues(params QsValue[] values)
+        {
+            QsMatrix m = new QsMatrix();
+            
+            foreach (var v in values)
+            {
+                if (v is QsScalar)
+                {
+                    if (m.RowsCount == 0)
+                        m.AddVector((QsVector)VectorFromValues(v));
+                    else
+                    {
+                        m.Rows[0].AddComponent((QsScalar)v);
+                    }
+                }
+
+                if (v is QsVector)
+                {
+                    if (m.RowsCount == 0)
+                        m.AddVector(((QsVector)v).Clone() as QsVector);
+                    else if (m.RowsCount == 1)
+                    {
+                        m.Rows[0].AddComponents((QsVector)v);
+                    }
+                    else
+                    {
+                        throw new QsInvalidOperationException("Couldn't adding vector to multi row matrix");
+                    }
+                }
+
+                if (v is QsMatrix)
+                {
+                    if (m.RowsCount == 0)
+                    {
+                        m = null;
+                        m = QsMatrix.CopyMatrix((QsMatrix)v);
+                    }
+                    else if (m.RowsCount == ((QsMatrix)v).RowsCount)
+                    {
+                        foreach (var col in ((QsMatrix)v).Columns)
+                        {
+                            m.AddColumnVector(col);
+                        }
+                    }
+                    else
+                    {
+                        throw new QsInvalidOperationException("Couldn't adding different row matrices");
+                    }
+                }
+            }
+
+            return m;
         }
 
         /// <summary>
@@ -354,7 +413,7 @@ namespace Qs.Types
                 }
                 else
                 {
-                    throw new QsException("Component is not a vector value.");
+                    throw new QsInvalidOperationException("Value to be added is not a vector nor a matrix.");
                 }
             }
 

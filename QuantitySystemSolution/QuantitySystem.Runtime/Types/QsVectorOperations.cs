@@ -86,6 +86,7 @@ namespace Qs.Types
 
             QsVector v = new QsVector(this.Count);
 
+            
             for (int i = 0; i < this.Count; i++)
             {
                 v.AddComponent(this[i] - vector[i]);

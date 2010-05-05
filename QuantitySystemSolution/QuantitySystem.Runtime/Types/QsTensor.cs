@@ -12,14 +12,22 @@ namespace Qs.Types
     public partial class QsTensor : QsValue
     {
 
+        /// <summary>
+        /// Returns the current rank of this Tensor.
+        /// </summary>
+        public int Rank
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+        }
+
         public List<QsMatrix> Layers = new List<QsMatrix>();
-
-
 
         public QsTensor()
         {
         }
-
 
         /// <summary>
         /// Form tensor from group of matrices.
@@ -29,10 +37,6 @@ namespace Qs.Types
         {
             Layers.AddRange(matrices);
         }
-
-        
-
-
 
         #region QsValue operations
         public override QsValue Identity
@@ -217,5 +221,12 @@ namespace Qs.Types
             return sb.ToString();
         }
 
+
+
+        #region This region for rotation of tensor 
+        // try to remember that rotation of tensor depend on the rank of the tensor
+        //  I mean tensor of rank 0 (looks like scalar)  will have no dimention to rotate around
+        //  tensor of 2nd rank will have two dimension to rotate around
+        #endregion
     }
 }

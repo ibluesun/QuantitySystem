@@ -12,7 +12,7 @@ namespace Qs.Types
     /// Matrix that hold quantities
     /// and the basic matrix calculations.
     /// </summary>
-    public partial class QsMatrix : QsValue, IEnumerable<QsVector>
+    public partial class QsMatrix : QsValue, IEnumerable<QsVector>, ICloneable
     {
         public List<QsVector> Rows = new List<QsVector>();
 
@@ -132,6 +132,25 @@ namespace Qs.Types
                return Rows[0].Count;
             }
         }
+
+
+        /// <summary>
+        /// Returns columns as vector array.
+        /// </summary>
+        public QsVector[] Columns
+        {
+            get
+            {
+                QsVector[] vs = new QsVector[ColumnsCount];
+
+                for (int i = 0; i < ColumnsCount; i++)
+                {
+                    vs[i] = GetColumnVector(i);
+                }
+                return vs;
+            }
+        }
+        
 
         /// <summary>
         /// 
@@ -394,6 +413,12 @@ namespace Qs.Types
 
 
         #region Manipulation
+
+        /// <summary>
+        /// Gets a specific row vector
+        /// </summary>
+        /// <param name="rowIndex"></param>
+        /// <returns></returns>
         public QsVector GetVector(int rowIndex)
         {
             if (rowIndex > RowsCount) throw new QsMatrixException("Index '" + rowIndex + "' Exceeds the rows limits '" + RowsCount + "'");
@@ -413,6 +438,11 @@ namespace Qs.Types
             return mat;
         }
 
+        /// <summary>
+        ///  gets a specific covector as a vector object
+        /// </summary>
+        /// <param name="columnIndex"></param>
+        /// <returns></returns>
         public QsVector GetColumnVector(int columnIndex)
         {
             if (columnIndex > ColumnsCount) throw new QsMatrixException("Index '" + columnIndex + "' Exceeds the columns limits '" + ColumnsCount + "'");
@@ -432,6 +462,11 @@ namespace Qs.Types
 
         }
 
+        /// <summary>
+        /// Gets a specific covector as a matrix object.
+        /// </summary>
+        /// <param name="columnIndex"></param>
+        /// <returns></returns>
         public QsMatrix GetColumnVectorMatrix(int columnIndex)
         {
             QsMatrix mat = new QsMatrix();
@@ -474,7 +509,7 @@ namespace Qs.Types
                     //sb.Append("\t");   
                     for (int IX = 0; IX < this.ColumnsCount; IX++)
                     {
-                        string cell = this[IY, IX].Quantity.ToShortString();
+                        string cell = this[IY, IX].ToShortString();
 
                         sb.Append(cell.PadLeft(13));
                         sb.Append(" ");
@@ -664,5 +699,30 @@ namespace Qs.Types
         #endregion
 
 
+
+        /// <summary>
+        /// Copy the matrix into new matrix instance.
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
+        public static QsMatrix CopyMatrix(QsMatrix matrix)
+        {
+            QsMatrix m = new QsMatrix();
+            foreach (QsVector v in matrix)
+            {
+                m.AddVector(QsVector.CopyVector(v));
+            }
+
+            return m;
+        }
+
+        #region ICloneable Members
+
+        public object Clone()
+        {
+            return CopyMatrix(this);
+        }
+
+        #endregion
     }
 }

@@ -17,5 +17,12 @@ namespace Qs.Modules
             }
         }
 
+        public static QsValue ProcessorCount
+        {
+            get
+            {
+                return System.Environment.ProcessorCount.ToQuantity().ToScalar();
+            }
+        }
     }
 }
