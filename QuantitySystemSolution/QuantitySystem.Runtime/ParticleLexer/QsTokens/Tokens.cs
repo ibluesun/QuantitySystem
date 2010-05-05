@@ -222,6 +222,19 @@ namespace ParticleLexer.QsTokens
     }
 
 
+    /// <summary>
+    /// Dollar Sign followed by word token. $x or $y  $ROI 
+    /// </summary>
+    public class SymbolicToken : TokenClass
+    {
+    }
+
+    /// <summary>
+    /// $symbol with unit  :) i.e.  $x&lt;kg&gt;
+    /// </summary>
+    public class SymbolicQuantityToken : TokenClass
+    {
+    }
 
 
     /// <summary>
@@ -252,6 +265,13 @@ namespace ParticleLexer.QsTokens
     {
     }
 
+
+    /// <summary>
+    /// This token type is for internal use only.
+    /// </summary>
+    internal class MergedToken : TokenClass
+    {
+    }
 
     public static class TokenExtensions
     {

@@ -281,7 +281,6 @@ namespace QuantitySystem.Units
                 {
                     return DiscoverUnit(QuantityDimension.Dimensionless);
                 }
-
             }
 
 
@@ -295,13 +294,15 @@ namespace QuantitySystem.Units
 
             if (InnerUnitType == null) //no direct mapping so get it from the inner quantities
             {
+                BaseQuantity[] InternalQuantities;
+            
                 //I can't cast BaseQuantity to AnyQuantity<object>  very annoying
                 //so I used reflection.
 
                 MethodInfo GIQ = m_QuantityType.GetMethod("GetInternalQuantities");
 
                 //casted the array to BaseQuantity array also
-                var InternalQuantities = GIQ.Invoke(quantity, null) as BaseQuantity[];
+                InternalQuantities = GIQ.Invoke(quantity, null) as BaseQuantity[];
 
                 foreach (var InnerQuantity in InternalQuantities)
                 {

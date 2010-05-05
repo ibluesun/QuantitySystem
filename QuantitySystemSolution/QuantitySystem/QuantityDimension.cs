@@ -219,7 +219,8 @@ namespace QuantitySystem
         }
 
         /// <summary>
-        /// rquality here based on first level of exponent validation.
+        /// Equality here based on first level of exponent validation.
+        /// Which means length explicitly is compared to the total dimension value not on radius and normal length values.
         /// </summary>
         /// <param name="dimension"></param>
         /// <returns></returns>
@@ -341,7 +342,7 @@ namespace QuantitySystem
 
 
         /// <summary>
-        /// Cash all quantities with their Dimensions.
+        /// Cache all quantities with their Dimensions.
         /// </summary>
         static QuantityDimension()
         {
@@ -423,7 +424,6 @@ namespace QuantitySystem
         public static AnyQuantity<T> QuantityFrom<T>(QuantityDimension dimension)
         {
 
-            
             Type QuantityType = QuantityTypeFrom(dimension);
 
             //the quantity type now is without container type we should generate it
@@ -446,6 +446,11 @@ namespace QuantitySystem
         }
 
 
+        /// <summary>
+        /// Returns the quantity dimenstion based on the quantity type.
+        /// </summary>
+        /// <param name="quantityType"></param>
+        /// <returns></returns>
         public static QuantityDimension DimensionFrom(Type quantityType)
         {
             if (!quantityType.IsGenericTypeDefinition)

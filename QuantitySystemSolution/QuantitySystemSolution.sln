@@ -1,11 +1,7 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 10.00
-# Visual Studio 2008
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantitySystem", "QuantitySystem\QuantitySystem.csproj", "{78909C0B-AA53-48F9-8AC9-F3937383629C}"
-EndProject
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "QuantitySystemTests", "QuantitySystemTests", "{11635727-736E-4C7D-93FE-CD36FE61917E}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantitySystemTestingProject", "QuantitySystemTestingProject\QuantitySystemTestingProject.csproj", "{6B22C63C-7927-4CB2-87A8-2BA3428570DC}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{27291231-815B-4D24-B9C9-7ABDBEEE948E}"
 	ProjectSection(SolutionItems) = preProject
@@ -13,10 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		QuantitySystemSolution.vsmdi = QuantitySystemSolution.vsmdi
 		What's New.txt = What's New.txt
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitsTestingProject", "UnitsTestingProject\UnitsTestingProject.csproj", "{2E1B9096-614C-405F-8587-1897F451F139}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantitySystemCalculator", "QuantitySystemCalculator\QuantitySystemCalculator.csproj", "{140E6C82-4B64-45AA-8FE1-91159322A29E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DLR", "DLR", "{BD2784D3-94C2-4F74-AF57-050ED12B6E5D}"
 	ProjectSection(SolutionItems) = preProject
@@ -26,15 +18,23 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DLR", "DLR", "{BD2784D3-94C
 		DLR\Microsoft.Scripting.ExtensionAttribute.dll = DLR\Microsoft.Scripting.ExtensionAttribute.dll
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qs", "QuantitySystem.Runtime\Qs.csproj", "{615A100B-4890-434E-8869-2A9B3200D664}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QsTestProject", "QsTestProject\QsTestProject.csproj", "{70D4A4DF-115F-440E-B97F-E76974A8AC14}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{B97E2DDA-3B38-465E-93A4-F48A3FD5D633}"
 	ProjectSection(SolutionItems) = preProject
 		Libraries\ParticleLexer.dll = Libraries\ParticleLexer.dll
 		Libraries\SymbolicAlgebra.dll = Libraries\SymbolicAlgebra.dll
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantitySystem", "QuantitySystem\QuantitySystem.csproj", "{78909C0B-AA53-48F9-8AC9-F3937383629C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantitySystemTestingProject", "QuantitySystemTestingProject\QuantitySystemTestingProject.csproj", "{6B22C63C-7927-4CB2-87A8-2BA3428570DC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitsTestingProject", "UnitsTestingProject\UnitsTestingProject.csproj", "{2E1B9096-614C-405F-8587-1897F451F139}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantitySystemCalculator", "QuantitySystemCalculator\QuantitySystemCalculator.csproj", "{140E6C82-4B64-45AA-8FE1-91159322A29E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qs", "QuantitySystem.Runtime\Qs.csproj", "{615A100B-4890-434E-8869-2A9B3200D664}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QsTestProject", "QsTestProject\QsTestProject.csproj", "{70D4A4DF-115F-440E-B97F-E76974A8AC14}"
 EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
@@ -68,30 +68,43 @@ Global
 		CategoryFile = QuantitySystemSolution.vsmdi
 	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug CLR4|Any CPU = Debug CLR4|Any CPU
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{78909C0B-AA53-48F9-8AC9-F3937383629C}.Debug CLR4|Any CPU.ActiveCfg = Debug CLR4|Any CPU
+		{78909C0B-AA53-48F9-8AC9-F3937383629C}.Debug CLR4|Any CPU.Build.0 = Debug CLR4|Any CPU
 		{78909C0B-AA53-48F9-8AC9-F3937383629C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{78909C0B-AA53-48F9-8AC9-F3937383629C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{78909C0B-AA53-48F9-8AC9-F3937383629C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{78909C0B-AA53-48F9-8AC9-F3937383629C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6B22C63C-7927-4CB2-87A8-2BA3428570DC}.Debug CLR4|Any CPU.ActiveCfg = Debug CLR4|Any CPU
+		{6B22C63C-7927-4CB2-87A8-2BA3428570DC}.Debug CLR4|Any CPU.Build.0 = Debug CLR4|Any CPU
 		{6B22C63C-7927-4CB2-87A8-2BA3428570DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6B22C63C-7927-4CB2-87A8-2BA3428570DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B22C63C-7927-4CB2-87A8-2BA3428570DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6B22C63C-7927-4CB2-87A8-2BA3428570DC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E1B9096-614C-405F-8587-1897F451F139}.Debug CLR4|Any CPU.ActiveCfg = Debug CLR4|Any CPU
+		{2E1B9096-614C-405F-8587-1897F451F139}.Debug CLR4|Any CPU.Build.0 = Debug CLR4|Any CPU
 		{2E1B9096-614C-405F-8587-1897F451F139}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2E1B9096-614C-405F-8587-1897F451F139}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2E1B9096-614C-405F-8587-1897F451F139}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2E1B9096-614C-405F-8587-1897F451F139}.Release|Any CPU.Build.0 = Release|Any CPU
+		{140E6C82-4B64-45AA-8FE1-91159322A29E}.Debug CLR4|Any CPU.ActiveCfg = Debug CLR4|Any CPU
+		{140E6C82-4B64-45AA-8FE1-91159322A29E}.Debug CLR4|Any CPU.Build.0 = Debug CLR4|Any CPU
 		{140E6C82-4B64-45AA-8FE1-91159322A29E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{140E6C82-4B64-45AA-8FE1-91159322A29E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{140E6C82-4B64-45AA-8FE1-91159322A29E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{140E6C82-4B64-45AA-8FE1-91159322A29E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{615A100B-4890-434E-8869-2A9B3200D664}.Debug CLR4|Any CPU.ActiveCfg = Debug CLR4|Any CPU
+		{615A100B-4890-434E-8869-2A9B3200D664}.Debug CLR4|Any CPU.Build.0 = Debug CLR4|Any CPU
 		{615A100B-4890-434E-8869-2A9B3200D664}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{615A100B-4890-434E-8869-2A9B3200D664}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{615A100B-4890-434E-8869-2A9B3200D664}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{615A100B-4890-434E-8869-2A9B3200D664}.Release|Any CPU.Build.0 = Release|Any CPU
+		{70D4A4DF-115F-440E-B97F-E76974A8AC14}.Debug CLR4|Any CPU.ActiveCfg = Debug CLR4|Any CPU
+		{70D4A4DF-115F-440E-B97F-E76974A8AC14}.Debug CLR4|Any CPU.Build.0 = Debug CLR4|Any CPU
 		{70D4A4DF-115F-440E-B97F-E76974A8AC14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{70D4A4DF-115F-440E-B97F-E76974A8AC14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70D4A4DF-115F-440E-B97F-E76974A8AC14}.Release|Any CPU.ActiveCfg = Release|Any CPU

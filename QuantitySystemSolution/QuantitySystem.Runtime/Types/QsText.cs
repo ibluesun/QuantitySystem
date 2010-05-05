@@ -62,12 +62,51 @@ namespace Qs.Types
 
         public override QsValue LeftShiftOperation(QsValue times)
         {
-            throw new NotImplementedException();
+            int itimes = Qs.IntegerFromQsValue((QsScalar)times);
+
+            if (itimes > this.Text.Length) itimes = itimes % this.Text.Length;
+
+
+            StringBuilder vec = new StringBuilder(this.Text.Length);
+
+            for (int i = itimes; i < this.Text.Length; i++)
+            {
+                vec.Append(this.Text[i]);
+            }
+
+            for (int i = 0; i < itimes; i++)
+            {
+                vec.Append(this.Text[i]);
+            }
+
+
+            return new QsText(vec.ToString());
+
         }
 
         public override QsValue RightShiftOperation(QsValue times)
         {
-            throw new NotImplementedException();
+            int itimes = Qs.IntegerFromQsValue((QsScalar)times);
+
+            if (itimes > this.Text.Length) itimes = itimes % this.Text.Length;
+
+            // 1 2 3 4 5 >> 2  == 4 5 1 2 3
+             
+            StringBuilder vec = new StringBuilder(this.Text.Length);
+
+            for (int i = this.Text.Length - itimes; i < this.Text.Length; i++)
+            {
+                vec.Append(this.Text[i]);
+            }
+
+            for (int i = 0; i < (this.Text.Length - itimes); i++)
+            {
+                vec.Append(this.Text[i]);
+            }
+
+
+            return new QsText(vec.ToString());
+
         }
 
         public override bool LessThan(QsValue value)

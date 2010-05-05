@@ -17,62 +17,6 @@ namespace QuantitySystem.Quantities.BaseQuantities
     {
 
 
-
-        #region Strongly Typed Operations
-
-        /*
-        public static TQuantity Add<TQuantity>(TQuantity firstQuantity, TQuantity secondQuantity) where TQuantity : AnyQuantity, new()
-        {
-            TQuantity AQ = new TQuantity();
-
-
-            //convert values to Absolute values
-
-            double firstVal = firstQuantity.Unit.GetAbsoluteValue(firstQuantity.Value);
-            double secondVal = secondQuantity.Unit.GetAbsoluteValue(secondQuantity.Value);
-
-            //sum the values
-
-            double val = firstVal + secondVal;
-
-            //assign the unit of first quantity to the result.
-            AQ.Unit = firstQuantity.Unit;
-
-            //get relative value based on first quantity unit
-
-
-            AQ.Value = AQ.Unit.GetRelativeValue(val);
-
-
-
-            return AQ;
-        }
-
-        public static TQuantity Subtract<TQuantity>(TQuantity firstQuantity, TQuantity secondQuantity) where TQuantity : AnyQuantity, new()
-        {
-            TQuantity AQ = new TQuantity();
-            //convert values to Absolute values
-
-            double firstVal = firstQuantity.Unit.GetAbsoluteValue(firstQuantity.Value);
-            double secondVal = secondQuantity.Unit.GetAbsoluteValue(secondQuantity.Value);
-
-            //sum the values
-
-            double val = firstVal - secondVal;
-
-            //assign the unit of first quantity to the result.
-            AQ.Unit = firstQuantity.Unit;
-
-            //get relative value based on first quantity unit
-
-            AQ.Value = AQ.Unit.GetRelativeValue(val);
-
-            return AQ;
-        }
-        */
-
-        #endregion
-
         #region Operation Methods
 
         public static AnyQuantity<T> Add(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
@@ -441,7 +385,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
             else
             {
 
-                qresult.Value = MultiplyGenericByGeneric(firstQuantity.Value, sec_qty.Value);
+                qresult.Value = DivideGenericByGeneric(firstQuantity.Value, secondQuantity.Value);
 
                 //check if any of the two quantities have a valid unit 
                 // to be able to derive the current quantity
@@ -459,21 +403,23 @@ namespace QuantitySystem.Quantities.BaseQuantities
             return qresult;
         }
 
+        /// <summary>
+        /// This is a specific raise to double storage quantity power.
+        /// </summary>
+        /// <param name="quantity"></param>
+        /// <param name="exponent"></param>
+        /// <returns></returns>
         public static AnyQuantity<T> Power(AnyQuantity<T> quantity, AnyQuantity<double> exponent)
         {
             if (!exponent.Dimension.IsDimensionless)
             {
-                throw new QuantityException("Raising Quantity to a non dimensionless quantity are not implemented");
+                throw new QuantityException("Raising Quantity to a non dimensionless quantity are not implemented", new NotImplementedException());
             }
 
             
             // and I am ignoring the units conversion also 
-
-            
-
             
             Unit unit = quantity.Unit.RaiseUnitPower((float)exponent.Value);
-
 
 
             AnyQuantity<T> result = null;
@@ -486,48 +432,35 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 result.Value = RaiseGenericByScalar(quantity.Value, exponent.Value);
                 result.Unit = unit;
             }
-            
-
-
-            /*
-             * Old code
-            
-            //for now I am casting the double to integer 
-            int ex = (int)Math.Abs(exponent.Value);
-
-            AnyQuantity<T> q = null;
-            if (exponent.Value < 0) //then the number is 1/
-                q = (AnyQuantity<T>)quantity.Invert();
-            else
-                q = quantity;
-
-
-            if (exponent.Value == 0)
-            {
-                result = q / q;
-            }
-            else
-            {
-                result = q;
-
-
-
-                ex--;
-
-
-                while (ex > 0)
-                {
-                    result = result * q;
-                    ex--;
-                }
-            }
-            */
 
             Debug.Assert(result.Dimension.Equals(result.Unit.UnitDimension), "Dimensions are not equal after power");
             return result;
 
         }
 
+
+
+        /// <summary>
+        /// Raising power of the same storage types.
+        /// </summary>
+        /// <param name="firstQuantity"></param>
+        /// <param name="secondQuantity"></param>
+        /// <returns></returns>
+        public static AnyQuantity<T> Power(AnyQuantity<T> quantity, AnyQuantity<T> exponent)
+        {
+
+            if (!(exponent.Dimension.IsDimensionless & quantity.Dimension.IsDimensionless))
+            {
+                throw new QuantityException("All quantities should be dimensionless, because I don't have a clue about your object power technique", new NotImplementedException());
+            }
+
+
+            AnyQuantity<T> result = new DimensionlessQuantities.DimensionlessQuantity<T>();
+            result.Value = RaiseGenericByGeneric(quantity.Value, exponent.Value);
+            
+            return result;
+                
+        }
 
         public static AnyQuantity<T> Modulus(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
         {

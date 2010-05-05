@@ -91,18 +91,26 @@ namespace QuantitySystem.Quantities
         #region M L T Processing
 
 
+        /// <summary>
+        /// Cached Dimension.
+        /// </summary>
+        private QuantityDimension _Dimension = null;
+
         public override QuantityDimension Dimension
         {
             get
             {
-                QuantityDimension QDTotal = new QuantityDimension();
-
-                foreach (AnyQuantity<T>  aq in InternalQuantities)
+                if (_Dimension == null)
                 {
-                    QDTotal += aq.Dimension;
-                }
+                    QuantityDimension QDTotal = new QuantityDimension();
 
-                return QDTotal;
+                    foreach (AnyQuantity<T> aq in InternalQuantities)
+                    {
+                        QDTotal += aq.Dimension;
+                    }
+                    _Dimension = QDTotal;
+                }
+                return _Dimension;
             }
         }
 

@@ -12,11 +12,12 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
         public Time(float dimension) : base(dimension) { }
 
+        private static QuantityDimension _Dimension = new QuantityDimension(0, 0, 1);
         public override QuantityDimension Dimension
         {
             get
             {
-                return new QuantityDimension(0, 0, 1) * Exponent;
+                return  _Dimension * Exponent;
             }
         }
 

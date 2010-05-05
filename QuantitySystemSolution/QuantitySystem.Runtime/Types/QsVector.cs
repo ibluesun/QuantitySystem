@@ -35,19 +35,40 @@ namespace Qs.Types
             ListStorage.AddRange(scalars);
         }
 
+        /// <summary>
+        /// Concatenate the double value to the current vector.
+        /// </summary>
+        /// <param name="value"></param>
         public void AddComponent(double value)
         {
             ListStorage.Add(value.ToQuantity().ToScalar());
         }
 
+        /// <summary>
+        /// Concatenate the scalar to the current vector.
+        /// </summary>
+        /// <param name="scalar"></param>
         public void AddComponent(QsScalar scalar)
         {
             ListStorage.Add(scalar);
         }
 
+        /// <summary>
+        /// Concatenate the scalars to the current vector
+        /// </summary>
+        /// <param name="scalars"></param>
         public void AddComponents(params QsScalar[] scalars)
         {
             ListStorage.AddRange(scalars);
+        }
+
+        /// <summary>
+        /// Concatenate the elements of vectors to the current vector.
+        /// </summary>
+        /// <param name="vector"></param>
+        public void AddComponents(QsVector vector)
+        {
+            foreach (var s in vector) ListStorage.Add(s);
         }
 
         #endregion
@@ -127,7 +148,7 @@ namespace Qs.Types
             sb.Append("QsVector: ");
             for (int ix = 0; ix < this.Count; ix++)
             {
-                string cell = this[ix].Quantity.ToShortString();
+                string cell = this[ix].ToShortString();
                 sb.Append(cell);
                 sb.Append(" ");
             }
@@ -136,14 +157,18 @@ namespace Qs.Types
         }
 
 
-
+        /// <summary>
+        /// Copy the vector to another instance with the same components.
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
         public static QsVector CopyVector(QsVector vector)
         {
             QsVector vec = new QsVector(vector.Count);
 
             foreach (var q in vector)
             {
-                vec.AddComponent(new QsScalar { Quantity = (AnyQuantity<double>)q.Quantity.Clone() });
+                vec.AddComponent((QsScalar)q.Clone());
             }
             return vec;
         }

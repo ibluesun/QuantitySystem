@@ -18,6 +18,7 @@ using System.Reflection;
 using Qs.Types;
 using Qs.Runtime.Operators;
 using ParticleLexer.QsTokens;
+using SymbolicAlgebra;
 
 
 namespace Qs.Runtime
@@ -196,6 +197,11 @@ namespace Qs.Runtime
             tokens = ConditionsTokenize(tokens);   // make tokens of conditional statements
 
             tokens = tokens.MergeTokens(new WordToken());                 //discover words
+
+            // merge the $ + Word into Symbolic and get the symbolic variables.
+            tokens = tokens.MergeSequenceTokens<SymbolicToken>(typeof(DollarToken), typeof(WordToken));
+            tokens = tokens.MergeSequenceTokens<SymbolicQuantityToken>(typeof(SymbolicToken), typeof(UnitToken));
+
             tokens = tokens.MergeTokens(new NumberToken());               //discover the numbers
             tokens = tokens.MergeTokens(new UnitizedNumberToken());   //discover the unitized numbers
 
@@ -204,6 +210,8 @@ namespace Qs.Runtime
             tokens = tokens.MergeTokens(new NameSpaceToken());
             tokens = tokens.MergeTokens(new NameSpaceAndValueToken());
 
+            // merge the function value  expressions 
+            //  @f  
             tokens = tokens.MergeTokens<FunctionValueToken>();
 
 
@@ -219,8 +227,6 @@ namespace Qs.Runtime
             tokens = tokens.MergeTokens<AbsoluteToken>();
             tokens = tokens.MergeTokens<MagnitudeToken>();
 
-
-
             tokens = tokens.RemoveSpaceTokens();                           //remove all spaces
 
             tokens = tokens.DiscoverQsCalls(StringComparer.OrdinalIgnoreCase,
@@ -234,16 +240,16 @@ namespace Qs.Runtime
         /// <summary>
         /// Main parsing method.
         /// </summary>
-        /// <param name="line"></param>
-        /// <returns></returns>
-        internal Expression ParseArithmatic(Token tokens)
+        /// <param name="toks">Tokens</param>
+        /// <returns>Microsoft DLR Expression</returns>
+        internal Expression ParseArithmatic(Token toks)
         {
 
             // I remove the spaces here because the function called here sometimes have extra unneeded spaces
             // one scenario is ||{3 4 5} >> 1 ||  
             // the magnitude token will take the inner tokens as it is then send it for evaluation again.
 
-            tokens = tokens.RemoveSpaceTokens();                           //remove all spaces
+            var tokens = toks.RemoveSpaceTokens();                           //remove all spaces
 
             Expression quantityExpression = null;
             ExprOp eop = null;
@@ -353,6 +359,10 @@ namespace Qs.Runtime
                 else if (tokens[ix].TokenClassType == typeof(FunctionValueToken))
                 {
                     quantityExpression = GetFunctionValue(tokens[ix]);
+                }
+                else if (tokens[ix].TokenClassType == typeof(SymbolicToken) || tokens[ix].TokenClassType == typeof(SymbolicQuantityToken))
+                {
+                    quantityExpression = SymbolicScalar(tokens[ix]);
                 }
                 else
                 {
@@ -496,6 +506,9 @@ namespace Qs.Runtime
         }
 
 
+
+
+
         /// <summary>
         /// Get Absolute of number or determinant of matrix.
         /// </summary>
@@ -582,29 +595,43 @@ namespace Qs.Runtime
             // first split between semi colon tokens.
             // then use every splitted token to 
             
-            token = token.MergeAllBut(typeof(WordToken), new SemiColonToken());
+            token = token.MergeAllBut(typeof(MergedToken), new SemiColonToken());
 
             // now the tokens are scalars or vectors followed by semi colon;
             // put them beside each other
 
             for (int i = 0; i < token.Count; i++)
             {
-                if (token[i].TokenClassType == typeof(WordToken))
+
+                if (token[i].TokenClassType == typeof(MergedToken))
                 {
+                    // loop through every element 
+                    //  whether it was scalar or vector or matrix.
 
-                    string w = token[i].TokenValue.Trim();
-                    if (w.StartsWith("["))
-                    {
-                        //don't alter '{' token if already start with '['
-                        vctExpressions.Add(ParseArithmatic(token[i]));
-                    }
-                    else
-                    {
-                        var vtk = token[i].FuseTokens<CurlyBracketGroupToken>("{", "}");
+                    List<Expression> componentsExpressions = new List<Expression>();
 
-                        vctExpressions.Add(ParseArithmatic(vtk));
+                    var stoks = token[i].MergeAllBut(typeof(MergedToken), new CommaToken(), new MultipleSpaceToken());
+
+                    foreach (var vtk in stoks)
+                    {
+                        if (
+                            vtk.TokenClassType != typeof(MultipleSpaceToken)
+                            &&
+                            vtk.TokenClassType != typeof(CommaToken)
+                            )
+                        {
+                            componentsExpressions.Add(ParseArithmatic(vtk));    // get the expression of the current component.
+                            
+                        }
                     }
-                    
+
+                    Expression ComponentsArray = Expression.NewArrayInit(typeof(QsValue), componentsExpressions);
+                    Expression MatrixOfComponents = Expression.Call(
+                        typeof(QsValue).GetMethod("MatrixRowFromValues"),
+                        ComponentsArray);
+
+                    vctExpressions.Add(MatrixOfComponents);
+                
                 }
             }
 
@@ -773,6 +800,30 @@ namespace Qs.Runtime
             {
                 throw new QsVariableNotFoundException("Function (" + functionValueToken.TokenValue + ") not found");
             }
+        }
+
+        /// <summary>
+        /// Form the SymbolicQuantity expression.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        public Expression SymbolicScalar(Token token)
+        {
+            string s = string.Empty;
+            string unit = "1";
+            if (token.TokenClassType == typeof(SymbolicToken))
+            {
+                s = token[1].TokenValue;
+            }
+            else
+            {
+                s = token[0][1].TokenValue;
+                unit = token[1].TokenValue.Trim('<', '>');
+            }
+            SymbolicVariable sv  = new SymbolicVariable(s);
+            QsScalar SymbolicScalar = sv.ToQuantity(unit).ToScalar();
+
+            return Expression.Constant(SymbolicScalar, typeof(QsValue));
         }
 
         public QsValue Execute(string line)
@@ -996,7 +1047,6 @@ namespace Qs.Runtime
         {
             //fn(x, y, ff(y/x, e + fr(d)))     <== sample form :D
 
-            //List<string> paramsText = new List<string>();  //contains the parameters sent as text 
             List<Token> ArgumentTokens = new List<Token>();
 
             //discover parameters
@@ -1004,7 +1054,6 @@ namespace Qs.Runtime
             {
                 if (args[ai].TokenValue != ",")
                 {
-                    //paramsText.Add(args[ai].TokenValue.Trim());
                     ArgumentTokens.Add(args[ai]);
                 }
             }

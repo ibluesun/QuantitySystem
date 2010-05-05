@@ -61,8 +61,8 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
                 if (un[0] != '<') un = "<" + un + ">"; 
             }
-            
-            return Value.ToString() + un;
+
+            return Value.ToString() + " " + un;
         
         }
 
@@ -223,6 +223,48 @@ namespace QuantitySystem.Quantities.BaseQuantities
             return result;
         }
 
+        public static T DivideGenericByGeneric(T firstVal, T secondVal)
+        {
+            DynamicMethod method = new DynamicMethod(
+                "Multiply_Method" + ":" + typeof(T).ToString(),
+                typeof(T),
+                new Type[] { typeof(T), typeof(T) });
+
+
+            //get generator to construct the function.
+
+            ILGenerator gen = method.GetILGenerator();
+
+
+            gen.Emit(OpCodes.Ldarg_0);  //load the first value
+            gen.Emit(OpCodes.Ldarg_1);  //load the second value
+
+
+            if (typeof(T).IsPrimitive)
+            {
+                gen.Emit(OpCodes.Div);              //adding them if they were premitive
+            }
+            else
+            {
+                MethodInfo info = typeof(T).GetMethod
+                    (
+                    "op_Division",
+                    new Type[] { typeof(T), typeof(T) },
+                    null
+                    );
+
+                gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
+
+            }
+
+            gen.Emit(OpCodes.Ret);
+
+
+            T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
+
+            return result;
+        }
+
         /// <summary>
         /// 
         /// </summary>
@@ -291,6 +333,63 @@ namespace QuantitySystem.Quantities.BaseQuantities
             }
         }
 
+
+        /// <summary>
+        /// Raise power of generic to generic 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="factor"></param>
+        /// <returns></returns>
+        public static T RaiseGenericByGeneric(T value, T factor)
+        {
+            //create the dynamic method here 
+
+            DynamicMethod method = new DynamicMethod(
+                "Power_Method" + ":" + typeof(T).ToString(),
+                typeof(T),
+                new Type[] { typeof(T), typeof(T) });
+
+            //get generator to construct the function.
+
+            ILGenerator gen = method.GetILGenerator();
+
+            gen.Emit(OpCodes.Ldarg_0);  //load the first value
+            gen.Emit(OpCodes.Ldarg_1);  //load the second value
+
+            if (typeof(T).IsPrimitive)
+            {
+
+                MethodInfo info = typeof(Math).GetMethod
+                    (
+                    "Pow",
+                    new Type[] { typeof(double), typeof(double) },
+                    null
+                    );
+
+                gen.EmitCall(OpCodes.Call, info, null);   
+
+            }
+            else
+            {
+                MethodInfo info = typeof(T).GetMethod
+                    (
+                    "Pow",
+                    new Type[] { typeof(T), typeof(T) },
+                    null
+                    );
+
+                gen.EmitCall(OpCodes.Call, info, null);   
+
+            }
+
+            gen.Emit(OpCodes.Ret);
+
+            T result = (T)method.Invoke(null, new object[] { value, factor });
+
+            return result;
+
+
+        }
 
 
 

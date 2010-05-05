@@ -22,12 +22,12 @@ namespace QuantitySystem.Quantities.BaseQuantities
         public Mass(float exponent) : base(exponent) { }
 
 
-
+        private static QuantityDimension _Dimension = new QuantityDimension(1, 0, 0);
         public override QuantityDimension Dimension
         {
             get
             {
-                return new QuantityDimension(1, 0, 0) * Exponent;
+                return _Dimension * Exponent;
             }
         }
 
