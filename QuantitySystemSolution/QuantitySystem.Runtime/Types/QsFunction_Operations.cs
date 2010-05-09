@@ -178,33 +178,6 @@ namespace Qs.Types
             return fNameParamPart;
         }
 
-        /// <summary>
-        /// Sums the current function with the parameter function
-        /// symbolically.
-        /// </summary>
-        /// <param name="function"></param>
-        /// <returns></returns>
-        private QsFunction SymbolicOperation(QsFunction function, string operation)
-        {
-
-            var fTokens = JoinFunctionsBodiesTokensWithOperation(operation, this, function);
-
-            var sp = new SymbolicAlgebra.SymbolicParser();
-
-            var SymbolicExpression = sp.ParseSymbols(fTokens);
-
-            Expression<Func<SymbolicVariable>> cq = Expression.Lambda<Func<SymbolicVariable>>(SymbolicExpression);
-
-            var fq = cq.Compile();
-            var fs = fq().ToString();
-
-            string funcHead = FormFunctionHeadFromFunctions("_", this, function);
-            string wholeFunction = funcHead + " = " + fs;
-
-            return QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, wholeFunction);
-        }
-
-
         public override QsValue AddOperation(QsValue value)
         {
             return FOperation(value, Operator.Plus);
@@ -213,7 +186,6 @@ namespace Qs.Types
         public override QsValue SubtractOperation(QsValue value)
         {
             return FOperation(value, Operator.Minus);
-
         }
 
         public override QsValue MultiplyOperation(QsValue value)
