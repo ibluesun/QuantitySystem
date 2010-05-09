@@ -128,8 +128,6 @@
     <Compile Include="QsInvalidOperationException.cs" />
     <Compile Include="QsSyntaxErrorException.cs" />
     <Compile Include="Runtime\QsParameterNotFoundException.cs" />
-    <Compile Include="SymbolicAlgebra\SymbolicParser.cs" />
-    <Compile Include="SymbolicAlgebra\SymbolicVariableExtensions.cs" />
     <Compile Include="Types\Attributes\QsFunctionAttribute.cs" />
     <Compile Include="Types\QsFunction_Operations.cs" />
     <Compile Include="Types\QsMatrixException.cs">

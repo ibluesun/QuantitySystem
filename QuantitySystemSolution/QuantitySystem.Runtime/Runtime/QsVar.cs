@@ -279,7 +279,7 @@ namespace Qs.Runtime
                         quantityExpression = Expression.Constant(QsScalar.MinusOne, typeof(QsValue));
                     }
 
-                    op = "*";
+                    op = "_h*";
                     ix--;
                     goto ExpressionCompleted;
                     
@@ -1396,6 +1396,7 @@ namespace Qs.Runtime
 
             Type aqType = typeof(QsValue);
 
+            if (op == "_h*") return Expression.Multiply(left, right);
 
             if (op == "^") return Expression.Power(left, right, aqType.GetMethod("Pow"));
             if (op == "^.") return Expression.Power(left, right, aqType.GetMethod("PowDot"));
@@ -1495,6 +1496,11 @@ namespace Qs.Runtime
 
             // passes depends on priorities of operators.
 
+            // Internal Higher Priority Group
+            string[] HigherGroup = { "_h*" /* Higher Multiplication priority used internally in 
+                                           * the case of -4  or 5^-3
+                                             To be treated like -1_*4   or 5^-1_*4
+                                           */};
 
             string[] Group = { "^"    /* Power for normal product '*' */, 
                                "^."   /* Power for dot product */ ,
@@ -1520,7 +1526,7 @@ namespace Qs.Runtime
 
 
             /// Operator Groups Ordered by Priorities.
-            string[][] OperatorGroups = { Group, Group1, Group2, Shift, RelationalGroup, EqualityGroup, AndGroup, OrGroup, WhenOtherwiseGroup };
+            string[][] OperatorGroups = { HigherGroup, Group, Group1, Group2, Shift, RelationalGroup, EqualityGroup, AndGroup, OrGroup, WhenOtherwiseGroup };
 
 
 

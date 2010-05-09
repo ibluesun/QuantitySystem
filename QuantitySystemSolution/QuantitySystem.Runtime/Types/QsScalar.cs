@@ -142,14 +142,32 @@ namespace Qs.Types
 
         }
 
-        public QsScalar PowerScalar(QsScalar scalar)
+        public QsScalar PowerScalar(QsScalar power)
         {
             switch (_ScalarType)
             {
                 case ScalarTypes.DoubleNumberQuantity:
-                    return new QsScalar { Quantity = AnyQuantity<double>.Power(this.Quantity, scalar.Quantity) };
+                    return new QsScalar { Quantity = AnyQuantity<double>.Power(this.Quantity, power.Quantity) };
                 case ScalarTypes.SymbolicQuantity:
-                    return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = AnyQuantity<SymbolicVariable>.Power(this.SymbolicQuantity, scalar.SymbolicQuantity) };
+                    {
+                        switch (power.ScalarType)
+                        {
+                            case ScalarTypes.SymbolicQuantity:
+                            return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = AnyQuantity<SymbolicVariable>.Power(this.SymbolicQuantity, power.SymbolicQuantity) };
+                            case ScalarTypes.DoubleNumberQuantity:
+                            {
+                                int ipower = (int)power.Quantity.Value;
+                                
+                                QsScalar nsq = new QsScalar(ScalarTypes.SymbolicQuantity);
+                                nsq.SymbolicQuantity = this.SymbolicQuantity.Value.Power(ipower).ToQuantity();
+                                nsq.SymbolicQuantity.Unit = this.SymbolicQuantity.Unit.RaiseUnitPower(ipower);
+                                return nsq;                                
+                            }
+                            default:
+                            throw new NotImplementedException("Raising Symbolic Quantity to " + power.ScalarType.ToString() + " is not implemented yet");
+                        }
+                        
+                    }
                 default:
                     throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
             }
