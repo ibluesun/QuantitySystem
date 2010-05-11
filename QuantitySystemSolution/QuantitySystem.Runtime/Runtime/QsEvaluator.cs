@@ -250,12 +250,12 @@ namespace Qs.Runtime
                     {
                         //get the quantity
 
-                        qty = new QsScalar { Quantity = AnyQuantity<double>.Parse(m.Groups[6].Value) };
+                        qty = new QsScalar { NumericalQuantity = AnyQuantity<double>.Parse(m.Groups[6].Value) };
 
 
                         //get the quantity
 
-                        qty.Quantity.Unit = Unit.DiscoverUnit(qty.Quantity); 
+                        qty.NumericalQuantity.Unit = Unit.DiscoverUnit(qty.NumericalQuantity); 
 
                     }
                     catch (QuantityNotFoundException)
@@ -266,7 +266,7 @@ namespace Qs.Runtime
 
                 }
 
-                qty.Quantity.Value = varVal;
+                qty.NumericalQuantity.Value = varVal;
 
                 SetVariable(varName, qty);
                 

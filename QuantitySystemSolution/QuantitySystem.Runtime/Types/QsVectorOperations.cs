@@ -168,14 +168,14 @@ namespace Qs.Types
         {
             if (this.Count != vector.Count) throw new QsException("Vectors are not equal");
 
-            AnyQuantity<double> Total = this[0].Quantity * vector[0].Quantity;
+            QsScalar Total = this[0] * vector[0];
 
             for (int i = 1; i < this.Count; i++)
             {
-                Total = Total + (this[i].Quantity * vector[i].Quantity);
+                Total = Total + (this[i] * vector[i]);
             }
 
-            return new QsScalar { Quantity = Total };
+            return Total ;
         }
 
 
@@ -197,19 +197,31 @@ namespace Qs.Types
             for (int i = 0; i < this.Count; i++)
             {
                 // first row is the units.
-                var utou = this[i].Quantity.Unit.PathToUnit(v2[i].Quantity.Unit).ConversionFactor; //the units may be different but the quantities are the same.
-                Unit u = (Unit)this[i].Quantity.Unit.Clone();
+                var utou = this[i].Unit.PathToUnit(v2[i].Unit).ConversionFactor; //the units may be different but the quantities are the same.
+                Unit u = (Unit)this[i].Unit.Clone();
 
                 // unit with the conversion factor
-                units.AddComponent(new QsScalar { Quantity = u.GetThisUnitQuantity<double>(utou) });
+                units.AddComponent(new QsScalar { NumericalQuantity = u.GetThisUnitQuantity<double>(utou) });
 
 
                 // second row is first vector
+
                 //take the value of the quantity and convert it to dimensionless value.
-                a.AddComponent(new QsScalar { Quantity = this[i].Quantity.Value.ToQuantity() });
+                if (this[i].ScalarType == ScalarTypes.NumericalQuantity)
+                    a.AddComponent(new QsScalar { NumericalQuantity = this[i].NumericalQuantity.Value.ToQuantity() });
+                else if(this[i].ScalarType==ScalarTypes.SymbolicQuantity)
+                    a.AddComponent(new QsScalar( ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this[i].SymbolicQuantity.Value.ToQuantity()});
+                else 
+                    throw new NotImplementedException();
+
 
                 // third row is the second vector
-                b.AddComponent(new QsScalar { Quantity = v2[i].Quantity.Value.ToQuantity() });
+                if (v2[i].ScalarType == ScalarTypes.NumericalQuantity)
+                    b.AddComponent(new QsScalar { NumericalQuantity = v2[i].NumericalQuantity.Value.ToQuantity() });
+                else if (v2[i].ScalarType == ScalarTypes.SymbolicQuantity)
+                    b.AddComponent(new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = v2[i].SymbolicQuantity.Value.ToQuantity() });
+                else
+                    throw new NotImplementedException();
 
             }
 
@@ -521,13 +533,13 @@ namespace Qs.Types
             {
                 var s = (QsScalar)value.AbsOperation();
 
-                return this.Magnitude().Quantity < s.Quantity;
+                return this.Magnitude().NumericalQuantity < s.NumericalQuantity;
             }
             else if (value is QsVector)
             {
                 //the comparison will be based on the vector magnitudes.
                 var v = (QsVector)value;
-                return (this.Magnitude().Quantity < v.Magnitude().Quantity);
+                return (this.Magnitude().NumericalQuantity < v.Magnitude().NumericalQuantity);
             }
             else
             {
@@ -540,14 +552,14 @@ namespace Qs.Types
             if (value is QsScalar)
             {
                 var s = (QsScalar)value.AbsOperation();
-                return this.Magnitude().Quantity > s.Quantity;
+                return this.Magnitude().NumericalQuantity > s.NumericalQuantity;
 
             }
             else if (value is QsVector)
             {
                 //the comparison will be based on the vector magnitudes.
                 var v = (QsVector)value;
-                return (this.Magnitude().Quantity > v.Magnitude().Quantity);
+                return (this.Magnitude().NumericalQuantity > v.Magnitude().NumericalQuantity);
 
             }
             else
@@ -561,14 +573,14 @@ namespace Qs.Types
             if (value is QsScalar)
             {
                 var s = (QsScalar)value.AbsOperation();
-                return this.Magnitude().Quantity <= s.Quantity;
+                return this.Magnitude().NumericalQuantity <= s.NumericalQuantity;
 
             }
             else if (value is QsVector)
             {
                 //the comparison will be based on the vector magnitudes.
                 var v = (QsVector)value;
-                return (this.Magnitude().Quantity <= v.Magnitude().Quantity);
+                return (this.Magnitude().NumericalQuantity <= v.Magnitude().NumericalQuantity);
 
             }
             else
@@ -582,14 +594,14 @@ namespace Qs.Types
             if (value is QsScalar)
             {
                 var s = (QsScalar)value.AbsOperation();
-                return this.Magnitude().Quantity >= s.Quantity;
+                return this.Magnitude().NumericalQuantity >= s.NumericalQuantity;
 
             }
             else if (value is QsVector)
             {
                 //the comparison will be based on the vector magnitudes.
                 var v = (QsVector)value;
-                return (this.Magnitude().Quantity >= v.Magnitude().Quantity);
+                return (this.Magnitude().NumericalQuantity >= v.Magnitude().NumericalQuantity);
 
             }
             else
@@ -605,14 +617,14 @@ namespace Qs.Types
             if (value is QsScalar)
             {
                 var s = (QsScalar)value.AbsOperation();
-                return this.Magnitude().Quantity == s.Quantity;
+                return this.Magnitude().NumericalQuantity == s.NumericalQuantity;
 
             }
             else if (value is QsVector)
             {
                 //the comparison will be based on the vector magnitudes.
                 var v = (QsVector)value;
-                return (this.Magnitude().Quantity == v.Magnitude().Quantity);
+                return (this.Magnitude().NumericalQuantity == v.Magnitude().NumericalQuantity);
 
             }
             else
@@ -626,14 +638,14 @@ namespace Qs.Types
             if (value is QsScalar)
             {
                 var s = (QsScalar)value.AbsOperation();
-                return this.Magnitude().Quantity != s.Quantity;
+                return this.Magnitude().NumericalQuantity != s.NumericalQuantity;
 
             }
             else if (value is QsVector)
             {
                 //the comparison will be based on the vector magnitudes.
                 var v = (QsVector)value;
-                return (this.Magnitude().Quantity != v.Magnitude().Quantity);
+                return (this.Magnitude().NumericalQuantity != v.Magnitude().NumericalQuantity);
 
             }
             else

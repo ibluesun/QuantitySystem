@@ -236,7 +236,7 @@ namespace Qs.Runtime
             AnyQuantity<double> v;
             if (Unit.TryParseQuantity(element, out v))
             {
-                var el = QsSequenceElement.FromQuantity(new QsScalar { Quantity = v });
+                var el = QsSequenceElement.FromQuantity(new QsScalar { NumericalQuantity = v });
                 el.ElementDeclaration = element;
 
                 el.IndexEvaluation = false;

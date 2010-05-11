@@ -481,7 +481,7 @@ namespace Qs.Runtime
 
                 var tot = SumElements(fromIndex, toIndex);
                 
-                var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
+                var count = new QsScalar { NumericalQuantity = Qs.ToQuantity((double)n) };
                 return tot / count;
             }
         }
@@ -495,7 +495,7 @@ namespace Qs.Runtime
 
             var tot = SumElements(fromIndex, toIndex, arg0);
             var n = toIndex - fromIndex + 1;
-            var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
+            var count = new QsScalar { NumericalQuantity = Qs.ToQuantity((double)n) };
             return tot / count;
         }
         public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1)
@@ -504,7 +504,7 @@ namespace Qs.Runtime
 
             var tot = SumElements(fromIndex, toIndex, arg0, arg1);
             var n = toIndex - fromIndex + 1;
-            var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
+            var count = new QsScalar { NumericalQuantity = Qs.ToQuantity((double)n) };
             return tot / count;
         }
         public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2)
@@ -513,7 +513,7 @@ namespace Qs.Runtime
 
             var tot = SumElements(fromIndex, toIndex, arg0, arg1, arg2);
             var n = toIndex - fromIndex + 1;
-            var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
+            var count = new QsScalar { NumericalQuantity = Qs.ToQuantity((double)n) };
             return tot / count;
         }
         public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3)
@@ -522,7 +522,7 @@ namespace Qs.Runtime
 
             var tot = SumElements(fromIndex, toIndex, arg0, arg1, arg2, arg3);
             var n = toIndex - fromIndex + 1;
-            var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
+            var count = new QsScalar { NumericalQuantity = Qs.ToQuantity((double)n) };
             return tot / count;
         }
         public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4)
@@ -531,7 +531,7 @@ namespace Qs.Runtime
 
             var tot = SumElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4);
             var n = toIndex - fromIndex + 1;
-            var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
+            var count = new QsScalar { NumericalQuantity = Qs.ToQuantity((double)n) };
             return tot / count;
         }
         public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5)
@@ -540,7 +540,7 @@ namespace Qs.Runtime
 
             var tot = SumElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4, arg5);
             var n = toIndex - fromIndex + 1;
-            var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
+            var count = new QsScalar { NumericalQuantity = Qs.ToQuantity((double)n) };
             return tot / count;
         }
         public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5, QsValue arg6)
@@ -549,7 +549,7 @@ namespace Qs.Runtime
 
             var tot = SumElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
             var n = toIndex - fromIndex + 1;
-            var count = new QsScalar { Quantity = Qs.ToQuantity((double)n) };
+            var count = new QsScalar { NumericalQuantity = Qs.ToQuantity((double)n) };
             return tot / count;
         }
         #endregion
@@ -1173,7 +1173,7 @@ namespace Qs.Runtime
         {
             int i = MinimumIndex;
             var q = this.GetElementValue(i);
-            while (((QsScalar)q).Quantity.Value < double.MaxValue)
+            while (((QsScalar)q).NumericalQuantity.Value < double.MaxValue)
             {
 
                 yield return (QsValue)q;

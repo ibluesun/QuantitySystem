@@ -563,7 +563,7 @@ namespace Qs.Runtime
                 else if (p.Quantity is QsScalar)
                 {
                     var scalar = (QsScalar)p.Quantity;
-                    object nativeValue = System.Convert.ChangeType(scalar.Quantity.Value, paramInfos[iy].ParameterType);
+                    object nativeValue = System.Convert.ChangeType(scalar.NumericalQuantity.Value, paramInfos[iy].ParameterType);
                     NativeParameters.Add(nativeValue);
                 }
                 else if (p.Quantity is QsText)
@@ -581,7 +581,7 @@ namespace Qs.Runtime
                         System.Array arr = System.Array.CreateInstance(ArrayType, vec.Count);
                         for (int i = 0; i < vec.Count; i++)
                         {
-                            object val = System.Convert.ChangeType(vec[i].Quantity.Value, ArrayType);
+                            object val = System.Convert.ChangeType(vec[i].NumericalQuantity.Value, ArrayType);
                             arr.SetValue(val, i);
                         }
                         

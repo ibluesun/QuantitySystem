@@ -73,12 +73,12 @@ namespace QsTestProject
         [TestMethod()]
         public void FactorialTest()
         {
-            QsValue number = new QsScalar() { Quantity = Unit.ParseQuantity("5<kg>") };
+            QsValue number = new QsScalar() { NumericalQuantity = Unit.ParseQuantity("5<kg>") };
 
             QsScalar actual;
             actual = (QsScalar)QsGamma.Factorial(number);
 
-            Assert.AreEqual<AnyQuantity<double>>(Unit.ParseQuantity("120<kg^5>"), actual.Quantity);
+            Assert.AreEqual<AnyQuantity<double>>(Unit.ParseQuantity("120<kg^5>"), actual.NumericalQuantity);
 
         }
     }

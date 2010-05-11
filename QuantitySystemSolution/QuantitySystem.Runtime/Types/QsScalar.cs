@@ -5,6 +5,8 @@ using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 using Qs.Runtime;
 using SymbolicAlgebra;
+using System.Globalization;
+using QuantitySystem.Units;
 
 namespace Qs.Types
 {
@@ -25,9 +27,6 @@ namespace Qs.Types
             get { return _ScalarType; }
         } 
 
-
-        
-
         /// <summary>
         /// Quantity that its storage is symbol.
         /// </summary>
@@ -41,16 +40,55 @@ namespace Qs.Types
         /// Double Number Quantity 
         /// Default behaviour.
         /// </summary>
-        public AnyQuantity<double> Quantity
+        public AnyQuantity<double> NumericalQuantity
         {
             get;
             set;
         }
 
+        /// <summary>
+        /// Return the current scalar unit.
+        /// </summary>
+        public Unit Unit
+        {
+            get
+            {
+                switch (_ScalarType)
+                {
+                    case ScalarTypes.NumericalQuantity:
+                        return NumericalQuantity.Unit;
+                    case ScalarTypes.SymbolicQuantity:
+                        return SymbolicQuantity.Unit;
+                    default:
+                        throw new NotImplementedException();
+                }
+            }
+        }
+
+        /// <summary>
+        /// Try to convert the current quantity into symbolic quantity.
+        /// </summary>
+        /// <returns></returns>
+        public AnyQuantity<SymbolicVariable> ToSymbolicQuantity()
+        {
+            switch(_ScalarType)
+            {
+                case ScalarTypes.NumericalQuantity:
+                    AnyQuantity<SymbolicVariable> sv =
+                        this.NumericalQuantity.Unit.GetThisUnitQuantity<SymbolicVariable>(
+                        new SymbolicVariable(this.NumericalQuantity.Value.ToString(CultureInfo.InvariantCulture)));
+
+                    return sv;
+                case ScalarTypes.SymbolicQuantity:
+                    return (AnyQuantity<SymbolicVariable>)SymbolicQuantity.Clone();
+                default:
+                    throw new NotImplementedException();
+            }
+        }
 
         public QsScalar()
         {
-            _ScalarType = ScalarTypes.DoubleNumberQuantity;
+            _ScalarType = ScalarTypes.NumericalQuantity;
         }
 
         public QsScalar(ScalarTypes scalarType)
@@ -62,8 +100,8 @@ namespace Qs.Types
         {
             switch (_ScalarType)
             {
-                case ScalarTypes.DoubleNumberQuantity:
-                    return Quantity.ToString();
+                case ScalarTypes.NumericalQuantity:
+                    return NumericalQuantity.ToString();
                 case ScalarTypes.SymbolicQuantity:
                     return SymbolicQuantity.ToString();
                 default:
@@ -75,8 +113,8 @@ namespace Qs.Types
         {
             switch (_ScalarType)
             {
-                case ScalarTypes.DoubleNumberQuantity:
-                    return Quantity.ToShortString();
+                case ScalarTypes.NumericalQuantity:
+                    return NumericalQuantity.ToShortString();
                 case ScalarTypes.SymbolicQuantity:
                     return SymbolicQuantity.ToShortString();
                 default:
@@ -87,41 +125,101 @@ namespace Qs.Types
         #region Operations
 
         #region Scalar Operations
+        /// <summary>
+        /// Add the passed scalar to the current scalar.
+        /// </summary>
+        /// <param name="scalar"></param>
+        /// <returns></returns>
         public QsScalar AddScalar(QsScalar scalar)
         {
             switch (_ScalarType)
             {
-                case ScalarTypes.DoubleNumberQuantity:
-                    return new QsScalar { Quantity = this.Quantity + scalar.Quantity };
+                case ScalarTypes.NumericalQuantity:
+                    switch (scalar.ScalarType)
+                    {
+                        case ScalarTypes.NumericalQuantity:
+                            return new QsScalar { NumericalQuantity = this.NumericalQuantity + scalar.NumericalQuantity };
+                        case ScalarTypes.SymbolicQuantity:
+                            return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.ToSymbolicQuantity() + scalar.SymbolicQuantity };
+                        default:
+                            throw new NotImplementedException();
+                    }
                 case ScalarTypes.SymbolicQuantity:
-                    return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.SymbolicQuantity + scalar.SymbolicQuantity };
+                    switch (scalar.ScalarType)
+                    {
+                        case ScalarTypes.NumericalQuantity:
+                            return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.SymbolicQuantity + scalar.ToSymbolicQuantity() };
+                        case ScalarTypes.SymbolicQuantity:
+                            return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.SymbolicQuantity + scalar.SymbolicQuantity };
+                        default:
+                            throw new NotImplementedException();
+                    }
                 default:
                     throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
             }
-        
-
         }
+
         public QsScalar SubtractScalar(QsScalar scalar)
         {
             switch (_ScalarType)
             {
-                case ScalarTypes.DoubleNumberQuantity:
-                    return new QsScalar { Quantity = this.Quantity - scalar.Quantity };
+                case ScalarTypes.NumericalQuantity:
+                    switch (scalar.ScalarType)
+                    {
+                        case ScalarTypes.NumericalQuantity:
+                            return new QsScalar { NumericalQuantity = this.NumericalQuantity - scalar.NumericalQuantity };
+                        case ScalarTypes.SymbolicQuantity:
+                            return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.ToSymbolicQuantity() - scalar.SymbolicQuantity };
+                        default:
+                            throw new NotImplementedException();
+                    }
                 case ScalarTypes.SymbolicQuantity:
-                    return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.SymbolicQuantity - scalar.SymbolicQuantity };
+                    switch (scalar.ScalarType)
+                    {
+                        case ScalarTypes.NumericalQuantity:
+                            return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.SymbolicQuantity - scalar.ToSymbolicQuantity() };
+                        case ScalarTypes.SymbolicQuantity:
+                            return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.SymbolicQuantity - scalar.SymbolicQuantity };
+                        default:
+                            throw new NotImplementedException();
+                    }
                 default:
                     throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
             }
 
         }
+
+        /// <summary>
+        /// Multiply the passed scalar to the current scalar instance.
+        /// </summary>
+        /// <param name="scalar"></param>
+        /// <returns></returns>
         public QsScalar MultiplyScalar(QsScalar scalar)
         {
             switch (_ScalarType)
             {
-                case ScalarTypes.DoubleNumberQuantity:
-                    return new QsScalar { Quantity = this.Quantity * scalar.Quantity };
+                case ScalarTypes.NumericalQuantity:
+                    switch (scalar.ScalarType)
+                    {
+                        case ScalarTypes.NumericalQuantity:
+                            return new QsScalar { NumericalQuantity = this.NumericalQuantity * scalar.NumericalQuantity };
+                        case ScalarTypes.SymbolicQuantity:
+                            return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.ToSymbolicQuantity() * scalar.SymbolicQuantity };
+                        default:
+                            throw new NotImplementedException();
+                    }
                 case ScalarTypes.SymbolicQuantity:
-                    return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.SymbolicQuantity * scalar.SymbolicQuantity };
+                    {
+                        switch (scalar.ScalarType)
+                        {
+                            case ScalarTypes.NumericalQuantity:
+                                return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.SymbolicQuantity * scalar.ToSymbolicQuantity() };
+                            case ScalarTypes.SymbolicQuantity:
+                                return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.SymbolicQuantity * scalar.SymbolicQuantity };
+                            default:
+                                throw new NotImplementedException();
+                        }
+                    }
                 default:
                     throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
             }
@@ -132,10 +230,26 @@ namespace Qs.Types
         {
             switch (_ScalarType)
             {
-                case ScalarTypes.DoubleNumberQuantity:
-                    return new QsScalar { Quantity = this.Quantity / scalar.Quantity };
+                case ScalarTypes.NumericalQuantity:
+                    switch (scalar.ScalarType)
+                    {
+                        case ScalarTypes.NumericalQuantity:
+                            return new QsScalar { NumericalQuantity = this.NumericalQuantity / scalar.NumericalQuantity };
+                        case ScalarTypes.SymbolicQuantity:
+                            return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.ToSymbolicQuantity() / scalar.SymbolicQuantity };
+                        default:
+                            throw new NotImplementedException();
+                    }
                 case ScalarTypes.SymbolicQuantity:
-                    return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.SymbolicQuantity / scalar.SymbolicQuantity };
+                    switch (scalar.ScalarType)
+                    {
+                        case ScalarTypes.NumericalQuantity:
+                            return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.SymbolicQuantity / scalar.ToSymbolicQuantity() };
+                        case ScalarTypes.SymbolicQuantity:
+                            return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this.SymbolicQuantity / scalar.SymbolicQuantity };
+                        default:
+                            throw new NotImplementedException();
+                    }
                 default:
                     throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
             }
@@ -146,17 +260,24 @@ namespace Qs.Types
         {
             switch (_ScalarType)
             {
-                case ScalarTypes.DoubleNumberQuantity:
-                    return new QsScalar { Quantity = AnyQuantity<double>.Power(this.Quantity, power.Quantity) };
+                case ScalarTypes.NumericalQuantity:
+                    {
+                        switch (power.ScalarType)
+                        {
+                            case ScalarTypes.NumericalQuantity:
+                                return new QsScalar { NumericalQuantity = AnyQuantity<double>.Power(this.NumericalQuantity, power.NumericalQuantity) };
+                            default:
+                                throw new NotImplementedException();
+                        }
+
+                    }
                 case ScalarTypes.SymbolicQuantity:
                     {
                         switch (power.ScalarType)
                         {
-                            case ScalarTypes.SymbolicQuantity:
-                            return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = AnyQuantity<SymbolicVariable>.Power(this.SymbolicQuantity, power.SymbolicQuantity) };
-                            case ScalarTypes.DoubleNumberQuantity:
+                            case ScalarTypes.NumericalQuantity:
                             {
-                                int ipower = (int)power.Quantity.Value;
+                                int ipower = (int)power.NumericalQuantity.Value;
                                 
                                 QsScalar nsq = new QsScalar(ScalarTypes.SymbolicQuantity);
                                 nsq.SymbolicQuantity = this.SymbolicQuantity.Value.Power(ipower).ToQuantity();
@@ -175,7 +296,7 @@ namespace Qs.Types
 
         public QsScalar ModuloScalar(QsScalar scalar)
         {
-            return new QsScalar { Quantity = this.Quantity % scalar.Quantity };
+            return new QsScalar { NumericalQuantity = this.NumericalQuantity % scalar.NumericalQuantity };
         }
 
 
@@ -527,15 +648,15 @@ namespace Qs.Types
         /// <returns></returns>
         public override QsValue AbsOperation()
         {
-            var q = this.Quantity;
+            var q = this.NumericalQuantity;
 
             if (q.Value < 0)
             {
-                return new QsScalar { Quantity = q * "-1".ToQuantity() };
+                return new QsScalar { NumericalQuantity = q * "-1".ToQuantity() };
             }
             else
             {
-                return new QsScalar { Quantity = q * "1".ToQuantity() };
+                return new QsScalar { NumericalQuantity = q * "1".ToQuantity() };
             }
 
         }
@@ -585,7 +706,7 @@ namespace Qs.Types
             if (value is QsScalar)
             {
                 QsScalar scalar = (QsScalar)value;
-                return this.Quantity < scalar.Quantity;
+                return this.NumericalQuantity < scalar.NumericalQuantity;
             }
             else if (value is QsVector)
             {
@@ -594,7 +715,7 @@ namespace Qs.Types
                 //compare with the magnitude of the vector
                 var mag = vector.Magnitude();
 
-                return ((QsScalar)this.AbsOperation()).Quantity < mag.Quantity;
+                return ((QsScalar)this.AbsOperation()).NumericalQuantity < mag.NumericalQuantity;
                 
             }
             else if (value is QsMatrix)
@@ -614,7 +735,7 @@ namespace Qs.Types
             if (value is QsScalar)
             {
                 QsScalar scalar = (QsScalar)value;
-                return this.Quantity > scalar.Quantity;
+                return this.NumericalQuantity > scalar.NumericalQuantity;
             }
             else if (value is QsVector)
             {
@@ -623,7 +744,7 @@ namespace Qs.Types
                 //compare with the magnitude of the vector
                 var mag = vector.Magnitude();
 
-                return ((QsScalar)this.AbsOperation()).Quantity > mag.Quantity;
+                return ((QsScalar)this.AbsOperation()).NumericalQuantity > mag.NumericalQuantity;
             }
             else if (value is QsMatrix)
             {
@@ -641,7 +762,7 @@ namespace Qs.Types
             if (value is QsScalar)
             {
                 QsScalar scalar = (QsScalar)value;
-                return this.Quantity <= scalar.Quantity;
+                return this.NumericalQuantity <= scalar.NumericalQuantity;
             }
             else if (value is QsVector)
             {
@@ -649,7 +770,7 @@ namespace Qs.Types
                 //compare with the magnitude of the vector
                 var mag = vector.Magnitude();
 
-                return ((QsScalar)this.AbsOperation()).Quantity <= mag.Quantity;
+                return ((QsScalar)this.AbsOperation()).NumericalQuantity <= mag.NumericalQuantity;
             }
             else if (value is QsMatrix)
             {
@@ -667,7 +788,7 @@ namespace Qs.Types
             if (value is QsScalar)
             {
                 QsScalar scalar = (QsScalar)value;
-                return this.Quantity >= scalar.Quantity;
+                return this.NumericalQuantity >= scalar.NumericalQuantity;
             }
             else if (value is QsVector)
             {
@@ -675,7 +796,7 @@ namespace Qs.Types
                 //compare with the magnitude of the vector
                 var mag = vector.Magnitude();
 
-                return ((QsScalar)this.AbsOperation()).Quantity >= mag.Quantity;
+                return ((QsScalar)this.AbsOperation()).NumericalQuantity >= mag.NumericalQuantity;
             }
             else if (value is QsMatrix)
             {
@@ -695,7 +816,7 @@ namespace Qs.Types
             if (value is QsScalar)
             {
                 QsScalar scalar = (QsScalar)value;
-                return this.Quantity == scalar.Quantity;
+                return this.NumericalQuantity == scalar.NumericalQuantity;
             }
             else if (value is QsVector)
             {
@@ -703,7 +824,7 @@ namespace Qs.Types
                 //compare with the magnitude of the vector
                 var mag = vector.Magnitude();
 
-                return ((QsScalar)this.AbsOperation()).Quantity == mag.Quantity;
+                return ((QsScalar)this.AbsOperation()).NumericalQuantity == mag.NumericalQuantity;
             }
             else if (value is QsMatrix)
             {
@@ -721,7 +842,7 @@ namespace Qs.Types
             if (value is QsScalar)
             {
                 QsScalar scalar = (QsScalar)value;
-                return this.Quantity != scalar.Quantity;
+                return this.NumericalQuantity != scalar.NumericalQuantity;
             }
             else if (value is QsVector)
             {
@@ -729,7 +850,7 @@ namespace Qs.Types
                 //compare with the magnitude of the vector
                 var mag = vector.Magnitude();
 
-                return ((QsScalar)this.AbsOperation()).Quantity != mag.Quantity;
+                return ((QsScalar)this.AbsOperation()).NumericalQuantity != mag.NumericalQuantity;
             }
             else if (value is QsMatrix)
             {
@@ -751,7 +872,7 @@ namespace Qs.Types
         {
             QsScalar n = new QsScalar(this._ScalarType);
 
-            n.Quantity = this.Quantity;
+            n.NumericalQuantity = this.NumericalQuantity;
             n.SymbolicQuantity = this.SymbolicQuantity;
 
             return n;

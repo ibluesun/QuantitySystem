@@ -278,7 +278,7 @@ namespace Qs.Types
         /// <returns>QsScalar on the form of QsValue</returns>
         public static QsValue ParseScalar(string quantity)
         {
-            return new QsScalar { Quantity = quantity.ToQuantity() };
+            return new QsScalar { NumericalQuantity = quantity.ToQuantity() };
         }
 
         /// <summary>
@@ -292,7 +292,7 @@ namespace Qs.Types
             QsVector v = new QsVector(qs.Length);
             foreach (string q in qs)
             {
-                v.AddComponent(new QsScalar { Quantity = q.ToQuantity() });
+                v.AddComponent(new QsScalar { NumericalQuantity = q.ToQuantity() });
             }
             return v;
         }

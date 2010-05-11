@@ -82,7 +82,7 @@ namespace Qs.Types
                          select 
                          QsParameter.MakeParameter(arg.ToScalarValue(), arg.ToShortString())).ToArray();
 
-            return ((QsScalar)InvokeByQsParameters(parms)).Quantity;
+            return ((QsScalar)InvokeByQsParameters(parms)).NumericalQuantity;
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Qs.Types
         /// <returns></returns>
         public AnyQuantity<double> Invoke()
         {
-            return ((QsScalar)FunctionDelegate_0()).Quantity;
+            return ((QsScalar)FunctionDelegate_0()).NumericalQuantity;
         }
 
         /// <summary>
