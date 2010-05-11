@@ -83,6 +83,9 @@ namespace QuantitySystem.Quantities
         internal void SetInternalQuantities(AnyQuantity<T>[] quantities)
         {
             InternalQuantities = quantities;
+
+            // Break the fucking caching HERE :S :S
+            _Dimension = null;
         }
         
 
@@ -96,6 +99,9 @@ namespace QuantitySystem.Quantities
         /// </summary>
         private QuantityDimension _Dimension = null;
 
+        /// <summary>
+        /// The current dimension of the quantity.
+        /// </summary>
         public override QuantityDimension Dimension
         {
             get
@@ -114,6 +120,10 @@ namespace QuantitySystem.Quantities
             }
         }
 
+        /// <summary>
+        /// Invert the derived quantity by inverting every inner quantity in its internal quantities.
+        /// </summary>
+        /// <returns></returns>
         public override BaseQuantity Invert()
         {
             List<AnyQuantity<T>> lq = new List<AnyQuantity<T>>();

@@ -21,8 +21,8 @@ namespace Qs.Runtime.Operators
         {
             if (value is QsScalar)
             {
-                AnyQuantity<double> number = ((QsScalar)value).Quantity;
-                return new QsScalar { Quantity = QuantityFactorial(number) };
+                AnyQuantity<double> number = ((QsScalar)value).NumericalQuantity;
+                return new QsScalar { NumericalQuantity = QuantityFactorial(number) };
             }
             else if (value is QsVector)
             {
@@ -33,7 +33,7 @@ namespace Qs.Runtime.Operators
                 foreach (var v in vec)
                 {
 
-                    rvec.AddComponent(new QsScalar { Quantity = QuantityFactorial(v.Quantity) });
+                    rvec.AddComponent(new QsScalar { NumericalQuantity = QuantityFactorial(v.NumericalQuantity) });
                 }
 
                 return rvec;
@@ -49,7 +49,7 @@ namespace Qs.Runtime.Operators
 
                     for (int IX = 0; IX < mat.ColumnsCount; IX++)
                     {
-                        row.Add(new QsScalar { Quantity = QuantityFactorial(mat[IY, IX].Quantity) });
+                        row.Add(new QsScalar { NumericalQuantity = QuantityFactorial(mat[IY, IX].NumericalQuantity) });
                     }
 
                     Total.AddRow(row.ToArray());

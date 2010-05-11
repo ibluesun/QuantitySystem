@@ -14,8 +14,8 @@ namespace Qs.Modules
             ContractUtils.Requires(from.Quantity is QsScalar);
             ContractUtils.Requires(to.Quantity is QsScalar);
 
-            double fd = ((QsScalar)from.Quantity).Quantity.Value;
-            double td = ((QsScalar)to.Quantity).Quantity.Value;
+            double fd = ((QsScalar)from.Quantity).NumericalQuantity.Value;
+            double td = ((QsScalar)to.Quantity).NumericalQuantity.Value;
 
             QsVector vec = new QsVector();
 
@@ -45,10 +45,10 @@ namespace Qs.Modules
             ContractUtils.Requires(step.Quantity is QsScalar);
 
 
-            double fd = ((QsScalar)from.Quantity).Quantity.Value;
-            double td = ((QsScalar)to.Quantity).Quantity.Value;
+            double fd = ((QsScalar)from.Quantity).NumericalQuantity.Value;
+            double td = ((QsScalar)to.Quantity).NumericalQuantity.Value;
 
-            double stepd = ((QsScalar)step.Quantity).Quantity.Value;
+            double stepd = ((QsScalar)step.Quantity).NumericalQuantity.Value;
 
             QsVector vec = new QsVector();
 

@@ -13,7 +13,7 @@ namespace Qs.Types
         /// <summary>
         /// Default behaviour of scalar values
         /// </summary>
-        DoubleNumberQuantity = 0 ,
+        NumericalQuantity = 0 ,
 
         /// <summary>
         /// Complex number storage type.

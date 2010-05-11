@@ -591,7 +591,7 @@ namespace Qs.Types
                     vec.AddComponent(
                         new QsScalar
                         {
-                            Quantity = "-1".ToQuantity() * (this[0, 1].Quantity * this[1, 0].Quantity)
+                            NumericalQuantity = "-1".ToQuantity() * (this[0, 1].NumericalQuantity * this[1, 0].NumericalQuantity)
                         }
                         );
 

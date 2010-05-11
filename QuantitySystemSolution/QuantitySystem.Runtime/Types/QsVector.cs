@@ -81,18 +81,18 @@ namespace Qs.Types
         {
             var exponent = "2".ToQuantity();
 
-            AnyQuantity<double> Total = AnyQuantity<double>.Power(this[0].Quantity, exponent);
+            AnyQuantity<double> Total = AnyQuantity<double>.Power(this[0].NumericalQuantity, exponent);
 
             for (int i = 1; i < ListStorage.Count; i++)
             {
-                Total = Total + AnyQuantity<double>.Power(this[i].Quantity, exponent);
+                Total = Total + AnyQuantity<double>.Power(this[i].NumericalQuantity, exponent);
             }
 
             exponent = "0.5".ToQuantity();
 
             Total = AnyQuantity<double>.Power(Total, exponent);
 
-            return new QsScalar { Quantity = Total };
+            return new QsScalar { NumericalQuantity = Total };
         }
 
         /// <summary>

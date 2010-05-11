@@ -51,7 +51,7 @@ namespace Qs
 
         public static int IntegerFromQsValue(QsValue val)
         {
-            return IntegerFromQuantity(((QsScalar)val).Quantity);
+            return IntegerFromQuantity(((QsScalar)val).NumericalQuantity);
         }
 
         /// <summary>
@@ -124,7 +124,7 @@ namespace Qs
         /// <returns></returns>
         public static QsScalar ToScalar(this AnyQuantity<double> qty)
         {
-            return new QsScalar { Quantity = qty };
+            return new QsScalar { NumericalQuantity = qty };
         }
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace Qs
 
         public static QsValue ToScalarValue(this AnyQuantity<double> qty)
         {
-            return new QsScalar { Quantity = qty };
+            return new QsScalar { NumericalQuantity = qty };
         }
 
         public static QsValue ToScalarValue(this string s)
@@ -167,7 +167,7 @@ namespace Qs
 
         public static QsValue ToScalarValue(this int i)
         {
-            return new QsScalar { Quantity = ToQuantity(i) };
+            return new QsScalar { NumericalQuantity = ToQuantity(i) };
         }
 
 
@@ -178,7 +178,7 @@ namespace Qs
         /// <returns></returns>
         public static QsScalar ToScalar(this string s)
         {
-            return new QsScalar { Quantity = s.ToQuantity() };
+            return new QsScalar { NumericalQuantity = s.ToQuantity() };
         }
 
 

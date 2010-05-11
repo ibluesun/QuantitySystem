@@ -149,7 +149,7 @@ namespace Qs.Types
             else if (value is QsScalar)
             {
                 var fname = "_";
-                var fbody = "" + this.FunctionBody + " " + operation + " " + ((QsScalar)value).Quantity.ToShortString();
+                var fbody = "" + this.FunctionBody + " " + operation + " " + ((QsScalar)value).NumericalQuantity.ToShortString();
                 var fparam = this.ParametersNames;
                 var f = fname + "(" + RemoveRedundantParameters(fparam) + ") = " + fbody;
                 return QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, f);

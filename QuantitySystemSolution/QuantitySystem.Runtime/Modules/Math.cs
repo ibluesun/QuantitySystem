@@ -18,7 +18,7 @@ namespace Qs.Modules
             {
                 if (val.Value is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).Quantity;
+                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -38,9 +38,9 @@ namespace Qs.Modules
 
                     foreach (QsScalar var in vec)
                     {
-                        if (var.Quantity.Dimension.IsDimensionless)
+                        if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Sinh(var.Quantity.Value);
+                            double r = System.Math.Sinh(var.NumericalQuantity.Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -81,7 +81,7 @@ namespace Qs.Modules
             {
                 if (val.Value is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).Quantity;
+                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -101,9 +101,9 @@ namespace Qs.Modules
 
                     foreach (QsScalar var in vec)
                     {
-                        if (var.Quantity.Dimension.IsDimensionless)
+                        if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Cosh(var.Quantity.Value);
+                            double r = System.Math.Cosh(var.NumericalQuantity.Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -145,7 +145,7 @@ namespace Qs.Modules
             {
                 if (val.Value is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).Quantity;
+                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -165,9 +165,9 @@ namespace Qs.Modules
 
                     foreach (QsScalar var in vec)
                     {
-                        if (var.Quantity.Dimension.IsDimensionless)
+                        if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Sin(var.Quantity.Value);
+                            double r = System.Math.Sin(var.NumericalQuantity.Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -208,7 +208,7 @@ namespace Qs.Modules
             {
                 if (val.Value is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).Quantity;
+                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -228,9 +228,9 @@ namespace Qs.Modules
 
                     foreach (QsScalar var in vec)
                     {
-                        if (var.Quantity.Dimension.IsDimensionless)
+                        if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Cos(var.Quantity.Value);
+                            double r = System.Math.Cos(var.NumericalQuantity.Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -279,7 +279,7 @@ namespace Qs.Modules
             {
                 if (val.Value is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).Quantity;
+                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -299,9 +299,9 @@ namespace Qs.Modules
 
                     foreach (QsScalar var in vec)
                     {
-                        if (var.Quantity.Dimension.IsDimensionless)
+                        if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Log(var.Quantity.Value);
+                            double r = System.Math.Log(var.NumericalQuantity.Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -342,7 +342,7 @@ namespace Qs.Modules
             {
                 if (val.Value is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).Quantity;
+                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -362,9 +362,9 @@ namespace Qs.Modules
 
                     foreach (QsScalar var in vec)
                     {
-                        if (var.Quantity.Dimension.IsDimensionless)
+                        if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Log10(var.Quantity.Value);
+                            double r = System.Math.Log10(var.NumericalQuantity.Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -405,11 +405,11 @@ namespace Qs.Modules
             {
                 if (val.Value is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).Quantity;
+                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
-                        double r = System.Math.Log(q.Value, ((QsScalar)newBase.Value).Quantity.Value);
+                        double r = System.Math.Log(q.Value, ((QsScalar)newBase.Value).NumericalQuantity.Value);
                         return r.ToQuantity().ToScalarValue();
                     }
                     else
@@ -425,9 +425,9 @@ namespace Qs.Modules
 
                     foreach (QsScalar var in vec)
                     {
-                        if (var.Quantity.Dimension.IsDimensionless)
+                        if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Log(var.Quantity.Value, ((QsScalar)newBase.Value).Quantity.Value);
+                            double r = System.Math.Log(var.NumericalQuantity.Value, ((QsScalar)newBase.Value).NumericalQuantity.Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -469,7 +469,7 @@ namespace Qs.Modules
             {
                 if (val.Value is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).Quantity;
+                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -489,9 +489,9 @@ namespace Qs.Modules
 
                     foreach (QsScalar var in vec)
                     {
-                        if (var.Quantity.Dimension.IsDimensionless)
+                        if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Floor(var.Quantity.Value);
+                            double r = System.Math.Floor(var.NumericalQuantity.Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -533,7 +533,7 @@ namespace Qs.Modules
             {
                 if (val.Value is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).Quantity;
+                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -553,9 +553,9 @@ namespace Qs.Modules
 
                     foreach (QsScalar var in vec)
                     {
-                        if (var.Quantity.Dimension.IsDimensionless)
+                        if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Ceiling(var.Quantity.Value);
+                            double r = System.Math.Ceiling(var.NumericalQuantity.Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -597,7 +597,7 @@ namespace Qs.Modules
             {
                 if (val.Value is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).Quantity;
+                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -617,9 +617,9 @@ namespace Qs.Modules
 
                     foreach (QsScalar var in vec)
                     {
-                        if (var.Quantity.Dimension.IsDimensionless)
+                        if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Exp(var.Quantity.Value);
+                            double r = System.Math.Exp(var.NumericalQuantity.Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
