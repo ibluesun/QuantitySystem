@@ -12,9 +12,9 @@ namespace Qs.Modules
 
         public static QsValue Transpose(QsParameter matrix)
         {
-            if (matrix.Quantity is QsMatrix)
+            if (matrix.QsNativeValue is QsMatrix)
             {
-                return ((QsMatrix)matrix.Quantity).Transpose();
+                return ((QsMatrix)matrix.QsNativeValue).Transpose();
             }
             else
                 throw new QsInvalidInputException("Expected matrix input");

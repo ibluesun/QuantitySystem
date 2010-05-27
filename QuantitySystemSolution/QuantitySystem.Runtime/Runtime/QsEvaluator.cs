@@ -166,7 +166,7 @@ namespace Qs.Runtime
                     Unit u1 = Unit.Parse(m.Groups[1].Value);
                     Unit u2 = Unit.Parse(m.Groups[2].Value);
                     //PrintUnitInfo(u);
-                    UnitPath up = u1.PathToUnit(u2);
+                    UnitPathStack up = u1.PathToUnit(u2);
 
                     Console.ForegroundColor = ConsoleColor.Gray;
 
@@ -630,7 +630,14 @@ namespace Qs.Runtime
             }
             catch (Exception e)
             {
-                throw new QsException("Unhandled", e);
+                if (e is TargetInvocationException)
+                {
+                    throw new QsException("Unhandled", e.InnerException);
+                }
+                else
+                {
+                    throw new QsException("Unhandled", e);
+                }
             }
             #endregion
 

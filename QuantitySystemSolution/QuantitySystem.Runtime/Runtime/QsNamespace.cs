@@ -556,27 +556,27 @@ namespace Qs.Runtime
 
             foreach (var p in parameters)
             {
-                if (p.Quantity == null)
+                if (p.QsNativeValue == null)
                 {
                     NativeParameters.Add(null);
                 }
-                else if (p.Quantity is QsScalar)
+                else if (p.QsNativeValue is QsScalar)
                 {
-                    var scalar = (QsScalar)p.Quantity;
+                    var scalar = (QsScalar)p.QsNativeValue;
                     object nativeValue = System.Convert.ChangeType(scalar.NumericalQuantity.Value, paramInfos[iy].ParameterType);
                     NativeParameters.Add(nativeValue);
                 }
-                else if (p.Quantity is QsText)
+                else if (p.QsNativeValue is QsText)
                 {
-                    NativeParameters.Add(((QsText)p.Quantity).Text);
+                    NativeParameters.Add(((QsText)p.QsNativeValue).Text);
                 }
-                else if (p.Quantity is QsVector)
+                else if (p.QsNativeValue is QsVector)
                 {
 
                     if (paramInfos[iy].ParameterType.IsArray)
                     {
 
-                        QsVector vec = (QsVector)p.Quantity;
+                        QsVector vec = (QsVector)p.QsNativeValue;
                         System.Type ArrayType = System.Type.GetType(paramInfos[iy].ParameterType.FullName.Trim('[', ']'));
                         System.Array arr = System.Array.CreateInstance(ArrayType, vec.Count);
                         for (int i = 0; i < vec.Count; i++)

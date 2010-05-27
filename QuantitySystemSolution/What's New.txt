@@ -1,8 +1,20 @@
+[Qs 1.1.9.962]
+- Imlementing Standard deviation in Sequence  x[1 !% 10]  for only sequence without parameters (not a finished implementation)
+- Enhancing the Symbolic Algebra library and include it in this version to make raising symbolic values to symbolic values
+   valid in case all involved quantities are dimensionless.
+- Refactored many things in QuantitySystem Project (hoping that I haven't hurt anything with that)
+- AddOperation and SubtractOperation for tensor are implemented
+- Fixing matrix determinant with symbolic variables.
+- Adding support to store tensors with more ranks 4, 5 etc... 
+- Enhancement to the tensor parsing.
+
+
+
 [Qs 1.1.9.95]
 - The usage of DLR 1.0  final release 
 	DLR 1.0 released with the release of visual studio 2010 
 	and I adopted it immediately
-	thank god it didn't break my build :) (although I don't what's new ) DLR Team should write a lot of documentation
+	thank god it didn't break my build :) (although I don't know what's new!! ) DLR Team should write a lot of documentation
 - Enhancing the parsing of Matrix (to behave like matlab again) in order to think about how will I enhance the Tensor parsing.
 - Adding shifting to Text 
 	"Ahmed" >> 1  result it "hmedA"  :)

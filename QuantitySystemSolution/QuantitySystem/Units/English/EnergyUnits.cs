@@ -5,7 +5,7 @@ using QuantitySystem.Quantities;
 namespace QuantitySystem.Units.English
 {
 
-    [DefaultUnit("BTU", typeof(Energy<>))]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "BTU"), DefaultUnit("BTU", typeof(Energy<>))]
     [ReferenceUnit(1054.8)]
     public sealed class BTU : Unit
     {

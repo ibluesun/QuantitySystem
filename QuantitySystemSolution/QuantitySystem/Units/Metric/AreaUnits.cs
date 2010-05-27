@@ -29,7 +29,7 @@ namespace QuantitySystem.Units.Metric
     /// <summary>
     /// Decare by addin Deka to Are
     /// </summary>
-    [MetricUnit("decare", typeof(Area<>))]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Decare"), MetricUnit("decare", typeof(Area<>))]
     [ReferenceUnit(10, UnitType = typeof(Are))]
     public sealed class Decare : MetricUnit
     {

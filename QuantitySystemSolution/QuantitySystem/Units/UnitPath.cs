@@ -12,14 +12,12 @@ namespace QuantitySystem.Units
 {
 
 
-    public class UnitPath:Stack<UnitPathItem>, ICloneable
+    public class UnitPathStack:Stack<UnitPathItem>, ICloneable
     {
-
-        //I should add to expression tree here.
 
         public override bool Equals(object obj)
         {
-            UnitPath up = obj as UnitPath;
+            UnitPathStack up = obj as UnitPathStack;
 
             if (up != null)
             {
@@ -71,12 +69,12 @@ namespace QuantitySystem.Units
 
         public object Clone()
         {
-            UnitPath up = new UnitPath();
+            UnitPathStack up = new UnitPathStack();
             foreach (UnitPathItem upi in this.Reverse())
             {
                 up.Push(new UnitPathItem
                 {
-                    Denumenator = upi.Denumenator,
+                    Denominator = upi.Denominator,
                     Numerator = upi.Numerator,
                     //Shift = upi.Shift,
                     Unit = (Unit)upi.Unit.Clone()

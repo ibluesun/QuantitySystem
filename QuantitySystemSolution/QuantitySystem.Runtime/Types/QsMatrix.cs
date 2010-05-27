@@ -26,7 +26,9 @@ namespace Qs.Types
         /// <param name="vectors"></param>
         public QsMatrix(params QsVector[] vectors)
         {
-            Rows.AddRange(vectors);
+            List<QsVector> copiedVectors = new List<QsVector>();
+            foreach (var v in vectors) copiedVectors.Add(QsVector.CopyVector(v));
+            Rows.AddRange(copiedVectors);
         }
 
         /// <summary>
@@ -35,7 +37,7 @@ namespace Qs.Types
         /// <param name="vector"></param>
         public void AddVector(QsVector vector)
         {
-            Rows.Add(vector);
+            Rows.Add(QsVector.CopyVector(vector));
         }
 
         /// <summary>
@@ -55,7 +57,6 @@ namespace Qs.Types
         {
             Rows.AddRange(vectors);
         }
-
 
         /// <summary>
         /// Add a row of quantities to the matrix.
@@ -305,7 +306,7 @@ namespace Qs.Types
         /// </summary>
         /// <param name="matrix"></param>
         /// <returns></returns>
-        public QsMatrix SubtractMatrix(QsMatrix matrix)
+        private QsMatrix SubtractMatrix(QsMatrix matrix)
         {
             if (this.DimensionEquals(matrix))
             {
@@ -589,10 +590,7 @@ namespace Qs.Types
                     QsVector vec = new QsVector(2);
                     vec.AddComponent(this[0, 0] * this[1, 1]);
                     vec.AddComponent(
-                        new QsScalar
-                        {
-                            NumericalQuantity = "-1".ToQuantity() * (this[0, 1].NumericalQuantity * this[1, 0].NumericalQuantity)
-                        }
+                         "-1".ToQuantity().ToScalar() * (this[0, 1] * this[1, 0])
                         );
 
                     return vec;
@@ -618,7 +616,7 @@ namespace Qs.Types
                 else
                 {
                     //I think this is the LU decomposition.
-                    throw new QsMatrixException("Determinant of more than 3 elements not Implemented yet");
+                    throw new QsMatrixException("Determinant of more than 3 elements are not Implemented yet {LU goes here}");
                 }
                     
             }

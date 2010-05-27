@@ -15,13 +15,13 @@ namespace QuantitySystem.Units
         {
             get
             {
-                return Numerator / Denumenator;
+                return Numerator / Denominator;
             }
         }
 
         public double Numerator { get; set; }
 
-        public double Denumenator { get; set; }
+        public double Denominator { get; set; }
 
 
 
@@ -31,8 +31,8 @@ namespace QuantitySystem.Units
         public void Invert()
         {
             double num = Numerator;
-            Numerator = Denumenator;
-            Denumenator = num;
+            Numerator = Denominator;
+            Denominator = num;
         }
 
 
@@ -44,7 +44,7 @@ namespace QuantitySystem.Units
             {
                 if ((this.Unit.GetType() == upi.Unit.GetType())
                     && (this.Numerator == upi.Numerator)
-                    && (this.Denumenator == upi.Denumenator))
+                    && (this.Denominator == upi.Denominator))
                     return true;
                 else
                     return false;

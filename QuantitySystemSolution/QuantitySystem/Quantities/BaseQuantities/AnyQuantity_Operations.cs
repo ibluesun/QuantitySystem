@@ -52,7 +52,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
                         //factor from second unit to first unit
-                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                        UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
                         //secondVal =  stof.ConversionFactor * secondVal;  //original line without shift
 
@@ -131,7 +131,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
                         //factor from second unit to first unit
-                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                        UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
 
                         secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
@@ -195,7 +195,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
                         //factor from second unit to first unit
-                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                        UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
                         secondVal = stof.ConversionFactor * secondVal;
                     }
@@ -267,7 +267,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
                         //factor from second unit to first unit
-                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                        UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
                         secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
                     }
@@ -462,7 +462,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 
         }
 
-        public static AnyQuantity<T> Modulus(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
+        public static AnyQuantity<T> Mod(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
         {
             AnyQuantity<T> qresult = (AnyQuantity<T>)firstQuantity.Clone();
 
@@ -502,7 +502,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
                         //factor from second unit to first unit
-                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                        UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
                         //secondVal =  stof.ConversionFactor * secondVal;  //original line without shift
 
@@ -558,7 +558,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
                         //factor from second unit to first unit
-                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                        UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
 
                         secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
@@ -594,7 +594,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
                         //factor from second unit to first unit
-                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                        UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
                         //secondVal =  stof.ConversionFactor * secondVal;  //original line without shift
 
@@ -650,7 +650,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
                         //factor from second unit to first unit
-                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                        UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
 
                         secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
@@ -686,7 +686,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
                         //factor from second unit to first unit
-                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                        UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
                         //secondVal =  stof.ConversionFactor * secondVal;  //original line without shift
 
@@ -742,7 +742,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
                         //factor from second unit to first unit
-                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                        UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
 
                         secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
@@ -778,7 +778,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
                         //factor from second unit to first unit
-                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                        UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
                         //secondVal =  stof.ConversionFactor * secondVal;  //original line without shift
 
@@ -834,7 +834,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
                         //factor from second unit to first unit
-                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                        UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
 
                         secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
@@ -870,7 +870,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
                         //factor from second unit to first unit
-                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                        UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
                         //secondVal =  stof.ConversionFactor * secondVal;  //original line without shift
 
@@ -926,7 +926,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
                         //factor from second unit to first unit
-                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                        UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
 
                         secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
@@ -962,7 +962,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
                         //factor from second unit to first unit
-                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                        UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
                         //secondVal =  stof.ConversionFactor * secondVal;  //original line without shift
 
@@ -1018,7 +1018,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
                         //factor from second unit to first unit
-                        UnitPath stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                        UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
 
                         secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
@@ -1067,9 +1067,10 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
         public static AnyQuantity<T> operator %(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
         {
-            return Modulus(firstQuantity, secondQuantity);
+            return Mod(firstQuantity, secondQuantity);
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2225:OperatorOverloadsHaveNamedAlternates")]
         public static AnyQuantity<T> operator ^(AnyQuantity<T> quantity, AnyQuantity<double> exponent)
         {
             return Power(quantity, exponent);

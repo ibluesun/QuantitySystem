@@ -246,7 +246,7 @@ namespace Qs.Runtime
         {
 
             // I remove the spaces here because the function called here sometimes have extra unneeded spaces
-            // one scenario is ||{3 4 5} >> 1 ||  
+            // one scenario is || {3 4 5} >> 1 ||  
             // the magnitude token will take the inner tokens as it is then send it for evaluation again.
 
             var tokens = toks.RemoveSpaceTokens();                           //remove all spaces
@@ -380,7 +380,7 @@ namespace Qs.Runtime
 
 
                             // parameter is having quantity in normal cases
-                            Expression directQuantity = Expression.Property(eu, "Quantity");
+                            Expression directQuantity = Expression.Property(eu, "QsNativeValue");
 
                             // another expression for getting the quantity from the variable passed 
                             //   this case only occure if I called a function declared like this   f(a) = a(5,3)+a
@@ -656,14 +656,25 @@ namespace Qs.Runtime
             // first split between semi colon tokens.
             // then use every splitted token to 
 
-            token = token.MergeAllBut(typeof(WordToken), new VerticalBarToken());
+            token = token.MergeAllBut(typeof(MergedToken), new VerticalBarToken());
 
             for (int i = 0; i < token.Count; i++)
             {
-                if (token[i].TokenClassType == typeof(WordToken))
+
+                if (token[i].TokenClassType == typeof(MergedToken))
                 {
-                    var vtk = token[i].FuseTokens<SquareBracketsGroupToken>("[", "]");
-                    vctExpressions.Add(ParseArithmatic(vtk));
+                    if (token[i].Contains<TensorGroupToken>())
+                    {
+                        // get the matrix inside and parse it
+                        var subTensors = token[i].RemoveSpaceTokens();
+                        vctExpressions.Add(ParseArithmatic(subTensors));
+                    }
+                    else
+                    {
+                        // treat as a matrix 
+                        var vtk = token[i].FuseTokens<SquareBracketsGroupToken>("[", "]");
+                        vctExpressions.Add(ParseArithmatic(vtk));
+                    }
                 }
             }
 
@@ -930,6 +941,8 @@ namespace Qs.Runtime
                     methodName = "MulElements";
                 else if (itok[1].TokenValue == "..")
                     methodName = "QsValueElements";
+                else if (itok[1].TokenValue == "!%")
+                    methodName = "StdDeviation";
             }
             else if (int.TryParse(indexText, out n))
             {

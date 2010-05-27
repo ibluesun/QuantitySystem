@@ -278,11 +278,34 @@ namespace Qs.Types
                             case ScalarTypes.NumericalQuantity:
                             {
                                 int ipower = (int)power.NumericalQuantity.Value;
+
+                                if ((power.NumericalQuantity.Value - ipower) > 0.00000000000000001) //because IEEE floating number is crazy about comparisons
+                                    throw new QsException("Raising Symbolic Quantity to Real Number is not supported");
                                 
                                 QsScalar nsq = new QsScalar(ScalarTypes.SymbolicQuantity);
                                 nsq.SymbolicQuantity = this.SymbolicQuantity.Value.Power(ipower).ToQuantity();
                                 nsq.SymbolicQuantity.Unit = this.SymbolicQuantity.Unit.RaiseUnitPower(ipower);
                                 return nsq;                                
+                            }
+                            case ScalarTypes.SymbolicQuantity:
+                            {
+                                if (power.SymbolicQuantity.Dimension.IsDimensionless && this.SymbolicQuantity.Dimension.IsDimensionless)
+                                {
+                                    // get the raised symbolic variable
+                                    SymbolicVariable RaisedSymbolicVariable = SymbolicVariable.SymbolicPower(this.SymbolicQuantity.Value, power.SymbolicQuantity.Value);
+
+                                    // make it into quantity
+                                    AnyQuantity<SymbolicVariable> NewSymbolicQuantity = RaisedSymbolicVariable.ToQuantity();
+
+                                    // assign into SymbolicQuantity property in new QsScalar object.
+
+                                    QsScalar NewSymbolicQuantityScalar = NewSymbolicQuantity.ToScalar();
+
+                                    return NewSymbolicQuantityScalar;
+
+                                }
+                                else
+                                    throw new QsException("Raising Symbolic Quantity to Symbolic Quantity is only valid when the two quantities are dimensionless");
                             }
                             default:
                             throw new NotImplementedException("Raising Symbolic Quantity to " + power.ScalarType.ToString() + " is not implemented yet");

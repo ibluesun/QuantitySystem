@@ -11,7 +11,7 @@ namespace QuantitySystem.Units.English
 
     }
 
-    [Unit("pdl", typeof(Force<>))]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Poundal"), Unit("pdl", typeof(Force<>))]
     [ReferenceUnit(0.031080950171567253, UnitType=typeof(PoundForce))]
     public sealed class Poundal : Unit
     {

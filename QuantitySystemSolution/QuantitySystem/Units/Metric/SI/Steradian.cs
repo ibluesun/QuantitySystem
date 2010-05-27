@@ -4,7 +4,7 @@ using QuantitySystem.Quantities.DimensionlessQuantities;
 
 namespace QuantitySystem.Units.Metric.SI
 {
-    [MetricUnit("sr", typeof(SolidAngle<>))]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Steradian"), MetricUnit("sr", typeof(SolidAngle<>))]
     public sealed class Steradian : MetricUnit
     {
     }

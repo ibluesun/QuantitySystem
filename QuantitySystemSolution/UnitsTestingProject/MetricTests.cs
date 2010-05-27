@@ -77,7 +77,7 @@ namespace UnitsTestingProject
         {
             Barye u = new Barye();
 
-            UnitPath up =  u.PathToDefaultUnit();
+            UnitPathStack up =  u.PathToDefaultUnit();
 
             Assert.AreEqual(0.1, up.ConversionFactor);
 

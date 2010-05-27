@@ -235,18 +235,18 @@ namespace QuantitySystem.Units
 
             }
 
-            this.symbol = GenerateUnitSymbolFromSubBaseUnits();
+            this._Symbol = GenerateUnitSymbolFromSubBaseUnits();
 
 
-            this.isDefaultUnit = true;
+            this._IsDefaultUnit = true;
 
             //the quantity may be derived quantity which shouldn't be referenced :check here.
-            this.quantityType = quantityType;
+            this._QuantityType = quantityType;
 
             
-            unitDimension = QuantityDimension.DimensionFrom(this.quantityType);
+            _UnitDimension = QuantityDimension.DimensionFrom(this._QuantityType);
 
-            this.isBaseUnit = false;
+            this._IsBaseUnit = false;
 
         }
 
@@ -376,7 +376,7 @@ namespace QuantitySystem.Units
 
             SubUnits = GroupUnits(SubUnits); //group similar units
 
-            this.symbol = GenerateUnitSymbolFromSubBaseUnits();
+            this._Symbol = GenerateUnitSymbolFromSubBaseUnits();
 
             // if the passed type is AnyQuantity<object> for example
             //     then I want to get the type without type parameters AnyQuantity<>
@@ -389,29 +389,29 @@ namespace QuantitySystem.Units
 
             if (quantityType != typeof(DerivedQuantity<>) && quantityType != null)
             {
-                if (quantityType != typeof(DimensionlessQuantity<>)) this.isDefaultUnit = true;
+                if (quantityType != typeof(DimensionlessQuantity<>)) this._IsDefaultUnit = true;
 
-                this.quantityType = quantityType;
+                this._QuantityType = quantityType;
 
                 //get the unit dimension from the passed type.
-                unitDimension = QuantityDimension.DimensionFrom(quantityType);
+                _UnitDimension = QuantityDimension.DimensionFrom(quantityType);
 
             }
             else
             {
                 //passed type is derivedQuantity which indicates that the units representing unknow derived quantity to the system
                 //so that quantityType should be kept as derived quantity type.
-                this.quantityType = quantityType;
+                this._QuantityType = quantityType;
 
 
                 //get the unit dimension from the passed units.
-                this.unitDimension = QuantityDimension.Dimensionless;
+                this._UnitDimension = QuantityDimension.Dimensionless;
                 foreach (Unit uu in SubUnits)
-                    this.unitDimension += uu.UnitDimension;
+                    this._UnitDimension += uu.UnitDimension;
             }
 
 
-            this.isBaseUnit = false;
+            this._IsBaseUnit = false;
 
         }
 
@@ -424,7 +424,7 @@ namespace QuantitySystem.Units
         /// </summary>
         /// <param name="units"></param>
         /// <returns></returns>
-        private List<Unit> FlattenUnits(List<Unit> units)
+        private static List<Unit> FlattenUnits(List<Unit> units)
         {
             List<Unit> all = new List<Unit>();
             foreach (Unit un in units)
@@ -516,7 +516,7 @@ namespace QuantitySystem.Units
 
                                     ((MetricUnit)us[un.GetType()]).UnitPrefix = MetricPrefix.None;
                                     unitOverflow += Math.Pow(10, resultExponent);
-                                    isOverflowed = true;
+                                    _IsOverflowed = true;
 
                                 }
                             }
@@ -527,7 +527,7 @@ namespace QuantitySystem.Units
 
                                 ((MetricUnit)us[un.GetType()]).UnitPrefix = MetricPrefix.None;
                                 unitOverflow += Math.Pow(10, resultExponent);
-                                isOverflowed = true;
+                                _IsOverflowed = true;
 
                             }
                         }
@@ -535,7 +535,7 @@ namespace QuantitySystem.Units
                         {
                             ((MetricUnit)us[un.GetType()]).UnitPrefix = mpe.CorrectPrefix;
                             unitOverflow += Math.Pow(10, mpe.OverflowExponent);
-                            isOverflowed = true;
+                            _IsOverflowed = true;
                         }
 
                     }
@@ -563,7 +563,7 @@ namespace QuantitySystem.Units
                         MetricUnit mu = (MetricUnit)un;
                         if (mu.UnitPrefix.Exponent != 0)
                         {
-                            isOverflowed = true;
+                            _IsOverflowed = true;
                             unitOverflow += Math.Pow(10, mu.UnitPrefix.Exponent);
                         }
                     }
@@ -574,12 +574,12 @@ namespace QuantitySystem.Units
         }
 
         #region overflow code
-        protected bool isOverflowed = false;
+        protected bool _IsOverflowed = false;
 
         /// <summary>
         /// Overflow flag.
         /// </summary>
-        public bool IsOverflowed { get { return isOverflowed; } }
+        public bool IsOverflowed { get { return _IsOverflowed; } }
 
         protected double unitOverflow=0.0;
         /// <summary>
@@ -593,7 +593,7 @@ namespace QuantitySystem.Units
         {    
             double u =  unitOverflow;
             unitOverflow = 0.0;
-            isOverflowed = false;
+            _IsOverflowed = false;
             return u;
         }
         #endregion

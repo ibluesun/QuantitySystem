@@ -15,27 +15,27 @@ namespace QuantitySystem.Units
     {
         #region Fields
         
-        protected string symbol;
+        protected string _Symbol;
 
-        protected bool isDefaultUnit;
-        private readonly bool isBaseUnit;
+        protected bool _IsDefaultUnit;
+        private readonly bool _IsBaseUnit;
 
 
-        protected Type quantityType;
-        protected QuantityDimension unitDimension;
+        protected Type _QuantityType;
+        protected QuantityDimension _UnitDimension;
 
 
 
         
         //the reference unit information.
-        protected readonly Unit referenceUnit;
+        protected readonly Unit _ReferenceUnit;
 
-        protected readonly double referenceUnitNumerator;
-        protected readonly double referenceUnitDenominator;
+        protected readonly double _ReferenceUnitNumerator;
+        protected readonly double _ReferenceUnitDenominator;
 
 
 
-        private readonly bool isStronglyTyped = false;
+        private readonly bool _IsStronglyTyped = false;
 
         #endregion
 
@@ -48,7 +48,7 @@ namespace QuantitySystem.Units
         {
             //only called on the strongly typed units
 
-            isStronglyTyped = true;
+            _IsStronglyTyped = true;
             
             //read the current attributes
 
@@ -61,19 +61,19 @@ namespace QuantitySystem.Units
 
             if (ua != null)
             {
-                symbol = ua.Symbol;
-                quantityType = ua.QuantityType;
-                unitDimension = QuantityDimension.DimensionFrom(quantityType);
+                _Symbol = ua.Symbol;
+                _QuantityType = ua.QuantityType;
+                _UnitDimension = QuantityDimension.DimensionFrom(_QuantityType);
 
 
                 if (ua is DefaultUnitAttribute)
                 {
-                    isDefaultUnit = true;  //indicates that this unit is the default when creating the quantity in this system
+                    _IsDefaultUnit = true;  //indicates that this unit is the default when creating the quantity in this system
                     //also default unit is the unit that relate its self to the SI Unit.
                 }
                 else
                 {
-                    isDefaultUnit = false;
+                    _IsDefaultUnit = false;
                 }
             }
             else
@@ -81,13 +81,13 @@ namespace QuantitySystem.Units
                 throw new UnitException("Unit Attribute not found");
             }
 
-            if (quantityType.Namespace == "QuantitySystem.Quantities.BaseQuantities")
+            if (_QuantityType.Namespace == "QuantitySystem.Quantities.BaseQuantities")
             {
-                isBaseUnit = true;
+                _IsBaseUnit = true;
             }
             else
             {
-                isBaseUnit = false;
+                _IsBaseUnit = false;
             }
 
             //Get the reference attribute
@@ -97,28 +97,28 @@ namespace QuantitySystem.Units
             {
                 if (dua.UnitType != null)
                 {
-                    referenceUnit = (Unit)Activator.CreateInstance(dua.UnitType);
+                    _ReferenceUnit = (Unit)Activator.CreateInstance(dua.UnitType);
                 }
                 else
                 {
                     //get the SI Unit Type for this quantity
                     //first search for direct mapping
-                    Type SIUnitType = GetDefaultSIUnitTypeOf(quantityType);
+                    Type SIUnitType = GetDefaultSIUnitTypeOf(_QuantityType);
                     if (SIUnitType != null)
                     {
-                        referenceUnit = (Unit)Activator.CreateInstance(SIUnitType);
+                        _ReferenceUnit = (Unit)Activator.CreateInstance(SIUnitType);
                     }
                     else
                     {
                         //try dynamic creation of the unit.
-                        referenceUnit = new Unit(quantityType);
+                        _ReferenceUnit = new Unit(_QuantityType);
 
                     }
                     
                 }
 
-                referenceUnitNumerator = dua.Numerator;
-                referenceUnitDenominator = dua.Denominator;
+                _ReferenceUnitNumerator = dua.Numerator;
+                _ReferenceUnitDenominator = dua.Denominator;
 
             }
 
@@ -139,12 +139,12 @@ namespace QuantitySystem.Units
 
                 if (IsStronglyTyped)
                 {
-                    return symbol;
+                    return _Symbol;
                 }
                 else
                 {
 
-                    return symbol;
+                    return _Symbol;
                 }
             }
         }
@@ -157,7 +157,7 @@ namespace QuantitySystem.Units
             get
             {
                 //based on the current unit attribute
-                return isDefaultUnit;
+                return _IsDefaultUnit;
             }
         }
 
@@ -166,8 +166,8 @@ namespace QuantitySystem.Units
         /// </summary>
         public QuantityDimension UnitDimension
         {
-            get { return unitDimension; }
-            internal set { unitDimension = value; }
+            get { return _UnitDimension; }
+            internal set { _UnitDimension = value; }
         } 
 
 
@@ -178,12 +178,12 @@ namespace QuantitySystem.Units
         {
             get
             {
-                return quantityType;
+                return _QuantityType;
             }
             internal set
             {
-                quantityType = value;
-                unitDimension = QuantityDimension.DimensionFrom(value);
+                _QuantityType = value;
+                _UnitDimension = QuantityDimension.DimensionFrom(value);
             }
         }
 
@@ -194,7 +194,7 @@ namespace QuantitySystem.Units
         {
             get
             {
-                return isBaseUnit;
+                return _IsBaseUnit;
             }
         }
 
@@ -208,13 +208,13 @@ namespace QuantitySystem.Units
         {
             get 
             {
-                if (referenceUnit != null)
+                if (_ReferenceUnit != null)
                 {
-                    if (referenceUnit.UnitExponent != this.UnitExponent)
-                        referenceUnit.UnitExponent = this.UnitExponent;
+                    if (_ReferenceUnit.UnitExponent != this.UnitExponent)
+                        _ReferenceUnit.UnitExponent = this.UnitExponent;
                 }
 
-                return referenceUnit; 
+                return _ReferenceUnit; 
             }
         }
 
@@ -231,7 +231,7 @@ namespace QuantitySystem.Units
             get 
             {
 
-                return Math.Pow(referenceUnitNumerator, unitExponent);
+                return Math.Pow(_ReferenceUnitNumerator, unitExponent);
             }
         }
 
@@ -239,7 +239,7 @@ namespace QuantitySystem.Units
         {
             get
             {
-                return Math.Pow(referenceUnitDenominator, unitExponent);
+                return Math.Pow(_ReferenceUnitDenominator, unitExponent);
             }
         }
 
@@ -401,7 +401,7 @@ namespace QuantitySystem.Units
                 {
                     Type UnitType = this.GetType();
 
-                    string ns = UnitType.Namespace.Substring(UnitType.Namespace.LastIndexOf("Units.") + 6);
+                    string ns = UnitType.Namespace.Substring(UnitType.Namespace.LastIndexOf("Units.", StringComparison.Ordinal) + 6);
                     return ns;
                 }
                 else
@@ -454,7 +454,7 @@ namespace QuantitySystem.Units
         {
             get
             {
-                return isStronglyTyped;
+                return _IsStronglyTyped;
             }
         }
         #endregion

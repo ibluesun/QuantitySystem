@@ -18,7 +18,7 @@ namespace QuantitySystem.Units.English
 
     }
 
-    [Unit("drachm", typeof(Mass<>))]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Drachm"), Unit("drachm", typeof(Mass<>))]
     [ReferenceUnit(1, 256, UnitType = typeof(Pound))]
     public sealed class Drachm : Unit
     {
@@ -63,7 +63,7 @@ namespace QuantitySystem.Units.English
     }
 
 
-    [Unit("t", typeof(Mass<>))]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Tonne"), Unit("t", typeof(Mass<>))]
     [ReferenceUnit(2240, UnitType = typeof(Pound))]
     public sealed class Tonne : Unit
     {

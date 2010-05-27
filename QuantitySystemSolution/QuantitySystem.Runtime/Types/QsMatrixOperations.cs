@@ -60,7 +60,7 @@ namespace Qs.Types
         /// </summary>
         /// <param name="scalarQuantity"></param>
         /// <returns></returns>
-        public QsMatrix SubtractScalar(QsScalar scalar)
+        private QsMatrix SubtractScalar(QsScalar scalar)
         {
             QsMatrix Total = new QsMatrix();
             for (int IY = 0; IY < this.RowsCount; IY++)

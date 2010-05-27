@@ -97,9 +97,9 @@ namespace QuantitySystem.Units
         {
 
 
-            unitSystem = unitSystem.ToLower(CultureInfo.InvariantCulture);
+            unitSystem = unitSystem.ToUpper(CultureInfo.InvariantCulture);
 
-            if (unitSystem.Contains("metric.si"))
+            if (unitSystem.Contains("METRIC.SI"))
             {
                 Type oUnitType = GetDefaultSIUnitTypeOf(quantityType);
                 return oUnitType;
@@ -175,8 +175,8 @@ namespace QuantitySystem.Units
 
                     //prepare the query that we will search in
                     var SystemUnitTypes = from ut in UnitTypes
-                                          where ut.Namespace.ToLower(CultureInfo.InvariantCulture).EndsWith(CurrentUnitSystem)
-                                                || ut.Namespace.ToLower(CultureInfo.InvariantCulture).EndsWith("shared")
+                                          where ut.Namespace.ToUpper(CultureInfo.InvariantCulture).EndsWith(CurrentUnitSystem, StringComparison.Ordinal)
+                                                || ut.Namespace.ToUpper(CultureInfo.InvariantCulture).EndsWith("SHARED", StringComparison.Ordinal)
                                           select ut;
 
                     //select the default by predictor from the query
@@ -195,7 +195,7 @@ namespace QuantitySystem.Units
 
                 }
 
-                if (SystemUnitType == null && unitSystem.Contains("metric"))
+                if (SystemUnitType == null && unitSystem.Contains("METRIC"))
                 {
                     //try another catch for SI unit for this quantity
                     //   because SI and metric units are disordered for now
@@ -231,7 +231,7 @@ namespace QuantitySystem.Units
 
             //don't forget to include second in si units it is shared between all metric systems
             var SIUnitTypes = from si in UnitTypes
-                              where si.Namespace.ToLower(CultureInfo.InvariantCulture).EndsWith("si") || si.Namespace.ToLower(CultureInfo.InvariantCulture).EndsWith("shared")
+                              where si.Namespace.ToUpper(CultureInfo.InvariantCulture).EndsWith("SI", StringComparison.Ordinal) || si.Namespace.ToUpper(CultureInfo.InvariantCulture).EndsWith("SHARED", StringComparison.Ordinal)
                               select si;
 
 
@@ -282,7 +282,7 @@ namespace QuantitySystem.Units
 
             bool UnitModifier = false;
 
-            if (unit.EndsWith("!")) 
+            if (unit.EndsWith("!", StringComparison.Ordinal)) 
             {
                 //it is intended of Radius length
                 unit = unit.TrimEnd('!');
@@ -422,7 +422,7 @@ namespace QuantitySystem.Units
 
             int power = 1;
 
-            if (upower.Length > 1) power = int.Parse(upower[1]);
+            if (upower.Length > 1) power = int.Parse(upower[1], CultureInfo.InvariantCulture);
 
             Unit FinalUnit=null;
 
@@ -438,7 +438,7 @@ namespace QuantitySystem.Units
                 for (int i = 10; i >= -10; i -= 1)
                 {
                     if (i == 0) i--; //skip the None prefix
-                    if (unit.StartsWith(MetricPrefix.GetPrefix(i).Symbol, StringComparison.InvariantCulture))
+                    if (unit.StartsWith(MetricPrefix.GetPrefix(i).Symbol, StringComparison.Ordinal))
                     {
                         //found
 
@@ -552,7 +552,7 @@ namespace QuantitySystem.Units
                     DefaultUnits.AddRange(baseUnits);
                 }
 
-                return new Unit(unit.quantityType, DefaultUnits.ToArray());
+                return new Unit(unit._QuantityType, DefaultUnits.ToArray());
 
             }
         }
@@ -591,7 +591,7 @@ namespace QuantitySystem.Units
             if (um.Success)
             {
                 string varUnit = um.Groups["unit"].Value;
-                val = double.Parse(um.Groups["num"].Value);
+                val = double.Parse(um.Groups["num"].Value, CultureInfo.InvariantCulture);
 
                 Unit un = Unit.Parse(varUnit);
                 qty = un.GetThisUnitQuantity<double>(val);
@@ -643,18 +643,18 @@ namespace QuantitySystem.Units
             }
 
 
-            u.unitDimension = this.unitDimension * power; //must change the unit dimension of the unit
+            u._UnitDimension = this._UnitDimension * power; //must change the unit dimension of the unit
             // however because the unit is having sub units we don't have to modify the exponent of it
             //  note: unit that depend on sub units is completly unaware of its exponent
             //    or I should say it is always equal = 1
 
             try
             {
-                u.quantityType = QuantityDimension.QuantityTypeFrom(u.unitDimension);
+                u._QuantityType = QuantityDimension.QuantityTypeFrom(u._UnitDimension);
             }
             catch (QuantityNotFoundException)
             {
-                u.quantityType = typeof(DerivedQuantity<>);
+                u._QuantityType = typeof(DerivedQuantity<>);
             }
 
 
@@ -666,12 +666,12 @@ namespace QuantitySystem.Units
             else if (u.SubUnits == null)
             {
                 //exponent != 1  like ^5 ^0.3  we need processing
-                return new Unit(u.quantityType, u);
+                return new Unit(u._QuantityType, u);
             }
             else
             {
                 //consist of sub units definitly we need processing.
-                return new Unit(u.quantityType, u.SubUnits.ToArray());
+                return new Unit(u._QuantityType, u.SubUnits.ToArray());
             }
 
         }

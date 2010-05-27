@@ -50,6 +50,10 @@ namespace QuantitySystem.DimensionDescriptors
             }
         }
 
+        public override int GetHashCode()
+        {
+            return NormalExponent.GetHashCode() ^ RadiusExponent.GetHashCode();
+        }
 
         #region IDimensionDescriptor<LengthDescriptor> Members
 
