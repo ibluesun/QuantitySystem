@@ -181,7 +181,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
             }
         }
 
-        public static T MultiplyGenericByGeneric(T firstVal, T secondVal)
+        public static T MultiplyGenericByGeneric(T firstValue, T secondValue)
         {
             DynamicMethod method = new DynamicMethod(
                 "Multiply_Method" + ":" + typeof(T).ToString(),
@@ -218,12 +218,12 @@ namespace QuantitySystem.Quantities.BaseQuantities
             gen.Emit(OpCodes.Ret);
 
 
-            T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
+            T result = (T)method.Invoke(null, new object[] { firstValue, secondValue });
 
             return result;
         }
 
-        public static T DivideGenericByGeneric(T firstVal, T secondVal)
+        public static T DivideGenericByGeneric(T firstValue, T secondValue)
         {
             DynamicMethod method = new DynamicMethod(
                 "Multiply_Method" + ":" + typeof(T).ToString(),
@@ -260,7 +260,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
             gen.Emit(OpCodes.Ret);
 
 
-            T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
+            T result = (T)method.Invoke(null, new object[] { firstValue, secondValue });
 
             return result;
         }
@@ -396,10 +396,10 @@ namespace QuantitySystem.Quantities.BaseQuantities
         /// <summary>
         /// Remainder of two generic objects  a % b
         /// </summary>
-        /// <param name="firstVal"></param>
-        /// <param name="secondVal"></param>
+        /// <param name="firstValue"></param>
+        /// <param name="secondValue"></param>
         /// <returns></returns>
-        public static T ModuloGenericByGeneric(T firstVal, T secondVal)
+        public static T ModuloGenericByGeneric(T firstValue, T secondValue)
         {
             DynamicMethod method = new DynamicMethod(
                 "Modulo_Method" + ":" + typeof(T).ToString(),
@@ -436,7 +436,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
             gen.Emit(OpCodes.Ret);
 
 
-            T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
+            T result = (T)method.Invoke(null, new object[] { firstValue, secondValue });
 
             return result;
         }

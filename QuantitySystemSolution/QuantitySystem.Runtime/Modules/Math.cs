@@ -16,9 +16,9 @@ namespace Qs.Modules
         {
             if (val.IsQsValue)
             {
-                if (val.Value is QsScalar)
+                if (val.ParameterValue is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
+                    AnyQuantity<double> q = ((QsScalar)val.ParameterValue).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -30,9 +30,9 @@ namespace Qs.Modules
                         throw new QsInvalidInputException("Non dimensionless number");
                     }
                 }
-                else if (val.Value is QsVector)
+                else if (val.ParameterValue is QsVector)
                 {
-                    QsVector vec = (QsVector)val.Value;
+                    QsVector vec = (QsVector)val.ParameterValue;
 
                     QsVector rv = new QsVector(vec.Count);
 
@@ -51,9 +51,9 @@ namespace Qs.Modules
 
                     return rv;
                 }
-                else if (val.Value is QsMatrix)
+                else if (val.ParameterValue is QsMatrix)
                 {
-                    QsMatrix mat = (QsMatrix)val.Value;
+                    QsMatrix mat = (QsMatrix)val.ParameterValue;
                     QsMatrix rm = new QsMatrix();
 
                     foreach (var vec in mat.Rows)
@@ -79,9 +79,9 @@ namespace Qs.Modules
         {
             if (val.IsQsValue)
             {
-                if (val.Value is QsScalar)
+                if (val.ParameterValue is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
+                    AnyQuantity<double> q = ((QsScalar)val.ParameterValue).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -93,9 +93,9 @@ namespace Qs.Modules
                         throw new QsInvalidInputException("Non dimensionless number");
                     }
                 }
-                else if (val.Value is QsVector)
+                else if (val.ParameterValue is QsVector)
                 {
-                    QsVector vec = (QsVector)val.Value;
+                    QsVector vec = (QsVector)val.ParameterValue;
 
                     QsVector rv = new QsVector(vec.Count);
 
@@ -114,9 +114,9 @@ namespace Qs.Modules
 
                     return rv;
                 }
-                else if (val.Value is QsMatrix)
+                else if (val.ParameterValue is QsMatrix)
                 {
-                    QsMatrix mat = (QsMatrix)val.Value;
+                    QsMatrix mat = (QsMatrix)val.ParameterValue;
                     QsMatrix rm = new QsMatrix();
 
                     foreach (var vec in mat.Rows)
@@ -143,9 +143,9 @@ namespace Qs.Modules
             
             if (val.IsQsValue)
             {
-                if (val.Value is QsScalar)
+                if (val.ParameterValue is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
+                    AnyQuantity<double> q = ((QsScalar)val.ParameterValue).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -157,9 +157,9 @@ namespace Qs.Modules
                         throw new QsInvalidInputException("Non dimensionless number");
                     }
                 }
-                else if (val.Value is QsVector)
+                else if (val.ParameterValue is QsVector)
                 {
-                    QsVector vec = (QsVector)val.Value;
+                    QsVector vec = (QsVector)val.ParameterValue;
 
                     QsVector rv = new QsVector(vec.Count);
 
@@ -178,9 +178,9 @@ namespace Qs.Modules
 
                     return rv;
                 }
-                else if (val.Value is QsMatrix)
+                else if (val.ParameterValue is QsMatrix)
                 {
-                    QsMatrix mat = (QsMatrix)val.Value;
+                    QsMatrix mat = (QsMatrix)val.ParameterValue;
                     QsMatrix rm = new QsMatrix();
 
                     foreach (var vec in mat.Rows)
@@ -206,9 +206,9 @@ namespace Qs.Modules
         {
             if (val.IsQsValue)
             {
-                if (val.Value is QsScalar)
+                if (val.ParameterValue is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
+                    AnyQuantity<double> q = ((QsScalar)val.ParameterValue).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -220,9 +220,9 @@ namespace Qs.Modules
                         throw new QsInvalidInputException("Non dimensionless number");
                     }
                 }
-                else if (val.Value is QsVector)
+                else if (val.ParameterValue is QsVector)
                 {
-                    QsVector vec = (QsVector)val.Value;
+                    QsVector vec = (QsVector)val.ParameterValue;
 
                     QsVector rv = new QsVector(vec.Count);
 
@@ -241,9 +241,9 @@ namespace Qs.Modules
 
                     return rv;
                 }
-                else if (val.Value is QsMatrix)
+                else if (val.ParameterValue is QsMatrix)
                 {
-                    QsMatrix mat = (QsMatrix)val.Value;
+                    QsMatrix mat = (QsMatrix)val.ParameterValue;
                     QsMatrix rm = new QsMatrix();
 
                     foreach (var vec in mat.Rows)
@@ -277,9 +277,9 @@ namespace Qs.Modules
         {
             if (val.IsQsValue)
             {
-                if (val.Value is QsScalar)
+                if (val.ParameterValue is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
+                    AnyQuantity<double> q = ((QsScalar)val.ParameterValue).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -291,9 +291,9 @@ namespace Qs.Modules
                         throw new QsInvalidInputException("Non dimensionless number");
                     }
                 }
-                else if (val.Value is QsVector)
+                else if (val.ParameterValue is QsVector)
                 {
-                    QsVector vec = (QsVector)val.Value;
+                    QsVector vec = (QsVector)val.ParameterValue;
 
                     QsVector rv = new QsVector(vec.Count);
 
@@ -312,9 +312,9 @@ namespace Qs.Modules
 
                     return rv;
                 }
-                else if (val.Value is QsMatrix)
+                else if (val.ParameterValue is QsMatrix)
                 {
-                    QsMatrix mat = (QsMatrix)val.Value;
+                    QsMatrix mat = (QsMatrix)val.ParameterValue;
                     QsMatrix rm = new QsMatrix();
 
                     foreach (var vec in mat.Rows)
@@ -340,9 +340,9 @@ namespace Qs.Modules
         {
             if (val.IsQsValue)
             {
-                if (val.Value is QsScalar)
+                if (val.ParameterValue is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
+                    AnyQuantity<double> q = ((QsScalar)val.ParameterValue).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -354,9 +354,9 @@ namespace Qs.Modules
                         throw new QsInvalidInputException("Non dimensionless number");
                     }
                 }
-                else if (val.Value is QsVector)
+                else if (val.ParameterValue is QsVector)
                 {
-                    QsVector vec = (QsVector)val.Value;
+                    QsVector vec = (QsVector)val.ParameterValue;
 
                     QsVector rv = new QsVector(vec.Count);
 
@@ -375,9 +375,9 @@ namespace Qs.Modules
 
                     return rv;
                 }
-                else if (val.Value is QsMatrix)
+                else if (val.ParameterValue is QsMatrix)
                 {
-                    QsMatrix mat = (QsMatrix)val.Value;
+                    QsMatrix mat = (QsMatrix)val.ParameterValue;
                     QsMatrix rm = new QsMatrix();
 
                     foreach (var vec in mat.Rows)
@@ -403,13 +403,13 @@ namespace Qs.Modules
         {
             if (val.IsQsValue)
             {
-                if (val.Value is QsScalar)
+                if (val.ParameterValue is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
+                    AnyQuantity<double> q = ((QsScalar)val.ParameterValue).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
-                        double r = System.Math.Log(q.Value, ((QsScalar)newBase.Value).NumericalQuantity.Value);
+                        double r = System.Math.Log(q.Value, ((QsScalar)newBase.ParameterValue).NumericalQuantity.Value);
                         return r.ToQuantity().ToScalarValue();
                     }
                     else
@@ -417,9 +417,9 @@ namespace Qs.Modules
                         throw new QsInvalidInputException("Non dimensionless number");
                     }
                 }
-                else if (val.Value is QsVector)
+                else if (val.ParameterValue is QsVector)
                 {
-                    QsVector vec = (QsVector)val.Value;
+                    QsVector vec = (QsVector)val.ParameterValue;
 
                     QsVector rv = new QsVector(vec.Count);
 
@@ -427,7 +427,7 @@ namespace Qs.Modules
                     {
                         if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Log(var.NumericalQuantity.Value, ((QsScalar)newBase.Value).NumericalQuantity.Value);
+                            double r = System.Math.Log(var.NumericalQuantity.Value, ((QsScalar)newBase.ParameterValue).NumericalQuantity.Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -438,9 +438,9 @@ namespace Qs.Modules
 
                     return rv;
                 }
-                else if (val.Value is QsMatrix)
+                else if (val.ParameterValue is QsMatrix)
                 {
-                    QsMatrix mat = (QsMatrix)val.Value;
+                    QsMatrix mat = (QsMatrix)val.ParameterValue;
                     QsMatrix rm = new QsMatrix();
 
                     foreach (var vec in mat.Rows)
@@ -467,9 +467,9 @@ namespace Qs.Modules
         {
             if (val.IsQsValue)
             {
-                if (val.Value is QsScalar)
+                if (val.ParameterValue is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
+                    AnyQuantity<double> q = ((QsScalar)val.ParameterValue).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -481,9 +481,9 @@ namespace Qs.Modules
                         throw new QsInvalidInputException("Non dimensionless number");
                     }
                 }
-                else if (val.Value is QsVector)
+                else if (val.ParameterValue is QsVector)
                 {
-                    QsVector vec = (QsVector)val.Value;
+                    QsVector vec = (QsVector)val.ParameterValue;
 
                     QsVector rv = new QsVector(vec.Count);
 
@@ -502,9 +502,9 @@ namespace Qs.Modules
 
                     return rv;
                 }
-                else if (val.Value is QsMatrix)
+                else if (val.ParameterValue is QsMatrix)
                 {
-                    QsMatrix mat = (QsMatrix)val.Value;
+                    QsMatrix mat = (QsMatrix)val.ParameterValue;
                     QsMatrix rm = new QsMatrix();
 
                     foreach (var vec in mat.Rows)
@@ -531,9 +531,9 @@ namespace Qs.Modules
         {
             if (val.IsQsValue)
             {
-                if (val.Value is QsScalar)
+                if (val.ParameterValue is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
+                    AnyQuantity<double> q = ((QsScalar)val.ParameterValue).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -545,9 +545,9 @@ namespace Qs.Modules
                         throw new QsInvalidInputException("Non dimensionless number");
                     }
                 }
-                else if (val.Value is QsVector)
+                else if (val.ParameterValue is QsVector)
                 {
-                    QsVector vec = (QsVector)val.Value;
+                    QsVector vec = (QsVector)val.ParameterValue;
 
                     QsVector rv = new QsVector(vec.Count);
 
@@ -566,9 +566,9 @@ namespace Qs.Modules
 
                     return rv;
                 }
-                else if (val.Value is QsMatrix)
+                else if (val.ParameterValue is QsMatrix)
                 {
-                    QsMatrix mat = (QsMatrix)val.Value;
+                    QsMatrix mat = (QsMatrix)val.ParameterValue;
                     QsMatrix rm = new QsMatrix();
 
                     foreach (var vec in mat.Rows)
@@ -595,9 +595,9 @@ namespace Qs.Modules
         {
             if (val.IsQsValue)
             {
-                if (val.Value is QsScalar)
+                if (val.ParameterValue is QsScalar)
                 {
-                    AnyQuantity<double> q = ((QsScalar)val.Value).NumericalQuantity;
+                    AnyQuantity<double> q = ((QsScalar)val.ParameterValue).NumericalQuantity;
 
                     if (q.Dimension.IsDimensionless)
                     {
@@ -609,9 +609,9 @@ namespace Qs.Modules
                         throw new QsInvalidInputException("Non dimensionless number");
                     }
                 }
-                else if (val.Value is QsVector)
+                else if (val.ParameterValue is QsVector)
                 {
-                    QsVector vec = (QsVector)val.Value;
+                    QsVector vec = (QsVector)val.ParameterValue;
 
                     QsVector rv = new QsVector(vec.Count);
 
@@ -630,9 +630,9 @@ namespace Qs.Modules
 
                     return rv;
                 }
-                else if (val.Value is QsMatrix)
+                else if (val.ParameterValue is QsMatrix)
                 {
-                    QsMatrix mat = (QsMatrix)val.Value;
+                    QsMatrix mat = (QsMatrix)val.ParameterValue;
                     QsMatrix rm = new QsMatrix();
 
                     foreach (var vec in mat.Rows)

@@ -6,6 +6,7 @@ using System.Runtime.Serialization;
 
 namespace QuantitySystem
 {
+    [Serializable()]
     public class QuantityException : Exception
     {
       public QuantityException()

@@ -81,6 +81,7 @@ namespace QuantitySystem
         /// <summary>
         /// The Quality in MLT form
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "MLT")]
         public virtual string MLT
         {
             get
@@ -127,6 +128,7 @@ namespace QuantitySystem
         /// <summary>
         /// FLT powers based on Force Length, and Time.
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "FLT")]
         public string FLT
         {
             get
@@ -525,6 +527,7 @@ namespace QuantitySystem
 
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "mlt"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "MLT")]
         public static QuantityDimension ParseMLT(string mlt)
         {
 

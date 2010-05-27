@@ -15,14 +15,19 @@ namespace Qs.Types
     /// </summary>
     public class QsParameter
     {
-        public object Value { get; private set; }
+        /// <summary>
+        /// The parameter representation as a C# object 
+        /// </summary>
+        public object ParameterValue { get; private set; }
 
         /// <summary>
         /// Original value before evaluation.
         /// </summary>
         public string ParameterRawText { get; private set; }
 
-
+        /// <summary>
+        /// Namespace part in parameter text
+        /// </summary>
         public string NamespaceName
         {
             get
@@ -36,6 +41,9 @@ namespace Qs.Types
             }
         }
 
+        /// <summary>
+        /// Variable Name or VariableName in namespace part in original parameter text
+        /// </summary>
         public string NamespaceVariableName
         {
             get
@@ -52,7 +60,7 @@ namespace Qs.Types
         {
             QsParameter qp = new QsParameter();
 
-            qp.Value = value;
+            qp.ParameterValue = value;
 
             qp.ParameterRawText = rawValue;
 
@@ -60,11 +68,14 @@ namespace Qs.Types
         }
 
 
-        public QsValue Quantity
+        /// <summary>
+        /// The parameter value as a native qs value or null if fail.
+        /// </summary>
+        public QsValue QsNativeValue
         {
             get
             {
-                return Value as QsValue;
+                return ParameterValue as QsValue;
             }
         }
 
@@ -99,7 +110,7 @@ namespace Qs.Types
         {
             get
             {
-                if (Value is QsValue) return true;
+                if (ParameterValue is QsValue) return true;
                 else return false;
             }
         }
@@ -111,8 +122,8 @@ namespace Qs.Types
         {
             get
             {
-                if (Value != null)
-                    return Value.ToString();
+                if (ParameterValue != null)
+                    return ParameterValue.ToString();
                 else
                     return ParameterRawText;
             }

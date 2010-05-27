@@ -93,7 +93,7 @@ namespace QuantitySystem.Units
             get
             {
                 //return true only and if only the current prefix equal the default prefix.
-                if (referenceUnit == null)
+                if (_ReferenceUnit == null)
                 {
                     //means I am native SI unit.
                     if (unitPrefix.Exponent == defaultUnitPrefix.Exponent)
@@ -113,7 +113,7 @@ namespace QuantitySystem.Units
         {
             get
             {
-                if (referenceUnit == null)
+                if (_ReferenceUnit == null)
                 {
                     // I am native SI unit
                     if (IsDefaultUnit)
@@ -148,7 +148,7 @@ namespace QuantitySystem.Units
         {
             get
             {
-                if (referenceUnit == null)
+                if (_ReferenceUnit == null)
                 {
                     if (IsDefaultUnit)
                         return 0;
@@ -158,7 +158,7 @@ namespace QuantitySystem.Units
                 else
                 {
                     //return referenceUnitDenominator;
-                    return Math.Pow(referenceUnitDenominator, UnitExponent);
+                    return Math.Pow(_ReferenceUnitDenominator, UnitExponent);
 
                 }
             }
@@ -176,7 +176,7 @@ namespace QuantitySystem.Units
             get
             {
                 
-                if (referenceUnit == null)
+                if (_ReferenceUnit == null)
                 {
                     if (IsDefaultUnit)
                         return 0;
@@ -194,7 +194,7 @@ namespace QuantitySystem.Units
                     //(p.u) i.e.  km, mm, Gare
                     //(p.u)^r  = p^r*u^r
 
-                    return Math.Pow(referenceUnitNumerator, UnitExponent) * CorrectToDefault;
+                    return Math.Pow(_ReferenceUnitNumerator, UnitExponent) * CorrectToDefault;
 
                 }
             }

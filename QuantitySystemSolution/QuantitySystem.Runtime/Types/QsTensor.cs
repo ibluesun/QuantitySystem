@@ -12,6 +12,21 @@ namespace Qs.Types
     public partial class QsTensor : QsValue
     {
 
+        protected List<QsMatrix> MatrixLayers = new List<QsMatrix>();
+
+
+        /// <summary>
+        /// As was indicated in wikipedia and some physics forms
+        /// It is good to visualize the 4th Tensor as a hyper cube 
+        /// Hyper cube is a structure with four indices 
+        /// and it could be accessed by Einstein indexing method.
+        /// ------------------------------
+        /// However in the property we can store Sub Tensors which in turn can store sub tensors and etc.
+        /// this will permit us to store more tensor ranks as we want 
+        /// </summary>
+        protected List<QsTensor> InnerTensors;
+
+
         /// <summary>
         /// Returns the current rank of this Tensor.
         /// </summary>
@@ -19,11 +34,40 @@ namespace Qs.Types
         {
             get
             {
-                throw new NotImplementedException();
+                if (InnerTensors == null)
+                {
+
+                    if (MatrixLayers.Count > 1) return 3;
+                    else if (MatrixLayers.Count == 1)
+                    {
+                        var matrix = MatrixLayers[0];
+                        if (matrix.RowsCount > 1) return 2;
+                        else
+                        {
+                            // only one row then it is vector
+                            var vector = matrix.Rows[0];
+                            if (vector.Count > 1) return 1;
+                            else return 0;   //scalar
+
+                        }
+                    }
+                    else
+                    {
+                        throw new QsException("Tensor is not initialized yet");
+                    }
+                }
+                else
+                {
+                    // innder tensors do exist
+                    // make recursive call to obtain the tensor rank
+
+                    int rank = this.InnerTensors[0].Rank;
+
+                    return rank + 1;
+
+                }
             }
         }
-
-        public List<QsMatrix> Layers = new List<QsMatrix>();
 
         public QsTensor()
         {
@@ -35,113 +79,8 @@ namespace Qs.Types
         /// <param name="matrices"></param>
         public QsTensor(params QsMatrix[] matrices)
         {
-            Layers.AddRange(matrices);
+            MatrixLayers.AddRange(matrices);
         }
-
-        #region QsValue operations
-        public override QsValue Identity
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override QsValue AddOperation(QsValue value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override QsValue SubtractOperation(QsValue value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override QsValue MultiplyOperation(QsValue value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override QsValue DivideOperation(QsValue value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override QsValue PowerOperation(QsValue value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override QsValue ModuloOperation(QsValue value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override QsValue LeftShiftOperation(QsValue times)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override QsValue RightShiftOperation(QsValue times)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public override bool LessThan(QsValue value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool GreaterThan(QsValue value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool LessThanOrEqual(QsValue value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool GreaterThanOrEqual(QsValue value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Equality(QsValue value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override bool Inequality(QsValue value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override QsValue DotProductOperation(QsValue value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override QsValue CrossProductOperation(QsValue value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override QsValue TensorProductOperation(QsValue value)
-        {
-            throw new NotImplementedException();
-        }
-
-        public override QsValue NormOperation()
-        {
-            throw new NotImplementedException();
-        }
-
-        public override QsValue AbsOperation()
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
 
 
         /// <summary>
@@ -151,7 +90,7 @@ namespace Qs.Types
         {
             get
             {
-                return Layers[0].RowsCount;
+                return MatrixLayers[0].RowsCount;
             }
         }
 
@@ -162,17 +101,96 @@ namespace Qs.Types
         {
             get
             {
-                return Layers[0].ColumnsCount;
+                return MatrixLayers[0].ColumnsCount;
             }
         }
 
+
         /// <summary>
-        /// 
+        /// Initiate adding tensor in current tensor 
+        /// and increase the rank of the tensor
+        /// most probably inserting tensor as a sub tensor will increase rank starting from 4th rank.
+        /// </summary>
+        /// <param name="qsTensor"></param>
+        public void AddInnerTensor(QsTensor qsTensor)
+        {
+            if (qsTensor.Rank == 0)
+            {
+                if (MatrixLayers.Count == 0)
+                {
+                    var matrix = new QsMatrix(new QsVector(qsTensor.MatrixLayers[0][0, 0]));
+
+                    MatrixLayers.Add(matrix);
+                }
+                else
+                {
+                    // successive insertion of zero rank tensor will be put into the vecor in the matrix in the tensor.
+                    MatrixLayers[0].Rows[0].AddComponent(qsTensor.MatrixLayers[0][0, 0]);
+                }
+            }
+            else if (qsTensor.Rank == 1)
+            {
+                if (MatrixLayers.Count == 0)
+                {
+                    var matrix = new QsMatrix(qsTensor.MatrixLayers[0].Rows[0]);
+                    MatrixLayers.Add(matrix);
+                }
+                else
+                {
+                    // successive insertion of first rank tensor insert them in the matrix.
+
+                    var v = qsTensor.MatrixLayers[0].Rows[0];
+
+                    if (MatrixLayers.Count > 0)
+                    {
+                        if (v.Count != this.FaceColumnsCount)
+                            throw new QsInvalidInputException("Adding first rank tensor with different number of columns");
+
+                    }
+                    MatrixLayers[0].AddVector(v);
+                }
+            }
+            else if (qsTensor.Rank == 2)
+            {
+                var matrix = QsMatrix.CopyMatrix(qsTensor.MatrixLayers[0]);
+
+                if (MatrixLayers.Count > 0)
+                {
+                    if (matrix.RowsCount == this.FaceRowsCount)
+                    {
+                        if (matrix.ColumnsCount == this.FaceColumnsCount)
+                        {
+
+                        }
+                        else
+                        {
+                            throw new QsInvalidOperationException("Adding Second Rank tensor with different number of columns");
+                        }
+                    }
+                    else
+                    {
+                        throw new QsInvalidOperationException("Adding Second Rank tensor with different number of rows");
+                    }
+                }
+                MatrixLayers.Add(matrix);
+            }
+            else
+            {
+                // Third rank tensor or more 
+                if (InnerTensors == null) InnerTensors = new List<QsTensor>();
+
+                InnerTensors.Add(qsTensor);
+            }
+
+        }
+
+        /// <summary>
+        /// Add Matrix face to the current tensor
         /// </summary>
         /// <param name="qsMatrix"></param>
         public void AddMatrix(QsMatrix qsMatrix)
         {
-            if (Layers.Count > 0)
+            if (MatrixLayers.Count > 0)
             {
                 if (qsMatrix.RowsCount == FaceRowsCount && qsMatrix.ColumnsCount == FaceColumnsCount)
                 { }
@@ -182,12 +200,12 @@ namespace Qs.Types
                 }
             }
 
-            Layers.Add(qsMatrix);
+            MatrixLayers.Add(qsMatrix);
         }
 
 
         /// <summary>
-        /// 
+        /// Only Applied for 3rd rank tensor
         /// </summary>
         /// <param name="row"></param>
         /// <param name="column"></param>
@@ -197,11 +215,11 @@ namespace Qs.Types
             get
             {
                 
-                return Layers[z][row,column];
+                return MatrixLayers[z][row,column];
             }
             set
             {
-                Layers[z][row, column] = value;
+                MatrixLayers[z][row, column] = value;
             }
         }
 
@@ -209,11 +227,16 @@ namespace Qs.Types
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
+            string rankText = Rank.ToString();
+            if (Rank == 1) rankText += "st";
+            if (Rank == 2) rankText += "nd";
+            if (Rank == 3) rankText += "rd";
+            if (Rank > 3) rankText += "th";
 
-            sb.Append("QsTensor:");
+            sb.Append("QsTensor: " + rankText + " Rank");
             sb.AppendLine();
 
-            foreach (var mat in Layers)
+            foreach (var mat in MatrixLayers)
             {
                 sb.Append(mat.MatrixText);
                 sb.AppendLine();

@@ -6,7 +6,7 @@ using QuantitySystem.Quantities;
 namespace QuantitySystem.Units.Metric.Mts
 {
 
-    [MetricUnit("pz", typeof(Stress<>), true)]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Pièze"), MetricUnit("pz", typeof(Stress<>), true)]
     [ReferenceUnit(1000)]
     public sealed class Pièze : MetricUnit
     {

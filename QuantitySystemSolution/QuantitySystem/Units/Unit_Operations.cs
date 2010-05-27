@@ -21,12 +21,12 @@ namespace QuantitySystem.Units
         /// then the path is stopped on the unit itself and shouldn't bypass it.
         /// </summary>
         /// <returns></returns>
-        public UnitPath PathToDefaultUnit()
+        public UnitPathStack PathToDefaultUnit()
         {
 
             //from this unit get my path to the default unit.
 
-            UnitPath path = new UnitPath();
+            UnitPathStack path = new UnitPathStack();
 
 
             if (this.ReferenceUnit != null) //check that first parent exist.
@@ -46,7 +46,7 @@ namespace QuantitySystem.Units
                         {
                             Unit = RefUnit,
                             Numerator = RefTimesNum,
-                            Denumenator = RefTimesDen,
+                            Denominator = RefTimesDen,
                             //Shift = RefShift
                         }
                         );
@@ -63,7 +63,7 @@ namespace QuantitySystem.Units
                     {
                         Unit = RefUnit,
                         Numerator = RefTimesNum,
-                        Denumenator = RefTimesDen,
+                        Denominator = RefTimesDen,
                         //Shift = RefShift
                     }
                     );
@@ -79,7 +79,7 @@ namespace QuantitySystem.Units
                         {
                             Unit = this,
                             Numerator = 1,
-                            Denumenator = 1,
+                            Denominator = 1,
                             //Shift = 0.0
 
                         }
@@ -96,11 +96,11 @@ namespace QuantitySystem.Units
         /// Create units path from default unit in the dimension of the current unit system to the running unit instance.
         /// </summary>
         /// <returns></returns>
-        public UnitPath PathFromDefaultUnit()
+        public UnitPathStack PathFromDefaultUnit()
         {
-            UnitPath Forward = PathToDefaultUnit();
+            UnitPathStack Forward = PathToDefaultUnit();
 
-            UnitPath Backward = new UnitPath();
+            UnitPathStack Backward = new UnitPathStack();
 
             while (Forward.Count > 0)
             {
@@ -109,13 +109,13 @@ namespace QuantitySystem.Units
                 if (upi.Unit.IsDefaultUnit)
                 {
                     upi.Numerator = 1;
-                    upi.Denumenator = 1;
+                    upi.Denominator = 1;
                     //upi.Shift = 0;
                 }
                 else
                 {
                     upi.Numerator = upi.Unit.ReferenceUnitDenominator;  //invert the number
-                    upi.Denumenator = upi.Unit.ReferenceUnitNumerator;
+                    upi.Denominator = upi.Unit.ReferenceUnitNumerator;
                     //upi.Shift = 0 - upi.Unit.ReferenceUnitShift;
                 }
 
@@ -131,7 +131,7 @@ namespace QuantitySystem.Units
         /// </summary>
         /// <param name="unit"></param>
         /// <returns></returns>
-        public UnitPath PathFromUnit(Unit unit)
+        public UnitPathStack PathFromUnit(Unit unit)
         {
 
             return unit.PathToUnit(this);
@@ -142,7 +142,7 @@ namespace QuantitySystem.Units
 
         public Func<Unit, Unit, string> UnitToUnitSymbol = (Unit x, Unit y) => "[" + x.Symbol + ":" + x.UnitDimension.ToString() + "]" + "__" + "[" + y.Symbol + ":" + y.UnitDimension.ToString() + "]";
 
-        public static Dictionary<string, UnitPath> CachedPathes = new Dictionary<string, UnitPath>();
+        private static Dictionary<string, UnitPathStack> CachedPaths = new Dictionary<string, UnitPathStack>();
 
         private static bool enableUnitsCaching = true;
         public static bool EnableUnitsCaching
@@ -154,7 +154,7 @@ namespace QuantitySystem.Units
             set
             {
                 enableUnitsCaching = value;
-                if (enableUnitsCaching) CachedPathes.Clear();
+                if (enableUnitsCaching) CachedPaths.Clear();
             }
         }
 
@@ -163,15 +163,16 @@ namespace QuantitySystem.Units
         /// </summary>
         /// <param name="unit"></param>
         /// <returns></returns>
-        public UnitPath PathToUnit(Unit unit)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Maintainability", "CA1502:AvoidExcessiveComplexity")]
+        public UnitPathStack PathToUnit(Unit unit)
         {
             //because this method can be length method we try to check for cached pathes first.
-            UnitPath cachedPath;
+            UnitPathStack cachedPath;
             if (EnableUnitsCaching)
             {
-                if (CachedPathes.TryGetValue(UnitToUnitSymbol(this, unit), out cachedPath))
+                if (CachedPaths.TryGetValue(UnitToUnitSymbol(this, unit), out cachedPath))
                 {
-                    return (UnitPath)cachedPath.Clone();   //<--- Clone
+                    return (UnitPathStack)cachedPath.Clone();   //<--- Clone
                     
                     //Why CLONE :D ??  because the unit path is a stack and I use Pop all the time 
                     // during the application, and there were hidden error that poping from unit path in the 
@@ -205,10 +206,10 @@ namespace QuantitySystem.Units
                 // Source unit ==> SI Base Units
                 // target unit ==> SI BaseUnits
 
-                UnitPath SourcePath = this.PathToSIBaseUnits();
-                UnitPath TargetPath = unit.PathToSIBaseUnits();
+                UnitPathStack SourcePath = this.PathToSIBaseUnits();
+                UnitPathStack TargetPath = unit.PathToSIBaseUnits();
 
-                UnitPath Tito = new UnitPath();
+                UnitPathStack Tito = new UnitPathStack();
 
                 
 
@@ -230,7 +231,7 @@ namespace QuantitySystem.Units
 
                 if (EnableUnitsCaching)
                 {
-                    CachedPathes.Add(UnitToUnitSymbol(this, unit), (UnitPath)Tito.Clone());
+                    CachedPaths.Add(UnitToUnitSymbol(this, unit), (UnitPathStack)Tito.Clone());
                 }
 
                 return Tito;
@@ -238,16 +239,16 @@ namespace QuantitySystem.Units
 
             // 1- Get Path default unit to current unit.
 
-            UnitPath FromMeToDefaultUnit = this.PathToDefaultUnit();
+            UnitPathStack FromMeToDefaultUnit = this.PathToDefaultUnit();
 
             // 2- Get Path From Default unit to the passed unit.
 
-            UnitPath FromDefaultUnitToTargetUnit = unit.PathFromDefaultUnit();
+            UnitPathStack FromDefaultUnitToTargetUnit = unit.PathFromDefaultUnit();
 
             // 3- check if the two units are in the same unit system
             //  if the units share the same parent don't jump
 
-            UnitPath SystemsPath = null;
+            UnitPathStack SystemsPath = null;
 
             bool NoBoundaryCross = false;
 
@@ -289,7 +290,7 @@ namespace QuantitySystem.Units
                 
                 //then we must go out side the current unit system
                 //all default units are pointing to the SIUnit system this is a must and not option.
-                SystemsPath = new UnitPath();
+                SystemsPath = new UnitPathStack();
 
                 //get the default unit of target 
 
@@ -304,7 +305,7 @@ namespace QuantitySystem.Units
                 //     and in this case we will take the last bottom unit of stack and get its reference
 
                 
-                SystemsPath = new UnitPath();
+                SystemsPath = new UnitPathStack();
 
                 UnitPathItem DefaultPItem;
                 UnitPathItem RefUPI;
@@ -321,7 +322,7 @@ namespace QuantitySystem.Units
                     RefUPI = new UnitPathItem
                         {
                             Numerator = DefaultPItem.Unit.ReferenceUnitNumerator,
-                            Denumenator = DefaultPItem.Unit.ReferenceUnitDenominator,
+                            Denominator = DefaultPItem.Unit.ReferenceUnitDenominator,
                             //Shift = DefaultPItem.Unit.ReferenceUnitShift,
                             Unit = DefaultPItem.Unit.ReferenceUnit
                         };                
@@ -336,7 +337,7 @@ namespace QuantitySystem.Units
                         //I made the opposite assignments because we are in reverse manner
 
                         Numerator = DefaultPItem.Unit.ReferenceUnitDenominator, // <=== opposite
-                        Denumenator = DefaultPItem.Unit.ReferenceUnitNumerator, // <===
+                        Denominator = DefaultPItem.Unit.ReferenceUnitNumerator, // <===
                         //Shift = 0-DefaultPItem.Unit.ReferenceUnitShift,
                         Unit = DefaultPItem.Unit.ReferenceUnit
                     };
@@ -360,7 +361,7 @@ namespace QuantitySystem.Units
 
 
             //combine the two paths
-            UnitPath Total = new UnitPath();
+            UnitPathStack Total = new UnitPathStack();
 
             //we are building the conversion stairs
             // will end like a stack
@@ -402,7 +403,7 @@ namespace QuantitySystem.Units
             //Second location in cache  look above for the first one in the same function here :D
             if (EnableUnitsCaching)
             {
-                CachedPathes.Add(UnitToUnitSymbol(this, unit), (UnitPath)Total.Clone());
+                CachedPaths.Add(UnitToUnitSymbol(this, unit), (UnitPathStack)Total.Clone());
             }
 
             return Total;
@@ -410,7 +411,7 @@ namespace QuantitySystem.Units
 
 
 
-        public UnitPath PathToSIBaseUnits()
+        public UnitPathStack PathToSIBaseUnits()
         {
             if (this.IsStronglyTyped)
             {
@@ -428,7 +429,7 @@ namespace QuantitySystem.Units
                     //  we need to replace the knot unit with mixed unit to be able to do the conversion
 
                     // first we should reach default unit
-                    UnitPath path = this.PathToDefaultUnit();
+                    UnitPathStack path = this.PathToDefaultUnit();
 
                     //then test the system of the current unit if it was other than Metric.SI
                     //    then we must jump to SI otherwise we are already in default SI
@@ -452,7 +453,7 @@ namespace QuantitySystem.Units
                             RefUPI = new UnitPathItem
                                 {
                                     Numerator = DefaultPItem.Unit.ReferenceUnitNumerator,
-                                    Denumenator = DefaultPItem.Unit.ReferenceUnitDenominator,
+                                    Denominator = DefaultPItem.Unit.ReferenceUnitDenominator,
                                     //Shift = DefaultPItem.Unit.ReferenceUnitShift,
                                     Unit = DefaultPItem.Unit.ReferenceUnit
                                 };
@@ -472,7 +473,7 @@ namespace QuantitySystem.Units
                     SIUnit.UnitExponent = this.UnitExponent;
                     SIUnit.UnitDimension = this.UnitDimension;
 
-                    UnitPath up = this.PathToUnit(SIUnit);
+                    UnitPathStack up = this.PathToUnit(SIUnit);
 
                     if (!SIUnit.IsBaseUnit)
                     {
@@ -486,7 +487,7 @@ namespace QuantitySystem.Units
 
                             //expand the unit 
                             Unit expandedUnit = ExpandMetricUnit((MetricUnit)SIUnit);
-                            UnitPath expath = expandedUnit.PathToSIBaseUnits();
+                            UnitPathStack expath = expandedUnit.PathToSIBaseUnits();
 
                             while (expath.Count > 0)
                                 up.Push(expath.Pop());
@@ -503,10 +504,10 @@ namespace QuantitySystem.Units
             }
             
         
-            UnitPath Pathes = new UnitPath();
+            UnitPathStack Pathes = new UnitPathStack();
             foreach (Unit un in this.SubUnits)
             {
-                UnitPath up = null;
+                UnitPathStack up = null;
 
                 up = un.PathToSIBaseUnits();
 

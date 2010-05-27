@@ -16,7 +16,8 @@
     <SccLocalPath>SAK</SccLocalPath>
     <SccAuxPath>SAK</SccAuxPath>
     <SccProvider>SAK</SccProvider>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <OldToolsVersion>3.5</OldToolsVersion>
@@ -128,6 +129,9 @@
     <Compile Include="QsInvalidOperationException.cs" />
     <Compile Include="QsSyntaxErrorException.cs" />
     <Compile Include="Runtime\QsParameterNotFoundException.cs" />
+    <Compile Include="Runtime\QsSequence_Deviation.cs" />
+    <Compile Include="Runtime\QsSequence_Mean.cs" />
+    <Compile Include="Runtime\QsSequence_RangeOperations.cs" />
     <Compile Include="Types\Attributes\QsFunctionAttribute.cs" />
     <Compile Include="Types\QsFunction_Operations.cs" />
     <Compile Include="Types\QsMatrixException.cs">
@@ -140,6 +144,7 @@
     <Compile Include="Types\QsTensor.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Types\QsTensor_Operations.cs" />
     <Compile Include="Types\QsText.cs" />
     <Compile Include="Types\QsValue.cs" />
     <Compile Include="Types\QsVector.cs" />

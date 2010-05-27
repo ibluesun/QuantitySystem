@@ -79,7 +79,7 @@ namespace UnitsTestingProject
             ((MetricUnit)target).UnitPrefix = MetricPrefix.None;
 
 
-            UnitPath actual = target.PathToDefaultUnit();
+            UnitPathStack actual = target.PathToDefaultUnit();
             double expected = System.Math.Pow(10, -3);
 
             Assert.AreEqual(expected, actual.ConversionFactor);
@@ -142,7 +142,7 @@ namespace UnitsTestingProject
             target.UnitPrefix = MetricPrefix.Milli;
 
 
-            UnitPath actual = target.PathFromDefaultUnit();
+            UnitPathStack actual = target.PathFromDefaultUnit();
             double expected = System.Math.Pow(10, 6);
 
             Assert.AreEqual(expected, actual.ConversionFactor);

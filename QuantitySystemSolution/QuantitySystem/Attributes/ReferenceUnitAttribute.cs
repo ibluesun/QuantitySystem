@@ -33,10 +33,10 @@ namespace QuantitySystem.Attributes
         /// </summary>
         /// <param name="numerator"></param>
         /// <param name="denominator"></param>
-        public ReferenceUnitAttribute(double numerator, double denumerator)
+        public ReferenceUnitAttribute(double numerator, double denominator)
         {
             this.numerator = numerator;
-            this.denominator = denumerator;
+            this.denominator = denominator;
 
             
         }

@@ -3,6 +3,7 @@ using QuantitySystem.Quantities.DimensionlessQuantities;
 
 namespace QuantitySystem.Quantities
 {
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Illuminance")]
     public class Illuminance<T> : DerivedQuantity<T>
     {
         public Illuminance()

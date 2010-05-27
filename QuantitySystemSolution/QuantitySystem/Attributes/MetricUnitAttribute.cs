@@ -56,6 +56,7 @@ namespace QuantitySystem.Attributes
         /// <summary>
         /// Default prefix for SI if you create the unit with SI
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Si"), System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1709:IdentifiersShouldBeCasedCorrectly", MessageId = "Si")]
         public MetricPrefixes SiPrefix
         {
             get { return siPrefix; }
@@ -65,6 +66,7 @@ namespace QuantitySystem.Attributes
         /// <summary>
         /// Default prefix for cgs if you create the unit with cgs
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Cgs")]
         public MetricPrefixes CgsPrefix
         {
             get { return cgsPrefix; }
@@ -74,6 +76,7 @@ namespace QuantitySystem.Attributes
         /// <summary>
         /// Default prefix for metric if you create the unit with metric
         /// </summary>
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Mts")]
         public MetricPrefixes MtsPrefix
         {
             get { return mtsPrefix; }

@@ -322,14 +322,14 @@ namespace UnitsTestingProject
 
             //scenario 1: Mile To Foot
 
-            UnitPath expected = new UnitPath();
+            UnitPathStack expected = new UnitPathStack();
 
             expected.Push(
                 new UnitPathItem
                 {
                     Unit = new Mile(),
                     Numerator = 1,
-                    Denumenator=1
+                    Denominator=1
                 }
                 );
 
@@ -338,7 +338,7 @@ namespace UnitsTestingProject
                 {
                     Unit = new Yard(),
                     Numerator = 1760,
-                    Denumenator = 1
+                    Denominator = 1
                 }
                 );
 
@@ -347,14 +347,14 @@ namespace UnitsTestingProject
                 {
                     Unit = new Foot(),
                     Numerator = 3,
-                    Denumenator = 1
+                    Denominator = 1
                 }
                 );
 
 
             Mile mil = new Mile();
 
-            UnitPath actual = mil.PathToDefaultUnit();
+            UnitPathStack actual = mil.PathToDefaultUnit();
             
 
             Assert.AreEqual(expected, actual);
@@ -362,7 +362,7 @@ namespace UnitsTestingProject
 
 
             Inch f = new Inch();
-            UnitPath up = f.PathToDefaultUnit();
+            UnitPathStack up = f.PathToDefaultUnit();
             Assert.AreEqual(1/12.0, up.ConversionFactor);
 
 
@@ -380,14 +380,14 @@ namespace UnitsTestingProject
 
             //scenario 1: Mile To Foot
 
-            UnitPath expected = new UnitPath();
+            UnitPathStack expected = new UnitPathStack();
 
             expected.Push(
                 new UnitPathItem
                 {
                     Unit = new Foot(),
                     Numerator = 1,
-                    Denumenator=1
+                    Denominator=1
                 }
                 );
 
@@ -396,7 +396,7 @@ namespace UnitsTestingProject
                 {
                     Unit = new Yard(),
                     Numerator = 1, 
-                    Denumenator= 3
+                    Denominator= 3
                 }
                 );
 
@@ -405,14 +405,14 @@ namespace UnitsTestingProject
                 {
                     Unit = new Mile(),
                     Numerator = 1,
-                    Denumenator= 1760
+                    Denominator= 1760
                 }
                 );
 
 
             Mile mil = new Mile();
 
-            UnitPath actual = mil.PathFromDefaultUnit();
+            UnitPathStack actual = mil.PathFromDefaultUnit();
 
             Assert.AreEqual(expected, actual);
 
@@ -433,7 +433,7 @@ namespace UnitsTestingProject
             Inch i = new Inch();
 
 
-            UnitPath actual = i.PathFromUnit(mil);
+            UnitPathStack actual = i.PathFromUnit(mil);
 
 
             Assert.AreEqual(expected, actual.ConversionFactor);
@@ -453,7 +453,7 @@ namespace UnitsTestingProject
             Mile mil = new Mile();
             Inch i = new Inch();
 
-            UnitPath actual = mil.PathToUnit(i);
+            UnitPathStack actual = mil.PathToUnit(i);
 
             Assert.AreEqual(expected, actual.ConversionFactor);
 
@@ -520,7 +520,7 @@ namespace UnitsTestingProject
 
             var v = l / t;
             
-            UnitPath actual;
+            UnitPathStack actual;
 
             actual = v.Unit.PathToSIBaseUnits();
 

@@ -239,9 +239,9 @@ namespace Qs.Types
                 if (this.Parameters[ip].Type == QsParamType.Function)
                 {
                     //Handle to function.
-                    if (parameters[ip].Value != null)
+                    if (parameters[ip].ParameterValue != null)
                     {
-                        nakedParameter = QsParameter.MakeParameter(parameters[ip].Value, parameters[ip].ParameterRawText);  // and I will postpone the evaluation untill we process the function.
+                        nakedParameter = QsParameter.MakeParameter(parameters[ip].ParameterValue, parameters[ip].ParameterRawText);  // and I will postpone the evaluation untill we process the function.
                     }
                     else
                     {
@@ -258,7 +258,7 @@ namespace Qs.Types
                 {
 
                     //normal variable
-                    nakedParameter = QsParameter.MakeParameter(parameters[ip].Quantity, parameters[ip].ParameterRawText);
+                    nakedParameter = QsParameter.MakeParameter(parameters[ip].QsNativeValue, parameters[ip].ParameterRawText);
 
                 }
 

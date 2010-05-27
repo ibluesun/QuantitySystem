@@ -337,6 +337,30 @@ namespace Qs.Types
         /// <returns></returns>
         public static QsValue MatrixRowFromValues(params QsValue[] values)
         {
+            // what about [g g] and g is tensor
+            // in this case return value should be tensor
+            //   from the higher degree of above g
+            if (values[0] is QsTensor)
+            {
+                if (values.Count() == 1) return values[0];
+
+                // in rare cases or event known cases by me Ahmed Sadek and because of parsing 
+                // sometimes I enclose tensor variable inside matrix  [g g <|4 3|> ]
+                // so in this case i will the return as it is.
+
+                QsTensor tensor = new QsTensor();
+                foreach (var inTensor in values)
+                {
+                    if (inTensor.GetType() != typeof(QsTensor))
+                        throw new QsException("Non Tensor in a matrix of tensors is not valid expression.");
+                    else
+                        tensor.AddInnerTensor((QsTensor)inTensor);
+                }
+                return tensor;
+            }
+
+
+
             QsMatrix m = new QsMatrix();
             
             foreach (var v in values)
@@ -390,12 +414,30 @@ namespace Qs.Types
         }
 
         /// <summary>
-        /// 
+        /// The function receive rows from vectors or matrices or may be tensors
         /// </summary>
         /// <param name="values">Vectors</param>
         /// <returns></returns>
         public static QsValue MatrixFromValues(params QsValue[] values)
         {
+
+
+            if (values[0] is QsTensor)
+            {
+                if (values.Count() == 1) return values[0];
+
+                // treat the case of tensors
+                QsTensor tensor = new QsTensor();
+                foreach (var tn in values)
+                {
+                    if (tn.GetType() != typeof(QsTensor))
+                        throw new QsException("Non Tensor in a matrix of tensors is not valid expression.");
+                    else
+                        tensor.AddInnerTensor((QsTensor)tn);
+                }
+                return tensor;
+            }
+
             QsMatrix mat = new QsMatrix();
 
             foreach (var val in values)
@@ -424,7 +466,7 @@ namespace Qs.Types
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="values">Matrices</param>
+        /// <param name="values">Matrices or Tensors</param>
         /// <returns></returns>
         public static QsValue TensorFromValues(params QsValue[] values)
         {
@@ -435,6 +477,10 @@ namespace Qs.Types
                 if (val is QsMatrix)
                 {
                     tens.AddMatrix((QsMatrix)val);
+                }
+                else if (val is QsTensor)
+                {
+                    tens.AddInnerTensor((QsTensor)val);
                 }
                 else
                 {

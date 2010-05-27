@@ -5,7 +5,7 @@ using QuantitySystem.Quantities;
 namespace QuantitySystem.Units.English
 {
 
-    [Unit("fl_oz", typeof(Volume<>))]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1702:CompoundWordsShouldBeCasedCorrectly", MessageId = "FluidOunce"), Unit("fl_oz", typeof(Volume<>))]
     [ReferenceUnit(1, 20, UnitType = typeof(Pint))]
     public sealed class FluidOunce : Unit
     {
