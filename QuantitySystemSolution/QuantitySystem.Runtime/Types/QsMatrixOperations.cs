@@ -124,9 +124,6 @@ namespace Qs.Types
         }
 
         #endregion
-
-
-
         
 
         #region Matrix oeprators
@@ -389,7 +386,11 @@ namespace Qs.Types
 
         public override QsValue AbsOperation()
         {
-            return this.Determinant().Sum();
+
+            if (this.RowsCount < 4)
+                return this.Determinant().Sum();
+            else
+                return Determinant(this);
 
         }
 
@@ -477,16 +478,33 @@ namespace Qs.Types
             throw new NotImplementedException();
         }
 
-
+        /// <summary>
+        /// Return scalar with two indices
+        /// or Vector in one index
+        /// </summary>
+        /// <param name="indices"></param>
+        /// <returns></returns>
+        public override QsValue GetIndexedItem(int[] indices)
+        {
+            
+            int icount = indices.Count();
+            if (icount == 2)
+            {
+                return this[indices[0], indices[1]];
+            }
+            else if (icount == 1)
+            {
+                return this[indices[0]];
+            }
+            else
+            {
+                throw new QsException("Matrices indices only up to two");
+            }
+        }
 
 
         #endregion
 
 
-        #region Decomposition
-
-        // To write composition code here.
-
-        #endregion
     }
 }

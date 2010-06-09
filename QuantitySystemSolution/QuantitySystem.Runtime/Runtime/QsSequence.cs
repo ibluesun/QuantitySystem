@@ -26,6 +26,22 @@ namespace Qs.Runtime
         /// </summary>
         public int MaximumIndex { get; set; }
 
+        /// <summary>
+        /// The starting index when sequence operate in range.
+        /// </summary>
+        public int StartIndex { get; set; }
+
+        /// <summary>
+        /// The ending index when sequence operate in range.
+        /// </summary>
+        public int EndIndex { get; set; }
+
+
+        /// <summary>
+        /// When true indicates that the sequence is executing a range function.
+        /// </summary>
+        public bool RangeMode { get; set; }
+
 
         /// <summary>
         /// Correspones To: S[i]
@@ -91,7 +107,33 @@ namespace Qs.Runtime
         /// <returns></returns>
         public QsSequenceElement GetElement(int index)
         {
+            if (!RangeMode)
+            {
+                StartIndex = index;
+                EndIndex = index;
+            }
+
             return this[index];
+        }
+
+        /// <summary>
+        /// Internal function to tell the sequence to start in range mode.
+        /// </summary>
+        /// <param name="startingIndex"></param>
+        /// <param name="endingIndex"></param>
+        private void BeginRangeOperation(int startingIndex, int endingIndex)
+        {
+            RangeMode = true;
+            StartIndex = startingIndex;
+            EndIndex = endingIndex;
+        }
+
+        /// <summary>
+        /// Internal function to tell the sequence to terminate the range mode.
+        /// </summary>
+        private void EndRangeOperation()
+        {
+            RangeMode = false;
         }
 
 
@@ -129,6 +171,7 @@ namespace Qs.Runtime
         /// <returns></returns>
         public QsValue GetElementValue(int index)
         {
+
             QsValue val;
             if (CachingEnabled)
             {
@@ -148,7 +191,25 @@ namespace Qs.Runtime
                 //  and be parsed into function  (QsFunction)
                 var e = GetElement(index);
 
-                var FunctionBody= e.ElementDeclaration.Replace(this.SequenceIndexName, index.ToString(CultureInfo.InvariantCulture));
+                string se_text = e.ElementDeclaration.Replace("$" + this.SequenceIndexName, "`");
+                se_text = se_text.Replace(this.SequenceIndexName, index.ToString(CultureInfo.InvariantCulture));
+                se_text = se_text.Replace("`", "$" + this.SequenceIndexName);
+
+                if (!string.IsNullOrEmpty(SequenceRangeStartName))
+                {
+                    se_text = se_text.Replace("$" + SequenceRangeStartName, "`");
+                    se_text = se_text.Replace(SequenceRangeStartName, StartIndex.ToString(CultureInfo.InvariantCulture));
+                    se_text = se_text.Replace("`", "$" + SequenceRangeStartName);
+                }
+
+                if (!string.IsNullOrEmpty(SequenceRangeEndName))
+                {
+                    se_text = se_text.Replace("$" + SequenceRangeEndName, "`");
+                    se_text = se_text.Replace(SequenceRangeEndName, EndIndex.ToString(CultureInfo.InvariantCulture));
+                    se_text = se_text.Replace("`", "$" + SequenceRangeEndName);
+                }
+
+                var FunctionBody = se_text;
 
                 string porma = string.Empty;  // the parameters separated by comma ','
                 foreach (var prm in this.Parameters)
@@ -216,6 +277,270 @@ namespace Qs.Runtime
             return val;
         }
 
+        #endregion
+
+
+        #region Range Operation Execution
+
+        public QsValue RangeOperation(string operation, int fromIndex, int toIndex)
+        {
+            BeginRangeOperation(fromIndex, toIndex);
+            QsValue result = default(QsValue);
+            try
+            {
+                if (operation.Equals("SumElements", StringComparison.OrdinalIgnoreCase))
+                    result = SumElements(fromIndex, toIndex);
+                else if (operation.Equals("MulElements", StringComparison.OrdinalIgnoreCase))
+                    result = MulElements(fromIndex, toIndex);
+                else if (operation.Equals("Average", StringComparison.OrdinalIgnoreCase))
+                    result = Average(fromIndex, toIndex);
+                else if (operation.Equals("StdDeviation", StringComparison.OrdinalIgnoreCase))
+                    result = StdDeviation(fromIndex, toIndex);
+                else if (operation.Equals("QsValueElements", StringComparison.OrdinalIgnoreCase))
+                    result = QsValueElements(fromIndex, toIndex);
+                else
+                {
+                    EndRangeOperation();
+                    throw new QsException(operation + " range operation is not known");
+                }
+
+                EndRangeOperation();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                EndRangeOperation();
+                throw new QsException("Un Handled Exception", ex);
+            }
+
+        }
+
+        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsValue arg0)
+        {
+            BeginRangeOperation(fromIndex, toIndex);
+            QsValue result = default(QsValue);
+            try
+            {
+                if (operation.Equals("SumElements", StringComparison.OrdinalIgnoreCase))
+                    result = SumElements(fromIndex, toIndex, arg0);
+                else if (operation.Equals("MulElements", StringComparison.OrdinalIgnoreCase))
+                    result = MulElements(fromIndex, toIndex, arg0);
+                else if (operation.Equals("Average", StringComparison.OrdinalIgnoreCase))
+                    result = Average(fromIndex, toIndex, arg0);
+                else if (operation.Equals("StdDeviation", StringComparison.OrdinalIgnoreCase))
+                    result = StdDeviation(fromIndex, toIndex, arg0);
+                else if (operation.Equals("QsValueElements", StringComparison.OrdinalIgnoreCase))
+                    result = QsValueElements(fromIndex, toIndex, arg0);
+                else
+                {
+                    EndRangeOperation();
+                    throw new QsException(operation + " range operation is not known");
+                }
+
+                EndRangeOperation();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                EndRangeOperation();
+                throw new QsException("Un Handled Exception", ex);
+            }
+
+        }
+
+        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsValue arg0, QsValue arg1)
+        {
+            BeginRangeOperation(fromIndex, toIndex);
+            QsValue result = default(QsValue);
+            try
+            {
+                if (operation.Equals("SumElements", StringComparison.OrdinalIgnoreCase))
+                    result = SumElements(fromIndex, toIndex, arg0, arg1);
+                else if (operation.Equals("MulElements", StringComparison.OrdinalIgnoreCase))
+                    result = MulElements(fromIndex, toIndex, arg0, arg1);
+                else if (operation.Equals("Average", StringComparison.OrdinalIgnoreCase))
+                    result = Average(fromIndex, toIndex, arg0, arg1);
+                else if (operation.Equals("StdDeviation", StringComparison.OrdinalIgnoreCase))
+                    result = StdDeviation(fromIndex, toIndex, arg0, arg1);
+                else if (operation.Equals("QsValueElements", StringComparison.OrdinalIgnoreCase))
+                    result = QsValueElements(fromIndex, toIndex, arg0, arg1);
+                else
+                {
+                    EndRangeOperation();
+                    throw new QsException(operation + " range operation is not known");
+                }
+
+                EndRangeOperation();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                EndRangeOperation();
+                throw new QsException("Un Handled Exception", ex);
+            }
+
+        }
+        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2)
+        {
+            BeginRangeOperation(fromIndex, toIndex);
+            QsValue result = default(QsValue);
+            try
+            {
+                if (operation.Equals("SumElements", StringComparison.OrdinalIgnoreCase))
+                    result = SumElements(fromIndex, toIndex, arg0, arg1, arg2);
+                else if (operation.Equals("MulElements", StringComparison.OrdinalIgnoreCase))
+                    result = MulElements(fromIndex, toIndex, arg0, arg1, arg2);
+                else if (operation.Equals("Average", StringComparison.OrdinalIgnoreCase))
+                    result = Average(fromIndex, toIndex, arg0, arg1, arg2);
+                else if (operation.Equals("StdDeviation", StringComparison.OrdinalIgnoreCase))
+                    result = StdDeviation(fromIndex, toIndex, arg0, arg1, arg2);
+                else if (operation.Equals("QsValueElements", StringComparison.OrdinalIgnoreCase))
+                    result = QsValueElements(fromIndex, toIndex, arg0, arg1, arg2);
+                else
+                {
+                    EndRangeOperation();
+                    throw new QsException(operation + " range operation is not known");
+                }
+
+                EndRangeOperation();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                EndRangeOperation();
+                throw new QsException("Un Handled Exception", ex);
+            }
+
+        }
+        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3)
+        {
+            BeginRangeOperation(fromIndex, toIndex);
+            QsValue result = default(QsValue);
+            try
+            {
+                if (operation.Equals("SumElements", StringComparison.OrdinalIgnoreCase))
+                    result = SumElements(fromIndex, toIndex, arg0, arg1, arg2, arg3);
+                else if (operation.Equals("MulElements", StringComparison.OrdinalIgnoreCase))
+                    result = MulElements(fromIndex, toIndex, arg0, arg1, arg2, arg3);
+                else if (operation.Equals("Average", StringComparison.OrdinalIgnoreCase))
+                    result = Average(fromIndex, toIndex, arg0, arg1, arg2, arg3);
+                else if (operation.Equals("StdDeviation", StringComparison.OrdinalIgnoreCase))
+                    result = StdDeviation(fromIndex, toIndex, arg0, arg1, arg2, arg3);
+                else if (operation.Equals("QsValueElements", StringComparison.OrdinalIgnoreCase))
+                    result = QsValueElements(fromIndex, toIndex, arg0, arg1, arg2, arg3);
+                else
+                {
+                    EndRangeOperation();
+                    throw new QsException(operation + " range operation is not known");
+                }
+
+                EndRangeOperation();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                EndRangeOperation();
+                throw new QsException("Un Handled Exception", ex);
+            }
+
+        }
+        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4)
+        {
+            BeginRangeOperation(fromIndex, toIndex);
+            QsValue result = default(QsValue);
+            try
+            {
+                if (operation.Equals("SumElements", StringComparison.OrdinalIgnoreCase))
+                    result = SumElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4);
+                else if (operation.Equals("MulElements", StringComparison.OrdinalIgnoreCase))
+                    result = MulElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4);
+                else if (operation.Equals("Average", StringComparison.OrdinalIgnoreCase))
+                    result = Average(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4);
+                else if (operation.Equals("StdDeviation", StringComparison.OrdinalIgnoreCase))
+                    result = StdDeviation(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4);
+                else if (operation.Equals("QsValueElements", StringComparison.OrdinalIgnoreCase))
+                    result = QsValueElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4);
+                else
+                {
+                    EndRangeOperation();
+                    throw new QsException(operation + " range operation is not known");
+                }
+
+                EndRangeOperation();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                EndRangeOperation();
+                throw new QsException("Un Handled Exception", ex);
+            }
+
+        }
+        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5)
+        {
+            BeginRangeOperation(fromIndex, toIndex);
+            QsValue result = default(QsValue);
+            try
+            {
+                if (operation.Equals("SumElements", StringComparison.OrdinalIgnoreCase))
+                    result = SumElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4, arg5);
+                else if (operation.Equals("MulElements", StringComparison.OrdinalIgnoreCase))
+                    result = MulElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4, arg5);
+                else if (operation.Equals("Average", StringComparison.OrdinalIgnoreCase))
+                    result = Average(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4, arg5);
+                else if (operation.Equals("StdDeviation", StringComparison.OrdinalIgnoreCase))
+                    result = StdDeviation(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4, arg5);
+                else if (operation.Equals("QsValueElements", StringComparison.OrdinalIgnoreCase))
+                    result = QsValueElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4, arg5);
+                else
+                {
+                    EndRangeOperation();
+                    throw new QsException(operation + " range operation is not known");
+                }
+
+                EndRangeOperation();
+                return result;
+            }
+            catch (Exception ex)
+            {
+                EndRangeOperation();
+                throw new QsException("Un Handled Exception", ex);
+            }
+
+        }
+
+        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5, QsValue arg6)
+        {
+            BeginRangeOperation(fromIndex, toIndex);
+            QsValue result = default(QsValue);
+            try
+            {
+                if (operation.Equals("SumElements", StringComparison.OrdinalIgnoreCase))
+                    result = SumElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+                else if (operation.Equals("MulElements", StringComparison.OrdinalIgnoreCase))
+                    result = MulElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+                else if (operation.Equals("Average", StringComparison.OrdinalIgnoreCase))
+                    result = Average(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+                else if (operation.Equals("StdDeviation", StringComparison.OrdinalIgnoreCase))
+                    result = StdDeviation(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+                else if (operation.Equals("QsValueElements", StringComparison.OrdinalIgnoreCase))
+                    result = QsValueElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+                else
+                {
+                    EndRangeOperation();
+                    throw new QsException(operation + " range operation is not known");
+                }
+
+                EndRangeOperation();
+                return result;
+            }
+            catch(Exception ex)
+            {
+                EndRangeOperation();
+                throw new QsException("Un Handled Exception", ex);
+            }
+
+        }
         #endregion
 
 

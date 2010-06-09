@@ -243,6 +243,7 @@
     <Compile Include="Units\Metric\SI\BaseUnits\Mole.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Units\Metric\Calorie.cs" />
     <Compile Include="Units\Metric\SI\Coulomb.cs" />
     <Compile Include="Units\Misc\VolumeUnits.cs" />
     <Compile Include="Units\Metric\SI\Farad.cs" />

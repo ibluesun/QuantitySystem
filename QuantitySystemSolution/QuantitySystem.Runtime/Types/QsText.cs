@@ -131,12 +131,22 @@ namespace Qs.Types
 
         public override bool Equality(QsValue value)
         {
-            throw new NotImplementedException();
+            QsText text = value as QsText;
+            if (text==null)
+                return false;
+            else 
+            {
+                if (text.Text.Equals(this.Text, StringComparison.InvariantCultureIgnoreCase))
+                    return true;
+                else
+                    return false;
+            }
+            
         }
 
         public override bool Inequality(QsValue value)
         {
-            throw new NotImplementedException();
+            return !Equality(value);
         }
 
         public override QsValue DotProductOperation(QsValue value)
@@ -164,6 +174,10 @@ namespace Qs.Types
             throw new NotImplementedException();
         }
 
+        public override QsValue GetIndexedItem(int[] indices)
+        {
+            throw new NotImplementedException();
+        }
         #endregion
     }
 }

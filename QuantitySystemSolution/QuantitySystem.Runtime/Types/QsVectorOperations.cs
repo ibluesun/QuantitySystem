@@ -653,5 +653,12 @@ namespace Qs.Types
                 throw new NotSupportedException();
             }
         }
+
+        public override QsValue GetIndexedItem(int[] indices)
+        {
+            if (indices.Count() > 1) throw new QsException("Vector have one index only");
+            int index = indices[0];
+            return ListStorage[index];
+        }
     }
 }

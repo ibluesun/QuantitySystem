@@ -651,7 +651,7 @@ namespace Qs.Types
             {
                 // no namespace included then it is from the local scope.
 
-                var function = (QsFunction)QsEvaluator.GetScopeVariable(scope, qsNamespace, functionName);
+                var function = (QsFunction)QsEvaluator.GetScopeValueOrNull(scope, qsNamespace, functionName);
 
                 return function;
                 

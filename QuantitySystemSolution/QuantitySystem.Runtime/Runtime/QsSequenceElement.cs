@@ -54,6 +54,12 @@ namespace Qs.Runtime
 
 
         /// <summary>
+        /// Contains the DLR expression of the evaluation of this element.
+        /// </summary>
+        public Expression ElementExpression { get; set; }
+
+
+        /// <summary>
         /// The value of the sequence element.
         /// - AnyQuantity &lt;double>
         /// - Another Sequence
@@ -61,6 +67,7 @@ namespace Qs.Runtime
         /// - Delegate to code passing index and parameters.
         /// </summary>
         public object ElementValue { get; set; }
+
 
 
         /// <summary>
@@ -254,6 +261,7 @@ namespace Qs.Runtime
                 //add the index parameter
                 lb.Parameter(typeof(int), sequence.SequenceIndexName);
                 
+                
                 //find the index parameter in line to know if it will be evaluated or not
                 if (element.IndexOf(sequence.SequenceIndexName) > -1)
                     se.IndexEvaluation = true;
@@ -274,6 +282,7 @@ namespace Qs.Runtime
                 LambdaExpression le = lb.MakeLambda();
 
                 se.ElementDeclaration = element;
+                se.ElementExpression = pvar.ResultExpression;
                 se.ElementValue = le.Compile();
 
                 return se;
@@ -285,6 +294,7 @@ namespace Qs.Runtime
         }
 
         #endregion
+
 
     }
 }

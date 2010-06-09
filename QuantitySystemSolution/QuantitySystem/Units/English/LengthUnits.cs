@@ -20,7 +20,6 @@ namespace QuantitySystem.Units.English
     }
 
     [DefaultUnit("ft", typeof(Length<>))]
-    //[ReferenceUnit(1200, 3937)]
     [ReferenceUnit(0.3048)]
     public sealed class Foot : Unit
     {

@@ -40,8 +40,6 @@ using Microsoft.Scripting;
             for (int i = 0; i < commands.Length; i++)
                 commands[i] = commands[i].Trim();
 
-            
-
             if (commands[0] == "quit") return false;
 
             if (commands[0] == "exit")
@@ -122,10 +120,8 @@ using Microsoft.Scripting;
                     string file = commands[1];
 
                     ScriptScope.Engine.ExecuteFile(file, ScriptScope);
-                    
 
                     CommandProcessed = true;
-                    
                 }
             }
             return true;
@@ -144,7 +140,6 @@ using Microsoft.Scripting;
             }
 
             Console.ForegroundColor = ForegroundColor;
-
         }
 
 
@@ -185,9 +180,11 @@ using Microsoft.Scripting;
             Console.WriteLine();
             Console.WriteLine("Project Source: http://QuantitySystem.CodePlex.com");
             Console.WriteLine("Project Blog:   http://QuantitySystem.WordPress.com");
-            Console.WriteLine("-----------------------------------------------------------");
-
-            Console.WriteLine("Email: Ahmed.Sadek@LostParticles.net; Ahmed.Amara@gmail.com");
+            Console.WriteLine();
+            Console.WriteLine("-------------------------------------------------------------------");
+            Console.WriteLine("--                Ahmed Sadek Mohamed Tawfik                     --");
+            Console.WriteLine("--  Email: Ahmed.Sadek@LostParticles.net; Ahmed.Amara@gmail.com  --");
+            Console.WriteLine("-------------------------------------------------------------------");
 
             Console.ForegroundColor = ForegroundColor;
 
@@ -209,40 +206,41 @@ using Microsoft.Scripting;
 
             Console.WriteLine("       - Vector");
             Console.WriteLine("           vec = {3 4 5}");
-            Console.WriteLine("           |vec|, or ||vec||   to get magnitude");
-            Console.WriteLine("           v1 * v2   vector multiplication");
-            Console.WriteLine("           v1 . v2   dot product.");
-            Console.WriteLine("           v1 x v2   use x letter for cross product.");
-            Console.WriteLine("           v1 (*) v2   use (*) letters for tensor product.");
+            Console.WriteLine("           |vec|, or ||vec||     to get magnitude");
+            Console.WriteLine("           v1 * v2               vector multiplication");
+            Console.WriteLine("           v1 . v2               Dot product.");
+            Console.WriteLine("           v1 x v2               Use x letter for cross product.");
+            Console.WriteLine("           v1 (*) v2             Use (*) letters for tensor product.");
             Console.WriteLine();
 
             Console.WriteLine("       - Matrix");
             Console.WriteLine("           \" m = [3 4 5; 3 4 2; 9 3 2]");
-            Console.WriteLine("           \" |m| \"     for determinant of square matrix");
-            Console.WriteLine("           \" m1 * m2 \" for ordinary matrix multiplication");
-            Console.WriteLine("           \" m1 . m2 \" for matrix element wist multiplication");
-            Console.WriteLine("           \" m ^ 2 \"   for power with ordinary matrix multiplication");
-            Console.WriteLine("           \" m ^. 2 \"  for power with element matrix multiplication");
+            Console.WriteLine("           \" |m| \"             for determinant of square matrix");
+            Console.WriteLine("           \" m1 * m2 \"         for ordinary matrix multiplication");
+            Console.WriteLine("           \" m1 . m2 \"         for matrix element wise multiplication");
+            Console.WriteLine("           \" m ^ 2 \"           for power with ordinary matrix multiplication");
+            Console.WriteLine("           \" m ^. 2 \"          for power with element matrix multiplication");
 
 
             Console.WriteLine();
-            Console.WriteLine("       - \"f(x,y,z) = x+y+z\" to make a function.");
-            Console.WriteLine("         \"f(u,v,w) = u/v*w\" to make a function with the same name and different parameters.");
-            Console.WriteLine("         \"ro = f(v=10, w=3, u=3)\" to call specific function.");
-            Console.WriteLine("         \"@f\" return the function body as a value.");
+            Console.WriteLine("       - \"f(x,y,z) = x+y+z\"    to make a function.");
+            Console.WriteLine("         \"f(u,v,w) = u/v*w\"    to make a function with the same name and different parameters.");
+            Console.WriteLine("         \"r=f(v=10, w=3, u=3)\" to call specific function.");
+            Console.WriteLine("         \"@f\"                  return the function body as a value.");
 
             Console.WriteLine();
             Console.WriteLine("       - Sequence:");
-            Console.WriteLine("           \"S[] or S[n] or S[n](x) ..> 10; 20; n; x^n \" to make a sequence.");
-            Console.WriteLine("           \"S[n:10](x) = n^2/x^(1/n)  to set specific element of sequence.");
-            Console.WriteLine("           \"S[10]+S[20] to sum element 10 and 20");
+            Console.WriteLine("           \"S[] or S[n] or S[n](x) ..> 10; 20; n; x^n \"    to make a sequence.");
+            Console.WriteLine("           \"S[n:10](x) = n^2/x^(1/n)                        to set specific element of sequence.");
+            Console.WriteLine("           \"S[10]+S[20]                                     to sum element 10 and 20");
 
             Console.WriteLine();
             Console.WriteLine("       - Sequence operators:");
-            Console.WriteLine("             Series         [n++m]: S[0++40](args)  to get series from 0 to 40.");
-            Console.WriteLine("             Multiplication [n**m]: S[1**20)(args) to get products.");
-            Console.WriteLine("             Average        [n!!m]: S[1!!20] sum from 1 to 20 and divide by 20-1");
-            Console.WriteLine("             Range          [n..m]: S[0..20] Returns Vector or Matrix.");
+            Console.WriteLine("             Series              [n ++ m]: S[0++40] (args)  to get series from 0 to 40.");
+            Console.WriteLine("             Multiplication      [n ** m]: S[1**20) (args) to get products.");
+            Console.WriteLine("             Average             [n !! m]: S[1!!20] sum from 1 to 20 and divide by (20 - 1)");
+            Console.WriteLine("             Standard Deviation  [n !% m]: S[1!%20] sum from 1 to 20 and divide by (20 - 1)");
+            Console.WriteLine("             Range               [n .. m]: S[0..20] Returns Vector or Matrix.");
 
             Console.WriteLine();
             Console.WriteLine("       - Calling parametererized series without specifying parameter return a function");
@@ -268,12 +266,11 @@ using Microsoft.Scripting;
             Console.WriteLine();
             Console.WriteLine("       - \"Cls\" to clear the screen.");
             Console.WriteLine();
-            Console.WriteLine("       - \"Copyright\", and \"CTRL+Z\" to terminate the console.");
+            Console.WriteLine("       - \"Copyright\" for information about the product.");
+            Console.WriteLine("       - \"CTRL+Z\" to terminate the console.");
 
 
             Console.ForegroundColor = ForegroundColor;
-
-
         }
 
 
@@ -303,9 +300,7 @@ using Microsoft.Scripting;
             else
             {
                 throw new NotImplementedException("you should be running in DLR");
-
             }
-
         }
 
         /// <summary>
@@ -328,8 +323,6 @@ using Microsoft.Scripting;
                         Console.WriteLine("        " + nsvar + " = " + ns.GetValue(nsvar).ToString());
                     }                    
                 }
-
-                
                 Console.WriteLine();
             }
 
@@ -402,34 +395,23 @@ using Microsoft.Scripting;
                         };
 
                         units.Add(ui);
-
-                        
                     }
                     else
                     {
                         //print if only the unit is for this quantity
                         if (qtype.Equals(quantity, StringComparison.InvariantCultureIgnoreCase)) Console.WriteLine("    " + uname + " " + symbol + " " + system + qtype);
                     }
-
-
                 }
-
-
             }
 
             var uts = from ut in units
                       orderby ut.qtype
                       select ("    " + ut.uname + " " + ut.symbol + " " + ut.system + ut.qtype);
-
-           
                 foreach (var ut in uts)
                 {
                     
                     Console.WriteLine(ut);
                 }
-
-            
-
             Console.ForegroundColor = ForegroundColor;
         }
 

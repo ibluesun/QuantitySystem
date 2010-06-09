@@ -17,7 +17,7 @@ namespace QuantitySystem.Units.Misc
 
 
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Gradian"), Unit("grad", typeof(Angle<>))]
+    [Unit("grad", typeof(Angle<>))]
     [ReferenceUnit(9, 10, UnitType = typeof(ArcDegree))]
     public sealed class Gradian : Unit
     {
@@ -45,7 +45,7 @@ namespace QuantitySystem.Units.Misc
     }
 
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Naming", "CA1704:IdentifiersShouldBeSpelledCorrectly", MessageId = "Milli"), Unit("mas", typeof(Angle<>))]
+    [Unit("mas", typeof(Angle<>))]
     [ReferenceUnit(1, 1000, UnitType = typeof(ArcSecond))]
     public sealed class MilliArcSecond : Unit
     {

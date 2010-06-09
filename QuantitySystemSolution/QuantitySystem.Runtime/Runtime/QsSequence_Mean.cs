@@ -17,6 +17,8 @@ namespace Qs.Runtime
         /// <returns></returns>
         public QsValue Average(int fromIndex, int toIndex)
         {
+            
+
             var n = toIndex - fromIndex + 1;
             if (this.Parameters.Length > 0)
             {
@@ -39,6 +41,7 @@ namespace Qs.Runtime
                 string FunctionDeclaration = "_(" + porma + ") = " + FunctionBody;
 
                 QsFunction qs = QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, FunctionDeclaration);
+                
                 return qs;
             }
             else
@@ -48,6 +51,7 @@ namespace Qs.Runtime
                 var tot = SumElements(fromIndex, toIndex);
 
                 var count = new QsScalar { NumericalQuantity = Qs.ToQuantity((double)n) };
+                
                 return tot / count;
             }
         }
@@ -57,65 +61,86 @@ namespace Qs.Runtime
         #region Average Functions
         public QsValue Average(int fromIndex, int toIndex, QsValue arg0)
         {
+            
+
             FixIndices(ref fromIndex, ref toIndex);
 
             var tot = SumElements(fromIndex, toIndex, arg0);
             var n = toIndex - fromIndex + 1;
             var count = new QsScalar { NumericalQuantity = Qs.ToQuantity((double)n) };
+            
             return tot / count;
         }
         public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1)
         {
+            
+
             FixIndices(ref fromIndex, ref toIndex);
 
             var tot = SumElements(fromIndex, toIndex, arg0, arg1);
             var n = toIndex - fromIndex + 1;
             var count = new QsScalar { NumericalQuantity = Qs.ToQuantity((double)n) };
+            
             return tot / count;
         }
         public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2)
         {
+            
+
             FixIndices(ref fromIndex, ref toIndex);
 
             var tot = SumElements(fromIndex, toIndex, arg0, arg1, arg2);
             var n = toIndex - fromIndex + 1;
             var count = new QsScalar { NumericalQuantity = Qs.ToQuantity((double)n) };
+            
             return tot / count;
         }
         public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3)
         {
+            
+
             FixIndices(ref fromIndex, ref toIndex);
 
             var tot = SumElements(fromIndex, toIndex, arg0, arg1, arg2, arg3);
             var n = toIndex - fromIndex + 1;
             var count = new QsScalar { NumericalQuantity = Qs.ToQuantity((double)n) };
+            
             return tot / count;
         }
         public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4)
         {
+            
+
             FixIndices(ref fromIndex, ref toIndex);
 
             var tot = SumElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4);
             var n = toIndex - fromIndex + 1;
             var count = new QsScalar { NumericalQuantity = Qs.ToQuantity((double)n) };
+            
             return tot / count;
         }
         public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5)
         {
+            
+
             FixIndices(ref fromIndex, ref toIndex);
 
             var tot = SumElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4, arg5);
             var n = toIndex - fromIndex + 1;
             var count = new QsScalar { NumericalQuantity = Qs.ToQuantity((double)n) };
+            
             return tot / count;
         }
         public QsValue Average(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5, QsValue arg6)
         {
+            
+
             FixIndices(ref fromIndex, ref toIndex);
 
             var tot = SumElements(fromIndex, toIndex, arg0, arg1, arg2, arg3, arg4, arg5, arg6);
             var n = toIndex - fromIndex + 1;
             var count = new QsScalar { NumericalQuantity = Qs.ToQuantity((double)n) };
+            
             return tot / count;
         }
         #endregion

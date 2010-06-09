@@ -1,3 +1,37 @@
+[Qs 1.1.9.963]
+- Symbolic Algebra library  fixed. (refer to http://SymbolicAlgebra.codeplex.com)
+- Determinant for squared matrices above 3x3 is added.
+	Symbolic quantities also supported in determinants.
+- Equality and InEquality of text added.
+- GetScalar function for tensor that get any element in the tensor giving that number of indices == tensor rank
+- Getting range from parameterized sequence return vector or matrix or tensor based on what you have written in symbolic quantities
+   g[n](x) ..> x^n
+   g[0..3] result in { 1 x x^2 x^3}
+
+- Getting Standard Deviation from parameterized Sequence Implemented. 
+	S[1 !% 10]   # !% for standard deviation
+
+- Enhanced the sequence declaration to include the starting and ending index variables during evaluation
+	g[k=m->n](x) ..> n - k*x  #m is the starting index, and n is the ending index which can be used in the items evaluation.
+	also the range operations has been modified to support the new range start and end variables.
+
+
++ [QsFramework 1.1.9.63]
+	- Two energy units added <MBTU> = 1000 BTU  and <MMBTU> = 1000000 BTU    units
+	- Calorie unit added <cal> =  4.184 <J>  and this is the thermodynamic  value 
+	- Pound Calorie <lbcal>
+
+- Acess the elements of vector, matrix, and tensor from any rank now supported.
+  however the range operators are not implemented yet.
+
+  Note: The priority of accessing vectors, matrices, and tensors are higher than accessing Sequence with the same name.
+
+  when you declare a vector you can access scalar with one index.
+  when you declare a matrix you can access vector with one index, scalar with two indices.
+  also tensor from third rank can be accessed by one index for matrix, 2 for vector, and 3 indices for scalar
+  the above ranks also can be accessed in the same manner as tensor of 4th ranks contains tensors of 3rd rank.
+
+
 [Qs 1.1.9.962]
 - Imlementing Standard deviation in Sequence  x[1 !% 10]  for only sequence without parameters (not a finished implementation)
 - Enhancing the Symbolic Algebra library and include it in this version to make raising symbolic values to symbolic values
@@ -5,8 +39,31 @@
 - Refactored many things in QuantitySystem Project (hoping that I haven't hurt anything with that)
 - AddOperation and SubtractOperation for tensor are implemented
 - Fixing matrix determinant with symbolic variables.
-- Adding support to store tensors with more ranks 4, 5 etc... 
 - Enhancement to the tensor parsing.
++ Adding support to store tensors with more ranks 4, 5 etc... 
+	so Tensor that contain many matrices is as follow 
+		<| 4 2; 1 3 | 3 4; 3 1|>
+	for 4th rank you can define recursive declaration 
+		<| <| 4 2; 1 3 | 3 4; 3 1|> | <| 1 2; 5 3 | 6 4; 3.3 1|> |>
+
+	and ofcourse all your scalars can be symbolic, or numerical with units 
+
+
+[Intermediate fixes]
+- Fixed an error appeared after [Qs 1.1.9.94] because of caching (I was caching the Dimension of the Derived Quantity without chaning it when changint InternalQuantities)
+  This led to errors in determining the quantity type from successive calculations
+   however [Qs 1.1.9.93] doesn't have this problem ( the problem because of my endless wisedom)
+
+- More toward fusing Symbolic Quantities now the dot product, vector product, vector, and matrix calculations support symbolic ;) (somehow)
+
+- refactored Quantity into NumericalQuantity in QsScalar type. 
+
+- Fixed a destructive error: 5^-3 was evaluating in bad behaviour because i was translating -3 to (-1*3) then the priority of '^' precede the priority so I made a new operator internally to be (-1_h*3) to be evaluated before any operator.
+
+- Fixed Symbolic power in Symbolic Algebra library and to be checked the dll here
+  simply $r^0 equal {1} :) 
+   and added support for negative powers.
+
 
 
 

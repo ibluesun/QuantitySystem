@@ -16,7 +16,6 @@ namespace Qs.Types
     public sealed class QsScalar : QsValue, ICloneable
     {
 
-
         /// <summary>
         /// Tells the current storage type of the scalar.
         /// </summary>
@@ -550,7 +549,7 @@ namespace Qs.Types
             }
             else
             {
-                throw new NotSupportedException();
+                throw new NotImplementedException("Adding QsScalar to " + value.GetType().Name + " is not implemented yet");
             }
         }
 
@@ -580,7 +579,7 @@ namespace Qs.Types
             }
             else
             {
-                throw new NotSupportedException();
+                throw new NotImplementedException("Subtracting QsScalar from " + value.GetType().Name + " is not implemented yet");
             }
         }
 
@@ -611,7 +610,7 @@ namespace Qs.Types
             }
             else
             {
-                throw new NotSupportedException();
+                throw new NotImplementedException("Multiplieng QsScalar with " + value.GetType().Name + " is not implemented yet");
             }
         }
 
@@ -639,7 +638,7 @@ namespace Qs.Types
             }
             else
             {
-                throw new NotSupportedException();
+                throw new NotImplementedException("Dividing QsScalar over " + value.GetType().Name + " is not implemented yet");
             }
         }
 
@@ -651,7 +650,7 @@ namespace Qs.Types
             }
             else
             {
-                throw new NotSupportedException();
+                throw new NotImplementedException("Raising QsScalar to power of " + value.GetType().Name + " is not implemented yet");
             }
         }
 
@@ -701,13 +700,13 @@ namespace Qs.Types
             }
             else
             {
-                throw new NotSupportedException();
+                throw new NotImplementedException("Modulo of QsScalar over " + value.GetType().Name + " is not implemented yet");
             }
         }
 
         public override QsValue TensorProductOperation(QsValue value)
         {
-            throw new NotImplementedException();
+            throw new NotImplementedException("Tensor product of QsScalar and " + value.GetType().Name + " is not implemented yet");
         }
 
         public override QsValue LeftShiftOperation(QsValue times)
@@ -888,6 +887,10 @@ namespace Qs.Types
 
         #endregion
 
+        public override QsValue GetIndexedItem(int[] indices)
+        {
+            throw new NotImplementedException();
+        }
 
         #region ICloneable Members
 
@@ -902,5 +905,7 @@ namespace Qs.Types
         }
 
         #endregion
+
+        
     }
 }

@@ -182,6 +182,78 @@ namespace Qs.Types
             throw new NotImplementedException();
         }
 
+        public override QsValue GetIndexedItem(int[] indices)
+        {
+            int dr = this.Rank - indices.Count();
+            if (dr < 0)
+            {
+                throw new QsException("Indices count exceed the tensor rank, only specify indices to the same rank to get scalar, or less to get vectors to tensors");
+            }
+            else if (dr == 0)
+            {
+                return GetScalar(indices);
+            }
+            else if (dr == 1)
+            {
+                // return vector
+                if (this.Rank == 2)
+                {
+                    return this[0][indices[0]];
+                }
+                else if (this.Rank == 3)
+                {
+                    return this[indices[0]][indices[1]];
+                }
+                else
+                {
+                    QsTensor t = this;
+                    int ix = 0;
+                    int ic = indices.Count();
+                    while (ix < ic - 2)
+                    {
+                        t = t.InnerTensors[indices[ix]];
+                        ix++;
+                    }
+                    return t[indices[ix]][indices[ix + 1]];  //ix was increased the latest time.
+                }
+            }
+            else if (dr == 2)
+            {
+                // return matrix;
+                if (this.Rank == 2)
+                {
+                    return this[indices[0]];
+                }
+                else
+                {
+                    // specify the tensor
+                    QsTensor t = this;
+                    int ix = 0;
+                    int ic = indices.Count();
+
+                    while (ix < ic - 1)
+                    {
+                        t = t.InnerTensors[indices[ix]];
+                        ix++;
+                    }
+
+                    // then return the matrix.
+                    return t[indices[ix]];  //ix was increased the latest time.
+                }
+            }
+            else
+            {
+                // return tensor
+                QsTensor t = this;
+                int ix = 0;
+                while (ix < indices.Count())
+                {
+                    t = t.InnerTensors[indices[ix]];
+                    ix++;
+                }
+                return t;
+            }
+        }
         #endregion
 
     }
