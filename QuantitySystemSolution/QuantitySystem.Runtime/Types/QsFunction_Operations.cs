@@ -273,5 +273,10 @@ namespace Qs.Types
             throw new NotImplementedException();
         }
 
+
+        public override QsValue GetIndexedItem(int[] indices)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

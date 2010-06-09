@@ -7,7 +7,7 @@ namespace Qs.Types
 {
 
     /// <summary>
-    /// Represeneted by &lt;&lt; list &gt;&gt;
+    /// Represeneted by &lt;| [Matrix or Tensor] | [Matrix or Tensor] |&gt;
     /// </summary>
     public partial class QsTensor : QsValue
     {
@@ -58,7 +58,7 @@ namespace Qs.Types
                 }
                 else
                 {
-                    // innder tensors do exist
+                    // inner tensors do exist
                     // make recursive call to obtain the tensor rank
 
                     int rank = this.InnerTensors[0].Rank;
@@ -199,10 +199,21 @@ namespace Qs.Types
                     throw new QsException("The matrix about to be added is not in the same dimension");
                 }
             }
-
             MatrixLayers.Add(qsMatrix);
         }
 
+        /// <summary>
+        /// In 3rd rank tensor, return the matrix face of the given index.
+        /// </summary>
+        /// <param name="face"></param>
+        /// <returns></returns>
+        public QsMatrix this[int face]
+        {
+            get
+            {
+                return MatrixLayers[face];
+            }
+        }
 
         /// <summary>
         /// Only Applied for 3rd rank tensor
@@ -210,24 +221,68 @@ namespace Qs.Types
         /// <param name="row"></param>
         /// <param name="column"></param>
         /// <returns></returns>
-        public QsScalar this[int row, int column, int z]
+        public QsScalar this[int face, int row, int column]
         {
             get
             {
-                
-                return MatrixLayers[z][row,column];
+                return MatrixLayers[face][row, column];
             }
             set
             {
-                MatrixLayers[z][row, column] = value;
+                MatrixLayers[face][row, column] = value;
             }
         }
 
+        /// <summary>
+        /// Get the scalar in tensor.
+        /// </summary>
+        /// <param name="index"></param>
+        /// <returns></returns>
+        public QsScalar GetScalar(params int[] indices)
+        {
+            if (indices.Count() != this.Rank)
+            {
+                throw new QsException("Indices number (" + indices.Length.ToString() + ") doesn't equal the tensor rank (" + this.Rank.ToString() + ") (remember that you are getting a scalar)");
+            }
+            else
+            {
+                if (indices == null)
+                {
+                    return this[0][0][0];
+                }
+                else if (indices.Count() == 1)
+                {
+                    return this[0][0][indices[0]];
+                }
+                else if (indices.Count() == 2)
+                {
+                    return this[0][indices[0]][indices[1]];
+                }
+                else if (indices.Count() == 3)
+                {
+                    // cube
+                    return this[indices[0]][indices[1]][indices[2]];
+                }
+                else if (indices.Count() == 4)
+                {
+                    // hyper cube
+                    return this.InnerTensors[indices[0]][indices[1]][indices[2]][indices[3]];
+                }
+                else
+                {
+                    List<int> newIndices = new List<int>(indices.Length - 1);
+                    for (int ix = 1; ix < indices.Length; ix++) newIndices.Add(indices[ix]);
+
+                    return this.InnerTensors[indices[0]].GetScalar(newIndices.ToArray());
+                }
+            }
+        }
 
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
             string rankText = Rank.ToString();
+            if (Rank == 0) rankText += "th";
             if (Rank == 1) rankText += "st";
             if (Rank == 2) rankText += "nd";
             if (Rank == 3) rankText += "rd";

@@ -25,7 +25,6 @@ internal class QsHost : ConsoleHost
     public static int Main(string[] args)
     {
         
-
         if (Environment.GetEnvironmentVariable("TERM") == null)
         {
             Environment.SetEnvironmentVariable("TERM", "dumb");
@@ -35,17 +34,14 @@ internal class QsHost : ConsoleHost
         Console.ForegroundColor = QsCommands.ForegroundColor;
         Console.Clear();
 
+        Console.WindowWidth = 110;
+        Console.WindowHeight = 34;
+        
+        Console.BufferWidth = 110;
+
         QsCommands.StartConsole();
 
-
-        
-
-
         return new QsHost().Run(args);
-        //QuantitySystemCalculator.Program.OldMain(args);
-        //return 0;
-
-
 
     }
 

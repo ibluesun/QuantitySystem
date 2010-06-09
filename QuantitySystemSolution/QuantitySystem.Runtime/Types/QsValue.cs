@@ -9,7 +9,7 @@ namespace Qs.Types
     /// <summary>
     /// Base class for all QsValues Scalar, Vector, and Matrix, and later Tensor.
     /// </summary>
-    public abstract class QsValue
+    public abstract class QsValue: IComparable
     {
 
         #region the must inherit functions.
@@ -151,6 +151,12 @@ namespace Qs.Types
         abstract public QsValue RightShiftOperation(QsValue times);
         abstract public QsValue LeftShiftOperation(QsValue times);
 
+        /// <summary>
+        /// Any QsValue that contain sub items can be accessed by this method
+        /// </summary>
+        /// <param name="indexes"></param>
+        /// <returns></returns>
+        abstract public QsValue GetIndexedItem(int[] indices);
         #endregion
 
 
@@ -268,6 +274,8 @@ namespace Qs.Types
         }
 
         #endregion
+
+
 
         #region Helper Methods
 
@@ -504,5 +512,23 @@ namespace Qs.Types
             return this;
         }
 
+
+        #region IComparable Members
+
+        public int CompareTo(object obj)
+        {
+            QsValue value = obj as QsValue;
+            if (obj != null)
+            {
+                if (this.LessThan(value)) return -1;
+                if (this.Equality(value)) return 0;
+                if (this.GreaterThan(value)) return 1;
+                throw new QsException("Comparison failed between " + this.GetType().Name + " and " + value.GetType().Name);
+            }
+            else
+                throw new QsException("Comparison with values other than QsValue is not permitted");
+        }
+
+        #endregion
     }
 }

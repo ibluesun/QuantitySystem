@@ -43,6 +43,15 @@ namespace ParticleLexer.QsTokens
 
 
     #region Sequence tokens
+
+    /// <summary>
+    /// -> Token
+    /// </summary>
+    [TokenPattern(RegexPattern="->", ExactWord=true)]
+    public class PointerOperatorToken : TokenClass
+    {
+    }
+
     /// <summary>
     /// ..>  token
     /// </summary>

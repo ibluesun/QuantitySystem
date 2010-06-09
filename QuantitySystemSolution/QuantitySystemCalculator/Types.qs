@@ -23,7 +23,7 @@ m3 = [a b; b c; c a]
 ms = [$x 0 0; 0 $y 0; 0 0 $z]    #matrix contains symbolic quantities
 
 
-# Tensors from zero rank to 3rd rank
+# Tensors from zero rank to 4th rank
 T0 = <| 3 |>
 T1 = <| a b |>
 T2 = <| a ;b ; c|>

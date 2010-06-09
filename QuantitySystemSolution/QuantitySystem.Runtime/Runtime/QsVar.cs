@@ -221,7 +221,7 @@ namespace Qs.Runtime
                 new ParenthesisGroupToken(),                // group (--()-) parenthesis
                 new SquareBracketsGroupToken(),             // [[][][]]
                 new CurlyBracketGroupToken(),               //  {{}}{}
-                new TensorGroupToken()                      //  << <<>> >>
+                new TensorGroupToken()                      //  <| <| |> |>
                 );
 
             tokens = tokens.MergeTokens<AbsoluteToken>();
@@ -297,7 +297,7 @@ namespace Qs.Runtime
                 }
                 if(tokens[ix].TokenClassType == typeof(SequenceCallToken))
                 {
-                    quantityExpression = SequenceCallExpression(
+                    quantityExpression = IndexerExpression(
                         tokens[ix][0].TokenValue,
                         tokens[ix][1],
                         tokens[ix].Count > 2 ? tokens[ix][2] : null                   //if arguments exist we must include them   form  S[n](x,y,z)
@@ -417,30 +417,47 @@ namespace Qs.Runtime
                     else if (ParseMode == QsVarParseModes.Sequence)
                     {
                         #region Variable in Sequence Parsing
-                        //try to get the variable from the sequence index
-                        try
+
+                        if (q.Equals(Sequence.SequenceRangeStartName, StringComparison.OrdinalIgnoreCase))
                         {
-                            quantityExpression = lambdaBuilder.Parameters.Single(c => c.Name == q);
+                            quantityExpression = Expression.PropertyOrField(Expression.Constant(Sequence), "StartIndex");
+                            quantityExpression = Expression.Call(typeof(Qs).GetMethod("ToScalarValue", new Type[] { typeof(int) }), quantityExpression);
 
-                            //we should check if q is index or parameter of sequence.
-
-                            if (Sequence.SequenceIndexName == q)
-                            {
-                                //it is really an index
-                                // convert it into Quantity.
-                                //   because it is only integer
-
-                                quantityExpression = Expression.Call(typeof(Qs).GetMethod("ToScalarValue", new Type[] { typeof(int) }), quantityExpression);
-
-                            }
-
+                            Sequence.CachingEnabled = false;
                         }
-                        catch
+                        else if (q.Equals(Sequence.SequenceRangeEndName, StringComparison.OrdinalIgnoreCase))
                         {
-                            //quantity variable  //get it from evaluator  global heap
-                            quantityExpression = GetVariable(q);
-                            Sequence.CachingEnabled = false;  //because when evaluating external variable the external variable may change without knowing
-                            throw new QsParameterNotFoundException("Global variable (" + q + ") are not permitted");
+                            quantityExpression = Expression.PropertyOrField(Expression.Constant(Sequence), "EndIndex");
+                            quantityExpression = Expression.Call(typeof(Qs).GetMethod("ToScalarValue", new Type[] { typeof(int) }), quantityExpression);
+
+                            Sequence.CachingEnabled = false; // because start and end index may change from call to call
+                        }
+                        else
+                        {
+                            //try to get the variable from the sequence index
+                            try
+                            {
+                                quantityExpression = lambdaBuilder.Parameters.Single(c => c.Name == q);
+
+                                //we should check if q is index or parameter of sequence.
+
+                                if (q.Equals(Sequence.SequenceIndexName, StringComparison.OrdinalIgnoreCase))
+                                {
+                                    //it is really an index
+                                    // convert it into Quantity.
+                                    //   because it is only integer
+
+                                    quantityExpression = Expression.Call(typeof(Qs).GetMethod("ToScalarValue", new Type[] { typeof(int) }), quantityExpression);
+
+                                }
+                            }
+                            catch
+                            {
+                                //quantity variable  //get it from evaluator  global heap
+                                quantityExpression = GetVariable(q);
+                                Sequence.CachingEnabled = false;  //because when evaluating external variable the external variable may change without knowing
+                                throw new QsParameterNotFoundException("Global variable (" + q + ") are not permitted");
+                            }
                         }
                         #endregion
 
@@ -506,9 +523,6 @@ namespace Qs.Runtime
         }
 
 
-
-
-
         /// <summary>
         /// Get Absolute of number or determinant of matrix.
         /// </summary>
@@ -539,7 +553,6 @@ namespace Qs.Runtime
             rr = Expression.Call(rr, typeof(QsValue).GetMethod("NormOperation"));
             
             return rr;
-
         }
 
 
@@ -556,13 +569,14 @@ namespace Qs.Runtime
             Token token = tok.TrimStart(typeof(LeftCurlyBracketToken));
             token = token.TrimEnd(typeof(RightCurlyBracketToken));
 
-            token = token.MergeAllBut(typeof(WordToken), new CommaToken(), new MultipleSpaceToken());
-            token = token.RemoveTokens(typeof(CommaToken), typeof(MultipleSpaceToken));
             
+            token = token.MergeAllBut(typeof(MergedToken), new CommaToken(), new MultipleSpaceToken());
+            token = token.RemoveTokens(typeof(CommaToken), typeof(MultipleSpaceToken));
+
 
             for (int i = 0; i < token.Count ;i++ )
             {
-                if (token[i].TokenClassType==typeof(WordToken))
+                if (token[i].TokenClassType == typeof(MergedToken))
                 {
                     qtyExpressions.Add(ParseArithmatic(token[i]));
                 }
@@ -620,6 +634,7 @@ namespace Qs.Runtime
                             vtk.TokenClassType != typeof(CommaToken)
                             )
                         {
+
                             componentsExpressions.Add(ParseArithmatic(vtk));    // get the expression of the current component.
                             
                         }
@@ -698,6 +713,8 @@ namespace Qs.Runtime
         }
 
         #endregion
+        
+        #region Helpers in making values
         /// <summary>
         /// Obtain variable value by expression in the current scope
         /// </summary>
@@ -736,8 +753,6 @@ namespace Qs.Runtime
                 return fe;
             }
         }
-
-
 
 
         /// <summary>
@@ -836,21 +851,32 @@ namespace Qs.Runtime
 
             return Expression.Constant(SymbolicScalar, typeof(QsValue));
         }
+        #endregion
 
+        #region Execution Global Code
         public QsValue Execute(string line)
         {
             ParseArithmatic(line);
             return Execute() as QsValue;
         }
 
-        public object Execute()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
+        internal object Execute()
         {
-            Expression<Func<object>> cq = Expression.Lambda<Func<object>>
-                (this.ResultExpression);
 
+            // Construct Lambda function which return one object.
+            Expression<Func<object>> cq = Expression.Lambda<Func<object>>(this.ResultExpression);
+
+            // compile the function
             Func<object> aqf = cq.Compile();
 
+            // execute the function
             object result = aqf();
+
+            // return the result
             return result;
         }
 
@@ -862,11 +888,107 @@ namespace Qs.Runtime
                 return this.Evaluator.Scope;
             }
         }
+        #endregion
 
         public Type ScopeType { get { return Scope.GetType(); } }
 
         #region Expressions Generators
 
+
+        /// <summary>
+        /// Get Item with the specified indexing
+        /// </summary>
+        /// <param name="valueName"></param>
+        /// <param name="indexes"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
+        public Expression IndexerExpression(string valueName, Token indexes, Token args)
+        {
+            // Notes:
+            // Sequence and Values indexing are look alike from the syntax point of view
+            // however they are different on the evaluation part.
+            // Priority of value like vector and matrix are over the priority of sequence.
+            // however there are also some conditions
+            // If there are arguments in the called expression then we are difinitely calling sequence
+            // if the value name is refering to a scalar value then also we are acessing a sequence.
+            // {I know this is many checks on the level of execution especially the naieve test of scalar {But I want  it like that :) }
+            //
+
+            // check for args
+            if (args != null)
+            {
+                return SequenceCallExpression(valueName, indexes, args);
+            }
+            else
+            {
+                string ns = string.Empty;
+                if (valueName.IndexOf(':') > -1) ns = valueName.Substring(0, valueName.IndexOf(':'));
+
+                string valName = valueName.Substring(valueName.IndexOf(':') + 1);
+
+                QsValue value = QsEvaluator.GetScopeValueOrNull(this.Scope, ns, valName) as QsValue;
+                if (value == null)
+                {
+                    // value is null then it is difinitely  a sequence
+                    return SequenceCallExpression(valueName, indexes, args);
+                }
+                else
+                {
+                    // no there is a value there
+                    if (value is QsScalar)
+                    {
+                        // oops Scalar difinitely don't have elements inside it.
+                        return SequenceCallExpression(valueName, indexes, args);
+                    }
+                    else
+                    {
+                        // vector, matrix, or tensor.
+                        return ValueIndexExpression(value, indexes);
+                    }
+                }
+            }
+        }
+
+
+        /// <summary>
+        /// Evaluate vector, matrix, and tensor like v[i], m[i, j], or t[i, j, k]
+        /// For contravariant tensor subscripts should be followed by underscore like t[5,8_,2] To be implemented later.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="indexes"></param>
+        /// <returns></returns>
+        public Expression ValueIndexExpression(QsValue value, Token indexes)
+        {
+
+            var Tokens = indexes.TrimStart<LeftSquareBracketToken>().TrimEnd<RightSquareBracketToken>();
+            Tokens = Tokens.MergeAllBut<MergedToken>(new CommaToken()).RemoveTokens(typeof(CommaToken));
+
+            MethodInfo mi =  typeof(QsValue).GetMethod("GetIndexedItem");
+
+            int[] parameters = new int[Tokens.Count];
+
+            for (int ix = 0; ix < Tokens.Count; ix++)
+            {
+                parameters[ix] = int.Parse(Tokens[ix].TokenValue);
+            }
+
+            Expression result = Expression.Call(Expression.Constant(value),
+                mi,
+                Expression.Constant(parameters));
+
+            return result;
+
+        }
+
+        
+
+        /// <summary>
+        /// evaluate expression on the syntax S[n] or S[9..34](x1, x2, .., x7)  etc.
+        /// </summary>
+        /// <param name="sequenceName"></param>
+        /// <param name="indexes"></param>
+        /// <param name="args"></param>
+        /// <returns></returns>
         public Expression SequenceCallExpression(string sequenceName, Token indexes, Token args)
         {
            
@@ -930,6 +1052,7 @@ namespace Qs.Runtime
 
             if (itok.Count == 3 && itok[1].TokenClassType == typeof(SequenceRangeToken))
             {
+                #region From To and Range Function
                 FromExpression = Expression.Call(typeof(Qs).GetMethod("IntegerFromQsValue"), ParseArithmatic(itok[0].TokenValue));
                 ToExpression = Expression.Call(typeof(Qs).GetMethod("IntegerFromQsValue"), ParseArithmatic(itok[2].TokenValue));
 
@@ -943,6 +1066,7 @@ namespace Qs.Runtime
                     methodName = "QsValueElements";
                 else if (itok[1].TokenValue == "!%")
                     methodName = "StdDeviation";
+                #endregion
             }
             else if (int.TryParse(indexText, out n))
             {
@@ -966,6 +1090,7 @@ namespace Qs.Runtime
             MethodInfo mi;
             if (methodName == "GetElementValue")
             {
+                #region One Element Value
                 switch (parameters.Count)
                 {
                     case 0:
@@ -997,35 +1122,37 @@ namespace Qs.Runtime
                 }
                 // insert the index parameter.
                 parameters.Insert(0, IndexExpression);
-
+                #endregion
             }
             else
             {
+                #region Range Operation
+                const string RangeOperation = "RangeOperation";
                 switch (parameters.Count)
                 {
                     case 0:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int) });
+                        mi = typeof(QsSequence).GetMethod(RangeOperation, new Type[] { typeof(string), typeof(int), typeof(int) });
                         break;
                     case 1:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(QsValue) });
+                        mi = typeof(QsSequence).GetMethod(RangeOperation, new Type[] { typeof(string), typeof(int), typeof(int), typeof(QsValue) });
                         break;
                     case 2:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(QsValue), typeof(QsValue) });
+                        mi = typeof(QsSequence).GetMethod(RangeOperation, new Type[] { typeof(string), typeof(int), typeof(int), typeof(QsValue), typeof(QsValue) });
                         break;
                     case 3:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
+                        mi = typeof(QsSequence).GetMethod(RangeOperation, new Type[] { typeof(string), typeof(int), typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
                         break;
                     case 4:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
+                        mi = typeof(QsSequence).GetMethod(RangeOperation, new Type[] { typeof(string), typeof(int), typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
                         break;
                     case 5:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
+                        mi = typeof(QsSequence).GetMethod(RangeOperation, new Type[] { typeof(string), typeof(int), typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
                         break;
                     case 6:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
+                        mi = typeof(QsSequence).GetMethod(RangeOperation, new Type[] { typeof(string), typeof(int), typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
                         break;
                     case 7:
-                        mi = typeof(QsSequence).GetMethod(methodName, new Type[] { typeof(int), typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
+                        mi = typeof(QsSequence).GetMethod(RangeOperation, new Type[] { typeof(string), typeof(int), typeof(int), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue), typeof(QsValue) });
                         break;
                     default:
                         throw new QsException("Number of sequence parameters exceed the built in functionality");
@@ -1033,7 +1160,8 @@ namespace Qs.Runtime
                 // insert the index parameter.
                 parameters.Insert(0, ToExpression);
                 parameters.Insert(0, FromExpression);
-
+                parameters.Insert(0, Expression.Constant(methodName));
+                #endregion
             }
 
             #endregion
@@ -1591,7 +1719,7 @@ namespace Qs.Runtime
         /// <summary>
         /// The final result of the parsing and expression tree construction.
         /// </summary>
-        public Expression ResultExpression
+        internal Expression ResultExpression
         {
             get;
             set;

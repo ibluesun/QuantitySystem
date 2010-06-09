@@ -151,13 +151,26 @@ namespace Qs.Types
                 return vs;
             }
         }
-        
 
         /// <summary>
         /// 
         /// </summary>
-        /// <param name="row"></param>
-        /// <param name="column"></param>
+        /// <param name="row">i index</param>
+        /// <returns></returns>
+        public QsVector this[int row]
+        {
+            get
+            {
+                return Rows[row];
+            }
+
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="row">i index</param>
+        /// <param name="column">j index</param>
         /// <returns></returns>
         public QsScalar this[int row, int column]
         {
@@ -573,6 +586,8 @@ namespace Qs.Types
             }
         }
 
+
+
         /// <summary>
         /// Calculates the determinant and return it as a vector.
         /// </summary>
@@ -615,12 +630,11 @@ namespace Qs.Types
                 }
                 else
                 {
-                    //I think this is the LU decomposition.
-                    throw new QsMatrixException("Determinant of more than 3 elements are not Implemented yet {LU goes here}");
+                    throw new NotImplementedException();
                 }
                     
             }
-            else throw new QsMatrixException("matrix is not determinant");
+            else throw new QsMatrixException("This matrix is not a square matrix.");
         }
 
 
@@ -713,6 +727,28 @@ namespace Qs.Types
 
             return m;
         }
+
+
+        /// <summary>
+        /// Makes n x n matrix with zeros.
+        /// </summary>
+        /// <param name="n"></param>
+        /// <returns></returns>
+        public static QsMatrix MakeEmptySquareMatrix(int n)
+        {
+            QsMatrix m = new QsMatrix();
+            for (int i = 0; i < n; i++)
+            {
+                QsVector v = new QsVector(n);
+                for (int j = 0; j < n; j++)
+                {
+                    v.AddComponent(QsScalar.Zero);
+                }
+                m.AddVector(v);
+            }
+            return m;
+        }
+
 
         #region ICloneable Members
 

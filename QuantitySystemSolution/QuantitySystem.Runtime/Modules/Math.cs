@@ -656,5 +656,42 @@ namespace Qs.Modules
 
         #endregion
 
+        public static QsValue Max(QsParameter value)
+        {
+            if (value.QsNativeValue is QsScalar) return value.QsNativeValue;
+            if (value.QsNativeValue is QsVector)
+            {
+                var vector = value.QsNativeValue as QsVector;
+                return (QsValue)vector.Max();
+            }
+            if (value.QsNativeValue is QsMatrix)
+            {
+                var matrix = value.QsNativeValue as QsMatrix;
+                return (QsValue)matrix.ToArray().Max();
+            }
+
+            throw new QsException("Not implemented for above matrix");
+
+        }
+
+        public static QsValue Min(QsParameter value)
+        {
+            
+            if (value.QsNativeValue is QsScalar) return value.QsNativeValue;
+            if (value.QsNativeValue is QsVector)
+            {
+                var vector = value.QsNativeValue as QsVector;
+                return (QsValue)vector.Min();
+            }
+            if (value.QsNativeValue is QsMatrix)
+            {
+                var matrix = value.QsNativeValue as QsMatrix;
+                return (QsValue)matrix.ToArray().Min();
+            }
+
+            throw new QsException("Not implemented for above matrix");
+
+        }
+
     }
 }

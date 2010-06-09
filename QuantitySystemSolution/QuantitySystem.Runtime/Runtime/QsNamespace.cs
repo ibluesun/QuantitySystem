@@ -121,6 +121,38 @@ namespace Qs.Runtime
         }
 
 
+        public object GetValueOrNull(string name)
+        {
+            if (_NamespaceType != null)
+            {
+                if (QsFunction.IsItFunctionSymbolicName(name))
+                {
+                    if (HardCodedMethods == null) HardCodedMethods = GetQsNamespaceMethods();
+
+                    if (HardCodedMethods.ContainsKey(name))
+                    {
+                        return HardCodedMethods[name];
+                    }
+                }
+                else
+                {
+                    var prop = _NamespaceType.GetProperty(name, BindingFlags.IgnoreCase | BindingFlags.Static | BindingFlags.Public);
+                    if (prop != null)
+                    {
+                        return NativeValueToQsValue(prop.GetValue(null, null));
+                    }
+                }
+            }
+
+            // try in values hash
+
+            object o;
+            Values.TryGetValue(name, out o);
+
+            return o;
+        }
+
+
         /// <summary>
         /// Decorate a native C# function with QsFunction
         /// </summary>

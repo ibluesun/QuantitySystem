@@ -686,7 +686,14 @@ namespace Qs.Runtime
 
         #region Scope Helper methods.
 
-        public static object GetScopeVariable(Scope scope, string nameSpace, string name)
+        /// <summary>
+        /// Get the value or null
+        /// </summary>
+        /// <param name="scope"></param>
+        /// <param name="nameSpace"></param>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static object GetScopeValueOrNull(Scope scope, string nameSpace, string name)
         {
             if (string.IsNullOrEmpty(nameSpace))
             {
@@ -704,7 +711,7 @@ namespace Qs.Runtime
 
                 if (ns != null)
                 {
-                    return ns.GetValue(name);
+                    return ns.GetValueOrNull(name);
                 }
                 else
                 {
