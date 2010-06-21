@@ -134,7 +134,7 @@ namespace Qs.Runtime
         /// <returns></returns>
         internal Token MergeOperators(Token token)
         {
-            Token tok = token.MergeTokens(new PowerDotToken());
+            Token tok = token.MergeTokens<PowerDotToken>();
 
             //tok = tok.MergeTokens(new PowerCrossToken()); removed
 
@@ -143,23 +143,23 @@ namespace Qs.Runtime
             return tok;
         }
 
-        internal Token ConditionsTokenize(Token token)
+        private Token ConditionsTokenize(Token token)
         {
-            var tokens = token.MergeTokens(new WhenStatementToken());
+            var tokens = token.MergeTokens<WhenStatementToken>();
             
-            tokens = tokens.MergeTokens(new OtherwiseStatementToken());
+            tokens = tokens.MergeTokens<OtherwiseStatementToken>();
             
-            tokens = tokens.MergeTokens(new AndStatementToken());
+            tokens = tokens.MergeTokens<AndStatementToken>();
             
-            tokens = tokens.MergeTokens(new OrStatementToken());
+            tokens = tokens.MergeTokens<OrStatementToken>();
             
-            tokens = tokens.MergeTokens(new EqualityToken());
+            tokens = tokens.MergeTokens<EqualityToken>();
             
-            tokens = tokens.MergeTokens(new InEqualityToken());
+            tokens = tokens.MergeTokens<InEqualityToken>();
             
-            tokens = tokens.MergeTokens(new LessThanOrEqualToken());
+            tokens = tokens.MergeTokens<LessThanOrEqualToken>();
             
-            tokens = tokens.MergeTokens(new GreaterThanOrEqualToken());
+            tokens = tokens.MergeTokens<GreaterThanOrEqualToken>();
 
             return tokens;
         }
@@ -172,7 +172,7 @@ namespace Qs.Runtime
 
 
             // assemble all spaces
-            tokens = tokens.MergeTokens(new MultipleSpaceToken());
+            tokens = tokens.MergeTokens<MultipleSpaceToken>();
 
 
             // assemble all units <*>    //before tokenization of tensor operator
@@ -196,19 +196,19 @@ namespace Qs.Runtime
 
             tokens = ConditionsTokenize(tokens);   // make tokens of conditional statements
 
-            tokens = tokens.MergeTokens(new WordToken());                 //discover words
+            tokens = tokens.MergeTokens<WordToken>();                 //discover words
 
             // merge the $ + Word into Symbolic and get the symbolic variables.
             tokens = tokens.MergeSequenceTokens<SymbolicToken>(typeof(DollarToken), typeof(WordToken));
             tokens = tokens.MergeSequenceTokens<SymbolicQuantityToken>(typeof(SymbolicToken), typeof(UnitToken));
 
-            tokens = tokens.MergeTokens(new NumberToken());               //discover the numbers
-            tokens = tokens.MergeTokens(new UnitizedNumberToken());   //discover the unitized numbers
+            tokens = tokens.MergeTokens<NumberToken>();               //discover the numbers
+            tokens = tokens.MergeTokens<UnitizedNumberToken>();   //discover the unitized numbers
 
             tokens = MergeOperators(tokens);
 
-            tokens = tokens.MergeTokens(new NameSpaceToken());
-            tokens = tokens.MergeTokens(new NameSpaceAndValueToken());
+            tokens = tokens.MergeTokens<NameSpaceToken>();
+            tokens = tokens.MergeTokens<NameSpaceAndValueToken>();
 
             // merge the function value  expressions 
             //  @f  
@@ -1046,7 +1046,7 @@ namespace Qs.Runtime
 
             Token itok = Token.ParseText(indexText);
             itok = itok.RemoveSpaceTokens();
-            itok = itok.MergeTokens(new WordToken());
+            itok = itok.MergeTokens<WordToken>();
             
             itok = itok.MergeAllBut(typeof(WordToken), new SequenceRangeToken());
 

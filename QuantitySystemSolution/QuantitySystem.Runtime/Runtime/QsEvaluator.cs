@@ -321,8 +321,8 @@ namespace Qs.Runtime
             Token tt = Token.ParseText(line);
             tt = tt.DiscoverQsTextTokens();
 
-            tt = tt.MergeTokens(new WordToken());
-            tt = tt.MergeTokens(new MultipleSpaceToken());
+            tt = tt.MergeTokens<WordToken>();
+            tt = tt.MergeTokens<MultipleSpaceToken>();
             tt = tt.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
             tt = tt.DiscoverCalls();
             
@@ -375,14 +375,14 @@ namespace Qs.Runtime
                 {
                     // May be variable or sequence element.
                     Token seq = Token.ParseText(varName);
-                    seq = seq.MergeTokens(new MultipleSpaceToken());
+                    seq = seq.MergeTokens<MultipleSpaceToken>();
                     seq = seq.RemoveSpaceTokens();
-                    seq = seq.MergeTokens(new WordToken());
+                    seq = seq.MergeTokens<WordToken>();
 
-                    seq = seq.MergeTokens(new ColonToken());
+                    seq = seq.MergeTokens<ColonToken>();
                     seq = seq.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
 
-                    seq = seq.MergeTokens(new NameSpaceToken()); //discover namespace tokens
+                    seq = seq.MergeTokens<NameSpaceToken>(); //discover namespace tokens
 
                     string seqNamespace = string.Empty;
                     int nsidx = 0;
@@ -539,11 +539,11 @@ namespace Qs.Runtime
 
 
                         Token vnToken = Token.ParseText(varName);
-                        vnToken = vnToken.MergeTokens(new MultipleSpaceToken());
+                        vnToken = vnToken.MergeTokens<MultipleSpaceToken>();
                         vnToken = vnToken.RemoveSpaceTokens();
-                        vnToken = vnToken.MergeTokens(new WordToken());
-                        vnToken = vnToken.MergeTokens(new ColonToken());
-                        vnToken = vnToken.MergeTokens(new NameSpaceToken());
+                        vnToken = vnToken.MergeTokens<WordToken>();
+                        vnToken = vnToken.MergeTokens<ColonToken>();
+                        vnToken = vnToken.MergeTokens<NameSpaceToken>();
 
                         if (vnToken.Contains(typeof(NameSpaceToken)))
                         {

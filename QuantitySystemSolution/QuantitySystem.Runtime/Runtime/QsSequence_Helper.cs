@@ -109,10 +109,10 @@ namespace Qs.Runtime
 
             Token t = Token.ParseText(sequence);
 
-            t = t.MergeTokens(new MultipleSpaceToken());
+            t = t.MergeTokens<MultipleSpaceToken>();
 
-            t = t.MergeTokens(new PositiveSequenceToken());  //    ..>  start from 0 index to +ve
-            t = t.MergeTokens(new NegativeSequenceToken());  //    <..  start from -1 index to -ve
+            t = t.MergeTokens<PositiveSequenceToken>();  //    ..>  start from 0 index to +ve
+            t = t.MergeTokens<NegativeSequenceToken>();  //    <..  start from -1 index to -ve
 
 
             if (t.IndexOf(typeof(PositiveSequenceToken)) > -1)
@@ -133,11 +133,11 @@ namespace Qs.Runtime
             //   however I only support one index this time.
 
             t = t.MergeTokens<PointerOperatorToken>();
-            t = t.MergeTokens(new WordToken());
-            t = t.MergeTokens(new NumberToken());
-            t = t.MergeTokens(new UnitizedNumberToken());
+            t = t.MergeTokens<WordToken>();
+            t = t.MergeTokens<NumberToken>();
+            t = t.MergeTokens<UnitizedNumberToken>();
 
-            t = t.MergeTokens(new NameSpaceToken());
+            t = t.MergeTokens<NameSpaceToken>();
 
             t = t.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
 

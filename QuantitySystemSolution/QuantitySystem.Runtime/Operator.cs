@@ -6,6 +6,9 @@ using System.Text;
 namespace Qs
 {
 
+    /// <summary>
+    /// Library store the operators text.
+    /// </summary>
     internal static class Operator
     {
         public const string Plus = "+";

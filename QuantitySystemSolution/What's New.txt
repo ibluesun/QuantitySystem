@@ -1,3 +1,12 @@
+[QuantitySystem Framework 1.1.9.64]
+Added other quantities to support my thesis of my thermodynamic project.
+- SpecificEnergy
+- MolarDensity
+- MolarSpecificHeat
+- MolarVolume
+
+Changed the Calculator from AnyCPU to x86 structure  {I was testing with native 32 bit library  "REFPROP" if you are insist to know.}
+
 [Qs 1.1.9.963]
 - Symbolic Algebra library  fixed. (refer to http://SymbolicAlgebra.codeplex.com)
 - Determinant for squared matrices above 3x3 is added.

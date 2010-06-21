@@ -506,12 +506,12 @@ namespace Qs.Types
         public static Token TokenizeFunction(string functionCode)
         {
             Token functionToken = Token.ParseText(functionCode);
-            functionToken = functionToken.MergeTokens(new MultipleSpaceToken());
-            functionToken = functionToken.MergeTokens(new WordToken());
-            functionToken = functionToken.MergeTokens(new NumberToken());
-            functionToken = functionToken.MergeTokens(new UnitizedNumberToken());
+            functionToken = functionToken.MergeTokens<MultipleSpaceToken>();
+            functionToken = functionToken.MergeTokens<WordToken>();
+            functionToken = functionToken.MergeTokens<NumberToken>();
+            functionToken = functionToken.MergeTokens<UnitizedNumberToken>();
 
-            functionToken = functionToken.MergeTokens(new NameSpaceToken());
+            functionToken = functionToken.MergeTokens<NameSpaceToken>();
 
             functionToken = functionToken.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
             functionToken = functionToken.RemoveSpaceTokens();
