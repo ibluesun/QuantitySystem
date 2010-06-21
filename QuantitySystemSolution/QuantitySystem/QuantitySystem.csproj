@@ -145,12 +145,16 @@
     <Compile Include="Quantities\MassMomentOfInertia.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Quantities\MolarDensity.cs" />
     <Compile Include="Quantities\MolarMass.cs" />
+    <Compile Include="Quantities\MolarSpecificHeat.cs" />
+    <Compile Include="Quantities\MolarVolume.cs" />
     <Compile Include="Quantities\Momentum.cs" />
     <Compile Include="Quantities\Power.cs" />
     <Compile Include="Quantities\Pressure.cs" />
     <Compile Include="Quantities\RadiantIntensity.cs" />
     <Compile Include="Quantities\RotationalStiffness.cs" />
+    <Compile Include="Quantities\SpecificEnergy.cs" />
     <Compile Include="Quantities\SpecificHeat.cs" />
     <Compile Include="Quantities\SpecificVolume.cs" />
     <Compile Include="Quantities\SpecificWeight.cs" />

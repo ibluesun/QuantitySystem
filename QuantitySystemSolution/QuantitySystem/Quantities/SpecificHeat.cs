@@ -1,11 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using QuantitySystem.Quantities.BaseQuantities;
+﻿using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities
 {
+    /// <summary>
+    /// Energy per unit mass x temperature
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     public class SpecificHeat<T> : DerivedQuantity<T>
     {
 

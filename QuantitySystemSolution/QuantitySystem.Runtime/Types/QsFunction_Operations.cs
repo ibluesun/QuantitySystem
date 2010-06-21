@@ -134,25 +134,23 @@ namespace Qs.Types
             if (value is QsFunction)
             {
                 QsFunction fn2 = (QsFunction)value;
-                //if (operation == Operator.Plus)
-                //{
-                //    return SymbolicOperation(fn2, operation);
-                //}
-                //else
-                {
-                    string fDeclaration;
+                string fDeclaration;
 
-                    var fTokens = JoinFunctionsArrayTokensWithOperation(operation, out fDeclaration, this, fn2);
-                    return QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, fDeclaration, fTokens);
-                }
+                var fTokens = JoinFunctionsArrayTokensWithOperation(operation, out fDeclaration, this, fn2);
+                return QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, fDeclaration, fTokens);
+
             }
             else if (value is QsScalar)
             {
                 var fname = "_";
                 var fbody = "" + this.FunctionBody + " " + operation + " " + ((QsScalar)value).NumericalQuantity.ToShortString();
                 var fparam = this.ParametersNames;
+
                 var f = fname + "(" + RemoveRedundantParameters(fparam) + ") = " + fbody;
+
+                
                 return QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, f);
+                
             }
             else
             {
