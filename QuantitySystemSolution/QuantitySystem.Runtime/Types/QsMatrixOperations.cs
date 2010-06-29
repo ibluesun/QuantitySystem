@@ -299,10 +299,12 @@ namespace Qs.Types
             else if (value is QsVector)
             {
                 throw new NotSupportedException();
+
             }
             else if (value is QsMatrix)
             {
-                return this.MultiplyMatrixByElements((QsMatrix)value);
+
+                throw new NotSupportedException();
             }
             else
             {
@@ -419,6 +421,39 @@ namespace Qs.Types
 
         public override QsValue TensorProductOperation(QsValue value)
         {
+            if (value is QsMatrix)
+            {
+                // Kronecker product
+                var tm = (QsMatrix)value;
+
+                QsMatrix result = new QsMatrix();
+
+                List<QsMatrix> lm = new List<QsMatrix>();
+
+                for (int i = 0; i < this.RowsCount; i++)
+                {
+                    QsMatrix rowM = null;
+                    for (int j = 0; j < this.ColumnsCount; j++)
+                    {
+                        QsScalar element = this[i, j];
+                        var imat =  (QsMatrix)(tm * element);
+                        if (rowM == null) rowM = imat;
+                        else rowM = rowM.AppendRightMatrix(imat);
+                        
+                    }
+                    lm.Add(rowM);
+                }
+
+                // append vertically all matrices 
+
+                foreach (var rm in lm)
+                {
+
+                    result = result.AppendLowerMatrix(rm);
+                }
+
+                return result;
+            }
             throw new NotImplementedException();
         }
 
