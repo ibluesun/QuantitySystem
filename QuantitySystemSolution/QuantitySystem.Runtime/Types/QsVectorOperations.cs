@@ -464,7 +464,7 @@ namespace Qs.Types
 
                 }
 
-                return new QsMatrix(vcs.ToArray());
+                return (new QsMatrix(vcs.ToArray()));
 
             }
             else

@@ -18,11 +18,11 @@ namespace ParticleLexer.QsTokens
     /// unit token form &lt;unit&gt;
     /// </summary>
     [TokenPattern(
-        RegexPattern = "<(°?\\w+!?(\\^\\d+)?\\.?)+(/(°?\\w+!?(\\^\\d+)?\\.?)+)?>")
+        RegexPattern = "<(°?\\w+!?(\\^\\d+)?\\.?)+(/(°?\\w+!?(\\^\\d+)?\\.?)+)?>"
+        , ShouldBeginWith = "<"
+        )
     ]
-    public class UnitToken : TokenClass
-    {
-    }
+    public class UnitToken : TokenClass { }
 
     /// <summary>
     /// Unitized number is
@@ -55,12 +55,12 @@ namespace ParticleLexer.QsTokens
     /// <summary>
     /// ..>  token
     /// </summary>
-    [TokenPattern(RegexPattern = "\\.\\.>", ExactWord = true)]
+    [TokenPattern(RegexPattern = "\\.\\.>", ExactWord = true, ShouldBeginWith = ".")]
     public class PositiveSequenceToken : TokenClass
     {
     }
 
-    [TokenPattern(RegexPattern = "<\\.\\.", ExactWord = true)]
+    [TokenPattern(RegexPattern = "<\\.\\.", ExactWord = true, ShouldBeginWith = "<")]
     public class NegativeSequenceToken : TokenClass
     {
     }
@@ -132,7 +132,7 @@ namespace ParticleLexer.QsTokens
     /// <summary>
     /// | x |
     /// </summary>
-    [TokenPattern(RegexPattern = @"\|[^\|]+?\|")]
+    [TokenPattern(RegexPattern = @"\|[^\|]+?\|", ShouldBeginWith = "|")]
     public class AbsoluteToken : TokenClass
     {
     }
@@ -140,7 +140,7 @@ namespace ParticleLexer.QsTokens
     /// <summary>
     /// 
     /// </summary>
-    [TokenPattern(RegexPattern = @"\|\|")]
+    [TokenPattern(RegexPattern = @"\|\|", ShouldBeginWith = "|")]
     public class DoubleVerticalBarToken : TokenClass
     {
     }
@@ -148,7 +148,7 @@ namespace ParticleLexer.QsTokens
     /// <summary>
     /// || x ||
     /// </summary>
-    [TokenPattern(RegexPattern = @"\|\|.+\|\|")]
+    [TokenPattern(RegexPattern = @"\|\|.+\|\|", ShouldBeginWith = "|")]
     public class MagnitudeToken : TokenClass
     {
     }

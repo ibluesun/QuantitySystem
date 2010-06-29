@@ -421,6 +421,26 @@ namespace Qs.Types
         }
 
 
+        /// <summary>
+        /// Append the target matrix right to the matrix.
+        /// </summary>
+        /// <param name="matrix"></param>
+        /// <returns></returns>
+        public QsMatrix AppendRightMatrix(QsMatrix matrix)
+        {
+            QsMatrix m = CopyMatrix(this);
+            foreach (var column in matrix.Columns)
+                m.AddColumnVector(column);
+            return m;
+        }
+
+        public QsMatrix AppendLowerMatrix(QsMatrix matrix)
+        {
+            QsMatrix m = CopyMatrix(this);
+            foreach (var vector in matrix)
+                m.AddVector(vector);
+            return m;
+        }
 
         #endregion
 

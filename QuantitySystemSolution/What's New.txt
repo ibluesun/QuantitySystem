@@ -1,3 +1,12 @@
+[Qs 1.1.9.964]  (Released)
+- Enhancing the parsing speed  in ParticleLexer library which gave me (from 7% to 20% ) minimum to maximum performance increase.
+- Additition and Multiplication of Tensor with Scalar adjusted.
+- Outer product for matrix added '(*)' (Kronecker product)
+- Changed Tensor Rank into Tensor Order which is more correct than Rank word :S :S
+- Tensor Order 1 * Tensor Order 1 = Tensor Order 2 (Dyadic operation)  {NEVER NEVER NEVER think that vector is a first order tensor VECTOR IS VECTOR and TENSOR IS TENSOR  (although they look the same)}
+- I need to study tensor algebra also where is the 3rd order tensors and 4th 5th WHY I CAN'T find these entities and also what is the meaning of covariant and contravariant tensors :( :( :(  {{ I CAN'T UNDERSTAND LIKE THIS }}
+
+
 [QuantitySystem Framework 1.1.9.64]
 Added other quantities to support my thesis of my thermodynamic project.
 - SpecificEnergy

@@ -1,0 +1,18 @@
+here is another strange note
+
+When you multiply two VECTORS with outer product
+you get a matrix  because the outer product is actually
+a tensor product that only work with tensors of first order (NOT RAnK)
+
+so that 
+
+{4 3 2} (*) {2 2 2}   result is matrix
+
+the same operation is 
+<|4 3 2|> * <|2 2 2|>  result is tensor from 2nd Order
+
+[again because people easily refer to tensors of order 0 and 1 as scalar and vector actually makes my life harder to understand
+  also the problem of algebraic rings and things and others oh my god]
+
+
+
