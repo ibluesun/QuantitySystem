@@ -425,23 +425,25 @@ namespace QuantitySystem
         /// <returns></returns>
         public static AnyQuantity<T> QuantityFrom<T>(QuantityDimension dimension)
         {
-
-            Type QuantityType = QuantityTypeFrom(dimension);
-
-            //the quantity type now is without container type we should generate it
-
-            Type QuantityWithContainerType = QuantityType.MakeGenericType(typeof(T));
-
-            object j;
-            if(QuantitiesCached.TryGetValue(QuantityWithContainerType, out j))
+            lock (QuantitiesCached)
             {
-                return (AnyQuantity<T>)((AnyQuantity<T>)j).Clone();
-            }
-            else
-            {
-                j = Activator.CreateInstance(QuantityWithContainerType);
-                QuantitiesCached.Add(QuantityWithContainerType, j);
-                return (AnyQuantity<T>)((AnyQuantity<T>)j).Clone();
+                Type QuantityType = QuantityTypeFrom(dimension);
+
+                //the quantity type now is without container type we should generate it
+
+                Type QuantityWithContainerType = QuantityType.MakeGenericType(typeof(T));
+
+                object j;
+                if (QuantitiesCached.TryGetValue(QuantityWithContainerType, out j))
+                {
+                    return (AnyQuantity<T>)((AnyQuantity<T>)j).Clone();
+                }
+                else
+                {
+                    j = Activator.CreateInstance(QuantityWithContainerType);
+                    QuantitiesCached.Add(QuantityWithContainerType, j);
+                    return (AnyQuantity<T>)((AnyQuantity<T>)j).Clone();
+                }
             }
 
         

@@ -1,15 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Diagnostics;
 using Microsoft.Scripting.Hosting;
+using Qs.Types;
+using QuantitySystem;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
-using QuantitySystem;
-using Qs.Types;
-using System.Diagnostics;
-using Qs.Runtime;
 using SymbolicAlgebra;
+using Qs.Numerics;
 
 namespace Qs
 {
@@ -118,6 +115,42 @@ namespace Qs
         }
 
         /// <summary>
+        /// Quantitize the complex number into Complex Quantity
+        /// </summary>
+        /// <param name="complexValue"></param>
+        /// <param name="unit"></param>
+        /// <returns></returns>
+        public static AnyQuantity<Complex> ToQuantity(this Complex complexValue, string unit="1")
+        {
+            Unit un = Unit.Parse(unit);
+
+            return un.GetThisUnitQuantity<Complex>(complexValue);
+        }
+
+
+        /// <summary>
+        /// Wrap Complex Quantity into Scalar.
+        /// </summary>
+        /// <param name="qty"></param>
+        /// <returns></returns>
+        public static QsScalar ToScalar(this AnyQuantity<Complex> qty)
+        {
+            return new QsScalar(ScalarTypes.ComplexNumberQuantity) { ComplexQuantity = qty };
+        }
+
+        public static AnyQuantity<Quaternion> ToQuantity(this Quaternion quaternionValue, string unit = "1")
+        {
+            Unit un = Unit.Parse(unit);
+
+            return un.GetThisUnitQuantity<Quaternion>(quaternionValue);
+        }
+
+        public static QsScalar ToScalar(this AnyQuantity<Quaternion> qty)
+        {
+            return new QsScalar(ScalarTypes.QuaternionNumberQuantity) { QuaternionQuantity = qty };
+        }
+
+        /// <summary>
         /// Wrap AnyQuantity of double storage into qs scalar object.
         /// </summary>
         /// <param name="qty"></param>
@@ -160,6 +193,24 @@ namespace Qs
             return new QsScalar { NumericalQuantity = qty };
         }
 
+        public static AnyQuantity<Complex> ToComplex(this AnyQuantity<double> qty)
+        {
+            AnyQuantity<Complex> converted = qty.Unit.GetThisUnitQuantity<Complex>(qty.Value);
+            return converted;
+        }
+
+        public static AnyQuantity<Quaternion> ToQuaternion(this AnyQuantity<double> qty)
+        {
+            AnyQuantity<Quaternion> converted = qty.Unit.GetThisUnitQuantity<Quaternion>(qty.Value);
+            return converted;
+        }
+
+        public static AnyQuantity<Quaternion> ToQuaternion(this AnyQuantity<Complex> qty)
+        {
+            AnyQuantity<Quaternion> converted = qty.Unit.GetThisUnitQuantity<Quaternion>(qty.Value);
+            return converted;
+        }
+
         public static QsValue ToScalarValue(this string s)
         {
             return QsValue.ParseScalar(s);
@@ -199,7 +250,6 @@ namespace Qs
                 ss[i] = d.ToQuantity().ToScalar();
             }
             return ss;
-
         }
 
         public static QsVector ToQsVector<T>(this T[] data)

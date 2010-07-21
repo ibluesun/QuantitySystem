@@ -1,3 +1,45 @@
+[Qs 1.1.9.965]
+- Using .NET Framework 4 for the whole project and its realted projects.
+
+- Now functions when added or subtracted (all basic operations) use the symbolic library for manipulating the new function
+    -  f(x,y) = x^2+y 
+	-  g(x) = 2*x^2  
+	-  @g+@f  ==>  _(x,y) = 3*x^2 + y
+	- When adding function to symbolic quantity the symbolic quantity should be part of the argument list to be able to make the operation
+		- g(x) = x
+		- @g*$x ==>  _(x) = x^2
+		- @g*$y ==> Exception 'y' is not in the argument list.
+
+- First usage of .NET Parrallelism and fixing some threading issues in the framework itself (WOW, so I am now diving into the concurrent world :D )
+     - Implemented Parallelism in vector basic operations.
+
+- Added the Tensor product of order two which produce the same result as tensorial product between two matrices.
+
+- New Numerical types beside  Real and Symbolic quantities
+	
+	- 1) Complex Quantity (using the new complex type in .net 4)
+		- C{real imaginary}[<unit>]  
+			- example: C{3 2}<L> + c{1 2}<m^3>
+		- to make a complex number  write c followed by vector of two components (any extra component will be ignored)
+		- and you can follow the vector with unit to specify the complex number unit.
+		- C{3 1}<L> ^ 3.2   also valid
+		
+
+	- 2) Quaternion Quantity (I wrote the code by reading  http://www.boost.org/doc/libs/1_43_0/boost/math/quaternion.hpp)
+		- H{r i j k}[<unit>]  
+			- example: H{59 4 3 22}<L> 
+
+	- General Notes
+		- No Spaces between prefix and vector part or vector part and unit.
+	
+By this addition the scalar object is now CoMpLeTed holding 4 types of values
+	+ Real Values
+	+ Complex Values
+	+ Quaternion Values
+	+ Symbolic Values
+
+
+
 [Qs 1.1.9.964]  (Released)
 - Enhancing the parsing speed  in ParticleLexer library which gave me (from 7% to 20% ) minimum to maximum performance increase.
 - Additition and Multiplication of Tensor with Scalar adjusted.

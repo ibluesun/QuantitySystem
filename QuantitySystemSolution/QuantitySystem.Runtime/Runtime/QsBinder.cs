@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection;
+using System.Linq.Expressions;
 using Microsoft.Scripting.Actions;
-using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Ast;
+using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
 namespace Qs.Runtime
 {
     public class QsBinder : DefaultBinder
     {
-
-
         public QsBinder(ScriptDomainManager manager)
             : base(manager)
         {

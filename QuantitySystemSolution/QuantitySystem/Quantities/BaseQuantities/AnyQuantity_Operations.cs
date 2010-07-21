@@ -163,6 +163,95 @@ namespace QuantitySystem.Quantities.BaseQuantities
         }
 
 
+        /// <summary>
+        /// Adding quantities with different storage types
+        /// </summary>
+        /// <typeparam name="Q">Second Quantity Type</typeparam>
+        /// <param name="firstQuantity"></param>
+        /// <param name="secondQuantity"></param>
+        /// <returns></returns>
+        public static AnyQuantity<T> Add<Q>(AnyQuantity<T> firstQuantity, AnyQuantity<Q> secondQuantity)
+        {
+            if (firstQuantity.Equals(secondQuantity))
+            {
+                AnyQuantity<T> AQ = null;
+                try
+                {
+                    AQ = QuantityDimension.QuantityFrom<T>(firstQuantity.Dimension);
+                    //exception happen when adding two derived quantities together
+                }
+                catch (QuantityNotFoundException)
+                {
+                    //keep the first quantity configuration.
+                    AQ = (AnyQuantity<T>)firstQuantity.Clone();
+                }
+
+
+                //define the new dynamically created method
+                //with the return type and the input types
+
+                DynamicMethod method = new DynamicMethod(
+                    "Add_Method" + ":" + typeof(T).ToString(),
+                    typeof(T),
+                    new Type[] { typeof(T), typeof(Q) });
+
+
+                //get generator to construct the function.
+
+                ILGenerator gen = method.GetILGenerator();
+
+
+                gen.Emit(OpCodes.Ldarg_0);  //load the first value
+                gen.Emit(OpCodes.Ldarg_1);  //load the second value
+
+                MethodInfo info = typeof(T).GetMethod
+                    (
+                    "op_Addition",
+                    new Type[] { typeof(T), typeof(Q) },
+                    null
+                    );
+
+                gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
+
+                gen.Emit(OpCodes.Ret);
+
+                T firstVal = (firstQuantity.Value);
+
+                Q secondVal = (secondQuantity.Value);
+
+                //correct the values according to left unit or first unit.
+                //the resulted quantity has the values of the first unit.
+
+                if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                {
+                    //factor from second unit to first unit
+                    UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
+                    
+                    secondVal = MultiplyScalarByGeneric<Q>(stof.ConversionFactor, secondVal);
+                }
+
+                ////sum the values
+
+                T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
+
+                if (firstQuantity.Unit != null && secondQuantity.Unit != null)
+                {
+                    //assign the unit of first quantity to the result.
+                    AQ.Unit = firstQuantity.Unit;
+                }
+
+
+                AQ.Value = result;
+
+                return AQ;
+            }
+            else
+            {
+                throw new QuantitiesNotDimensionallyEqualException();
+            }
+        }
+
+
         public static AnyQuantity<T> Subtract(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
         {
             if (firstQuantity.Equals(secondQuantity))
@@ -413,7 +502,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
         {
             if (!exponent.Dimension.IsDimensionless)
             {
-                throw new QuantityException("Raising Quantity to a non dimensionless quantity are not implemented", new NotImplementedException());
+                throw new QuantityException("Raising Quantity to a non dimensionless quantity is not implemented", new NotImplementedException());
             }
 
             

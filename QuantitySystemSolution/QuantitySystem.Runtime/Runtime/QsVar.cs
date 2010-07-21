@@ -1,24 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text.RegularExpressions;
-using Microsoft.Scripting;
-
-using Microsoft.Scripting.Ast;
-
-using ParticleLexer;
-using ParticleLexer.StandardTokens;
-using QuantitySystem;
-using QuantitySystem.Quantities.BaseQuantities;
-using QuantitySystem.Quantities.DimensionlessQuantities;
-using QuantitySystem.Units;
 using System.Globalization;
-using Qs.Modules;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
-using Qs.Types;
-using Qs.Runtime.Operators;
+using Microsoft.Scripting.Ast;
+using ParticleLexer;
 using ParticleLexer.QsTokens;
+using ParticleLexer.StandardTokens;
+using Qs.Runtime.Operators;
+using Qs.Types;
 using SymbolicAlgebra;
+using Qs.Numerics;
 
 
 namespace Qs.Runtime
@@ -196,7 +189,7 @@ namespace Qs.Runtime
 
             tokens = ConditionsTokenize(tokens);   // make tokens of conditional statements
 
-            tokens = tokens.MergeTokens<WordToken>();                 //discover words
+            tokens = tokens.MergeTokens<WordToken>();                 //Discover words
 
             // merge the $ + Word into Symbolic and get the symbolic variables.
             tokens = tokens.MergeSequenceTokens<SymbolicToken>(typeof(DollarToken), typeof(WordToken));
@@ -204,6 +197,16 @@ namespace Qs.Runtime
 
             tokens = tokens.MergeTokens<NumberToken>();               //discover the numbers
             tokens = tokens.MergeTokens<UnitizedNumberToken>();   //discover the unitized numbers
+
+
+            // discover the complex numbers 
+            tokens = tokens.MergeTokens<ComplexNumberToken>();
+            tokens = tokens.MergeSequenceTokens<ComplexQuantityToken>(typeof(ComplexNumberToken), typeof(UnitToken));
+
+            // discover the complex numbers 
+            tokens = tokens.MergeTokens<QuaternionNumberToken>();
+            tokens = tokens.MergeSequenceTokens<QuaternionQuantityToken>(typeof(QuaternionNumberToken), typeof(UnitToken));
+
 
             tokens = MergeOperators(tokens);
 
@@ -213,8 +216,6 @@ namespace Qs.Runtime
             // merge the function value  expressions 
             //  @f  
             tokens = tokens.MergeTokens<FunctionValueToken>();
-
-
 
 
             tokens = tokens.MergeTokensInGroups(
@@ -326,9 +327,7 @@ namespace Qs.Runtime
                 else if (tokens[ix].TokenClassType == typeof(NumberToken))
                 {
                     //ordinary number
-
                     quantityExpression = Expression.Constant(QsValue.ParseScalar(q), typeof(QsValue));
-
                 }
                 else if (tokens[ix].TokenClassType == typeof(CurlyBracketGroupToken))
                 {
@@ -363,6 +362,14 @@ namespace Qs.Runtime
                 else if (tokens[ix].TokenClassType == typeof(SymbolicToken) || tokens[ix].TokenClassType == typeof(SymbolicQuantityToken))
                 {
                     quantityExpression = SymbolicScalar(tokens[ix]);
+                }
+                else if (tokens[ix].TokenClassType == typeof(ComplexNumberToken) || tokens[ix].TokenClassType == typeof(ComplexQuantityToken))
+                {
+                    quantityExpression = ComplexScalar(tokens[ix]);
+                }
+                else if (tokens[ix].TokenClassType == typeof(QuaternionNumberToken) || tokens[ix].TokenClassType == typeof(QuaternionQuantityToken))
+                {
+                    quantityExpression = QuaternionScalar(tokens[ix]);
                 }
                 else
                 {
@@ -513,13 +520,95 @@ namespace Qs.Runtime
                 // 
                 //  so raise an exception
 
-                throw new QsException("Incomplete expression");
+                throw new QsIncompleteExpression();
 
             }
 
             //then form the calculation expression
             return  ConstructExpression(FirstEop);
 
+        }
+
+        private Expression QuaternionScalar(Token quaternionToken)
+        {
+
+            Token cn = null;
+            if (quaternionToken.TokenClassType == typeof(QuaternionQuantityToken))
+                cn = quaternionToken[0];
+            else
+                cn = quaternionToken;
+
+            Token token = cn.TrimStart(typeof(WordToken)).TrimStart(typeof(LeftCurlyBracketToken));
+            token = token.TrimEnd(typeof(RightCurlyBracketToken));
+
+            token = token.MergeAllBut(typeof(MergedToken), new CommaToken(), new MultipleSpaceToken());
+            token = token.RemoveTokens(typeof(CommaToken), typeof(MultipleSpaceToken));
+
+            List<double> nums = new List<double>();
+            for (int i = 0; i < token.Count; i++)
+            {
+                if (token[i].TokenClassType == typeof(MergedToken))
+                {
+                    nums.Add(double.Parse(token[i].TokenValue));
+                }
+            }
+
+            double real = 0, im = 0, j = 0, k = 0;
+
+            if (nums.Count > 0) real = nums[0];
+            if (nums.Count > 1) im = nums[1];
+            if (nums.Count > 2) j = nums[2];
+            if (nums.Count > 3) k = nums[3];
+
+            Quaternion c = new Quaternion(real, im, j, k);
+            QsScalar sc = null;
+            if (quaternionToken.TokenClassType == typeof(QuaternionQuantityToken)) // there is a unit
+                sc = c.ToQuantity(quaternionToken[1].TokenValue.Trim('<', '>')).ToScalar();
+
+            else
+                sc = c.ToQuantity().ToScalar();
+
+            return Expression.Constant(sc, typeof(QsScalar));
+
+        }
+
+        private Expression ComplexScalar(Token complexToken)
+        {
+            Token cn = null;
+            if (complexToken.TokenClassType == typeof(ComplexQuantityToken))
+                cn = complexToken[0];
+            else
+                cn = complexToken;
+
+            Token token = cn.TrimStart(typeof(WordToken)).TrimStart(typeof(LeftCurlyBracketToken));
+            token = token.TrimEnd(typeof(RightCurlyBracketToken));
+
+            token = token.MergeAllBut(typeof(MergedToken), new CommaToken(), new MultipleSpaceToken());
+            token = token.RemoveTokens(typeof(CommaToken), typeof(MultipleSpaceToken));
+
+            List<double> nums = new List<double>();
+            for (int i = 0; i < token.Count; i++)
+            {
+                if (token[i].TokenClassType == typeof(MergedToken))
+                {
+                    nums.Add(double.Parse(token[i].TokenValue));
+                }
+            }
+
+            double real = 0, imaginary = 0;
+
+            if(nums.Count>0) real = nums[0];
+            if(nums.Count>1) imaginary = nums[1];
+
+            Complex c = new Complex(real, imaginary);
+            QsScalar sc = null;
+            if (complexToken.TokenClassType == typeof(ComplexQuantityToken)) // there is a unit
+                sc = c.ToQuantity(complexToken[1].TokenValue.Trim('<', '>')).ToScalar();
+                
+            else
+                sc = c.ToQuantity().ToScalar();
+
+            return Expression.Constant(sc, typeof(QsScalar));
         }
 
 

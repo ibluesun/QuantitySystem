@@ -169,7 +169,6 @@ namespace Qs.Types
                     }
                 }
 
-
                 return NewTensor;
             }
 
@@ -181,6 +180,13 @@ namespace Qs.Types
                     var thisVec = this[0][0];
                     var thatVec = tensor[0][0];
                     var result = (QsMatrix)thisVec.TensorProductOperation(thatVec);
+                    return new QsTensor(result);
+                }
+                if (this.Order == 2 && tensor.Order <= 2)
+                {
+                    //tenosrial product of two matrices will result in another matrix also.
+                    QsMatrix result = (QsMatrix)this.MatrixLayers[0].TensorProductOperation(tensor.MatrixLayers[0]);
+
                     return new QsTensor(result);
                 }
                 else

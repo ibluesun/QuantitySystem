@@ -27,6 +27,7 @@ namespace Qs.Types
         public QsVector(int count)            
         {
             ListStorage = new List<QsScalar>(count);
+            
         }
 
         public QsVector(params QsScalar[] scalars)

@@ -12,6 +12,8 @@ using Qs.Types;
 using QuantitySystem.Quantities.BaseQuantities;
 using Qs.Runtime;
 using ParticleLexer.QsTokens;
+using System.Linq.Expressions;
+using System;
 
 
 namespace Qs.Types

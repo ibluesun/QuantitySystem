@@ -134,23 +134,65 @@ namespace Qs.Types
             if (value is QsFunction)
             {
                 QsFunction fn2 = (QsFunction)value;
-                string fDeclaration;
 
-                var fTokens = JoinFunctionsArrayTokensWithOperation(operation, out fDeclaration, this, fn2);
-                return QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, fDeclaration, fTokens);
+                string fParameters = RemoveRedundantParameters(this.ParametersNames.Union(fn2.ParametersNames).ToArray());
+                
+                string thisFunctionBody  = this.FunctionBody;
+                foreach(string p in this.ParametersNames)
+                {
+                    thisFunctionBody = thisFunctionBody.Replace(p, "$" + p);
+                }
 
+                string targetFunctionBody  = fn2.FunctionBody;
+                foreach(string p in fn2.ParametersNames)
+                {
+                    targetFunctionBody = targetFunctionBody.Replace(p, "$" + p);
+                }
+
+                // form the expressions that will be parsed.
+                string fpt = "(" + thisFunctionBody + ")" + operation + "(" + targetFunctionBody + ")";
+
+                fpt = fpt.Replace("!", "__FAC__"); // replacing the ! sign with __FAC__ to include the '!' sign into the calculations {because '!' is operator in parsing so it doesn't enter the algebraic calculations}
+                //evaulate fpt
+
+                try
+                {
+                    QsScalar sc = (QsScalar)QsEvaluator.CurrentEvaluator.SilentEvaluate(fpt);
+                    string FuncBody = sc.SymbolicQuantity.Value.ToString().Replace("__FAC__", "!");
+                    string WholeFunction = "_(" + fParameters + ") = " + FuncBody;
+                    return QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, WholeFunction);
+                }
+                catch(QsIncompleteExpression)
+                {
+                    // something happened make the operation in old fashion
+                    string WholeFunction;
+                    Token FunctionToken = JoinFunctionsArrayTokensWithOperation(operation, out WholeFunction,this,fn2);
+                    return QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, WholeFunction, FunctionToken);
+                }
             }
             else if (value is QsScalar)
             {
+                QsScalar svl = (QsScalar)value;
+
                 var fname = "_";
-                var fbody = "" + this.FunctionBody + " " + operation + " " + ((QsScalar)value).NumericalQuantity.ToShortString();
-                var fparam = this.ParametersNames;
+               
+                var fbody = "" + this.FunctionBody;
+                foreach (string p in this.ParametersNames)
+                {
+                    fbody = fbody.Replace(p, "$" + p);
+                }
 
-                var f = fname + "(" + RemoveRedundantParameters(fparam) + ") = " + fbody;
-
+                fbody += " " + operation + svl.ToExpressionString();
                 
+                fbody = fbody.Replace("!", "__FAC__");
+                QsScalar fb = (QsScalar)QsEvaluator.CurrentEvaluator.SilentEvaluate(fbody);
+                string FuncBody = fb.SymbolicQuantity.Value.ToString().Replace("__FAC__", "!");
+
+                var fparam = this.ParametersNames;
+                var f = fname + "(" + RemoveRedundantParameters(fparam) + ") = " + FuncBody;
                 return QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, f);
                 
+               
             }
             else
             {
@@ -270,7 +312,6 @@ namespace Qs.Types
         {
             throw new NotImplementedException();
         }
-
 
         public override QsValue GetIndexedItem(int[] indices)
         {
