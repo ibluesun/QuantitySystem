@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using QuantitySystem.Quantities.BaseQuantities;
 using Qs.Types;
+using QuantitySystem.Quantities.BaseQuantities;
 
 namespace Qs.Runtime.Operators
 {
@@ -21,8 +19,16 @@ namespace Qs.Runtime.Operators
         {
             if (value is QsScalar)
             {
-                AnyQuantity<double> number = ((QsScalar)value).NumericalQuantity;
-                return new QsScalar { NumericalQuantity = QuantityFactorial(number) };
+                QsScalar sv = (QsScalar)value;
+                if (sv.ScalarType == ScalarTypes.NumericalQuantity)
+                {
+                    AnyQuantity<double> number = sv.NumericalQuantity;
+                    return new QsScalar { NumericalQuantity = QuantityFactorial(number) };
+                }
+                else
+                {
+                    throw new QsException("Unsupported scalar object");
+                }
             }
             else if (value is QsVector)
             {
@@ -32,8 +38,7 @@ namespace Qs.Runtime.Operators
 
                 foreach (var v in vec)
                 {
-
-                    rvec.AddComponent(new QsScalar { NumericalQuantity = QuantityFactorial(v.NumericalQuantity) });
+                    rvec.AddComponent((QsScalar)Factorial(v));
                 }
 
                 return rvec;
@@ -49,7 +54,7 @@ namespace Qs.Runtime.Operators
 
                     for (int IX = 0; IX < mat.ColumnsCount; IX++)
                     {
-                        row.Add(new QsScalar { NumericalQuantity = QuantityFactorial(mat[IY, IX].NumericalQuantity) });
+                        row.Add((QsScalar)Factorial(mat[IY, IX]));
                     }
 
                     Total.AddRow(row.ToArray());
@@ -168,8 +173,6 @@ namespace Qs.Runtime.Operators
 
             
             return StieltjesFactorial(number);
-            
-
 
         }
 

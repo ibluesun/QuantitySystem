@@ -51,19 +51,28 @@ namespace QuantitySystem.Quantities.BaseQuantities
             return qname + ": " + Value.ToString() + " " + (Unit != null ? Unit.Symbol : "");
         }
 
+
+        /// <summary>
+        /// Text represent the unit part.
+        /// </summary>
+        public string UnitText
+        {
+            get
+            {
+                string un = string.Empty;
+                if (Unit != null)
+                {
+                    un = Unit.Symbol.Trim();
+
+                    if (un[0] != '<') un = "<" + un + ">";
+                }
+                return un;
+            }
+        }
+
         public string ToShortString()
         {
-            
-            string un = string.Empty;
-            if (Unit != null)
-            {
-                un = Unit.Symbol.Trim();
-
-                if (un[0] != '<') un = "<" + un + ">"; 
-            }
-
-            return Value.ToString() + " " + un;
-        
+            return Value.ToString() + UnitText;
         }
 
         #endregion
@@ -82,16 +91,16 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
         #region Generic Helper Calculations
         
-        public static T MultiplyScalarByGeneric(double factor, T value)
+        public static Q MultiplyScalarByGeneric<Q>(double factor, Q value)
         {
             if (factor == 1.0) return value;
 
             //create the dynamic method here 
 
             DynamicMethod method = new DynamicMethod(
-                "Multiply_Method" + ":" + typeof(T).ToString(),
-                typeof(T),
-                new Type[] { typeof(double), typeof(T) });
+                "Multiply_Method" + ":" + typeof(Q).ToString(),
+                typeof(Q),
+                new Type[] { typeof(double), typeof(Q) });
 
 
             //get generator to construct the function.
@@ -103,16 +112,16 @@ namespace QuantitySystem.Quantities.BaseQuantities
             gen.Emit(OpCodes.Ldarg_1);  //load the second value
 
 
-            if (typeof(T).IsPrimitive)
+            if (typeof(Q).IsPrimitive)
             {
                 gen.Emit(OpCodes.Mul);              //adding them if they were premitive
             }
             else
             {
-                MethodInfo info = typeof(T).GetMethod
+                MethodInfo info = typeof(Q).GetMethod
                     (
                     "op_Multiply",
-                    new Type[] { typeof(double), typeof(T) },
+                    new Type[] { typeof(double), typeof(Q) },
                     null
                     );
 
@@ -123,7 +132,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
             gen.Emit(OpCodes.Ret);
 
 
-            T result = (T)method.Invoke(null, new object[] { factor, value });
+            Q result = (Q)method.Invoke(null, new object[] { factor, value });
 
 
             return result;
@@ -285,7 +294,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 DynamicMethod method = new DynamicMethod(
                     "Power_Method" + ":" + typeof(T).ToString(),
                     typeof(T),
-                    new Type[] { typeof(double), typeof(T) });
+                    new Type[] { typeof(T), typeof(double) });
 
 
                 //get generator to construct the function.
@@ -314,7 +323,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 {
                     MethodInfo info = typeof(T).GetMethod
                         (
-                        "Power",
+                        "Pow",
                         new Type[] { typeof(T), typeof(double) },
                         null
                         );

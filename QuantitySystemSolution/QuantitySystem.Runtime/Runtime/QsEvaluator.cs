@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Runtime;
+using ParticleLexer;
+using ParticleLexer.QsTokens;
+using ParticleLexer.StandardTokens;
+using Qs.Types;
 using QuantitySystem;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
-using ParticleLexer;
-using ParticleLexer.StandardTokens;
-using Qs.Types;
-using System.Reflection;
-using System.IO;
-using ParticleLexer.QsTokens;
 
 
 namespace Qs.Runtime
@@ -142,9 +141,15 @@ namespace Qs.Runtime
         public object SilentEvaluate(string line)
         {
             SilentOutput = true;
-            var r = Evaluate(line);
-            SilentOutput = false;
-            return r;
+            try
+            {
+                var r = Evaluate(line);
+                return r;
+            }
+            finally
+            {
+                SilentOutput = false;
+            }
         }
 
         public object Evaluate(string expr)
@@ -589,7 +594,7 @@ namespace Qs.Runtime
                         }
                         #endregion
                     }
-                        
+
                 }
                 else
                 {
@@ -627,6 +632,10 @@ namespace Qs.Runtime
             catch (QsException e)
             {
                 throw e;
+            }
+            catch (AggregateException ae)
+            {
+                throw (ae);
             }
             catch (Exception e)
             {
@@ -678,10 +687,6 @@ namespace Qs.Runtime
         }
 
         #endregion
-
-
-
-
 
 
         #region Scope Helper methods.
@@ -763,7 +768,6 @@ namespace Qs.Runtime
         #endregion
 
 
-
         #region  singleton pattern
         private QsEvaluator()
         {
@@ -781,8 +785,6 @@ namespace Qs.Runtime
         }
 
         #endregion
-
-
 
 
         #region Function Storage 

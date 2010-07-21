@@ -247,6 +247,31 @@ namespace ParticleLexer.QsTokens
 
 
     /// <summary>
+    /// C{3 4}  or with unit C{2 1}$x&lt;kg&gt;
+    /// </summary>
+    [TokenPattern(RegexPattern = @"C\{.+\}", ShouldBeginWith = "C")]
+    public class ComplexNumberToken : TokenClass
+    {
+    }
+
+    public class ComplexQuantityToken : TokenClass
+    {
+    }
+
+    /// <summary>
+    /// H{3 4}  or with unit H{2 1}$x&lt;kg&gt;
+    /// </summary>
+    [TokenPattern(RegexPattern = @"H\{.+\}", ShouldBeginWith = "H")]
+    public class QuaternionNumberToken : TokenClass
+    {
+    }
+
+    public class QuaternionQuantityToken : TokenClass
+    {
+    }
+
+
+    /// <summary>
     /// 
     /// </summary>
     public class TensorGroupToken : GroupTokenClass

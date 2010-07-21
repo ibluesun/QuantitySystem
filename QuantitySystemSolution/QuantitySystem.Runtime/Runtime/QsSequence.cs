@@ -312,7 +312,6 @@ namespace Qs.Runtime
                 EndRangeOperation();
                 throw new QsException("Un Handled Exception", ex);
             }
-
         }
 
         public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsValue arg0)

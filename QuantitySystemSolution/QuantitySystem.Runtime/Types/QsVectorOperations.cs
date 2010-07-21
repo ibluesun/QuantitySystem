@@ -5,6 +5,7 @@ using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
 using Qs.Runtime;
+using System.Threading.Tasks;
 
 namespace Qs.Types
 {
@@ -64,12 +65,14 @@ namespace Qs.Types
         {
             if (this.Count != vector.Count) throw new QsException("Vectors are not equal");
 
-            QsVector v = new QsVector(this.Count);
+            QsVector v = QsVector.CopyVector(this);
 
-            for (int i = 0; i < this.Count; i++)
-            {
-                v.AddComponent(this[i] + vector[i]);
-            }
+            Parallel.For(0, this.Count, (i) =>
+                {
+                    v[i] = v[i] + vector[i];
+                }
+            );
+
 
             return v;
         }
@@ -84,13 +87,15 @@ namespace Qs.Types
         {
             if (this.Count != vector.Count) throw new QsException("Vectors are not equal");
 
-            QsVector v = new QsVector(this.Count);
+            QsVector v = QsVector.CopyVector(this);
 
-            
-            for (int i = 0; i < this.Count; i++)
+            Parallel.For(0, this.Count, (i) =>
             {
-                v.AddComponent(this[i] - vector[i]);
+                v[i] = v[i] - vector[i];
             }
+            );
+
+
 
             return v;
         }
@@ -106,12 +111,14 @@ namespace Qs.Types
         {
             if (this.Count != vector.Count) throw new QsException("Vectors are not equal");
 
-            QsVector v = new QsVector(this.Count);
+            QsVector v = QsVector.CopyVector(this);
 
-            for (int i = 0; i < this.Count; i++)
+            Parallel.For(0, this.Count, (i) =>
             {
-                v.AddComponent(this[i] * vector[i]);
+                v[i] = v[i] * vector[i];
             }
+            );
+
 
             return v;
         }
@@ -126,12 +133,13 @@ namespace Qs.Types
         {
             if (this.Count != vector.Count) throw new QsException("Vectors are not equal");
 
-            QsVector v = new QsVector(this.Count);
+            QsVector v = QsVector.CopyVector(this);
 
-            for (int i = 0; i < this.Count; i++)
+            Parallel.For(0, this.Count, (i) =>
             {
-                v.AddComponent(this[i] / vector[i]);
+                v[i] = v[i] / vector[i];
             }
+            );
 
             return v;
         }
@@ -140,12 +148,15 @@ namespace Qs.Types
         {
             if (this.Count != vector.Count) throw new QsException("Vectors are not equal");
 
-            QsVector v = new QsVector(this.Count);
 
-            for (int i = 0; i < this.Count; i++)
+            QsVector v = QsVector.CopyVector(this);
+
+            Parallel.For(0, this.Count, (i) =>
             {
-                v.AddComponent(this[i] % vector[i]);
+                v[i] = v[i] % vector[i];
             }
+            );
+
 
             return v;
         }
@@ -203,7 +214,6 @@ namespace Qs.Types
                 // unit with the conversion factor
                 units.AddComponent(new QsScalar { NumericalQuantity = u.GetThisUnitQuantity<double>(utou) });
 
-
                 // second row is first vector
 
                 //take the value of the quantity and convert it to dimensionless value.
@@ -244,7 +254,6 @@ namespace Qs.Types
         #region QsValue operations
 
         public override QsValue Identity
-
         {
             get
             {
