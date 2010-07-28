@@ -9,10 +9,7 @@ namespace Qs.Runtime
 {
     public class QsBinder : DefaultBinder
     {
-        public QsBinder(ScriptDomainManager manager)
-            : base(manager)
-        {
-        }
+        
 
         public override Microsoft.Scripting.Actions.Calls.Candidate PreferConvert(Type t1, Type t2)
         {

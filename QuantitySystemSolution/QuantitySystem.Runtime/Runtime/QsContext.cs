@@ -17,11 +17,9 @@ namespace Qs.Runtime
             : base(manager)
         {
 
-            _binder = new QsBinder(manager);  // I have defined end statement to close the execution of the program.
+            _binder = new QsBinder();  // I have defined end statement to close the execution of the program.
                                               // the end statement will return null which in return the execution of current program will end.
                                               // always write end in the final line of your qs program.
-
-
            
         }
 
@@ -30,6 +28,7 @@ namespace Qs.Runtime
         public override ConvertBinder CreateConvertBinder(Type toType, bool? explicitCast)
         {
 
+            
             if (toType == typeof(int))
                 return new QsIntegerConvertBinder();
 

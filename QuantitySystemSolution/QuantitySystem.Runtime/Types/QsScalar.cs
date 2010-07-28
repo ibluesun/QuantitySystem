@@ -494,7 +494,19 @@ namespace Qs.Types
                             };
                         default:
                             throw new NotImplementedException("Raising Complex Quantity to " + power.ScalarType.ToString() + " is not implemented yet");
-                            
+
+                    }
+
+                case ScalarTypes.QuaternionNumberQuantity:
+                    switch (power.ScalarType)
+                    {
+                        case ScalarTypes.NumericalQuantity:
+                            return new QsScalar(ScalarTypes.QuaternionNumberQuantity)
+                            {
+                                QuaternionQuantity = AnyQuantity<Quaternion>.Power(this.QuaternionQuantity, power.NumericalQuantity)
+                            };
+                        default:
+                            throw new NotImplementedException("Raising Quaternion Quantity to " + power.ScalarType.ToString() + " is not implemented yet");
                     }
                 default:
                     throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
@@ -1023,7 +1035,26 @@ namespace Qs.Types
             if (value is QsScalar)
             {
                 QsScalar scalar = (QsScalar)value;
-                return this.NumericalQuantity == scalar.NumericalQuantity;
+                if (this.ScalarType == scalar.ScalarType)
+                {
+                    switch(this.ScalarType)
+                    {
+                        case ScalarTypes.NumericalQuantity:
+                            return this.NumericalQuantity == scalar.NumericalQuantity;
+                        case ScalarTypes.ComplexNumberQuantity:
+                            return this.ComplexQuantity == scalar.ComplexQuantity;
+                        case  ScalarTypes.QuaternionNumberQuantity:
+                            return this.QuaternionQuantity == scalar.QuaternionQuantity;
+                        case ScalarTypes.SymbolicQuantity:
+                            return this.SymbolicQuantity == scalar.SymbolicQuantity;
+                        default:
+                            throw new QsException("N/A");
+                    }
+                }
+                else
+                {
+                    return false;
+                }
             }
             else if (value is QsVector)
             {

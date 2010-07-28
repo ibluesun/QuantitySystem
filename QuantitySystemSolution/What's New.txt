@@ -1,3 +1,8 @@
+[Qs 1.1.9.966]
+- Added the Quaternion Power to integer.
+- Another enhancement to the parsing speed.
+- Adjusted the equality and inequality for quaternion and complex {semi adjustment}
+
 [Qs 1.1.9.965]
 - Using .NET Framework 4 for the whole project and its realted projects.
 

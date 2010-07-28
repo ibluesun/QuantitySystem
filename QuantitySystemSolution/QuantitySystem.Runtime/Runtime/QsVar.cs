@@ -8,10 +8,10 @@ using Microsoft.Scripting.Ast;
 using ParticleLexer;
 using ParticleLexer.QsTokens;
 using ParticleLexer.StandardTokens;
+using Qs.Numerics;
 using Qs.Runtime.Operators;
 using Qs.Types;
 using SymbolicAlgebra;
-using Qs.Numerics;
 
 
 namespace Qs.Runtime
@@ -136,27 +136,6 @@ namespace Qs.Runtime
             return tok;
         }
 
-        private Token ConditionsTokenize(Token token)
-        {
-            var tokens = token.MergeTokens<WhenStatementToken>();
-            
-            tokens = tokens.MergeTokens<OtherwiseStatementToken>();
-            
-            tokens = tokens.MergeTokens<AndStatementToken>();
-            
-            tokens = tokens.MergeTokens<OrStatementToken>();
-            
-            tokens = tokens.MergeTokens<EqualityToken>();
-            
-            tokens = tokens.MergeTokens<InEqualityToken>();
-            
-            tokens = tokens.MergeTokens<LessThanOrEqualToken>();
-            
-            tokens = tokens.MergeTokens<GreaterThanOrEqualToken>();
-
-            return tokens;
-        }
-
         internal Expression ParseArithmatic(string codeLine)
         {
             var tokens = Token.ParseText(codeLine);
@@ -171,6 +150,8 @@ namespace Qs.Runtime
             // assemble all units <*>    //before tokenization of tensor operator
             tokens = tokens.MergeTokens<UnitToken>();
 
+
+            /*
             // assemble '<|'
             tokens = tokens.MergeTokens<LeftTensorToken>();
 
@@ -187,7 +168,48 @@ namespace Qs.Runtime
             // assemble '||'  after assembling tensor group token
             tokens = tokens.MergeTokens<DoubleVerticalBarToken>();
 
-            tokens = ConditionsTokenize(tokens);   // make tokens of conditional statements
+            tokens = tokens.MergeTokens<WhenStatementToken>();
+
+            tokens = tokens.MergeTokens<OtherwiseStatementToken>();
+
+            tokens = tokens.MergeTokens<AndStatementToken>();
+
+            tokens = tokens.MergeTokens<OrStatementToken>();
+
+            tokens = tokens.MergeTokens<EqualityToken>();
+
+            tokens = tokens.MergeTokens<InEqualityToken>();
+
+            tokens = tokens.MergeTokens<LessThanOrEqualToken>();
+
+            tokens = tokens.MergeTokens<GreaterThanOrEqualToken>();
+            */
+
+            tokens = tokens.MergeMultipleWordTokens(
+                // assemble '<|'
+                typeof(LeftTensorToken),
+
+                // assemble '|>'
+                typeof(RightTensorToken),
+
+                // assemble '<<'
+                typeof(LeftShiftToken),
+
+                // assemble '>>'
+                typeof(RightShiftToken),
+
+                // assemble '||'  after assembling tensor group token
+                typeof(DoubleVerticalBarToken),
+                typeof(WhenStatementToken),
+                typeof(OtherwiseStatementToken),
+                typeof(AndStatementToken),
+                typeof(OrStatementToken),
+                typeof(EqualityToken),
+                typeof(InEqualityToken),
+                typeof(LessThanOrEqualToken),
+                typeof(GreaterThanOrEqualToken)
+                );
+
 
             tokens = tokens.MergeTokens<WordToken>();                 //Discover words
 
@@ -196,7 +218,8 @@ namespace Qs.Runtime
             tokens = tokens.MergeSequenceTokens<SymbolicQuantityToken>(typeof(SymbolicToken), typeof(UnitToken));
 
             tokens = tokens.MergeTokens<NumberToken>();               //discover the numbers
-            tokens = tokens.MergeTokens<UnitizedNumberToken>();   //discover the unitized numbers
+            //tokens = tokens.MergeTokens<UnitizedNumberToken>();   //discover the unitized numbers
+            tokens = tokens.MergeSequenceTokens<UnitizedNumberToken>(typeof(NumberToken), typeof(UnitToken));
 
 
             // discover the complex numbers 
@@ -564,7 +587,6 @@ namespace Qs.Runtime
             QsScalar sc = null;
             if (quaternionToken.TokenClassType == typeof(QuaternionQuantityToken)) // there is a unit
                 sc = c.ToQuantity(quaternionToken[1].TokenValue.Trim('<', '>')).ToScalar();
-
             else
                 sc = c.ToQuantity().ToScalar();
 
@@ -1657,8 +1679,8 @@ namespace Qs.Runtime
             if (op == "<=") return Expression.LessThanOrEqual(left, right);
             if (op == ">=") return Expression.GreaterThanOrEqual(left, right);
 
-            if (op == "==") return Expression.Equal(left, right);
-            if (op == "!=") return Expression.NotEqual(left, right);
+            if (op == "==") return Expression.Equal(left, right, true, aqType.GetMethod("op_Equality"));
+            if (op == "!=") return Expression.NotEqual(left, right, true, aqType.GetMethod("op_Inequality"));
 
             if (op.Equals("and", StringComparison.OrdinalIgnoreCase)) 
                 return Expression.And(left, right);

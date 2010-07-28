@@ -1,4 +1,21 @@
-﻿using System;
+﻿
+
+//  Source code is translated from boost C++ to C# 
+//  Translator: Ahmed Sadek
+
+
+//  boost quaternion.hpp header file
+
+//  (C) Copyright Hubert Holin 2001.
+//  Distributed under the Boost Software License, Version 1.0. (See
+//  accompanying file LICENSE_1_0.txt or copy at
+//  http://www.boost.org/LICENSE_1_0.txt)
+
+// See http://www.boost.org for updates, documentation, and revision history.
+
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,7 +28,6 @@ namespace Qs.Numerics
     /// </summary>
     public struct Quaternion
     {
-
         private double a;
         private double b;
         private double c;
@@ -254,6 +270,55 @@ namespace Qs.Numerics
         }
 
 
+        public static Quaternion Pow(Quaternion q, double nn)
+        {
+            int n = (int)nn;
 
+            if(n > 1)
+            {
+                int    m = n>>1;
+
+                Quaternion result = Pow(q, m);
+                
+                result *= result;
+                
+                if    (n != (m<<1))
+                {
+                    result *= q; // n odd
+                }
+                
+                return(result);
+            }
+            else if    (n == 1)
+            {
+                return(q);
+            }
+            else if    (n == 0)
+            {
+                return (new Quaternion(1));
+            }
+            else    /* n < 0 */
+            {
+                return (Pow(new Quaternion(1) / q, -n));
+            }
+        }
+
+
+        public static bool operator ==(Quaternion lhs, Quaternion rhs)
+        {
+            if (lhs.a == rhs.a &&
+                lhs.b == rhs.b &&
+                lhs.c == rhs.c &&
+                lhs.d == rhs.d
+                )
+                return true;
+            else
+                return false;
+        }
+
+        public static bool operator !=(Quaternion lhs, Quaternion rhs)
+        {
+            return !(lhs == rhs);
+        }
     }
 }

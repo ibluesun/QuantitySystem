@@ -140,7 +140,7 @@ namespace ParticleLexer.QsTokens
     /// <summary>
     /// 
     /// </summary>
-    [TokenPattern(RegexPattern = @"\|\|", ShouldBeginWith = "|")]
+    [TokenPattern(RegexPattern = @"\|\|", ExactWord = true)]
     public class DoubleVerticalBarToken : TokenClass
     {
     }
@@ -247,25 +247,31 @@ namespace ParticleLexer.QsTokens
 
 
     /// <summary>
-    /// C{3 4}  or with unit C{2 1}$x&lt;kg&gt;
+    /// C{3 4}  
     /// </summary>
     [TokenPattern(RegexPattern = @"C\{.+\}", ShouldBeginWith = "C")]
     public class ComplexNumberToken : TokenClass
     {
     }
 
+    /// <summary>
+    /// Complex number with unit C{2 1}&lt;kg&gt;
+    /// </summary>
     public class ComplexQuantityToken : TokenClass
     {
     }
 
     /// <summary>
-    /// H{3 4}  or with unit H{2 1}$x&lt;kg&gt;
+    /// H{3 4 2 1}
     /// </summary>
     [TokenPattern(RegexPattern = @"H\{.+\}", ShouldBeginWith = "H")]
     public class QuaternionNumberToken : TokenClass
     {
     }
 
+    /// <summary>
+    /// Quaternion number with unit H{2 1 5 4}&lt;kg&gt;
+    /// </summary>
     public class QuaternionQuantityToken : TokenClass
     {
     }
