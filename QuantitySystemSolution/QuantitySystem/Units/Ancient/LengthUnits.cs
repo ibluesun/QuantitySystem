@@ -7,7 +7,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Units.Ancient
 {
-    [DefaultUnit("cubit", typeof(Length<>))]
+    [Unit("cubit", typeof(Length<>))]
     [ReferenceUnit(0.4572)]
     public sealed class Cubit : Unit
     {

@@ -20,7 +20,7 @@ namespace QuantitySystem.Units.Astronomical
 
 
     [MetricUnit("pc", typeof(Length<>))]
-    [ReferenceUnit(30.857E+12)]
+    [ReferenceUnit(3.08568025E+16)]
     public sealed class Parsec : MetricUnit
     {
     }

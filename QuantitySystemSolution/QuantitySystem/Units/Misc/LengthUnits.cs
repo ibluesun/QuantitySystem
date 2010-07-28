@@ -1,5 +1,6 @@
 ﻿using QuantitySystem.Attributes;
 using QuantitySystem.Quantities.BaseQuantities;
+using QuantitySystem.Units.English;
 
 namespace QuantitySystem.Units.Misc
 {

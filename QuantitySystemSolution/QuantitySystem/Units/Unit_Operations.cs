@@ -13,8 +13,6 @@ namespace QuantitySystem.Units
 {
     public partial class Unit
     {
-
-
         /// <summary>
         /// Creat units path from the current unit instance to the default unit of the current 
         /// unit system in the current quantity dimension.
@@ -24,11 +22,8 @@ namespace QuantitySystem.Units
         /// <returns></returns>
         public UnitPathStack PathToDefaultUnit()
         {
-
             //from this unit get my path to the default unit.
-
             UnitPathStack path = new UnitPathStack();
-
 
             if (this.ReferenceUnit != null) //check that first parent exist.
             {
@@ -57,8 +52,13 @@ namespace QuantitySystem.Units
                     //RefShift = RefUnit.ReferenceUnitShift;
                     
                     RefUnit = RefUnit.ReferenceUnit;
+
+                    // check the reference unit system or (namespace) if different throw exception.
+                    //  the exception prevent crossing the system boundary.
+                    //if (RefUnit.GetType().Namespace != this.GetType().Namespace) throw new UnitException("Unit system access violation");
                 }
 
+                // because of while there is another information should be put on the stack.
                 path.Push(
                     new UnitPathItem
                     {
@@ -82,7 +82,6 @@ namespace QuantitySystem.Units
                             Numerator = 1,
                             Denominator = 1,
                             //Shift = 0.0
-
                         }
                         );
                 }
@@ -90,7 +89,6 @@ namespace QuantitySystem.Units
 
             return path;
         }
-
 
 
         /// <summary>
@@ -139,13 +137,11 @@ namespace QuantitySystem.Units
 
         }
 
-
-
         public Func<Unit, Unit, string> UnitToUnitSymbol = (Unit x, Unit y) => "[" + x.Symbol + ":" + x.UnitDimension.ToString() + "]" + "__" + "[" + y.Symbol + ":" + y.UnitDimension.ToString() + "]";
 
         private static Dictionary<string, UnitPathStack> CachedPaths = new Dictionary<string, UnitPathStack>();
 
-        private static bool enableUnitsCaching = true;
+        private static bool enableUnitsCaching = false;
         public static bool EnableUnitsCaching
         {
             get
@@ -168,6 +164,7 @@ namespace QuantitySystem.Units
         {
             lock (CachedPaths)
             {
+                #region Caching
                 //because this method can be a lengthy method we try to check for cached pathes first.
                 UnitPathStack cachedPath;
                 if (EnableUnitsCaching)
@@ -183,7 +180,9 @@ namespace QuantitySystem.Units
 
                     }
                 }
+                #endregion
 
+                #region validity of conversion
                 if (this.UnitDimension.IsDimensionless == true && unit.UnitDimension.IsDimensionless == true)
                 {
 
@@ -199,11 +198,14 @@ namespace QuantitySystem.Units
                         throw new UnitsNotDimensionallyEqualException();
                     }
                 }
+                #endregion
 
                 //test if one of the units are not strongly typed
                 //  because this needs special treatment. ;)
                 if (this.IsStronglyTyped == false || unit.IsStronglyTyped == false)
                 {
+                    #region Complex units
+
                     //the unit is not strongly typed so we need to make conversion to get its conversion
                     // Source unit ==> SI Base Units
                     // target unit ==> SI BaseUnits
@@ -235,6 +237,8 @@ namespace QuantitySystem.Units
                     }
 
                     return Tito;
+
+                    #endregion
                 }
 
                 // 1- Get Path default unit to current unit.
@@ -288,7 +292,6 @@ namespace QuantitySystem.Units
 
                     //then we must go out side the current unit system
                     //all default units are pointing to the SIUnit system this is a must and not option.
-                    SystemsPath = new UnitPathStack();
 
                     //get the default unit of target 
 
@@ -309,11 +312,8 @@ namespace QuantitySystem.Units
                     UnitPathItem RefUPI;
 
                     Unit SourceDefaultUnit = FromMeToDefaultUnit.Peek().Unit;
-                    Unit TargetDefaultUnit = FromDefaultUnitToTargetUnit.ElementAt(FromDefaultUnitToTargetUnit.Count - 1).Unit;
 
-                    if (SourceDefaultUnit.UnitSystem != "Metric.SI"
-                        && SourceDefaultUnit.GetType() != typeof(Shared.Second)
-                        )
+                    if (SourceDefaultUnit.UnitSystem != "Metric.SI" && SourceDefaultUnit.GetType() != typeof(Shared.Second))
                     {
                         //from source default unit to the si
                         DefaultPItem = FromMeToDefaultUnit.Peek();
@@ -371,13 +371,17 @@ namespace QuantitySystem.Units
                     Total.Push(FromMeToDefaultUnit.ElementAt(i));
                 }
 
+                Unit One = new Unit(typeof(DimensionlessQuantity<>));
+
                 //cross the system if we need to .
                 if (SystemsPath != null)
                 {
+                    Total.Push(new UnitPathItem { Denominator = 1, Numerator = 1, Unit = One });
                     for (int i = SystemsPath.Count - 1; i >= 0; i--)
                     {
                         Total.Push(SystemsPath.ElementAt(i));
                     }
+                    Total.Push(new UnitPathItem { Denominator = 1, Numerator = 1, Unit = One });
                 }
 
                 // from default unit to target unit
@@ -404,8 +408,6 @@ namespace QuantitySystem.Units
                 return Total;
             }
         }
-
-
 
         public UnitPathStack PathToSIBaseUnits()
         {
@@ -434,8 +436,6 @@ namespace QuantitySystem.Units
                         
                         //because no unit in SI with exponent = 1 don't have direct unit type
                         throw new NotImplementedException("Impossible reach by logic");
-                    
-
                     }
                     else
                     {
@@ -457,10 +457,7 @@ namespace QuantitySystem.Units
                             path.Push(RefUPI);
                         }
                     }
-
-                    
                     return path;
-                    
                 }
                 else
                 {
@@ -494,9 +491,6 @@ namespace QuantitySystem.Units
                     return up;
 
                 }
-
-
-
             }
             
         
@@ -509,20 +503,14 @@ namespace QuantitySystem.Units
 
                 while (up.Count > 0)
                 {
-
-
                     UnitPathItem upi = up.Pop();
 
                     if (un.IsInverted) upi.Invert();
 
                     Pathes.Push(upi);
                 }
-
             }
             return Pathes;
-
         }
-
-        
     }
 }
