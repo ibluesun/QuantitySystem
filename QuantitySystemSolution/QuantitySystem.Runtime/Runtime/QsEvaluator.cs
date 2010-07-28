@@ -152,6 +152,9 @@ namespace Qs.Runtime
             }
         }
 
+        static Regex UnitToUnitRegex = new Regex(UnitToUnitExpression);
+        static Regex UnitRegex = new Regex(UnitExpression);
+        static Regex VariableQuantityRegex = new Regex(VariableQuantityExpression);
         public object Evaluate(string expr)
         {
 
@@ -161,7 +164,7 @@ namespace Qs.Runtime
             #region Match <unit> to <unit>
 
             //match unit to unit
-            m = Regex.Match(expr, UnitToUnitExpression);
+            m = UnitToUnitRegex.Match(expr);
             if (m.Success)
             {
                 //evaluate unit
@@ -217,7 +220,7 @@ namespace Qs.Runtime
 
             #region Match Unit <unit> like  <kn>, <m>, <kW> etc.
             //match one unit first
-            m = Regex.Match(expr, UnitExpression);
+            m = UnitRegex.Match(expr);
             if (m.Success)
             {
                 //evaluate unit
@@ -240,7 +243,8 @@ namespace Qs.Runtime
 
             #region Match variable Assignation with quantity "a=40[Acceleration]"
             //match variable assignation with quantity
-            m = Regex.Match(expr, VariableQuantityExpression);
+            m = VariableQuantityRegex.Match(expr);
+            
             if (m.Success)
             {
                 //get the variable name
@@ -281,13 +285,8 @@ namespace Qs.Runtime
             #endregion
 
 
-            #region expression
-
             //check if the line has '='
             return ExtraEvaluate(expr);
-
-
-            #endregion
 
         }
 
@@ -297,14 +296,10 @@ namespace Qs.Runtime
             // f(x,y,z) = x + y + (z/2.04 * 32<kg>)
             QsFunction func = QsFunction.ParseFunction(this, line);
 
-            if (func != null)
+            if (!System.Object.ReferenceEquals(func, null))
             {
-               
                 //store the expression for later use 
-                //SetVariable(func.FunctionNamespace, func.FunctionSymbolicName, func);
-
                 StoreFunction(func);
-           
                 return func;
             }
 
@@ -320,28 +315,43 @@ namespace Qs.Runtime
             }
             
             #region expression evaluation with assignation or no assignation
+
+            Func<string, int> GetAssignOperatorIndex = delegate(string m)
+            {
+                int ix = 0;
+                int sl = m.Length;
+                int scs = 0;
+                int bcs = 0;
+                bool InText = false; 
+                while (ix < sl)
+                {
+                    if (m[ix] == '(') scs++;
+                    if (m[ix] == ')') scs--;
+                    if (m[ix] == '[') bcs++;
+                    if (m[ix] == ']') bcs--;
+
+                    if (m[ix] == '"')
+                    {
+                        if (ix > 0)
+                        {
+                            if (m[ix - 1] != '\\') // not escape charachter for qoutation mark
+                                InText = !InText;
+                        }
+                        else
+                            InText = !InText;
+                    }
+
+                    if (m[ix] == '=' && scs == 0 && bcs == 0 && InText==false) return ix;
+
+                    ix++;
+                }
+                return -1;
+            };
+
+
             string varName = string.Empty;
 
-            // check of existance of = inside bracket
-            Token tt = Token.ParseText(line);
-            tt = tt.DiscoverQsTextTokens();
-
-            tt = tt.MergeTokens<WordToken>();
-            tt = tt.MergeTokens<MultipleSpaceToken>();
-            tt = tt.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
-            tt = tt.DiscoverCalls();
-            
-
-
-            int AssignOperatorIndex = -1;
-            foreach (var t in tt)
-            {
-                if (t.TokenValue == "=")
-                {
-                    AssignOperatorIndex = t.IndexInText;
-                    break;
-                }
-            }
+            int AssignOperatorIndex = GetAssignOperatorIndex(line);
 
             if (AssignOperatorIndex > 0)  //assign operator should always have something behind it.
             {
@@ -378,32 +388,33 @@ namespace Qs.Runtime
             {
                 if (!string.IsNullOrEmpty(varName))
                 {
-                    // May be variable or sequence element.
-                    Token seq = Token.ParseText(varName);
-                    seq = seq.MergeTokens<MultipleSpaceToken>();
-                    seq = seq.RemoveSpaceTokens();
-                    seq = seq.MergeTokens<WordToken>();
-
-                    seq = seq.MergeTokens<ColonToken>();
-                    seq = seq.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
-
-                    seq = seq.MergeTokens<NameSpaceToken>(); //discover namespace tokens
-
-                    string seqNamespace = string.Empty;
-                    int nsidx = 0;
-                    if (seq[0].TokenClassType == typeof(NameSpaceToken))
-                    {
-                        nsidx = 1; //the function begin with namespace.
-                        seqNamespace = seq[0][0].TokenValue;
-                    }
-
-
                     bool IsSequence = false;
-                    if (seq.Count >= nsidx + 2)
+                    Token seq = null;
+                    int nsidx = 0;
+                    string seqNamespace = string.Empty;
+                    if (varName.Contains('['))
                     {
-                        if (seq[nsidx + 1].TokenClassType == typeof(SquareBracketsGroupToken))
+                        // May be sequence element.
+                        seq = Token.ParseText(varName);
+                        seq = seq.MergeTokens<MultipleSpaceToken>();
+                        seq = seq.RemoveSpaceTokens();
+                        seq = seq.MergeTokens<WordToken>();
+                        seq = seq.MergeTokens<ColonToken>();
+                        seq = seq.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
+                        seq = seq.MergeTokens<NameSpaceToken>(); //discover namespace tokens
+                        
+                        if (seq[0].TokenClassType == typeof(NameSpaceToken))
                         {
-                            IsSequence = true;
+                            nsidx = 1; //the function begin with namespace.
+                            seqNamespace = seq[0][0].TokenValue;
+                        }
+
+                        if (seq.Count >= nsidx + 2)
+                        {
+                            if (seq[nsidx + 1].TokenClassType == typeof(SquareBracketsGroupToken))
+                            {
+                                IsSequence = true;
+                            }
                         }
                     }
 
@@ -542,33 +553,39 @@ namespace Qs.Runtime
                         // get the after assign expression value
                         QsVar qv = new QsVar(this, line);
 
-
-                        Token vnToken = Token.ParseText(varName);
-                        vnToken = vnToken.MergeTokens<MultipleSpaceToken>();
-                        vnToken = vnToken.RemoveSpaceTokens();
-                        vnToken = vnToken.MergeTokens<WordToken>();
-                        vnToken = vnToken.MergeTokens<ColonToken>();
-                        vnToken = vnToken.MergeTokens<NameSpaceToken>();
-
-                        if (vnToken.Contains(typeof(NameSpaceToken)))
+                        if (varName.Contains(':'))
                         {
-                            var qvResult = qv.Execute();
-                            if (qvResult is QsFunction)
-                            {
-                                var qf = (QsFunction)qvResult;
-                                qf.FunctionNamespace = vnToken[0][0].TokenValue;
-                                qf.FunctionName = vnToken[1].TokenValue;
+                            Token vnToken = Token.ParseText(varName);
+                            vnToken = vnToken.MergeTokens<MultipleSpaceToken>();
+                            vnToken = vnToken.RemoveSpaceTokens();
+                            vnToken = vnToken.MergeTokens<WordToken>();
+                            vnToken = vnToken.MergeTokens<ColonToken>();
+                            vnToken = vnToken.MergeTokens<NameSpaceToken>();
 
-                                StoreFunction(qf);
-                                return qvResult;
+                            if (vnToken.Contains(typeof(NameSpaceToken)))
+                            {
+                                var qvResult = qv.Execute();
+                                if (qvResult is QsFunction)
+                                {
+                                    var qf = (QsFunction)qvResult;
+                                    qf.FunctionNamespace = vnToken[0][0].TokenValue;
+                                    qf.FunctionName = vnToken[1].TokenValue;
+
+                                    StoreFunction(qf);
+                                    return qvResult;
+                                }
+                                else
+                                {
+                                    SetVariable(vnToken[0][0].TokenValue, vnToken[1].TokenValue, qvResult);
+
+                                    var q = GetScopeQsValue(this.Scope, vnToken[0][0].TokenValue, vnToken[1].TokenValue);
+                                    PrintQuantity(q);
+                                    return q;
+                                }
                             }
                             else
                             {
-                                SetVariable(vnToken[0][0].TokenValue, vnToken[1].TokenValue, qvResult);
-
-                                var q = GetScopeQsValue(this.Scope, vnToken[0][0].TokenValue, vnToken[1].TokenValue);
-                                PrintQuantity(q);
-                                return q;
+                                throw new QsInvalidInputException();
                             }
                         }
                         else
@@ -585,16 +602,13 @@ namespace Qs.Runtime
                             else
                             {
                                 SetVariable(varName, qvResult);
-
                                 var q = GetScopeQsValue(this.Scope, "", varName);
                                 PrintQuantity(q);
-
                                 return q;
                             }
                         }
                         #endregion
                     }
-
                 }
                 else
                 {

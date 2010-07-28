@@ -66,6 +66,25 @@ namespace Qs.Numerics
             return new Complex(dd);
         }
 
+        public static bool operator ==(Complex lhs, Complex rhs)
+        {
+            return lhs.NativeComplex == rhs.NativeComplex;
+        }
+
+        public static bool operator !=(Complex lhs, Complex rhs)
+        {
+            return lhs.NativeComplex != rhs.NativeComplex;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return _NativeComplex.Equals(obj);
+        }
+        public override int GetHashCode()
+        {
+            return _NativeComplex.GetHashCode();
+        }
+
         #region Operations
         public static Complex operator +(Complex a, Complex b)
         {

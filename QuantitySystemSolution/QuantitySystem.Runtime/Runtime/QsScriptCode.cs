@@ -9,31 +9,20 @@ namespace Qs.Runtime
 {
     public class QsScriptCode : ScriptCode
     {
-
-
         public QsScriptCode(SourceUnit sourceUnit)
             : base(sourceUnit)
         {
-
-
         }
-
-
 
         public override object Run()
         {
             return Run(new Scope());
         }
 
-        public static string LastLine { get; set; }
-
-        
+        public static string LastLine { get; set; }        
         
         public override object Run(Scope scope)
         {
-
-
-            
             string code = string.Empty;
             try
             {
@@ -65,13 +54,24 @@ namespace Qs.Runtime
                         int pc = 0; // for ()
                         
                         bool qcOpened = false;
+                        int ix = 0;
 
                         StringBuilder sb = new StringBuilder();
-                        foreach (char c in line)
+                        while (ix < line.Length)
                         {
+                            var c = line[ix];
                             if (c == '(') pc++;
-                            if (c == '"') qcOpened = !qcOpened;
-                                
+
+                            if (line[ix] == '"')
+                            {
+                                if (ix > 0)
+                                {
+                                    if (line[ix - 1] != '\\') // not escape charachter for qoutation mark
+                                        qcOpened = !qcOpened;
+                                }
+                                else
+                                    qcOpened = !qcOpened;
+                            }
 
                             // is it a comment charachter.
                             if (c == '#')
@@ -87,6 +87,8 @@ namespace Qs.Runtime
                             if (c == ')') pc--;
 
                             sb.Append(c);
+
+                            ix++;
                         }
 
                         string l2 = sb.ToString().Trim();  // text without comment.
@@ -101,8 +103,6 @@ namespace Qs.Runtime
                         {
                             ret = qs.Evaluate(l2);
                         }
-
-
                     }
                 }
             }

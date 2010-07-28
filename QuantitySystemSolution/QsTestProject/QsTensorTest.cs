@@ -83,7 +83,7 @@ namespace QsTestProject
 
             var sv = t.GetScalar(0, 0, 0);
 
-            Assert.AreEqual("3 <1>", sv.ToShortString());
+            Assert.AreEqual("3<1>", sv.ToShortString());
 
 
             t = QsEngine.Execute("<| <|3 4; 3 1 | 9 8; 4 7|> | <|30 4; 3 1 | 9 18; 4 7|> |>") as QsTensor;
@@ -91,7 +91,7 @@ namespace QsTestProject
             // getting scalar from 4th rank tensor.
             sv = t.GetScalar(1, 1, 0, 1);
 
-            Assert.AreEqual("18 <1>", sv.ToShortString());
+            Assert.AreEqual("18<1>", sv.ToShortString());
 
 
             t = QsEngine.Execute("<| <| <|3 4; 3 1 | 9 8; 4 7|> | <|30 4; 3 1 | 9 18; 4 7|> |>  |  <| <|3 4;4 1 | 9 8; 4 7|> | <|30 403<L>; 302 1 | 19 180; 40 700|> |> |>") as QsTensor;
@@ -99,7 +99,7 @@ namespace QsTestProject
             // getting scalar from 5th rank tensor.
             sv = t.GetScalar(1, 1, 0, 0, 1);
 
-            Assert.AreEqual("403 <L>", sv.ToShortString());
+            Assert.AreEqual("403<L>", sv.ToShortString());
             
         }
     }

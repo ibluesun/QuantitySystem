@@ -204,6 +204,13 @@ using Microsoft.Scripting;
             Console.WriteLine("           Omit <unit> for dimensionless quantity");
             Console.WriteLine();
 
+            Console.WriteLine("       - Scalar Quantity");
+            Console.WriteLine("         Ordinary Real Number: 3, 3e4 or 2.3<L>");
+            Console.WriteLine("         Symbolic Real Number: $x,  $ROI or $POP<m>");
+            Console.WriteLine("         Complex Number      : C{3 2} or C{2 1}<K>");
+            Console.WriteLine("         Quaternion Number   : H{3 2 1 9} or H{8 4 2 1}<J>");
+            Console.WriteLine();
+
             Console.WriteLine("       - Vector");
             Console.WriteLine("           vec = {3 4 5}");
             Console.WriteLine("           |vec|, or ||vec||     to get magnitude");
@@ -230,9 +237,14 @@ using Microsoft.Scripting;
 
             Console.WriteLine();
             Console.WriteLine("       - Sequence:");
-            Console.WriteLine("           \"S[] or S[n] or S[n](x) ..> 10; 20; n; x^n \"    to make a sequence.");
-            Console.WriteLine("           \"S[n:10](x) = n^2/x^(1/n)                        to set specific element of sequence.");
-            Console.WriteLine("           \"S[10]+S[20]                                     to sum element 10 and 20");
+            Console.WriteLine("           Declaration");
+            Console.WriteLine("           \"S[]     ..> 10; 20\"");
+            Console.WriteLine("           \"S[n]    ..> 10; 20; n\"            sequence with index.");
+            Console.WriteLine("           \"S[n](x) ..> 10; 20; n; x^n\"    sequence with index and parameter.");
+            Console.WriteLine("           \"G[k=m->n](x) ..> n - (k*x)/m\"      sequence with start, end, and counter index plus parameter.");
+
+            Console.WriteLine("           \"S[n:10](x) = n^2/x^(1/n)\"                        to set specific element of sequence.");
+            Console.WriteLine("           \"S[10]+S[20]\"                                     to sum element 10 and 20");
 
             Console.WriteLine();
             Console.WriteLine("       - Sequence operators:");
@@ -244,8 +256,9 @@ using Microsoft.Scripting;
 
             Console.WriteLine();
             Console.WriteLine("       - Calling parametererized series without specifying parameter return a function");
-            Console.WriteLine("             \"g[n](x) ..> x^n");
-            Console.WriteLine("             \"gf = g[2++5]  # returns x^2+x^3+x^4+x^5 as a function of _(x)");
+            Console.WriteLine("             \"P[n](x) ..> x^n");
+            Console.WriteLine("             \"gf = P[2++5]  # returns x^2+x^3+x^4+x^5 as a function of _(x)");
+            Console.WriteLine("             \"gv = P[2..5]  # returns vector x^2, x^3, x^4, x^5 as a function of _(x)");
 
             Console.WriteLine();
             Console.WriteLine("       - \"var = number[Quantity Name]\" ");
