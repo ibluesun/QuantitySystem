@@ -141,7 +141,7 @@ namespace QuantitySystem.Units
 
         private static Dictionary<string, UnitPathStack> CachedPaths = new Dictionary<string, UnitPathStack>();
 
-        private static bool enableUnitsCaching = false;
+        private static bool enableUnitsCaching = true;
         public static bool EnableUnitsCaching
         {
             get
