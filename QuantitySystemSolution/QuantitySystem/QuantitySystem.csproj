@@ -172,7 +172,6 @@
     <Compile Include="QuantityException.cs" />
     <Compile Include="QuantityNotFoundException.cs" />
     <Compile Include="Units\Ancient\LengthUnits.cs" />
-    <Compile Include="Units\Astronomical\EnergyUnits.cs" />
     <Compile Include="Units\Astronomical\LengthUnits.cs" />
     <Compile Include="Units\Astronomical\MassUnits.cs" />
     <Compile Include="Units\Astronomical\TimeUnits.cs" />
@@ -189,22 +188,6 @@
     </Compile>
     <Compile Include="Units\English\LengthUnits.cs" />
     <Compile Include="Units\English\MassUnits.cs" />
-    <Compile Include="Units\English\US\AreaUnits.cs" />
-    <Compile Include="Units\English\Imperial\AreaUnits.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Units\English\Imperial\LengthUnits.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Units\English\Imperial\MassUnits.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Units\English\Imperial\VolumeUnits.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Units\English\US\LengthUnits.cs" />
-    <Compile Include="Units\English\US\MassUnits.cs" />
-    <Compile Include="Units\English\US\VelocityUnits.cs" />
     <Compile Include="Units\English\US\VolumeUnits.cs" />
     <Compile Include="Units\English\VolumeUnits.cs" />
     <Compile Include="Units\MetricUnit_Helper.cs" />
@@ -262,16 +245,11 @@
     <Compile Include="Units\Metric\SI\Volt.cs" />
     <Compile Include="Units\Metric\SI\Weber.cs" />
     <Compile Include="Units\Metric\VolumeUnits.cs" />
-    <Compile Include="Units\Metric\EnergyUnits.cs" />
-    <Compile Include="Units\Metric\LengthUnits.cs" />
-    <Compile Include="Units\Metric\MassUnits.cs" />
     <Compile Include="Units\Metric\PressureUnits.cs" />
-    <Compile Include="Units\Metric\VelocityUnits.cs" />
     <Compile Include="Attributes\DefaultUnitAttribute.cs" />
     <Compile Include="Attributes\MetricUnitAttribute.cs" />
     <Compile Include="Attributes\UnitAttribute.cs" />
     <Compile Include="Attributes\ReferenceUnitAttribute.cs" />
-    <Compile Include="Units\Metric\TimeUnits.cs" />
     <Compile Include="Units\MetricPrefixes.cs" />
     <Compile Include="Units\Metric\SI\Hertz.cs" />
     <Compile Include="Units\Metric\SI\Joule.cs">
