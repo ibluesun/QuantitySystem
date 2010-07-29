@@ -20,7 +20,7 @@ namespace QuantitySystem.Units.Misc
     /// </summary>
     /// <see href="http://msmvps.com/blogs/odewit/archive/2008/01/07/how-to-exploit-the-wpf-device-independent-pixel.aspx"/>
     /// <seealso href="http://msdn.microsoft.com/en-us/library/ms748373.aspx"/>    
-    [MetricUnit("DIP", typeof(Length<>))]
+    [Unit("DIP", typeof(Length<>))]
     [ReferenceUnit(0.0254, 96.0)]
     public sealed class DeviceIndependentPixel : Unit
     {

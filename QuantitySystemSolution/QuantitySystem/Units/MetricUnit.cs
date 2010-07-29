@@ -175,7 +175,6 @@ namespace QuantitySystem.Units
         {
             get
             {
-                
                 if (_ReferenceUnit == null)
                 {
                     if (IsDefaultUnit)
@@ -201,9 +200,16 @@ namespace QuantitySystem.Units
         }
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <returns></returns>
         public override string ToString()
         {
-            return this.UnitPrefix.Prefix + this.GetType().Name + " " + this.Symbol;
+            if (this.unitPrefix.Exponent == 0)
+                return this.GetType().Name + " " + this.Symbol;
+            else
+                return this.UnitPrefix.Prefix + this.GetType().Name.ToLower() + " " + this.Symbol;
         }
     }
 }
