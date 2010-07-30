@@ -91,6 +91,7 @@
     <Compile Include="AngleTest.cs" />
     <Compile Include="AnyQuantityTest.cs" />
     <Compile Include="ComplexNumber.cs" />
+    <Compile Include="UnityEqualityTest.cs" />
     <Compile Include="LengthDescriptorTest.cs" />
     <Compile Include="LengthTest.cs" />
     <Compile Include="MassTest.cs" />
