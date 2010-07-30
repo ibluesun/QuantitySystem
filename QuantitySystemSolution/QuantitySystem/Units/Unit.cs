@@ -419,7 +419,7 @@ namespace QuantitySystem.Units
 
                         while (suidx < SubUnits.Count)
                         {
-                            if (SubUnits[suidx].UnitSystem != ns && SubUnits[suidx].UnitSystem!="Shared")
+                            if (SubUnits[suidx].UnitSystem != ns && SubUnits[suidx].UnitSystem != "Shared")
                             {
                                 ns = MixedSystem;
                                 break;
@@ -460,13 +460,10 @@ namespace QuantitySystem.Units
         #endregion
 
 
-
-
         public override string ToString()
         {
             return this.GetType().Name + " " + this.Symbol;
         }
-
 
 
         #region ICloneable Members
@@ -477,5 +474,51 @@ namespace QuantitySystem.Units
         }
 
         #endregion
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object obj)
+        {
+            Unit u = obj as Unit;
+            if(!Object.ReferenceEquals(u, null))
+            {
+                if (this.Symbol.Equals(u.Symbol, StringComparison.Ordinal))
+                    return true;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.Symbol.GetHashCode();
+        }
+
+        public static  bool operator ==(Unit lhs, Unit rhs)
+        {
+            // If both are null, or both are same instance, return true.
+            if (System.Object.ReferenceEquals(lhs, rhs))
+            {
+                return true;
+            }
+
+            // If one is null, but not both, return false.
+            if (((object)lhs == null) || ((object)rhs == null))
+            {
+                return false;
+            }
+
+            return lhs.Equals(rhs);
+
+        }
+
+        public static bool operator !=(Unit lhs, Unit rhs)
+        {
+            return !(lhs == rhs);
+
+        }
     }
 }
