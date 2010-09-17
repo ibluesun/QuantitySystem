@@ -169,7 +169,15 @@ namespace Qs.Types
                         + QuaternionQuantity.Value.k.ToString(CultureInfo.InvariantCulture) + "}"
                         + this.QuaternionQuantity.UnitText;
                 case ScalarTypes.SymbolicQuantity:
-                    return "$" + SymbolicQuantity.ToShortString();
+                    {
+                        //add $ before any symbol
+
+                        string sq = SymbolicQuantity.Value.ToString();
+                        foreach (string sym in SymbolicQuantity.Value.InvolvedSymbols)
+                            sq = sq.Replace(sym, "$" + sym);
+                        return sq + SymbolicQuantity.UnitText;
+                        
+                    }
                 default:
                     throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
             }
@@ -744,6 +752,19 @@ namespace Qs.Types
                 var qt = QsEvaluator.CurrentEvaluator.SilentEvaluate(text.Text) as QsValue;
                 return AddOperation(qt);
             }
+            else if (value is QsFunction)
+            {
+                if (this.ScalarType == ScalarTypes.SymbolicQuantity)
+                {
+                    var fn = value as QsFunction;
+                    return this.AddScalar(fn.SymbolicBodyScalar);
+                }
+                else
+                {
+                    throw new NotImplementedException("Adding QsScalar[" + this.ScalarType.ToString() + "] from QsFunction is not implemented yet");
+                }
+            }
+
             else
             {
                 throw new NotImplementedException("Adding QsScalar to " + value.GetType().Name + " is not implemented yet");
@@ -773,6 +794,18 @@ namespace Qs.Types
                 var text = value as QsText;
                 var qt = QsEvaluator.CurrentEvaluator.SilentEvaluate(text.Text) as QsValue;
                 return SubtractOperation(qt);
+            }
+            else if (value is QsFunction)
+            {
+                if (this.ScalarType == ScalarTypes.SymbolicQuantity)
+                {
+                    var fn = value as QsFunction;
+                    return this.SubtractScalar(fn.SymbolicBodyScalar);
+                }
+                else
+                {
+                    throw new NotImplementedException("Subtracting QsScalar[" + this.ScalarType.ToString() + "] from QsFunction is not implemented yet");
+                }
             }
             else
             {
@@ -805,6 +838,18 @@ namespace Qs.Types
                 var qt = QsEvaluator.CurrentEvaluator.SilentEvaluate(text.Text) as QsValue;
                 return MultiplyOperation(qt);
             }
+            else if (value is QsFunction)
+            {
+                if (this.ScalarType == ScalarTypes.SymbolicQuantity)
+                {
+                    var fn = value as QsFunction;
+                    return this.MultiplyScalar(fn.SymbolicBodyScalar);
+                }
+                else
+                {
+                    throw new NotImplementedException("Multiplying QsScalar[" + this.ScalarType.ToString() + "] from QsFunction is not implemented yet");
+                }
+            }
             else
             {
                 throw new NotImplementedException("Multiplieng QsScalar with " + value.GetType().Name + " is not implemented yet");
@@ -832,6 +877,18 @@ namespace Qs.Types
                 var text = value as QsText;
                 var qt = QsEvaluator.CurrentEvaluator.SilentEvaluate(text.Text) as QsValue;
                 return DivideOperation(qt);
+            }
+            else if (value is QsFunction)
+            {
+                if (this.ScalarType == ScalarTypes.SymbolicQuantity)
+                {
+                    var fn = value as QsFunction;
+                    return this.DivideScalar(fn.SymbolicBodyScalar);
+                }
+                else
+                {
+                    throw new NotImplementedException("Dividing QsScalar[" + this.ScalarType.ToString() + "] from QsFunction is not implemented yet");
+                }
             }
             else
             {

@@ -70,6 +70,13 @@ namespace Qs.Types
         abstract public bool Inequality(QsValue value);
         #endregion
 
+        #region Symbolic Operations
+        public virtual QsValue DifferentiateOperation(QsValue value)
+        {
+            return DivideOperation(value);  //default action for all types.
+        }
+        #endregion
+
         /// <summary>
         /// QsValue . QsValue 
         /// </summary>

@@ -1,7 +1,37 @@
+[Qs 1.1.9.967]
+- DIP length unit for  added   {thanks for starnuto}
+- Cubit unit conversion fixed.
+
+- Function [+ - * /] symbolic quantity that is not exist in the function will generate a function with a new parameter for this symbolic quantity
+	f(x) = x^2
+	@f+$y result in  _f(x,y) = x^2+y
+
+- Enhancing SilentEvaluate function (just look to the code)
+
+- Adding derivative of functions for first time
+Qs> f(x) = x^4
+Qs> @F|$x 
+     _(x) = 4*x^3
+
+Qs> f(x,y) = 3*x^2*4*y^3
+Qs> @f|$x
+    _(x,y) = 24*x*y^3
+Qs> @f|$y
+    _(x,y) = 36*x^2*y^2
+Qs> @f|$y|$x
+    _(x,y) = 72*x*y^2
+Qs> @f|$y^2|$x
+    _(x,y) = 144*x*y
+
+- Breaking Change
+	Absolute  and Magnitude (Norms)    are now   _|x|_   and _||x||_ 
+
+- Hopefully the next release will be the 2.0 release :) :) :) 
+
 [Qs 1.1.9.966]
 - Added the Quaternion Power to integer.
 - Another enhancement to the parsing speed.
-- Adjusted the equality and inequality for quaternion and complex {semi adjustment}
+- Adjusted the equality and inequality for quaternion and complex quantities {semi adjustment}
 
 [Qs 1.1.9.965]
 - Using .NET Framework 4 for the whole project and its realted projects.

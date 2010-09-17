@@ -56,13 +56,13 @@ fun:a + fun:b
 
 #test the condition statement 
 
-wave:tri(t) = 1-|t| when |t|<1 otherwise 0						#http://en.wikipedia.org/wiki/Triangular_function 
-																# remember that |x| is absolute when x is scalar and determinant if x is n x n matrix
+wave:tri(t) = 1-_|t|_ when _|t|_<1 otherwise 0						#http://en.wikipedia.org/wiki/Triangular_function 
+																# remember that _|x|_ is absolute when x is scalar and determinant if x is n x n matrix
 										
 wave:saw(t) = t - math:floor(t)									#http://en.wikipedia.org/wiki/Sawtooth_wave
 
 math:sgn(x) = -1 when x<0 otherwise 0 when x==0 otherwise 1 	#http://en.wikipedia.org/wiki/Sign_function
-math:sgna(x) = x/|x|												# also the same but include more range of numbers
+math:sgna(x) = x/_|x|_												# also the same but include more range of numbers
 
 wave:Square(x) = math:sgn(math:sin(x))  						#http://en.wikipedia.org/wiki/Square_wave
 

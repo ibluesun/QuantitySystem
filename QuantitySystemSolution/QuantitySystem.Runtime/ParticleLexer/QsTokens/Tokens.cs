@@ -130,28 +130,47 @@ namespace ParticleLexer.QsTokens
 
 
     /// <summary>
-    /// | x |
+    /// Left token of absolute group
     /// </summary>
-    [TokenPattern(RegexPattern = @"\|[^\|]+?\|", ShouldBeginWith = "|")]
-    public class AbsoluteToken : TokenClass
+    [TokenPattern(RegexPattern = @"_\|", ExactWord = true)]
+    public class LeftAbsoluteToken : TokenClass
     {
     }
 
     /// <summary>
-    /// 
+    /// right token of absolute group
+    /// </summary>
+    [TokenPattern(RegexPattern = @"\|_", ExactWord = true)]
+    public class RightAbsoluteToken : TokenClass
+    {
+    }
+
+    /// <summary>
+    /// left token of norm group
+    /// </summary>
+    [TokenPattern(RegexPattern = @"_\|\|", ExactWord = true)]
+    public class LeftNormToken : TokenClass
+    {
+    }
+
+    /// <summary>
+    /// right token of norm group
+    /// </summary>
+    [TokenPattern(RegexPattern = @"\|\|_", ExactWord = true)]
+    public class RightNormToken : TokenClass
+    {
+    }
+
+
+
+    /// <summary>
+    /// Double Vertical Bar
     /// </summary>
     [TokenPattern(RegexPattern = @"\|\|", ExactWord = true)]
     public class DoubleVerticalBarToken : TokenClass
     {
     }
 
-    /// <summary>
-    /// || x ||
-    /// </summary>
-    [TokenPattern(RegexPattern = @"\|\|.+\|\|", ShouldBeginWith = "|")]
-    public class MagnitudeToken : TokenClass
-    {
-    }
 
 
     /// <summary>
@@ -278,12 +297,28 @@ namespace ParticleLexer.QsTokens
 
 
     /// <summary>
-    /// 
+    /// Express groups of '&lt;| a b c |>'
     /// </summary>
     public class TensorGroupToken : GroupTokenClass
     {
         public TensorGroupToken()
             : base(new LeftTensorToken(), new RightTensorToken())
+        {
+        }
+    }
+
+    public class AbsoluteGroupToken : GroupTokenClass
+    {
+        public AbsoluteGroupToken()
+            : base(new LeftAbsoluteToken(), new RightAbsoluteToken())
+        {
+        }
+    }
+
+    public class NormGroupToken : GroupTokenClass
+    {
+        public NormGroupToken()
+            : base(new LeftNormToken(), new RightNormToken())
         {
         }
     }

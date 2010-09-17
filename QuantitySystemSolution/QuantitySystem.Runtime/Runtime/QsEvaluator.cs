@@ -126,12 +126,27 @@ namespace Qs.Runtime
 
                 ns.SetValue(varName, varValue);
                 
-            }
-            
+            }            
         }
 
+        
+        /// <summary>
+        /// Stack that reserve the SilentEvaluation during successive calls to the SilentEvaluate
+        /// </summary>
+        private Stack<bool> SilentStack = new Stack<bool>();
 
-        public bool SilentOutput = false;
+        /// <summary>
+        /// Determine if we should echo the output on the screen or not.
+        /// </summary>
+        private bool SilentOutput
+        {
+            get
+            {
+                if (SilentStack.Count > 0) return true;
+                else return false;
+            }
+        }
+
 
         /// <summary>
         /// Never put any thing on the output screen.
@@ -140,15 +155,16 @@ namespace Qs.Runtime
         /// <returns></returns>
         public object SilentEvaluate(string line)
         {
-            SilentOutput = true;
+            
+            SilentStack.Push(true);
             try
             {
                 var r = Evaluate(line);
                 return r;
             }
             finally
-            {
-                SilentOutput = false;
+            {   
+                SilentStack.Pop();
             }
         }
 
