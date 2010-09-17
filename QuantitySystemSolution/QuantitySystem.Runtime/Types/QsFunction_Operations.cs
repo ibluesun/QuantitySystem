@@ -175,21 +175,27 @@ namespace Qs.Types
                 QsScalar svl = (QsScalar)value;
 
                 var fname = "_";
-               
-                var fbody = "" + this.FunctionBody;
-                foreach (string p in this.ParametersNames)
-                {
-                    fbody = fbody.Replace(p, "$" + p);
-                }
+
+                var fbody = this.SymbolicBodyText;
 
                 fbody += " " + operation + svl.ToExpressionString();
                 
-                fbody = fbody.Replace("!", "__FAC__");
                 QsScalar fb = (QsScalar)QsEvaluator.CurrentEvaluator.SilentEvaluate(fbody);
                 string FuncBody = fb.SymbolicQuantity.Value.ToString().Replace("__FAC__", "!");
 
-                var fparam = this.ParametersNames;
-                var f = fname + "(" + RemoveRedundantParameters(fparam) + ") = " + FuncBody;
+                string[] functionParametersArray = this.ParametersNames; // this is the available parameters for the original function.
+
+                if (svl.ScalarType == ScalarTypes.SymbolicQuantity)
+                {
+                    string[] syms = svl.SymbolicQuantity.Value.InvolvedSymbols;
+
+                    List<string> newParametersList = new List<string>(functionParametersArray);
+                    newParametersList.AddRange(syms);
+
+                    functionParametersArray = newParametersList.ToArray();
+                }
+
+                var f = fname + "(" + RemoveRedundantParameters(functionParametersArray) + ") = " + FuncBody;
                 return QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, f);
                 
                
@@ -197,6 +203,36 @@ namespace Qs.Types
             else
             {
                 throw new NotImplementedException();
+            }
+        }
+
+        /// <summary>
+        /// Returns the body of the function as a symbolic quantities.
+        /// </summary>
+        public string SymbolicBodyText
+        {
+            get
+            {
+                var fbody = this.FunctionBody;
+                foreach (string p in this.ParametersNames)
+                {
+                    fbody = fbody.Replace(p, "$" + p);
+                }
+
+                fbody = fbody.Replace("!", "__FAC__");
+
+                return "(" + fbody + ")";
+            }
+        }
+
+        /// <summary>
+        /// returns the function as symbolic quantity scalar.
+        /// </summary>
+        public QsScalar SymbolicBodyScalar
+        {
+            get
+            {
+                return (QsScalar)QsEvaluator.CurrentEvaluator.SilentEvaluate(SymbolicBodyText);
             }
         }
 
@@ -316,6 +352,35 @@ namespace Qs.Types
         public override QsValue GetIndexedItem(int[] indices)
         {
             throw new NotImplementedException();
+        }
+
+
+        public override QsValue DifferentiateOperation(QsValue value)
+        {
+            QsScalar sval = (QsScalar)value;
+
+            if (sval.ScalarType == ScalarTypes.SymbolicQuantity)
+            {
+                var dsv = sval.SymbolicQuantity.Value;
+
+                SymbolicVariable nsv = SymbolicBodyScalar.SymbolicQuantity.Value;
+                int times = (int)dsv.SymbolPower;
+                while (times > 0)
+                {
+                    nsv = nsv.Differentiate(dsv.Symbol);
+                    times--;
+                }
+
+                var fname = "_";
+
+                var WholeFunction = fname + "(" + RemoveRedundantParameters(this.ParametersNames) + ") = " + nsv.ToString();
+
+                return QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, WholeFunction);
+            }
+            else
+            {
+                return base.DifferentiateOperation(value);
+            }
         }
     }
 }

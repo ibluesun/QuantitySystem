@@ -150,40 +150,7 @@ namespace Qs.Runtime
             // assemble all units <*>    //before tokenization of tensor operator
             tokens = tokens.MergeTokens<UnitToken>();
 
-
-            /*
-            // assemble '<|'
-            tokens = tokens.MergeTokens<LeftTensorToken>();
-
-            // assemble '|>'
-            tokens = tokens.MergeTokens<RightTensorToken>();
-
-            // assemble '<<'
-            tokens = tokens.MergeTokens<LeftShiftToken>();
-
-            // assemble '>>'
-            tokens = tokens.MergeTokens<RightShiftToken>();
-
-
-            // assemble '||'  after assembling tensor group token
             tokens = tokens.MergeTokens<DoubleVerticalBarToken>();
-
-            tokens = tokens.MergeTokens<WhenStatementToken>();
-
-            tokens = tokens.MergeTokens<OtherwiseStatementToken>();
-
-            tokens = tokens.MergeTokens<AndStatementToken>();
-
-            tokens = tokens.MergeTokens<OrStatementToken>();
-
-            tokens = tokens.MergeTokens<EqualityToken>();
-
-            tokens = tokens.MergeTokens<InEqualityToken>();
-
-            tokens = tokens.MergeTokens<LessThanOrEqualToken>();
-
-            tokens = tokens.MergeTokens<GreaterThanOrEqualToken>();
-            */
 
             tokens = tokens.MergeMultipleWordTokens(
                 // assemble '<|'
@@ -198,8 +165,15 @@ namespace Qs.Runtime
                 // assemble '>>'
                 typeof(RightShiftToken),
 
-                // assemble '||'  after assembling tensor group token
-                typeof(DoubleVerticalBarToken),
+                // _|  and  |_  tokens
+                typeof(LeftAbsoluteToken),
+                typeof(RightAbsoluteToken),
+
+                // _||  and   _||   tokens
+                typeof(LeftNormToken),
+                typeof(RightNormToken),
+
+
                 typeof(WhenStatementToken),
                 typeof(OtherwiseStatementToken),
                 typeof(AndStatementToken),
@@ -242,14 +216,13 @@ namespace Qs.Runtime
 
 
             tokens = tokens.MergeTokensInGroups(
-                new ParenthesisGroupToken(),                // group (--()-) parenthesis
-                new SquareBracketsGroupToken(),             // [[][][]]
+                new ParenthesisGroupToken(),                //  group (--()-) parenthesis
+                new SquareBracketsGroupToken(),             //  [[][][]]
                 new CurlyBracketGroupToken(),               //  {{}}{}
-                new TensorGroupToken()                      //  <| <| |> |>
+                new TensorGroupToken(),                     //  <| <| |> |>
+                new NormGroupToken(),                       //  _|| _|| ||_ ||_
+                new AbsoluteGroupToken()                   //  _| _|  |_ |_
                 );
-
-            tokens = tokens.MergeTokens<AbsoluteToken>();
-            tokens = tokens.MergeTokens<MagnitudeToken>();
 
             tokens = tokens.RemoveSpaceTokens();                           //remove all spaces
 
@@ -370,11 +343,11 @@ namespace Qs.Runtime
                 {
                     quantityExpression = ParseText(tokens[ix]);
                 }
-                else if (tokens[ix].TokenClassType == typeof(MagnitudeToken))
+                else if (tokens[ix].TokenClassType == typeof(NormGroupToken))
                 {
                     quantityExpression = ValueNorm(tokens[ix]);
                 }
-                else if (tokens[ix].TokenClassType == typeof(AbsoluteToken))
+                else if (tokens[ix].TokenClassType == typeof(AbsoluteGroupToken))
                 {
                     quantityExpression = ValueAbsolute(tokens[ix]);
                 }
@@ -1656,6 +1629,9 @@ namespace Qs.Runtime
             if (op.Equals("^x", StringComparison.OrdinalIgnoreCase))
                 return Expression.Power(left, right, aqType.GetMethod("PowCross"));
 
+            if (op.Equals("|"))
+                return Expression.Call(left, aqType.GetMethod("DifferentiateOperation"), right);
+
             if (op == "*") return Expression.Multiply(left, right);
 
             if (op == ".") return Expression.Multiply(left, right, aqType.GetMethod("DotProduct"));
@@ -1751,12 +1727,14 @@ namespace Qs.Runtime
             // Internal Higher Priority Group
             string[] HigherGroup = { "_h*" /* Higher Multiplication priority used internally in 
                                            * the case of -4  or 5^-3
-                                             To be treated like -1_*4   or 5^-1_*4
+                                             To be treated like -1_h*4   or 5^-1_h*4
                                            */};
 
             string[] Group = { "^"    /* Power for normal product '*' */, 
                                "^."   /* Power for dot product */ ,
                                "^x"   /* Power for cross product */ };
+
+            string[] SymGroup = { "|" /* Derivation operator */};
 
             string[] Group1 = { "*"   /* normal multiplication */, 
                                 "."   /* dot product */, 
@@ -1778,9 +1756,7 @@ namespace Qs.Runtime
 
 
             /// Operator Groups Ordered by Priorities.
-            string[][] OperatorGroups = { HigherGroup, Group, Group1, Group2, Shift, RelationalGroup, EqualityGroup, AndGroup, OrGroup, WhenOtherwiseGroup };
-
-
+            string[][] OperatorGroups = { HigherGroup, Group, SymGroup, Group1, Group2, Shift, RelationalGroup, EqualityGroup, AndGroup, OrGroup, WhenOtherwiseGroup };
 
             foreach (var opg in OperatorGroups)
             {
