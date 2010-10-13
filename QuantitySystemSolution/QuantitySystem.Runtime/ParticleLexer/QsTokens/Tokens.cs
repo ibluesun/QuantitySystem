@@ -5,14 +5,6 @@ using System.Linq;
 
 namespace ParticleLexer.QsTokens
 {
-    /// <summary>
-    /// || Groups
-    /// </summary>
-    public class MatrixGroupToken : TokenClass
-    {
-    }
-
-
 
     /// <summary>
     /// unit token form &lt;unit&gt;
