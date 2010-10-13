@@ -440,6 +440,11 @@ namespace Qs.Types
                         {
                             case ScalarTypes.NumericalQuantity:
                                 return new QsScalar { NumericalQuantity = AnyQuantity<double>.Power(this.NumericalQuantity, power.NumericalQuantity) };
+                            case ScalarTypes.SymbolicQuantity:
+                                {
+                                    SymbolicVariable sv = new SymbolicVariable(this.NumericalQuantity.Value.ToString(CultureInfo.InvariantCulture));
+                                    return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = AnyQuantity<SymbolicVariable>.Power(sv.ToQuantity(), power.SymbolicQuantity) };
+                                }
                             default:
                                 throw new NotImplementedException();
                         }
