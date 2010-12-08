@@ -564,6 +564,7 @@ namespace Qs.Runtime
                     }
                     else
                     {
+
                         #region Normal Variable
                         //Normal Variable.
                         // get the after assign expression value
@@ -592,11 +593,47 @@ namespace Qs.Runtime
                                 }
                                 else
                                 {
-                                    SetVariable(vnToken[0][0].TokenValue, vnToken[1].TokenValue, qvResult);
+                                    if (varName.StartsWith("@") && qvResult.GetType() == typeof(QsScalar))
+                                    {
+                                        var fsc = (QsScalar)qvResult;
+                                        if (fsc.ScalarType == ScalarTypes.FunctionQuantity)
+                                        {
+                                            // @f = @function which means we should assign f to qsfunction f
+                                            
+                                            var qf = (QsFunction)((QsScalar)qvResult).FunctionQuantity.Value.Clone();
 
-                                    var q = GetScopeQsValue(this.Scope, vnToken[0][0].TokenValue, vnToken[1].TokenValue);
-                                    PrintQuantity(q);
-                                    return q;
+                                            qf.FunctionNamespace = vnToken[1][0].TokenValue;
+                                            qf.FunctionName = vnToken[2].TokenValue;
+
+                                            StoreFunction(qf);
+                                            return qf;
+                                        }
+                                        else if (fsc.ScalarType == ScalarTypes.SymbolicQuantity)
+                                        {
+                                            var fh = "_(";
+                                            foreach (var p in fsc.SymbolicQuantity.Value.InvolvedSymbols) fh += p + ", ";
+                                            fh = fh.TrimEnd(',', ' ') + ") = ";
+
+                                            var qf = QsFunction.ParseFunction(this, fh + fsc.SymbolicQuantity.Value.ToString());
+
+                                            qf.FunctionNamespace = vnToken[1][0].TokenValue;
+                                            qf.FunctionName = vnToken[2].TokenValue;
+
+                                            StoreFunction(qf);
+                                            return qf;
+                                        }
+                                        else
+                                        {
+                                            throw new QsException("Cannot store scalar " + fsc.ScalarType.ToString() + " into function variable");
+                                        }
+                                    }
+                                    else
+                                    {
+                                        SetVariable(vnToken[0][0].TokenValue, vnToken[1].TokenValue, qvResult);
+                                        var q = GetScopeQsValue(this.Scope, vnToken[0][0].TokenValue, vnToken[1].TokenValue);
+                                        PrintQuantity(q);
+                                        return q;
+                                    }
                                 }
                             }
                             else
@@ -617,13 +654,47 @@ namespace Qs.Runtime
                             }
                             else
                             {
-                                SetVariable(varName, qvResult);
-                                var q = GetScopeQsValue(this.Scope, "", varName);
-                                PrintQuantity(q);
-                                return q;
+                                if (varName.StartsWith("@") && qvResult.GetType()==typeof(QsScalar))
+                                {
+                                    var fsc = (QsScalar)qvResult;
+                                    varName = varName.Substring(1); // remove @
+                                    if (fsc.ScalarType == ScalarTypes.FunctionQuantity)
+                                    {
+                                        // @f = @function which means we should assign f to qsfunction f
+                                        
+                                        var qf = (QsFunction)((QsScalar)qvResult).FunctionQuantity.Value.Clone();
+                                        qf.FunctionName = varName;
+                                        StoreFunction(qf);
+                                        return qf;
+                                    }
+                                    else if (fsc.ScalarType == ScalarTypes.SymbolicQuantity)
+                                    {
+                                        var fh = "_(";
+                                        foreach (var p in fsc.SymbolicQuantity.Value.InvolvedSymbols) fh += p + ", ";
+                                        fh = fh.TrimEnd(',', ' ') + ") = ";
+
+                                        var qf = QsFunction.ParseFunction(this, fh + fsc.SymbolicQuantity.Value.ToString());
+                                        qf.FunctionName = varName;
+
+                                        StoreFunction(qf);
+                                        return qf;
+                                    }
+                                    else
+                                    {
+                                        throw new QsException("Cannot store scalar " + fsc.ScalarType.ToString() + " into function variable");
+                                    }
+                                }
+                                else
+                                {
+                                    SetVariable(varName, qvResult);
+                                    var q = GetScopeQsValue(this.Scope, "", varName);
+                                    PrintQuantity(q);
+                                    return q;
+                                }
                             }
                         }
                         #endregion
+
                     }
                 }
                 else
@@ -862,7 +933,6 @@ namespace Qs.Runtime
                 else
                 {
                     //overwrite  the old function.
-
 
                     if (OverLoadedFunction.FunctionDeclaration.Equals(DefaultFunction.FunctionDeclaration))
                     {

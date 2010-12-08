@@ -13,7 +13,7 @@ namespace Qs.Types
     /// <summary>
     /// Function that declared in Qs
     /// </summary>
-    public partial class QsFunction : QsValue
+    public partial class QsFunction
     {
 
         /// <summary>
@@ -21,7 +21,7 @@ namespace Qs.Types
         /// </summary>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        private static string RemoveRedundantParameters(params string[] parameters)
+        internal static string RemoveRedundantParameters(params string[] parameters)
         {
             Dictionary<string, bool> rp = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase);
             foreach (var prm in parameters)
@@ -187,19 +187,28 @@ namespace Qs.Types
 
                 if (svl.ScalarType == ScalarTypes.SymbolicQuantity)
                 {
-                    string[] syms = svl.SymbolicQuantity.Value.InvolvedSymbols;
+                    
+                    List<string> newParametersList = new List<string>(functionParametersArray);
+
+                    newParametersList.AddRange(svl.SymbolicQuantity.Value.InvolvedSymbols);
+
+                    functionParametersArray = newParametersList.ToArray();
+                }
+
+                if (svl.ScalarType == ScalarTypes.FunctionQuantity)
+                {
 
                     List<string> newParametersList = new List<string>(functionParametersArray);
-                    newParametersList.AddRange(syms);
+
+                    newParametersList.AddRange(svl.FunctionQuantity.Value.ParametersNames);
 
                     functionParametersArray = newParametersList.ToArray();
                 }
 
                 var f = fname + "(" + RemoveRedundantParameters(functionParametersArray) + ") = " + FuncBody;
                 return QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, f);
-                
-               
             }
+            
             else
             {
                 throw new NotImplementedException();
@@ -266,6 +275,7 @@ namespace Qs.Types
 
         public override QsValue MultiplyOperation(QsValue value)
         {
+            
             return FOperation(value, Operator.Multiply);
         }
 
@@ -354,7 +364,11 @@ namespace Qs.Types
             throw new NotImplementedException();
         }
 
-
+        /// <summary>
+        /// Differentiate operation for function.
+        /// </summary>
+        /// <param name="value">object of <see cref="QsScalar"/> that hold <see cref="AnyQuantity&lt;SymbolicVariable&gt;"/></param>
+        /// <returns></returns>
         public override QsValue DifferentiateOperation(QsValue value)
         {
             QsScalar sval = (QsScalar)value;

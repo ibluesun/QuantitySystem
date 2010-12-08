@@ -541,5 +541,29 @@ namespace Qs.Types
         #endregion
 
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public override QsValue DifferentiateOperation(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                QsMatrix n = new QsMatrix();
+                foreach (var row in n.Rows)
+                {
+                    n.AddRow(row.DifferentiateScalar((QsScalar)value).ToArray());
+                }
+                return n;
+            }
+            else
+            {
+                return base.DifferentiateOperation(value);
+            }
+        }
+
+
+
     }
 }

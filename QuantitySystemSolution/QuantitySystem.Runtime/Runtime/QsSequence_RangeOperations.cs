@@ -143,8 +143,8 @@ namespace Qs.Runtime
 
 
                 QsFunction qs = QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, FunctionDeclaration);
-                
-                return qs;
+
+                return new QsScalar(ScalarTypes.FunctionQuantity) { FunctionQuantity = qs.ToQuantity() };
             }
             else
             {
@@ -294,8 +294,9 @@ namespace Qs.Runtime
                 string FunctionDeclaration = "_(" + porma + ") = " + FunctionBody;
 
                 QsFunction qs = QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, FunctionDeclaration);
-                
-                return qs;
+
+                return new QsScalar(ScalarTypes.FunctionQuantity) { FunctionQuantity = qs.ToQuantity() };
+
             }
             else
             {

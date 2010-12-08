@@ -12,6 +12,7 @@ using Qs.Numerics;
 using Qs.Runtime.Operators;
 using Qs.Types;
 using SymbolicAlgebra;
+using Qs.Types.Operators;
 
 
 namespace Qs.Runtime
@@ -184,6 +185,7 @@ namespace Qs.Runtime
                 typeof(GreaterThanOrEqualToken)
                 );
 
+            
 
             tokens = tokens.MergeTokens<WordToken>();                 //Discover words
 
@@ -191,8 +193,9 @@ namespace Qs.Runtime
             tokens = tokens.MergeSequenceTokens<SymbolicToken>(typeof(DollarToken), typeof(WordToken));
             tokens = tokens.MergeSequenceTokens<SymbolicQuantityToken>(typeof(SymbolicToken), typeof(UnitToken));
 
+            
+
             tokens = tokens.MergeTokens<NumberToken>();               //discover the numbers
-            //tokens = tokens.MergeTokens<UnitizedNumberToken>();   //discover the unitized numbers
             tokens = tokens.MergeSequenceTokens<UnitizedNumberToken>(typeof(NumberToken), typeof(UnitToken));
 
 
@@ -213,7 +216,9 @@ namespace Qs.Runtime
             // merge the function value  expressions 
             //  @f  
             tokens = tokens.MergeTokens<FunctionValueToken>();
+            tokens = tokens.MergeSequenceTokens<FunctionQuantityToken>(typeof(FunctionValueToken), typeof(UnitToken));
 
+            tokens = tokens.MergeTokens<Nabla>();
 
             tokens = tokens.MergeTokensInGroups(
                 new ParenthesisGroupToken(),                //  group (--()-) parenthesis
@@ -353,7 +358,29 @@ namespace Qs.Runtime
                 }
                 else if (tokens[ix].TokenClassType == typeof(FunctionValueToken))
                 {
-                    quantityExpression = GetFunctionValue(tokens[ix]);
+                    quantityExpression = GetFunctionAsQuantity(tokens[ix]);
+                }
+                else if (tokens[ix].TokenClassType == typeof(FunctionQuantityToken))
+                {
+                    quantityExpression = GetFunctionAsQuantity(tokens[ix][0], tokens[ix][1]);
+                }
+                else if (tokens[ix].TokenClassType == typeof(AtSignToken))
+                {
+                    // convert '@' into function operation.
+                    var oo = new QsScalar(ScalarTypes.QsOperation)
+                    {
+                         Operation = new QsFunctionOperation()
+                    };
+
+                    quantityExpression = Expression.Constant(oo, typeof(QsValue));
+                }
+                else if (tokens[ix].TokenClassType == typeof(Nabla))
+                {
+                    var oo = new QsScalar(ScalarTypes.QsOperation)
+                    {
+                        Operation = new QsNablaOperation()
+                    };
+                    quantityExpression = Expression.Constant(oo, typeof(QsValue));
                 }
                 else if (tokens[ix].TokenClassType == typeof(SymbolicToken) || tokens[ix].TokenClassType == typeof(SymbolicQuantityToken))
                 {
@@ -840,15 +867,13 @@ namespace Qs.Runtime
 
 
         /// <summary>
-        /// gets the function as a value.
+        /// gets the function as a scalar of function quantity.
         /// </summary>
         /// <param name="function"></param>
         /// <returns></returns>
-        public Expression GetFunctionValue(Token functionValueToken)
+        public Expression GetFunctionAsQuantity(Token functionValueToken)
         {
-
             QsFunction f;
-
             if (functionValueToken.Count == 2)
             {
                 if (functionValueToken[1].TokenClassType == typeof(WordToken))
@@ -905,7 +930,79 @@ namespace Qs.Runtime
             }
 
             if (f != null)
-                return Expression.Constant(f, typeof(QsValue));
+            {
+                
+                //return Expression.Constant(f, typeof(QsValue));
+                return Expression.Constant(f.ToQuantity().ToScalar(), typeof(QsScalar));
+            }
+            else
+            {
+                throw new QsVariableNotFoundException("Function (" + functionValueToken.TokenValue + ") not found");
+            }
+        }
+
+        public Expression GetFunctionAsQuantity(Token functionValueToken, Token unit)
+        {
+            QsFunction f;
+            if (functionValueToken.Count == 2)
+            {
+                if (functionValueToken[1].TokenClassType == typeof(WordToken))
+                {
+                    f = QsFunction.GetFirstDeclaredFunction(
+                    this.Scope,
+                        string.Empty,
+                        functionValueToken[1].TokenValue);
+
+                }
+                else
+                {
+                    //namespace included
+                    f = QsFunction.GetFirstDeclaredFunction(this.Scope,
+                        functionValueToken[1][0][0].TokenValue,
+                        functionValueToken[1][1].TokenValue);
+                }
+            }
+            else if (functionValueToken.Count > 2)
+            {
+                string fpp = functionValueToken.SubTokensValue(2);
+
+                string[] pp = (from p in (fpp.Substring(1, fpp.Length - 2).Split(','))
+                               select p.Trim()).ToArray();
+
+                if (pp.Length == 1 && string.IsNullOrEmpty(pp[0]))
+                    pp = null;
+
+
+                if (functionValueToken[1].TokenClassType == typeof(WordToken))
+                {
+                    //specify parameters
+                    f = QsFunction.GetExactFunctionWithParameters(
+                        this.Scope,
+                        string.Empty,
+                        functionValueToken[1].TokenValue,
+                        pp
+                        );
+
+                }
+                else
+                {
+                    //namespace included
+                    f = QsFunction.GetExactFunctionWithParameters(
+                        this.Scope,
+                        functionValueToken[1][0][0].TokenValue,
+                        functionValueToken[1][1].TokenValue,
+                        pp);
+                }
+            }
+            else
+            {
+                throw new QsException("function value syntax error");
+            }
+
+            if (f != null)
+            {
+                return Expression.Constant(f.ToQuantity(unit.TrimTokens(1, 1).TokenValue).ToScalar(), typeof(QsScalar));
+            }
             else
             {
                 throw new QsVariableNotFoundException("Function (" + functionValueToken.TokenValue + ") not found");
@@ -977,7 +1074,6 @@ namespace Qs.Runtime
         public Type ScopeType { get { return Scope.GetType(); } }
 
         #region Expressions Generators
-
 
         /// <summary>
         /// Get Item with the specified indexing

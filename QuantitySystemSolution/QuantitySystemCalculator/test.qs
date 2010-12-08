@@ -37,7 +37,6 @@ fun:g(z = fun:g(y = fun:g(x = 2)))
 fun:ec(c) = c when c<=10 otherwise c^2 when c<=20 otherwise c^3 when c<=30 otherwise c^4 when c<=40 otherwise c^5
 
 
-
 fun:c(x,y) = x(y/2)
 fun:d(x,y) = x+y
 fun:v(l1,l2,h) = l1(l2,h)
@@ -68,7 +67,7 @@ wave:Square(x) = math:sgn(math:sin(x))  						#http://en.wikipedia.org/wiki/Squa
 
 MsgBox(text) = Windows:MessageBox(text)
 
-exp = e[0++20]
+@exp = e[0++20]
 
 exp(x=1)
 

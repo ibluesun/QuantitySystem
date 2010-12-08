@@ -537,5 +537,20 @@ namespace Qs.Types
         }
 
         #endregion
+
+        public virtual string ToShortString()
+        {
+            return "Unknown value";
+        }
+
+        /// <summary>
+        /// Returns text represent only
+        /// </summary>
+        /// <returns></returns>
+        public virtual string ToValueString()
+        {
+            return this.GetType().Name;
+        }
+
     }
 }

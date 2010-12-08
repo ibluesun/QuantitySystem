@@ -29,5 +29,7 @@ namespace Qs
 
         public const string PowerDot = "^.";
 
+        public const string Differentiate = "|";
+
     }
 }

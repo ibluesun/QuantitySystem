@@ -18,7 +18,7 @@ using Microsoft.Scripting;
         public static ScriptEngine Engine { get; set; }
         public static ScriptScope ScriptScope { get; set; }
 
-        public const ConsoleColor BackgroundColor = ConsoleColor.DarkBlue;
+        public const ConsoleColor BackgroundColor = ConsoleColor.DarkRed;
         public const ConsoleColor ForegroundColor = ConsoleColor.White;
         public const ConsoleColor HelpColor = ConsoleColor.Gray;
         

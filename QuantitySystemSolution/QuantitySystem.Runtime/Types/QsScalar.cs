@@ -65,6 +65,25 @@ namespace Qs.Types
             set;
         }
 
+
+        /// <summary>
+        /// Quantity that its storage is a Function.
+        /// </summary>
+        public AnyQuantity<QsFunction> FunctionQuantity
+        {
+            get;
+            set;
+        }
+
+        /// <summary>
+        /// Hold qs operations like @ and \/ operations
+        /// </summary>
+        public QsOperation Operation
+        {
+            get;
+            set;
+        }
+
         /// <summary>
         /// Return the current scalar unit.
         /// </summary>
@@ -80,8 +99,14 @@ namespace Qs.Types
                         return SymbolicQuantity.Unit;
                     case ScalarTypes.ComplexNumberQuantity:
                         return ComplexQuantity.Unit;
+                    case ScalarTypes.QuaternionNumberQuantity:
+                        return QuaternionQuantity.Unit;
+                    case ScalarTypes.FunctionQuantity:
+                        return FunctionQuantity.Unit;
+                    case ScalarTypes.QsOperation:
+                        return new Unit(typeof(QuantitySystem.Quantities.DimensionlessQuantities.DimensionlessQuantity<>));
                     default:
-                        throw new NotImplementedException();
+                        throw new NotImplementedException("Not implemented for " + _ScalarType.ToString());
                 }
             }
         }
@@ -118,22 +143,35 @@ namespace Qs.Types
 
         public override string ToString()
         {
+            string scalar = string.Empty;
             switch (_ScalarType)
             {
                 case ScalarTypes.NumericalQuantity:
-                    return NumericalQuantity.ToString();
+                    scalar = NumericalQuantity.ToString();
+                    break;
                 case ScalarTypes.ComplexNumberQuantity:
-                    return ComplexQuantity.ToString();
+                    scalar = ComplexQuantity.ToString();
+                    break;
                 case ScalarTypes.QuaternionNumberQuantity:
-                    return QuaternionQuantity.ToString();
+                    scalar = QuaternionQuantity.ToString();
+                    break;
                 case ScalarTypes.SymbolicQuantity:
-                    return SymbolicQuantity.ToString();
+                    scalar = SymbolicQuantity.ToString();
+                    break;
+                case ScalarTypes.FunctionQuantity:
+                    scalar = FunctionQuantity.ToString();
+                    break;
+                case ScalarTypes.QsOperation:
+                    scalar = Operation.ToString();
+                    break;
                 default:
                     throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
             }
+
+            return scalar;
         }
 
-        public string ToShortString()
+        public override string ToShortString()
         {
             switch (_ScalarType)
             {
@@ -145,6 +183,10 @@ namespace Qs.Types
                     return QuaternionQuantity.ToShortString();
                 case ScalarTypes.SymbolicQuantity:
                     return SymbolicQuantity.ToShortString();
+                case ScalarTypes.FunctionQuantity:
+                    return FunctionQuantity.Value.ToShortString();
+                case ScalarTypes.QsOperation:
+                    return Operation.ToShortString();
                 default:
                     throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
             }
@@ -171,17 +213,41 @@ namespace Qs.Types
                 case ScalarTypes.SymbolicQuantity:
                     {
                         //add $ before any symbol
-
                         string sq = SymbolicQuantity.Value.ToString();
                         foreach (string sym in SymbolicQuantity.Value.InvolvedSymbols)
                             sq = sq.Replace(sym, "$" + sym);
                         return sq + SymbolicQuantity.UnitText;
                         
                     }
+                case ScalarTypes.FunctionQuantity:
+                    {
+                        return FunctionQuantity.Value.SymbolicBodyText;
+                    }
                 default:
-                    throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
+                    throw new NotImplementedException(_ScalarType.ToString() + " ToExpression String is not implemented yet");
             }
 
+        }
+
+        /// <summary>
+        /// Gets the value hosted in this scalar as text.
+        /// </summary>
+        /// <returns></returns>
+        public override string ToValueString()
+        {
+            if (_ScalarType == ScalarTypes.NumericalQuantity) return NumericalQuantity.Value.ToString(CultureInfo.InvariantCulture);
+
+            if (_ScalarType == ScalarTypes.SymbolicQuantity) return SymbolicQuantity.Value.ToString();
+
+            if (_ScalarType == ScalarTypes.ComplexNumberQuantity) return ComplexQuantity.Value.ToString();
+
+            if (_ScalarType == ScalarTypes.QuaternionNumberQuantity) return QuaternionQuantity.Value.ToString();
+
+            if (_ScalarType == ScalarTypes.FunctionQuantity) return FunctionQuantity.Value.ToShortString();
+
+            if (_ScalarType == ScalarTypes.QsOperation) return Operation.ToShortString();
+
+            throw new NotImplementedException("Unknow scalar type: " + _ScalarType.ToString());
         }
 
         #region Operations
@@ -244,8 +310,12 @@ namespace Qs.Types
                         default:
                             throw new NotImplementedException();
                     }
+                case ScalarTypes.FunctionQuantity:
+                    {
+                        return ((QsFunction)FunctionQuantity.Value.AddOperation(scalar)).ToQuantity().ToScalar();
+                    }
                 default:
-                    throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
+                    throw new NotImplementedException(_ScalarType.ToString() + " + " + scalar.ScalarType.ToString());
             }
         }
 
@@ -301,8 +371,12 @@ namespace Qs.Types
                         default:
                             throw new NotImplementedException();
                     }
+                case ScalarTypes.FunctionQuantity:
+                    {
+                        return ((QsFunction)FunctionQuantity.Value.SubtractOperation(scalar)).ToQuantity().ToScalar();
+                    }
                 default:
-                    throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
+                    throw new NotImplementedException(_ScalarType.ToString() + " - " + scalar.ScalarType.ToString());
             }
 
         }
@@ -327,6 +401,8 @@ namespace Qs.Types
                             return new QsScalar(ScalarTypes.ComplexNumberQuantity) { ComplexQuantity = this.NumericalQuantity.ToComplex() * scalar.ComplexQuantity };
                         case ScalarTypes.QuaternionNumberQuantity:
                             return new QsScalar(ScalarTypes.QuaternionNumberQuantity) { QuaternionQuantity = this.NumericalQuantity.ToQuaternion() * scalar.QuaternionQuantity };
+                        case ScalarTypes.FunctionQuantity:
+                            return ((QsFunction)scalar.FunctionQuantity.Value.MultiplyOperation(this)).ToQuantity().ToScalar();
                         default:
                             throw new NotImplementedException();
                     }
@@ -366,8 +442,19 @@ namespace Qs.Types
                         default:
                             throw new NotImplementedException();
                     }
+                case ScalarTypes.FunctionQuantity:
+                    {
+                        switch (scalar.ScalarType)
+                        {
+                            case ScalarTypes.QsOperation:
+                                return (QsScalar)scalar.Operation.MultiplyOperation(this);
+                            default:
+                                return ((QsFunction)FunctionQuantity.Value.MultiplyOperation(scalar)).ToQuantity().ToScalar();
+                        }
+                    }
+
                 default:
-                    throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
+                    throw new NotImplementedException(_ScalarType.ToString() + " * " + scalar.ScalarType.ToString());
             }
 
         }
@@ -424,8 +511,12 @@ namespace Qs.Types
                         default:
                             throw new NotImplementedException();
                     }
+                case ScalarTypes.FunctionQuantity:
+                    {
+                        return ((QsFunction)FunctionQuantity.Value.DivideOperation(scalar)).ToQuantity().ToScalar();
+                    }
                 default:
-                    throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
+                    throw new NotImplementedException(_ScalarType.ToString() + " / " + scalar.ScalarType.ToString());
             }
 
         }
@@ -442,8 +533,15 @@ namespace Qs.Types
                                 return new QsScalar { NumericalQuantity = AnyQuantity<double>.Power(this.NumericalQuantity, power.NumericalQuantity) };
                             case ScalarTypes.SymbolicQuantity:
                                 {
-                                    SymbolicVariable sv = new SymbolicVariable(this.NumericalQuantity.Value.ToString(CultureInfo.InvariantCulture));
-                                    return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = AnyQuantity<SymbolicVariable>.Power(sv.ToQuantity(), power.SymbolicQuantity) };
+                                    if (this.NumericalQuantity.Dimension.IsDimensionless)
+                                    {
+                                        SymbolicVariable sv = new SymbolicVariable(this.NumericalQuantity.Value.ToString(CultureInfo.InvariantCulture));
+                                        return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = AnyQuantity<SymbolicVariable>.Power(sv.ToQuantity(), power.SymbolicQuantity) };
+                                    }
+                                    else
+                                    {
+                                        throw new QsException("Raising none dimensionless quantity to symbolic quantity is not supported");
+                                    }
                                 }
                             default:
                                 throw new NotImplementedException();
@@ -456,14 +554,9 @@ namespace Qs.Types
                         {
                             case ScalarTypes.NumericalQuantity:
                             {
-                                int ipower = (int)power.NumericalQuantity.Value;
+                                double dpower = power.NumericalQuantity.Value;
+                                QsScalar nsq = new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = AnyQuantity<SymbolicVariable>.Power(this.SymbolicQuantity, power.NumericalQuantity) };
 
-                                if ((power.NumericalQuantity.Value - ipower) > 0.00000000000000001) //because IEEE floating number is crazy about comparisons
-                                    throw new QsException("Raising Symbolic Quantity to Real Number is not supported");
-                                
-                                QsScalar nsq = new QsScalar(ScalarTypes.SymbolicQuantity);
-                                nsq.SymbolicQuantity = this.SymbolicQuantity.Value.Power(ipower).ToQuantity();
-                                nsq.SymbolicQuantity.Unit = this.SymbolicQuantity.Unit.RaiseUnitPower(ipower);
                                 return nsq;                                
                             }
                             case ScalarTypes.SymbolicQuantity:
@@ -521,8 +614,12 @@ namespace Qs.Types
                         default:
                             throw new NotImplementedException("Raising Quaternion Quantity to " + power.ScalarType.ToString() + " is not implemented yet");
                     }
+                case ScalarTypes.FunctionQuantity:
+                    {
+                        return ((QsFunction)FunctionQuantity.Value.PowerOperation(power)).ToQuantity().ToScalar();
+                    }
                 default:
-                    throw new NotImplementedException(_ScalarType.ToString() + " Operation not implemented yet");
+                    throw new NotImplementedException(_ScalarType.ToString() + " ^ " + power.ScalarType.ToString());
             }
         }
 
@@ -531,6 +628,40 @@ namespace Qs.Types
             return new QsScalar { NumericalQuantity = this.NumericalQuantity % scalar.NumericalQuantity };
         }
 
+        public QsScalar DifferentiateScalar(QsScalar scalar)
+        {
+            switch (_ScalarType)
+            {
+                case ScalarTypes.FunctionQuantity:
+                    return ((QsFunction)this.FunctionQuantity.Value.DifferentiateOperation(scalar)).ToQuantity().ToScalar();
+                case ScalarTypes.SymbolicQuantity:
+                        switch (scalar._ScalarType)
+                        {
+                            case ScalarTypes.SymbolicQuantity:
+                                {
+                                    var dsv = scalar.SymbolicQuantity.Value;
+                                    SymbolicVariable nsv = this.SymbolicQuantity.Value;
+                                    int times = (int)dsv.SymbolPower;
+                                    while (times > 0)
+                                    {
+                                        nsv = nsv.Differentiate(dsv.Symbol);
+                                        times--;
+                                    }
+
+                                    return nsv.ToQuantity().ToScalar();
+
+                                }
+                            default:
+                                throw new NotImplementedException();
+                        }
+
+                case ScalarTypes.QsOperation:
+                        return (QsScalar)this.Operation.DifferentiateOperation(scalar);
+                default:
+                        throw new NotImplementedException(_ScalarType.ToString() + " | " + scalar.ScalarType.ToString());
+            }
+        
+        }
 
         #endregion
 
@@ -823,14 +954,16 @@ namespace Qs.Types
         {
             if (value is QsScalar)
             {
-                return this.MultiplyScalar((QsScalar)value);
+                if (this._ScalarType == ScalarTypes.QsOperation)
+                    return Operation.MultiplyOperation(value);
+                else
+                    return this.MultiplyScalar((QsScalar)value);
             }
             else if (value is QsVector)
             {
                 var b = value as QsVector;
 
                 return this.MultiplyVector(b);
-
             }
             else if (value is QsMatrix)
             {
@@ -857,13 +990,20 @@ namespace Qs.Types
             }
             else
             {
-                throw new NotImplementedException("Multiplieng QsScalar with " + value.GetType().Name + " is not implemented yet");
+                throw new NotImplementedException("Multiplying QsScalar with " + value.GetType().Name + " is not implemented yet");
             }
         }
 
         public override QsValue DotProductOperation(QsValue value)
         {
-            return this.MultiplyOperation(value);
+            if (this._ScalarType == ScalarTypes.QsOperation)
+            {
+                return this.Operation.DotProductOperation(value);
+            }
+            else
+            {
+                return this.MultiplyOperation(value);
+            }
         }
 
         public override QsValue CrossProductOperation(QsValue value)
@@ -1176,17 +1316,55 @@ namespace Qs.Types
         {
             QsScalar n = new QsScalar(this._ScalarType);
 
-            n.NumericalQuantity = this.NumericalQuantity;
-            n.SymbolicQuantity = this.SymbolicQuantity;
-            n.ComplexQuantity = this.ComplexQuantity;
-            n.QuaternionQuantity = this.QuaternionQuantity;
+            switch (_ScalarType)
+            {
+                case  ScalarTypes.NumericalQuantity:
+                    n.NumericalQuantity = (AnyQuantity<double>)this.NumericalQuantity.Clone();
+                    break;
 
+                case ScalarTypes.SymbolicQuantity:
+                    {
+                        var svalue = (SymbolicVariable)this.SymbolicQuantity.Value.Clone();
+                        var sq = this.SymbolicQuantity.Unit.GetThisUnitQuantity<SymbolicVariable>(svalue);
+                        n.SymbolicQuantity = sq;
+                    }
+                    break;
+
+                case ScalarTypes.ComplexNumberQuantity:
+                    n.ComplexQuantity = (AnyQuantity<Complex>)this.ComplexQuantity.Clone();
+                    break;
+
+                case ScalarTypes.QuaternionNumberQuantity:
+                    n.QuaternionQuantity = (AnyQuantity<Quaternion>)this.QuaternionQuantity.Clone();
+                    break;
+
+                case ScalarTypes.FunctionQuantity:
+                    {
+                        var fvalue = (QsFunction)this.FunctionQuantity.Value.Clone();
+                        var fq = this.FunctionQuantity.Unit.GetThisUnitQuantity<QsFunction>(fvalue);
+                        n.FunctionQuantity = fq;
+                    }
+                    break;
+
+                case ScalarTypes.QsOperation:
+                    n.Operation = (QsOperation)this.Operation.Clone();
+                    break;
+
+            }
 
             return n;
         }
 
         #endregion
 
+
+        public override QsValue DifferentiateOperation(QsValue value)
+        {
+            if (value is QsScalar)
+                return this.DifferentiateScalar((QsScalar)value);
+            else
+                return base.DifferentiateOperation(value);
+        }
         
     }
 }

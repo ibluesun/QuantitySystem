@@ -120,6 +120,10 @@ namespace ParticleLexer.QsTokens
     {
     }
 
+    public class FunctionQuantityToken : TokenClass
+    {
+    }
+
 
     /// <summary>
     /// Left token of absolute group
@@ -163,6 +167,14 @@ namespace ParticleLexer.QsTokens
     {
     }
 
+
+    /// <summary>
+    /// \/ nabla operator :)
+    /// </summary>
+    [TokenPattern(RegexPattern = @"\\\/", ExactWord = true)]
+    public class Nabla : TokenClass
+    {
+    }
 
 
     /// <summary>
