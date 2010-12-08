@@ -21,7 +21,7 @@ namespace Qs.Types
     /// <summary>
     /// Function that declared in Qs
     /// </summary>
-    public partial class QsFunction : QsValue
+    public partial class QsFunction : QsValue, ICloneable
     {
         private string functionName;
 
@@ -497,6 +497,11 @@ namespace Qs.Types
             _IsReadOnly = isReadOnly;
         }
 
+        public override string ToShortString()
+        {
+            return FunctionDeclaration.Substring(0, FunctionDeclaration.IndexOf(')') + 1);
+        }
+
         public override string ToString()
         {
             return FunctionDeclaration;
@@ -764,5 +769,18 @@ namespace Qs.Types
 
 
 
+
+        #region ICloneable Members
+
+        public object Clone()
+        {
+            QsFunction f = (QsFunction)this.MemberwiseClone();
+            var fdname = f.FunctionDeclaration.Substring(0, f.FunctionDeclaration.IndexOf('('));
+            f.FunctionDeclaration = f.FunctionDeclaration.Replace(fdname, "_");
+            return f;
+
+        }
+
+        #endregion
     }
 }

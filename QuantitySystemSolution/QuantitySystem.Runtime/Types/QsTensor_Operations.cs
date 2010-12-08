@@ -412,6 +412,28 @@ namespace Qs.Types
                 return t;
             }
         }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public override QsValue DifferentiateOperation(QsValue value)
+        {
+            if (value is QsScalar)
+            {
+                var t = new QsTensor();
+                foreach (var m in t.MatrixLayers)
+                {
+                    t.AddMatrix((QsMatrix)m.DifferentiateOperation(value));
+                }
+                return t;
+            }
+            else
+            {
+                return base.DifferentiateOperation(value);
+            }
+        }
         #endregion
 
     }

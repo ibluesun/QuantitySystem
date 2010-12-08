@@ -625,7 +625,7 @@ namespace Qs.Types
                     QsVector vec = new QsVector(2);
                     vec.AddComponent(this[0, 0] * this[1, 1]);
                     vec.AddComponent(
-                         "-1".ToQuantity().ToScalar() * (this[0, 1] * this[1, 0])
+                         QsScalar.MinusOne * (this[0, 1] * this[1, 0])
                         );
 
                     return vec;

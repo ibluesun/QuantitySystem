@@ -13,6 +13,54 @@ namespace Qs.Types
     {
         
         #region Scalar Operations
+        /// <summary>
+        /// Add Scalar to the vector components.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        private QsVector AddScalar(QsScalar s)
+        {
+            QsVector v = new QsVector(this.Count);
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                v.AddComponent(this[i] + s);
+            }
+
+            return v;
+        }
+
+        /// <summary>
+        /// Subtract scalar from the vector components.
+        /// </summary>
+        /// <param name="s"></param>
+        /// <returns></returns>
+        private QsVector SubtractScalar(QsScalar s)
+        {
+            QsVector v = new QsVector(this.Count);
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                v.AddComponent(this[i] - s);
+            }
+
+            return v;
+
+        }
+
+        private QsVector MultiplyScalar(QsScalar s)
+        {
+            QsVector v = new QsVector(this.Count);
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                v.AddComponent(this[i] * s);
+            }
+
+            return v;
+
+        }
+
         public QsVector DivideScalar(QsScalar scalar)
         {
             QsVector v = new QsVector(this.Count);
@@ -41,16 +89,33 @@ namespace Qs.Types
 
         public QsVector PowerScalar(QsScalar scalar)
         {
-
             QsVector v = new QsVector(this.Count);
 
             for (int i = 0; i < this.Count; i++)
             {
                 v.AddComponent(this[i].PowerScalar(scalar));
             }
+            return v;
+        }
+
+
+        /// <summary>
+        /// Differentiate every component in vectpr with the scalar.
+        /// </summary>
+        /// <param name="scalar"></param>
+        /// <returns></returns>
+        public QsVector DifferentiateScalar(QsScalar scalar)
+        {
+            QsVector v = new QsVector(this.Count);
+
+            for (int i = 0; i < this.Count; i++)
+            {
+                v.AddComponent((QsScalar)this[i].DifferentiateScalar(scalar));
+            }
 
             return v;
         }
+
 
         #endregion
         #region Vector Operations
@@ -115,7 +180,7 @@ namespace Qs.Types
 
             Parallel.For(0, this.Count, (i) =>
             {
-                v[i] = v[i] * vector[i];
+                v[i] = v[i].MultiplyScalar(vector[i]);
             }
             );
 
@@ -217,21 +282,36 @@ namespace Qs.Types
                 // second row is first vector
 
                 //take the value of the quantity and convert it to dimensionless value.
-                if (this[i].ScalarType == ScalarTypes.NumericalQuantity)
-                    a.AddComponent(new QsScalar { NumericalQuantity = this[i].NumericalQuantity.Value.ToQuantity() });
-                else if(this[i].ScalarType==ScalarTypes.SymbolicQuantity)
-                    a.AddComponent(new QsScalar( ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this[i].SymbolicQuantity.Value.ToQuantity()});
-                else 
-                    throw new NotImplementedException();
-
+                switch (this[i].ScalarType)
+                {
+                    case ScalarTypes.NumericalQuantity:
+                        a.AddComponent(new QsScalar { NumericalQuantity = this[i].NumericalQuantity.Value.ToQuantity() });
+                        break;
+                    case ScalarTypes.SymbolicQuantity:
+                        a.AddComponent(new QsScalar( ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this[i].SymbolicQuantity.Value.ToQuantity()});
+                        break;
+                    case ScalarTypes.QsOperation:
+                        a.AddComponent((QsScalar)this[i].Clone());
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
 
                 // third row is the second vector
-                if (v2[i].ScalarType == ScalarTypes.NumericalQuantity)
-                    b.AddComponent(new QsScalar { NumericalQuantity = v2[i].NumericalQuantity.Value.ToQuantity() });
-                else if (v2[i].ScalarType == ScalarTypes.SymbolicQuantity)
-                    b.AddComponent(new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = v2[i].SymbolicQuantity.Value.ToQuantity() });
-                else
-                    throw new NotImplementedException();
+                switch (v2[i].ScalarType)
+                {
+                    case ScalarTypes.NumericalQuantity:
+                        b.AddComponent(new QsScalar { NumericalQuantity = v2[i].NumericalQuantity.Value.ToQuantity() });
+                        break;
+                    case ScalarTypes.SymbolicQuantity:
+                        b.AddComponent(new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = v2[i].SymbolicQuantity.Value.ToQuantity() });
+                        break;
+                    case ScalarTypes.QsOperation:
+                        b.AddComponent((QsScalar)v2[i].Clone());
+                        break;
+                    default:
+                        throw new NotImplementedException();
+                }
 
             }
 
@@ -266,12 +346,12 @@ namespace Qs.Types
             }
         }
 
+
         public override QsValue AddOperation(QsValue value)
         {
             if (value is QsScalar)
             {
-                var s = value as QsScalar;
-                return s.AddVector(this);
+                return this.AddScalar((QsScalar)value);
             }
             else if (value is QsVector)
             {
@@ -283,27 +363,11 @@ namespace Qs.Types
             }
         }
 
-
-        private QsVector SubtractScalar(QsScalar s)
-        {
-            QsVector v = new QsVector(this.Count);
-
-            for (int i = 0; i < this.Count; i++)
-            {
-                v.AddComponent(this[i] - s);
-            }
-
-            return v;
-
-        }
-
         public override QsValue SubtractOperation(QsValue value)
         {
             if (value is QsScalar)
             {
-                var s = value as QsScalar;
-                
-                return SubtractScalar(s);
+                return SubtractScalar((QsScalar)value);
             }
             else if (value is QsVector)
             {
@@ -325,8 +389,7 @@ namespace Qs.Types
         {
             if (value is QsScalar)
             {
-                var s = value as QsScalar;
-                return s.MultiplyVector(this);
+                return MultiplyScalar((QsScalar)value);
             }
             else if (value is QsVector)
             {
@@ -348,8 +411,7 @@ namespace Qs.Types
         {
             if (value is QsScalar)
             {
-                var s = value as QsScalar;
-                return s.MultiplyVector(this);
+                return MultiplyScalar((QsScalar)value);
             }
             else if (value is QsVector)
             {
@@ -365,8 +427,7 @@ namespace Qs.Types
         {
             if (value is QsScalar)
             {
-                var s = value as QsScalar;
-                return s.MultiplyVector(this);
+                return MultiplyScalar((QsScalar)value);
             }
             else if (value is QsVector)
             {
@@ -394,12 +455,24 @@ namespace Qs.Types
                 throw new NotSupportedException();
             }
         }
+
+        public override QsValue DifferentiateOperation(QsValue value)
+        {
+            if (value is QsScalar)
+            {   
+                return this.DifferentiateScalar((QsScalar)value);
+            }
+            else
+            {
+                throw new NotSupportedException();
+            }
+        }
+
         public override QsValue PowerOperation(QsValue value)
         {
             if (value is QsScalar)
             {
-                var s = value as QsScalar;
-                return this.PowerScalar(s);
+                return this.PowerScalar((QsScalar)value);
             }
             else
             {

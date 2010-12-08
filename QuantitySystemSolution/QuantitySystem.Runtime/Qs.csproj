@@ -124,6 +124,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Qs.cs" />
     <Compile Include="QsInvalidOperationException.cs" />
+    <Compile Include="Types\QsFunctionOperation.cs" />
+    <Compile Include="Types\QsNablaOperation.cs" />
     <Compile Include="Types\QsMatrix_Determinant.cs" />
     <Compile Include="QsSyntaxErrorException.cs" />
     <Compile Include="Runtime\QsParameterNotFoundException.cs" />
@@ -138,6 +140,7 @@
     <Compile Include="Runtime\QsFunctionNotFoundException.cs" />
     <Compile Include="Types\QsFunction_Helper.cs" />
     <Compile Include="Runtime\Operators\QsGamma.cs" />
+    <Compile Include="Types\QsOperation.cs" />
     <Compile Include="Types\QsScalar.cs" />
     <Compile Include="Types\QsTensor.cs">
       <SubType>Code</SubType>

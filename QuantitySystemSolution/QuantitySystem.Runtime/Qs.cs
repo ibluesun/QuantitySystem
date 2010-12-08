@@ -52,7 +52,7 @@ namespace Qs
         }
 
         /// <summary>
-        /// Quantitize the double value into DimensionlessQuantity
+        /// Quantitize the integer value into DimensionlessQuantity
         /// </summary>
         /// <param name="i"></param>
         /// <returns></returns>
@@ -63,7 +63,7 @@ namespace Qs
         }
 
         /// <summary>
-        /// Quantitize the double value into DimensionlessQuantity
+        /// Quantitize the floating value into DimensionlessQuantity
         /// </summary>
         /// <param name="d"></param>
         /// <returns></returns>
@@ -138,6 +138,13 @@ namespace Qs
             return new QsScalar(ScalarTypes.ComplexNumberQuantity) { ComplexQuantity = qty };
         }
 
+
+        /// <summary>
+        /// Quantitize the quaternion number into quantity
+        /// </summary>
+        /// <param name="quaternionValue"></param>
+        /// <param name="unit"></param>
+        /// <returns></returns>
         public static AnyQuantity<Quaternion> ToQuantity(this Quaternion quaternionValue, string unit = "1")
         {
             Unit un = Unit.Parse(unit);
@@ -145,13 +152,18 @@ namespace Qs
             return un.GetThisUnitQuantity<Quaternion>(quaternionValue);
         }
 
+        /// <summary>
+        /// Return a scalar object from quaternion quantity.
+        /// </summary>
+        /// <param name="qty"></param>
+        /// <returns></returns>
         public static QsScalar ToScalar(this AnyQuantity<Quaternion> qty)
         {
             return new QsScalar(ScalarTypes.QuaternionNumberQuantity) { QuaternionQuantity = qty };
         }
 
         /// <summary>
-        /// Wrap AnyQuantity of double storage into qs scalar object.
+        /// Wrap double quantity storage into qs scalar object.
         /// </summary>
         /// <param name="qty"></param>
         /// <returns></returns>
@@ -175,6 +187,21 @@ namespace Qs
         }
 
         /// <summary>
+        /// Returns a quantity from function
+        /// </summary>
+        /// <param name="fn"></param>
+        /// <param name="unit"></param>
+        /// <returns></returns>
+        public static AnyQuantity<QsFunction> ToQuantity(this QsFunction fn, string unit = "1")
+        {
+            Unit sunit = Unit.Parse(unit);
+
+            AnyQuantity<QsFunction> FunctionQuantity = sunit.GetThisUnitQuantity<QsFunction>(fn);
+
+            return FunctionQuantity;
+        }
+
+        /// <summary>
         /// Wrap AnyQuantity of Symbolic Variable object into qs scalar object.
         /// </summary>
         /// <param name="qty"></param>
@@ -188,29 +215,63 @@ namespace Qs
             return symscalar;
         }
 
+        /// <summary>
+        /// Returns a scalar object from function quantity.
+        /// </summary>
+        /// <param name="functionQuantity"></param>
+        /// <returns></returns>
+        public static QsScalar ToScalar(this AnyQuantity<QsFunction> functionQuantity)
+        {
+            QsScalar fnScalar = new QsScalar(ScalarTypes.FunctionQuantity)
+            {
+                FunctionQuantity = functionQuantity
+            };
+            return fnScalar;
+        }
+
+
         public static QsValue ToScalarValue(this AnyQuantity<double> qty)
         {
             return new QsScalar { NumericalQuantity = qty };
         }
 
+        /// <summary>
+        /// Returns Complex quantity from Double Quantity
+        /// </summary>
+        /// <param name="qty"></param>
+        /// <returns></returns>
         public static AnyQuantity<Complex> ToComplex(this AnyQuantity<double> qty)
         {
             AnyQuantity<Complex> converted = qty.Unit.GetThisUnitQuantity<Complex>(qty.Value);
             return converted;
         }
 
+
+        /// <summary>
+        /// Returns Quaternion quantity from Double Quantity.
+        /// </summary>
+        /// <param name="qty"></param>
+        /// <returns></returns>
         public static AnyQuantity<Quaternion> ToQuaternion(this AnyQuantity<double> qty)
         {
             AnyQuantity<Quaternion> converted = qty.Unit.GetThisUnitQuantity<Quaternion>(qty.Value);
             return converted;
         }
 
+
+        /// <summary>
+        /// Returns Quaternion Quantity from Complex Quantity.
+        /// </summary>
+        /// <param name="qty"></param>
+        /// <returns></returns>
         public static AnyQuantity<Quaternion> ToQuaternion(this AnyQuantity<Complex> qty)
         {
             AnyQuantity<Quaternion> converted = qty.Unit.GetThisUnitQuantity<Quaternion>(qty.Value);
             return converted;
         }
 
+
+        
         public static QsValue ToScalarValue(this string s)
         {
             return QsValue.ParseScalar(s);

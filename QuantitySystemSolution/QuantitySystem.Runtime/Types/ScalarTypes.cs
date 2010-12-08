@@ -28,6 +28,19 @@ namespace Qs.Types
         /// <summary>
         /// Symbolic variable 
         /// </summary>
-        SymbolicQuantity = 100
+        SymbolicQuantity = 100,
+
+
+        /// <summary>
+        /// Function as a variable.
+        /// </summary>
+        FunctionQuantity = 300,
+
+
+
+        /// <summary>
+        /// @
+        /// </summary>
+        QsOperation = 400
     }
 }

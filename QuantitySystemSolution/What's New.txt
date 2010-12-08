@@ -1,3 +1,34 @@
+[Qs 1.1.9.968]
+- numerical ^ symbolic implementation. 
+	I mean a=4^$x or s[n] ..> n^$x
+
+- Function converted to a quantity to be able to go into vectors, matrices, and tensors.
+- Because refering to function with @  will get a scalar function then assigning to a new function variable should be done like this
+		@NewFunc  = @func|$x   # this will differentiate func and put it into NewFunc
+- Vectors, matrices, and tensors now accept functions as quantities
+	v = {@f @F(y) @g}
+
++ The new changes include also that you can differentiate the symbolic quantities
+	a= 4*$x^3
+	then a|$x  will produce 12*x^2
+	- also you can create function from symbolic quantity 
+		@f = $x^4+$y
+
+- Symbolic quantities can be raised to real numbers now.
+
++ Differential Operator has been added.
+	- Which is in turn very appealing 
+		- the operation goes like this   @|$x  is an intermediate operation 
+		  that when mulitplied by a function, it gets its derivative of paramater x
+		- @|$x * @F   is the same as  @F|$x   
+
++ Nabla has been added
+	- Gradient has been implemented by   \/*@f   where @F refer to the function that express the scalar field.
+		- example:  f(x,y) = x^2 + y^2  the \/*@F  produce vector  {2*x 2*y}
+
+
+
+
 [Qs 1.1.9.967]
 - DIP length unit for  added   {thanks for starnuto}
 - Cubit unit conversion fixed.
