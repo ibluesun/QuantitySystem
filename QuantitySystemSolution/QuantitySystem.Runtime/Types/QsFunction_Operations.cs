@@ -235,7 +235,7 @@ namespace Qs.Types
         }
 
         /// <summary>
-        /// returns the function as symbolic quantity scalar.
+        /// Returns the function body as symbolic quantity scalar.
         /// </summary>
         public QsScalar SymbolicBodyScalar
         {

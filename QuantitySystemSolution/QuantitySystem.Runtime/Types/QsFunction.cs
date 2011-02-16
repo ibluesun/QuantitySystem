@@ -425,6 +425,9 @@ namespace Qs.Types
         /// </summary>
         public QsParamInfo[] Parameters { get; set; }
 
+        /// <summary>
+        /// Returns the parameters names in the function
+        /// </summary>
         public string[] ParametersNames
         {
             get

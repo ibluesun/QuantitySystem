@@ -1357,7 +1357,11 @@ namespace Qs.Types
 
         #endregion
 
-
+        /// <summary>
+        /// differentiate the current scalar  by overriding the method
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public override QsValue DifferentiateOperation(QsValue value)
         {
             if (value is QsScalar)
@@ -1365,6 +1369,39 @@ namespace Qs.Types
             else
                 return base.DifferentiateOperation(value);
         }
-        
+
+        /// <summary>
+        /// make a range from  this scalar to the input parameter scalar.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public override QsValue RangeOperation(QsValue value)
+        {
+            QsScalar to = value as QsScalar;
+            if (to != null)
+            {
+                if (this._ScalarType == ScalarTypes.NumericalQuantity && to._ScalarType == ScalarTypes.NumericalQuantity)
+                {
+                    double start = this.NumericalQuantity.Value;
+                    double end = to.NumericalQuantity.Value;
+                    
+                    QsVector v = new QsVector();
+                    if (end >= start)
+                        for (double id = start; id <= end; id++) v.AddComponent(id.ToQuantity().ToScalar());
+                    else
+                        for (double id = start; id >= end; id--) v.AddComponent(id.ToQuantity().ToScalar());
+
+                    return v;
+                }
+                else
+                {
+                    throw new NotImplementedException("Range from " + this._ScalarType.ToString() + " to " + to._ScalarType.ToString() + " is not supported");
+                }
+            }
+            else
+            {
+                throw new NotImplementedException("Range to " + value.GetType().Name + " is not supported");
+            }
+        }
     }
 }

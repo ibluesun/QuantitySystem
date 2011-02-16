@@ -174,6 +174,8 @@ namespace Qs.Runtime
                 typeof(LeftNormToken),
                 typeof(RightNormToken),
 
+                // ..
+                typeof(VectorRangeToken),
 
                 typeof(WhenStatementToken),
                 typeof(OtherwiseStatementToken),
@@ -185,28 +187,23 @@ namespace Qs.Runtime
                 typeof(GreaterThanOrEqualToken)
                 );
 
-            
-
             tokens = tokens.MergeTokens<WordToken>();                 //Discover words
 
             // merge the $ + Word into Symbolic and get the symbolic variables.
             tokens = tokens.MergeSequenceTokens<SymbolicToken>(typeof(DollarToken), typeof(WordToken));
             tokens = tokens.MergeSequenceTokens<SymbolicQuantityToken>(typeof(SymbolicToken), typeof(UnitToken));
 
-            
-
             tokens = tokens.MergeTokens<NumberToken>();               //discover the numbers
-            tokens = tokens.MergeSequenceTokens<UnitizedNumberToken>(typeof(NumberToken), typeof(UnitToken));
-
+            tokens = tokens.MergeTokens<UnitizedNumberToken>();
+            //tokens = tokens.MergeSequenceTokens<UnitizedNumberToken>(typeof(NumberToken), typeof(UnitToken));
 
             // discover the complex numbers 
             tokens = tokens.MergeTokens<ComplexNumberToken>();
             tokens = tokens.MergeSequenceTokens<ComplexQuantityToken>(typeof(ComplexNumberToken), typeof(UnitToken));
 
-            // discover the complex numbers 
+            // discover the quaternion numbers 
             tokens = tokens.MergeTokens<QuaternionNumberToken>();
             tokens = tokens.MergeSequenceTokens<QuaternionQuantityToken>(typeof(QuaternionNumberToken), typeof(UnitToken));
-
 
             tokens = MergeOperators(tokens);
 
@@ -218,7 +215,9 @@ namespace Qs.Runtime
             tokens = tokens.MergeTokens<FunctionValueToken>();
             tokens = tokens.MergeSequenceTokens<FunctionQuantityToken>(typeof(FunctionValueToken), typeof(UnitToken));
 
+            // Assemble '\''/' into \/ to form the nabla operator
             tokens = tokens.MergeTokens<Nabla>();
+
 
             tokens = tokens.MergeTokensInGroups(
                 new ParenthesisGroupToken(),                //  group (--()-) parenthesis
@@ -1717,6 +1716,8 @@ namespace Qs.Runtime
 
             Type aqType = typeof(QsValue);
 
+            if (op == "..") return Expression.Call(left, aqType.GetMethod("RangeOperation"), right);
+
             if (op == "_h*") return Expression.Multiply(left, right);
 
             if (op == "^") return Expression.Power(left, right, aqType.GetMethod("Pow"));
@@ -1827,8 +1828,9 @@ namespace Qs.Runtime
                                            */};
 
             string[] Group = { "^"    /* Power for normal product '*' */, 
-                               "^."   /* Power for dot product */ ,
-                               "^x"   /* Power for cross product */ };
+                               "^."   /* Power for dot product */,
+                               "^x"   /* Power for cross product */,
+                               ".." };
 
             string[] SymGroup = { "|" /* Derivation operator */};
 
