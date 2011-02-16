@@ -12,10 +12,9 @@ namespace Qs.Types.Operators
     /// </summary>
     public class QsNablaOperation : QsOperation
     {
-
-
         /// <summary>
-        /// Returns vector.
+        /// \/ * value  operation is called gradient 
+        ///     gradient over scalar field generate a vector 
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -25,22 +24,27 @@ namespace Qs.Types.Operators
 
             if (!Object.ReferenceEquals(fscalar, null))
             {
+
+                // Here we will multiply the nabla \/*  with @function 
                 if (!Object.ReferenceEquals(fscalar.FunctionQuantity, null))
                 {
                     var f = fscalar.FunctionQuantity.Value;
                     
+
                     string[] prms = f.ParametersNames;
                     
                     SymbolicAlgebra.SymbolicVariable fsv = f.SymbolicBodyScalar.SymbolicQuantity.Value;
 
-                    QsVector Gradient = new QsVector();
+                    QsVector GradientResult = new QsVector();
 
+                    // we loop through the symbolic body and differentiate it with respect to the function parameters.
+                    // then accumulate the 
                     foreach (string prm in prms)
                     {
-                        Gradient.AddComponent(fsv.Differentiate(prm).ToQuantity().ToScalar());
+                        GradientResult.AddComponent(fsv.Differentiate(prm).ToQuantity().ToScalar());
                     }
 
-                    return Gradient;
+                    return GradientResult;
                 }
             }
 

@@ -77,6 +77,19 @@ namespace Qs.Types
         }
         #endregion
 
+        #region Range Operation
+
+        /// <summary>
+        /// Should be implemented for scalars values
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public virtual QsValue RangeOperation(QsValue value)
+        {
+            throw new NotImplementedException();
+        }
+        #endregion
+
         /// <summary>
         /// QsValue . QsValue 
         /// </summary>

@@ -1,3 +1,8 @@
+[Qs 1.2]
+- Vector range operator  '..'  added 
+     3..5  returns vector {3 4 5}
+
+
 [Qs 1.1.9.968]
 - numerical ^ symbolic implementation. 
 	I mean a=4^$x or s[n] ..> n^$x
@@ -22,7 +27,7 @@
 		  that when mulitplied by a function, it gets its derivative of paramater x
 		- @|$x * @F   is the same as  @F|$x   
 
-+ Nabla has been added
++ Nabla Operator has been added
 	- Gradient has been implemented by   \/*@f   where @F refer to the function that express the scalar field.
 		- example:  f(x,y) = x^2 + y^2  the \/*@F  produce vector  {2*x 2*y}
 

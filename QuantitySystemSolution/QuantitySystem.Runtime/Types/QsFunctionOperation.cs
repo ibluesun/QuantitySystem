@@ -6,7 +6,7 @@ using System.Text;
 namespace Qs.Types
 {
     /// <summary>
-    /// The class will hold intermediate operations that could be applied to functino
+    /// The class will hold intermediate operations that could be applied to function
     /// example  @ alone will do nothing
     /// @|$x  is deriving function operator over x symbol [this will store this operation inside this class]
     /// 

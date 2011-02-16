@@ -213,11 +213,12 @@ using Microsoft.Scripting;
 
             Console.WriteLine("       - Vector");
             Console.WriteLine("           vec = {3 4 5}");
-            Console.WriteLine("           |vec|, or ||vec||     to get magnitude");
-            Console.WriteLine("           v1 * v2               vector multiplication");
-            Console.WriteLine("           v1 . v2               Dot product.");
-            Console.WriteLine("           v1 x v2               Use x letter for cross product.");
-            Console.WriteLine("           v1 (*) v2             Use (*) letters for tensor product.");
+            Console.WriteLine("           _|vec|_, or _||vec||_     to get magnitude");
+            Console.WriteLine("           v1 * v2                   vector multiplication");
+            Console.WriteLine("           v1 . v2                   Dot product.");
+            Console.WriteLine("           v1 x v2                   Use x letter for cross product.");
+            Console.WriteLine("           v1 (*) v2                 Use (*) letters for tensor product.");
+            Console.WriteLine("           v = 5..20                 .. operator for genearting vector from .. to");
             Console.WriteLine();
 
             Console.WriteLine("       - Matrix");
@@ -227,6 +228,12 @@ using Microsoft.Scripting;
             Console.WriteLine("           \" m1 . m2 \"         for matrix element wise multiplication");
             Console.WriteLine("           \" m ^ 2 \"           for power with ordinary matrix multiplication");
             Console.WriteLine("           \" m ^. 2 \"          for power with element matrix multiplication");
+
+
+            Console.WriteLine();
+            Console.WriteLine("       - Tensor");
+            Console.WriteLine("         <| Matrix | Matrix |> #3d Order");
+            Console.WriteLine("         <| <| 5 3;2 1|> | <|3 2;1 9|> |> #4th Order");
 
 
             Console.WriteLine();
