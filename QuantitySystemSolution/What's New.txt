@@ -1,3 +1,27 @@
+[Qs 1.2.1]
+- Rational Number  Q{1 2} == 1/2 == 0.5  but in rational format has been added.
+- support to multiple inner namespaces like  p:g:j=30
+- fixed the function operator in assigning so the '@'  precede the function itself inside the namespace i.e. p:g:@h
+- lambda expression added  to form a quantity 
+	- natural way of function quantity was
+		- u(t) = 0 + 2.2*t
+		- a = @u									# which indicates that 
+	- New way is to write the funtction in lambda 
+		- @{(t) = 0 + 2.2*t}                        # the new 
+- now you have to explicitly load the external library before using it 
+- you can use .net system classes by adding :: to indicate you will start from the begining of namespace
+    example  Qs> ::System:Environment:ProcessorCount
+
+- Ability to create instance of .net classes (Qs now try to map the class public properties between native and qs types)
+- I already added a library to draw simple and I mean simple circle on screen.
+   please refer to the demo.qs in the executable folder.
+
+[Quantity System Framework 1.2]
+	- Fixed accumulating metric prefixes problem that 1<m/s> * 1<s/m> ==  2<1>   which is wrong ofcourse
+
+
+
+
 [Qs 1.2]
 - Vector range operator  '..'  added 
      3..5  returns vector {3 4 5}

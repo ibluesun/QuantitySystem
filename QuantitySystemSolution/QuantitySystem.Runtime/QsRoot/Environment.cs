@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using Qs.Types;
 using Qs.Runtime;
+using Qs;
 
-namespace Qs.Modules
+namespace QsRoot
 {
     public static class Environment
     {
@@ -25,4 +26,5 @@ namespace Qs.Modules
             }
         }
     }
+
 }

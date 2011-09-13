@@ -126,6 +126,9 @@
     <None Include="test.qs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="Demo.qs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Types.qs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

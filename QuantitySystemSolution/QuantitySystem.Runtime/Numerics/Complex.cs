@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NativeComplex = System.Numerics.Complex;
+using System.Globalization;
 
 namespace Qs.Numerics
 {
@@ -56,7 +57,7 @@ namespace Qs.Numerics
 
         public override string ToString()
         {
-            return _NativeComplex.ToString();
+            return "(" + Real.ToString(CultureInfo.InvariantCulture) + ", " + Imaginary.ToString(CultureInfo.InvariantCulture) + "i)";
         }
 
 

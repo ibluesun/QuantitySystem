@@ -189,7 +189,7 @@ namespace Qs.Types
                         }
                     }
 
-                    var fn = Math.Pow(-1.0, 1.0 + j1 + 1.0);
+                    var fn = System.Math.Pow(-1.0, 1.0 + j1 + 1.0);
                     var f = fn.ToQuantity().ToScalar();
                     var mr = Determinant(m);
 

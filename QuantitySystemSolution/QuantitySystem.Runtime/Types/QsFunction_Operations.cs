@@ -178,7 +178,7 @@ namespace Qs.Types
 
                 var fbody = this.SymbolicBodyText;
 
-                fbody += " " + operation + svl.ToExpressionString();
+                fbody += " " + operation + svl.ToExpressionParsableString();
                 
                 QsScalar fb = (QsScalar)QsEvaluator.CurrentEvaluator.SilentEvaluate(fbody);
                 string FuncBody = fb.SymbolicQuantity.Value.ToString().Replace("__FAC__", "!");

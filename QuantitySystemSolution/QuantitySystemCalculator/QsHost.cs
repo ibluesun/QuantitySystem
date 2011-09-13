@@ -18,6 +18,7 @@ internal class QsHost : ConsoleHost
 
     }
     
+    
 
     
 
@@ -30,14 +31,14 @@ internal class QsHost : ConsoleHost
             Environment.SetEnvironmentVariable("TERM", "dumb");
         }
 
-        Console.BackgroundColor = QsCommands.BackgroundColor;
-        Console.ForegroundColor = QsCommands.ForegroundColor;
-        Console.Clear();
+        //Console.BackgroundColor = QsCommands.BackgroundColor;
+        //Console.ForegroundColor = QsCommands.ForegroundColor;
+        //Console.Clear();
 
-        Console.WindowWidth = 110;
-        Console.WindowHeight = 34;
+        //Console.WindowWidth = 110;
+        //Console.WindowHeight = 34;
         
-        Console.BufferWidth = 110;
+        //Console.BufferWidth = 110;
 
         QsCommands.StartConsole();
 

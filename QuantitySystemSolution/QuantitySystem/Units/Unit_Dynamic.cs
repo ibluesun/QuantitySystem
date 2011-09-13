@@ -515,8 +515,11 @@ namespace QuantitySystem.Units
                                     // so we will take the whole fraction and make an overflow
 
                                     ((MetricUnit)us[un.GetType()]).UnitPrefix = MetricPrefix.None;
-                                    unitOverflow += Math.Pow(10, resultExponent);
-                                    _IsOverflowed = true;
+                                    if (resultExponent != 0)
+                                    {
+                                        unitOverflow += Math.Pow(10, resultExponent);
+                                        _IsOverflowed = true;
+                                    }
 
                                 }
                             }
@@ -526,8 +529,12 @@ namespace QuantitySystem.Units
                                 //resultExponent = (accumExponent - sourceExponent);
 
                                 ((MetricUnit)us[un.GetType()]).UnitPrefix = MetricPrefix.None;
-                                unitOverflow += Math.Pow(10, resultExponent);
-                                _IsOverflowed = true;
+
+                                if (resultExponent != 0)   //don't overflow in case of zero exponent target because there is not prefix in this case
+                                {
+                                    unitOverflow += Math.Pow(10, resultExponent);
+                                    _IsOverflowed = true;
+                                }
 
                             }
                         }

@@ -521,6 +521,7 @@ namespace Qs.Types
             functionToken = functionToken.MergeTokens<NumberToken>();
             functionToken = functionToken.MergeTokens<UnitizedNumberToken>();
 
+            //merge namespace  word+':'  but in multiple namespaces it makes them separate
             functionToken = functionToken.MergeTokens<NameSpaceToken>();
 
             functionToken = functionToken.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
@@ -531,6 +532,8 @@ namespace Qs.Types
 
         public static QsFunction ParseFunction(QsEvaluator qse, string functionDeclaration)
         {
+            if (functionDeclaration.StartsWith("@")) return null; 
+
             // fast check for function as = and ) before it.
             int eqIdx = functionDeclaration.IndexOf('=');
             if (eqIdx > 0)
@@ -564,7 +567,18 @@ namespace Qs.Types
 
             int nsidx = 0; // surve as a base for indexing token if there is namespace it will be 1 otherwise remain 0
 
-            if (functionToken[0].TokenClassType == typeof(NameSpaceToken)) nsidx = 1; //the function begin with namespace.
+            // specify the namespaces end token.
+            string functionNamespace = "";
+            foreach (var tok in functionToken)
+            {
+                if (tok.TokenClassType == typeof(NameSpaceToken))
+                {
+                    nsidx++;
+                    functionNamespace += tok.TokenValue;
+                }
+                else
+                    break;
+            }
 
             if (
                 functionToken[nsidx].TokenClassType == typeof(WordToken) &&
@@ -577,10 +591,13 @@ namespace Qs.Types
 
                 string functionName  = string.Empty;
                 
+
                 functionName = functionToken[nsidx].TokenValue;
+
+                //remove the last : from namespace
+                functionNamespace = functionNamespace.TrimEnd(':');
+
                 
-                string functionNamespace = "";
-                if (nsidx == 1) functionNamespace = functionToken[0][0].TokenValue;
 
                 List<string> textParams = new List<string>();
                 List<QsParamInfo> prms = new List<QsParamInfo>();

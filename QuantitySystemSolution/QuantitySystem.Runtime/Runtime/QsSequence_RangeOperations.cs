@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using Qs.Types;
 
+
+
 namespace Qs.Runtime
 {
     public partial class QsSequence : SortedList<int, QsSequenceElement>, IEnumerable<QsValue>
@@ -522,7 +524,7 @@ namespace Qs.Runtime
 
                 if (ee is QsScalar)
                 {
-                    Total = new QsVector(Math.Abs(toIndex - fromIndex) + 1);
+                    Total = new QsVector(System.Math.Abs(toIndex - fromIndex) + 1);
                     foreach (string pel in ProcessedElements)
                         ((QsVector)Total).AddComponent((QsScalar)QsEvaluator.CurrentEvaluator.SilentEvaluate(pel));
                 }
@@ -556,7 +558,7 @@ namespace Qs.Runtime
             if (firstElement is QsScalar)
             {
                 //return vector
-                QsVector Total = new QsVector(Math.Abs(toIndex - fromIndex) + 1);
+                QsVector Total = new QsVector(System.Math.Abs(toIndex - fromIndex) + 1);
   
                 
                 #region Numerical Representation
@@ -626,7 +628,7 @@ namespace Qs.Runtime
             if (firstElement is QsScalar)
             {
                 //return vector
-                QsVector Total = new QsVector(Math.Abs(toIndex - fromIndex) + 1);
+                QsVector Total = new QsVector(System.Math.Abs(toIndex - fromIndex) + 1);
 
                 Total.AddComponent((QsScalar)firstElement);
 
@@ -691,7 +693,7 @@ namespace Qs.Runtime
             if (firstElement is QsScalar)
             {
                 //return vector
-                QsVector Total = new QsVector(Math.Abs(toIndex - fromIndex) + 1);
+                QsVector Total = new QsVector(System.Math.Abs(toIndex - fromIndex) + 1);
 
                 Total.AddComponent((QsScalar)firstElement);
 
@@ -755,7 +757,7 @@ namespace Qs.Runtime
             if (firstElement is QsScalar)
             {
                 //return vector
-                QsVector Total = new QsVector(Math.Abs(toIndex - fromIndex) + 1);
+                QsVector Total = new QsVector(System.Math.Abs(toIndex - fromIndex) + 1);
 
                 Total.AddComponent((QsScalar)firstElement);
 
@@ -818,7 +820,7 @@ namespace Qs.Runtime
             if (firstElement is QsScalar)
             {
                 //return vector
-                QsVector Total = new QsVector(Math.Abs(toIndex - fromIndex) + 1);
+                QsVector Total = new QsVector(System.Math.Abs(toIndex - fromIndex) + 1);
 
                 Total.AddComponent((QsScalar)firstElement);
 
@@ -883,7 +885,7 @@ namespace Qs.Runtime
             if (firstElement is QsScalar)
             {
                 //return vector
-                QsVector Total = new QsVector(Math.Abs(toIndex - fromIndex) + 1);
+                QsVector Total = new QsVector(System.Math.Abs(toIndex - fromIndex) + 1);
 
                 Total.AddComponent((QsScalar)firstElement);
 
@@ -947,7 +949,7 @@ namespace Qs.Runtime
             if (firstElement is QsScalar)
             {
                 //return vector
-                QsVector Total = new QsVector(Math.Abs(toIndex - fromIndex) + 1);
+                QsVector Total = new QsVector(System.Math.Abs(toIndex - fromIndex) + 1);
 
                 Total.AddComponent((QsScalar)firstElement);
 
@@ -1010,7 +1012,7 @@ namespace Qs.Runtime
             if (firstElement is QsScalar)
             {
                 //return vector
-                QsVector Total = new QsVector(Math.Abs(toIndex - fromIndex) + 1);
+                QsVector Total = new QsVector(System.Math.Abs(toIndex - fromIndex) + 1);
 
                 Total.AddComponent((QsScalar)firstElement);
 

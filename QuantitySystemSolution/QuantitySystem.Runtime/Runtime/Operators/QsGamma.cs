@@ -80,7 +80,7 @@ namespace Qs.Runtime.Operators
             if (v < 0) throw new ArgumentOutOfRangeException("Number", number, "Number is less than 0");
 
             AnyQuantity<double> num = (AnyQuantity<double>)number.Clone();
-            num.Value = Math.Floor(num.Value);
+            num.Value = System.Math.Floor(num.Value);
 
             double Total = num.Value == 0 ? 1 : num.Value;
 
@@ -116,7 +116,7 @@ namespace Qs.Runtime.Operators
         public static double GammaFactorial(double number)
         {
             //I checked this http://www.rskey.org/gamma.htm 
-            // then this ...  http://www.luschny.de/math/factorial/approx/SimpleCases.html
+            // then this ...  http://www.luschny.de/System.Math/factorial/approx/SimpleCases.html
 
 
 
@@ -125,9 +125,9 @@ namespace Qs.Runtime.Operators
             {
                 var y = x + 1; var p = 1.0;
                 while (y < 7) { p = p * y; y = y + 1; }
-                var r = Math.Exp(y * Math.Log(y) - y + 1 / (12 * y + 2 / (5 * y + 53 / (42 * y))));
+                var r = System.Math.Exp(y * System.Math.Log(y) - y + 1 / (12 * y + 2 / (5 * y + 53 / (42 * y))));
                 if (x < 7) r = r / p;
-                return r * Math.Sqrt(2 * Math.PI / y);
+                return r * System.Math.Sqrt(2 * System.Math.PI / y);
             };
 
 
@@ -138,7 +138,7 @@ namespace Qs.Runtime.Operators
                 var a6 = 109535241009 / 48264275462;
                 var Z = z + 1;
 
-                return (1 / 2) * Math.Log(2 * Math.PI) + (Z - 1 / 2) * Math.Log(Z) - Z +
+                return (1 / 2) * System.Math.Log(2 * System.Math.PI) + (Z - 1 / 2) * System.Math.Log(Z) - Z +
                     a0 / (Z + a1 / (Z + a2 / (Z + a3 / (Z + a4 / (Z + a5 / (Z + a6 / Z))))));
             };
 
@@ -151,7 +151,7 @@ namespace Qs.Runtime.Operators
                     p = p*y;
                     y = y+1;
                 };
-                var r = Math.Exp(StieltjesLnFactorial(y));
+                var r = System.Math.Exp(StieltjesLnFactorial(y));
 
                 if (x < 8) return  (r * x) / (p * y);
                 else
@@ -167,7 +167,7 @@ namespace Qs.Runtime.Operators
                 temp += (1 / 1440) * (1 / x * x * x);
                 temp += (239 / 362880) * (1 / x * x * x * x * x);
 
-                return Math.Pow(temp, x) * Math.Exp(-x) * Math.Sqrt(2) * Math.Sqrt(Math.PI * x);
+                return System.Math.Pow(temp, x) * System.Math.Exp(-x) * System.Math.Sqrt(2) * System.Math.Sqrt(System.Math.PI * x);
 
             };
 

@@ -103,8 +103,13 @@ namespace Qs.Numerics
 
         public override string ToString()
         {
-            return "(" + a.ToString(CultureInfo.InvariantCulture) + ", " + b.ToString(CultureInfo.InvariantCulture)
-                + ", " + c.ToString(CultureInfo.InvariantCulture) + ", " + d.ToString(CultureInfo.InvariantCulture) + ")";
+            return "(" 
+                + a.ToString(CultureInfo.InvariantCulture) + ", " 
+                + b.ToString(CultureInfo.InvariantCulture)
+                + "i, " 
+                + c.ToString(CultureInfo.InvariantCulture) 
+                + "j, " 
+                + d.ToString(CultureInfo.InvariantCulture) + "k )";
         }
 
         #region The code is based on http://www.boost.org/doc/libs/1_43_0/boost/math/quaternion.hpp

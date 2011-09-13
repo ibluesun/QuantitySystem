@@ -13,6 +13,8 @@ using Qs.Runtime.Operators;
 using Qs.Types;
 using SymbolicAlgebra;
 using Qs.Types.Operators;
+using QsRoot;
+
 
 
 namespace Qs.Runtime
@@ -98,6 +100,14 @@ namespace Qs.Runtime
 
         }
 
+        public QsVar(QsEvaluator evaluator, Token expression)
+        {
+            this.evaluator = evaluator;
+
+            ResultExpression = ParseArithmatic(expression);
+
+        }
+
         private QsSequence Sequence= null;
 
         /// <summary>
@@ -154,6 +164,9 @@ namespace Qs.Runtime
             tokens = tokens.MergeTokens<DoubleVerticalBarToken>();
 
             tokens = tokens.MergeMultipleWordTokens(
+                // object assignment
+                typeof(PointerOperatorToken),
+
                 // assemble '<|'
                 typeof(LeftTensorToken),
 
@@ -170,17 +183,13 @@ namespace Qs.Runtime
                 typeof(LeftAbsoluteToken),
                 typeof(RightAbsoluteToken),
 
-                // _||  and   _||   tokens
+                // _||  and   ||_   tokens
                 typeof(LeftNormToken),
                 typeof(RightNormToken),
 
                 // ..
                 typeof(VectorRangeToken),
 
-                typeof(WhenStatementToken),
-                typeof(OtherwiseStatementToken),
-                typeof(AndStatementToken),
-                typeof(OrStatementToken),
                 typeof(EqualityToken),
                 typeof(InEqualityToken),
                 typeof(LessThanOrEqualToken),
@@ -188,6 +197,13 @@ namespace Qs.Runtime
                 );
 
             tokens = tokens.MergeTokens<WordToken>();                 //Discover words
+
+            tokens = tokens.MergeMultipleWordTokens(
+                typeof(WhenStatementToken),
+                typeof(OtherwiseStatementToken),
+                typeof(AndStatementToken),
+                typeof(OrStatementToken)
+                );
 
             // merge the $ + Word into Symbolic and get the symbolic variables.
             tokens = tokens.MergeSequenceTokens<SymbolicToken>(typeof(DollarToken), typeof(WordToken));
@@ -204,20 +220,32 @@ namespace Qs.Runtime
             // discover the quaternion numbers 
             tokens = tokens.MergeTokens<QuaternionNumberToken>();
             tokens = tokens.MergeSequenceTokens<QuaternionQuantityToken>(typeof(QuaternionNumberToken), typeof(UnitToken));
+            
+            // discover the rational numbers
+            tokens = tokens.MergeTokens<RationalNumberToken>();
+            tokens = tokens.MergeSequenceTokens<RationalQuantityToken>(typeof(RationalNumberToken), typeof(UnitToken));
+
+            // discover the functions created inline.
+            tokens = tokens.MergeTokens<FunctionLambdaToken>();
 
             tokens = MergeOperators(tokens);
-
-            tokens = tokens.MergeTokens<NameSpaceToken>();
-            tokens = tokens.MergeTokens<NameSpaceAndValueToken>();
 
             // merge the function value  expressions 
             //  @f  
             tokens = tokens.MergeTokens<FunctionValueToken>();
             tokens = tokens.MergeSequenceTokens<FunctionQuantityToken>(typeof(FunctionValueToken), typeof(UnitToken));
 
+            // merge the namespaces.
+            tokens = tokens.MergeTokens<NameSpaceToken>();
+            tokens = tokens.MergeTokens<NameSpaceAndValueToken>();
+
+            // manually merge function value and quantity into its namespace because it can't be done with regular expression
+            tokens = tokens.MergeSequenceTokens<NameSpaceAndValueToken>(typeof(NameSpaceToken), typeof(FunctionValueToken));
+            tokens = tokens.MergeSequenceTokens<NameSpaceAndValueToken>(typeof(NameSpaceToken), typeof(FunctionQuantityToken));
+
+
             // Assemble '\''/' into \/ to form the nabla operator
             tokens = tokens.MergeTokens<Nabla>();
-
 
             tokens = tokens.MergeTokensInGroups(
                 new ParenthesisGroupToken(),                //  group (--()-) parenthesis
@@ -286,6 +314,22 @@ namespace Qs.Runtime
                     
                 }
 
+                if (q.Equals("new", StringComparison.OrdinalIgnoreCase))
+                {
+                    // creating object
+
+                    op = string.Empty;
+                    ix++;
+
+                    Type dt;
+
+                    // the next token will be a class 
+                    quantityExpression = CreateInstance(tokens[ix], out dt);
+
+
+                    goto ExpressionCompleted;
+                }
+
 
                 bool FactorialPostfix = false;
                 if (!string.IsNullOrEmpty(op))
@@ -307,11 +351,28 @@ namespace Qs.Runtime
                 }
                 else if (tokens[ix].TokenClassType == typeof(ParenthesisCallToken))
                 {
-
-                    quantityExpression = FunctionCallExpression(
-                        tokens[ix][0].TokenValue,
-                        tokens[ix][1]
-                        );
+                    if (eop != null)
+                    {
+                        if (eop.Operation == "->")
+                        {
+                            // member call to the object.
+                            quantityExpression = Expression.Constant(tokens[ix]);
+                        }
+                        else
+                        {
+                            quantityExpression = FunctionCallExpression(
+                                tokens[ix][0].TokenValue,
+                                tokens[ix][1]
+                                );
+                        }
+                    }
+                    else
+                    {
+                        quantityExpression = FunctionCallExpression(
+                            tokens[ix][0].TokenValue,
+                            tokens[ix][1]
+                            );
+                    }
                 }
                 else if (tokens[ix].TokenClassType == typeof(ParenthesisGroupToken))
                 {
@@ -392,6 +453,23 @@ namespace Qs.Runtime
                 else if (tokens[ix].TokenClassType == typeof(QuaternionNumberToken) || tokens[ix].TokenClassType == typeof(QuaternionQuantityToken))
                 {
                     quantityExpression = QuaternionScalar(tokens[ix]);
+                }
+                else if (tokens[ix].TokenClassType == typeof(RationalNumberToken) || tokens[ix].TokenClassType == typeof(RationalQuantityToken))
+                {
+                    quantityExpression = RationalScalar(tokens[ix]);
+                }
+                else if (tokens[ix].TokenClassType == typeof(FunctionLambdaToken))
+                {
+                    var g = tokens[ix].TrimTokens(2,1);
+                    var funcbody = g.TokenValue;
+                    if (funcbody.StartsWith("(")) funcbody = "_" + funcbody;
+
+                    var sf = new QsScalar(ScalarTypes.FunctionQuantity)
+                    {
+                        FunctionQuantity = QsFunction.ParseFunction(this.Evaluator, funcbody).ToQuantity()
+                    };
+
+                    quantityExpression = Expression.Constant(sf);
                 }
                 else
                 {
@@ -483,7 +561,7 @@ namespace Qs.Runtime
                             catch
                             {
                                 //quantity variable  //get it from evaluator  global heap
-                                quantityExpression = GetVariable(q);
+                                quantityExpression = GetQsVariable(tokens[ix]);
                                 Sequence.CachingEnabled = false;  //because when evaluating external variable the external variable may change without knowing
                                 throw new QsParameterNotFoundException("Global variable (" + q + ") are not permitted");
                             }
@@ -493,8 +571,25 @@ namespace Qs.Runtime
                     }
                     else
                     {
-                        //quantity variable  //get it from evaluator  global heap
-                        quantityExpression = GetVariable(q);
+                        if (eop != null)
+                        {
+                            if (eop.Operation == "->")
+                            {
+                                // previous operation were calling for object member
+                                quantityExpression = Expression.Constant(tokens[ix]);   // this is the name of the property 
+                            }
+                            else
+                            {
+                                //quantity variable  //get it from evaluator  global heap
+                                quantityExpression = GetQsVariable(tokens[ix]);
+                            }
+                        }
+                        else
+                        {
+                            //quantity variable  //get it from evaluator  global heap
+                            quantityExpression = GetQsVariable(tokens[ix]);
+                        }
+
                     }
 
                 }
@@ -550,6 +645,123 @@ namespace Qs.Runtime
             return  ConstructExpression(FirstEop);
 
         }
+
+        /// <summary>
+        /// the token contains the information of the wanted class.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
+        private Expression CreateInstance(Token token, out Type discoveredType)
+        {
+            string cls = string.Empty;
+            string[] args = {};
+
+            if(token.TokenClassType == typeof(ParenthesisCallToken))
+            {
+                cls = token[0].TokenValue;
+                args = token[1].TrimTokens(1,1).TokenValue.Split(',');
+            }
+            else
+            {
+                cls = token.TokenValue;
+            }
+
+            cls = cls.Replace(':','.');
+
+
+            if (cls.StartsWith(".."))
+                cls = cls.Replace("..", ""); // indicates that we used root operator in namespace  ::
+            else
+                cls = "QsRoot." + cls;
+
+
+            discoveredType = Type.GetType(cls, false, true);
+
+            if (discoveredType == null) discoveredType = Root.GetExternalType(cls);
+
+            if (discoveredType == null) throw new QsException("There is no such type.");
+
+            if (args.Length == 0)
+            {
+                return Expression.Call(typeof(QsObject).GetMethod("CreateNativeObject"), Expression.New(discoveredType));
+            }
+            else
+            {
+                //constructor included
+                //know the paramaeter type
+                List<Expression> Arguments = new List<Expression>(args.Length);
+                var argsToken = token[1];
+
+                var d_ctor = discoveredType.GetConstructors().First(c => c.GetParameters().Length == args.Length);
+                var d_ctor_params = d_ctor.GetParameters();
+
+                int ctorArgIndex = 0;
+                foreach (var tk in argsToken)
+                {
+                    if (tk.TokenClassType == typeof(ParameterToken))
+                    {
+                        // evaluate the expresion
+                        var expr = ParseArithmatic(tk);  // the return value is QsValue
+
+                        // we have to check the corresponding parameter type to make convertion if needed.
+                        Type targetType = d_ctor_params[ctorArgIndex].ParameterType;
+
+                        Arguments.Add(Root.QsToNativeConvert(targetType, expr));
+                        ctorArgIndex++;
+                    }
+                }
+
+                // args has been prepared
+                return Expression.Call(typeof(QsObject).GetMethod("CreateNativeObject"), Expression.New(d_ctor, Arguments.ToArray()));
+
+            }
+        }
+
+        /// <summary>
+        /// Parse the complex number  C{3 2}  into expression
+        /// </summary>
+        /// <param name="complexToken"></param>
+        /// <returns></returns>
+        private Expression RationalScalar(Token complexToken)
+        {
+            Token cn = null;
+            if (complexToken.TokenClassType == typeof(RationalQuantityToken))
+                cn = complexToken[0];
+            else
+                cn = complexToken;
+
+            Token token = cn.TrimStart(typeof(WordToken)).TrimStart(typeof(LeftCurlyBracketToken));
+            token = token.TrimEnd(typeof(RightCurlyBracketToken));
+
+            token = token.MergeAllBut(typeof(MergedToken), new CommaToken(), new MultipleSpaceToken());
+            token = token.RemoveTokens(typeof(CommaToken), typeof(MultipleSpaceToken));
+
+            List<float> nums = new List<float>();
+            for (int i = 0; i < token.Count; i++)
+            {
+                if (token[i].TokenClassType == typeof(MergedToken))
+                {
+                    nums.Add(float.Parse(token[i].TokenValue));
+                }
+            }
+
+            float num = 0, den = 0;
+
+            if (nums.Count > 0) num = nums[0];
+            if (nums.Count > 1) den = nums[1];
+
+            Rational c = new Rational(num, den);
+            QsScalar sc = null;
+            if (complexToken.TokenClassType == typeof(RationalQuantityToken)) // there is a unit
+                sc = c.ToQuantity(complexToken[1].TokenValue.Trim('<', '>')).ToScalar();
+
+            else
+                sc = c.ToQuantity().ToScalar();
+
+            return Expression.Constant(sc, typeof(QsScalar));
+        }
+
+
 
         private Expression QuaternionScalar(Token quaternionToken)
         {
@@ -825,35 +1037,55 @@ namespace Qs.Runtime
         #endregion
         
         #region Helpers in making values
+
+
         /// <summary>
         /// Obtain variable value by expression in the current scope
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        public Expression GetVariable(string name)
+        public Expression GetQsVariable(Token name)
         {
+            //string GetterFunction = isObject ? "GetScopeValue" : "GetScopeQsValue";
+            string GetterFunction = "GetScopeQsValue";
+
             Type ScopeType = this.Evaluator.Scope.GetType();
 
             //store the scope
             var ScopeExp = Expression.Constant(Evaluator.Scope, ScopeType);
 
             //check if the name contain namespace
-            string[] var = name.Split(':');
-            if (var.Length == 2)
+            string[] var = name.TokenValue.Split(':');
+            if (var.Length >= 2)
             {
-                var fe = Expression.Call(
-                    typeof(QsEvaluator).GetMethod("GetScopeQsValue"),
-                    ScopeExp,
-                    Expression.Constant(var[0]),
-                    Expression.Constant(var[1])
-                    );
-                return fe;
+                string ns = name.TokenValue.Substring(0, name.TokenValue.LastIndexOf(':'));
+                string nsvar = var[var.Length - 1];
+
+                if (nsvar.StartsWith("@"))
+                {
+                    // referring to a function in the namespace.
+                    return GetFunctionAsQuantity(
+                        name
+                        );
+                }
+                else
+                {
+                    // normal variable in the namespace
+                    return Expression.Call(
+                        typeof(QsEvaluator).GetMethod(GetterFunction),
+                        ScopeExp,
+                        Expression.Constant(ns),
+                        Expression.Constant(nsvar)
+                        );
+                }
+
+                
             }
             else
             {
 
                 var fe = Expression.Call(
-                    typeof(QsEvaluator).GetMethod("GetScopeQsValue"),
+                    typeof(QsEvaluator).GetMethod(GetterFunction),
                     ScopeExp,
                     Expression.Constant(string.Empty),
                     Expression.Constant(var[0])
@@ -873,61 +1105,58 @@ namespace Qs.Runtime
         public Expression GetFunctionAsQuantity(Token functionValueToken)
         {
             QsFunction f;
-            if (functionValueToken.Count == 2)
+
+            if (functionValueToken.TokenValue.Contains('('))
             {
-                if (functionValueToken[1].TokenClassType == typeof(WordToken))
+                // the existence of open parenthesis indicates that we refered to the function name with its parameters list also
+                // like this   @f(x,y)  or Y:@F(u,v)
+
+                // get from the opening bracket
+                string fpp = functionValueToken.TokenValue.Substring(functionValueToken.TokenValue.IndexOf('('));
+
+                // put the parameter names in array
+                string[] pp = (from p in (fpp.Substring(1, fpp.Length - 2).Split(','))
+                               select p.Trim()).ToArray();
+
+
+                if (pp.Length == 1 && string.IsNullOrEmpty(pp[0])) pp = null;
+
+                string ns = string.Empty;
+
+                if (functionValueToken.TokenValue.Contains(':'))
+                    ns = functionValueToken.TokenValue.Substring(0, functionValueToken.TokenValue.LastIndexOf(':'));
+                string nsfnname = functionValueToken.TokenValue.Substring(functionValueToken.TokenValue.LastIndexOf(':') + 2);
+                nsfnname = nsfnname.Substring(0, nsfnname.IndexOf('('));
+
+
+                //specify parameters
+                f = QsFunction.GetExactFunctionWithParameters(
+                    this.Scope,
+                    ns,
+                    nsfnname,
+                    pp
+                    );
+            }
+            else
+            {
+                if (functionValueToken.TokenValue.StartsWith("@"))
                 {
                     f = QsFunction.GetFirstDeclaredFunction(
                     this.Scope,
                         string.Empty,
-                        functionValueToken[1].TokenValue);
+                        functionValueToken.TokenValue.Substring(1));
 
                 }
                 else
                 {
                     //namespace included
                     f = QsFunction.GetFirstDeclaredFunction(this.Scope,
-                        functionValueToken[1][0][0].TokenValue,
-                        functionValueToken[1][1].TokenValue);
+                        functionValueToken.TokenValue.Substring(0, functionValueToken.TokenValue.LastIndexOf(':')),
+                        functionValueToken.TokenValue.Substring(functionValueToken.TokenValue.LastIndexOf(':') + 2));
                 }
             }
-            else if (functionValueToken.Count > 2)
-            {
-                string fpp = functionValueToken.SubTokensValue(2);
 
-                string[] pp = (from p in (fpp.Substring(1, fpp.Length - 2).Split(','))
-                                  select p.Trim()).ToArray();
-
-                if (pp.Length == 1 && string.IsNullOrEmpty(pp[0]))
-                    pp = null;
-
-                
-                if (functionValueToken[1].TokenClassType == typeof(WordToken))
-                {
-                    //specify parameters
-                    f = QsFunction.GetExactFunctionWithParameters(
-                        this.Scope,
-                        string.Empty,
-                        functionValueToken[1].TokenValue, 
-                        pp
-                        );
-
-                }
-                else
-                {
-                    //namespace included
-                    f = QsFunction.GetExactFunctionWithParameters(
-                        this.Scope,
-                        functionValueToken[1][0][0].TokenValue,
-                        functionValueToken[1][1].TokenValue, 
-                        pp);
-                }
-            }
-            else
-            {
-                throw new QsException("function value syntax error");
-            }
-
+            
             if (f != null)
             {
                 
@@ -1101,9 +1330,9 @@ namespace Qs.Runtime
             else
             {
                 string ns = string.Empty;
-                if (valueName.IndexOf(':') > -1) ns = valueName.Substring(0, valueName.IndexOf(':'));
+                if (valueName.LastIndexOf(':') > -1) ns = valueName.Substring(0, valueName.LastIndexOf(':'));
 
-                string valName = valueName.Substring(valueName.IndexOf(':') + 1);
+                string valName = valueName.Substring(valueName.LastIndexOf(':') + 1);
 
                 QsValue value = QsEvaluator.GetScopeValueOrNull(this.Scope, ns, valName) as QsValue;
                 if (value == null)
@@ -1198,9 +1427,9 @@ namespace Qs.Runtime
             // discover namespace
 
             string sequenceNamespace = string.Empty;
-            if (sequenceName.IndexOf(':') > -1) sequenceNamespace = sequenceName.Substring(0, sequenceName.IndexOf(':'));
+            if (sequenceName.IndexOf(':') > -1) sequenceNamespace = sequenceName.Substring(0, sequenceName.LastIndexOf(':'));
 
-            string seqCallName = sequenceName.Substring(sequenceName.IndexOf(':') + 1);
+            string seqCallName = sequenceName.Substring(sequenceName.LastIndexOf(':') + 1);
 
             string seqo = QsSequence.FormSequenceSymbolicName(seqCallName, 1, parameters.Count);
 
@@ -1381,10 +1610,10 @@ namespace Qs.Runtime
             // discover namespace
             string functionNameSpace = "";
 
-            if (functionName.IndexOf(':') > -1) functionNameSpace = functionName.Substring(0, functionName.IndexOf(':'));
+            if (functionName.LastIndexOf(':') > -1) functionNameSpace = functionName.Substring(0, functionName.LastIndexOf(':'));
 
             // function name part after namespace
-            string funcCallName = functionName.Substring(functionName.IndexOf(':') + 1);
+            string funcCallName = functionName.Substring(functionName.LastIndexOf(':') + 1);
 
             //now parameters separated
 
@@ -1716,6 +1945,8 @@ namespace Qs.Runtime
 
             Type aqType = typeof(QsValue);
 
+            if (op == "->") return Expression.Call(Expression.Convert(left, typeof(QsObject)), typeof(QsObject).GetMethod("Execute"), right);
+            
             if (op == "..") return Expression.Call(left, aqType.GetMethod("RangeOperation"), right);
 
             if (op == "_h*") return Expression.Multiply(left, right);
@@ -1823,14 +2054,16 @@ namespace Qs.Runtime
 
             // Internal Higher Priority Group
             string[] HigherGroup = { "_h*" /* Higher Multiplication priority used internally in 
-                                           * the case of -4  or 5^-3
-                                             To be treated like -1_h*4   or 5^-1_h*4
+                                              the case of -4  or 5^-3
+                                              To be treated like -1_h*4   or 5^-1_h*4
                                            */};
 
             string[] Group = { "^"    /* Power for normal product '*' */, 
                                "^."   /* Power for dot product */,
                                "^x"   /* Power for cross product */,
-                               ".." };
+                               ".."   /* Vector Range operator {from..to} */,
+                               "->"   /* object member calling */
+                             };
 
             string[] SymGroup = { "|" /* Derivation operator */};
 
