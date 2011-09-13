@@ -140,16 +140,25 @@ namespace Qs.Runtime
             t = t.MergeTokens<NameSpaceToken>();
 
             t = t.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
-
+            t = t.RemoveSpaceTokens();
 
             int nsidx = 0; // surve as a base for indexing token if there is namespace it will be 1 otherwise remain 0
 
             string declaredNamespace = string.Empty;
-            if (t[0].TokenClassType == typeof(NameSpaceToken))
+
+            
+            foreach (var tok in t)
             {
-                nsidx = 1; //the function begin with namespace.
-                declaredNamespace = t[0][0].TokenValue;
+                if (tok.TokenClassType == typeof(NameSpaceToken))
+                {
+                    nsidx++;
+                    declaredNamespace += tok.TokenValue;
+                }
+                else
+                    break;
             }
+
+            declaredNamespace = declaredNamespace.TrimEnd(':');
 
 
             if (t[nsidx + 0].TokenClassType == typeof(WordToken)
@@ -175,7 +184,8 @@ namespace Qs.Runtime
                         {
                             //reaching here means the sequence has parameterized arguments.
                             SequenceTokenType = t[nsidx + 3].TokenClassType;
-                            shift = nsidx + 1;
+                            //shift = nsidx + 1;
+                            shift = 1;
                         }
                         else return null;
                     }
@@ -279,7 +289,7 @@ namespace Qs.Runtime
                     seqo = new QsSequence(indexes.Count > 0 ? indexes[0] : string.Empty, parameters)
                     {
                         SequenceSymbolicName = sequenceName,
-                        SequenceDeclaration = t[nsidx + 0].TokenValue + t[nsidx + 1].TokenValue + (shift == nsidx + 1 ? t[nsidx + 2].TokenValue : ""),
+                        SequenceDeclaration = t[nsidx + 0].TokenValue + t[nsidx + 1].TokenValue + t[nsidx + shift + 1].TokenValue, //(shift == nsidx + 1 ? t[nsidx + 2].TokenValue : ""),
                         SequenceNamespace = declaredNamespace,
                         SequenceRangeStartName = rangeStartNames[0],
                         SequenceRangeEndName = rangeEndNames[0]

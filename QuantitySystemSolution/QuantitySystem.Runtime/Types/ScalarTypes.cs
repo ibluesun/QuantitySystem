@@ -41,6 +41,11 @@ namespace Qs.Types
         /// <summary>
         /// @
         /// </summary>
-        QsOperation = 400
+        QsOperation = 400,
+
+        /// <summary>
+        /// Rational Number Storage type.
+        /// </summary>
+        RationalNumberQuantity = 5           // equal 5 because it precedes the complex number in evolution  and written at the end here because I implemented it in that order.
     }
 }

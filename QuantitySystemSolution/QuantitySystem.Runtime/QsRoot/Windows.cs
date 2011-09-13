@@ -6,8 +6,10 @@ using Qs.Runtime;
 using Qs.Types;
 using System.Runtime.InteropServices;
 using System.Windows.Forms;
+using Qs;
 
-namespace Qs.Modules
+
+namespace QsRoot
 {
     /// <summary>
     /// Qs Module as namespace.
@@ -32,7 +34,7 @@ namespace Qs.Modules
         }
 
         public static QsValue MessageBox(
-            QsParameter text, 
+            QsParameter text,
             [QsParamInfo(QsParamType.Text)]QsParameter caption
             )
         {
@@ -81,8 +83,8 @@ namespace Qs.Modules
             get
             {
                 return GetForegroundWindow();
-                
             }
         }
     }
+
 }

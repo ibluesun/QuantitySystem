@@ -7,6 +7,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
 using SymbolicAlgebra;
 using Qs.Numerics;
+using System.Reflection;
 
 namespace Qs
 {
@@ -258,6 +259,13 @@ namespace Qs
             return converted;
         }
 
+        public static AnyQuantity<Rational> ToRational(this AnyQuantity<double> qty)
+        {
+
+            AnyQuantity<Rational> converted = qty.Unit.GetThisUnitQuantity<Rational>(new Rational((float)qty.Value, 1));
+            return converted;
+        }
+
 
         /// <summary>
         /// Returns Quaternion Quantity from Complex Quantity.
@@ -269,6 +277,33 @@ namespace Qs
             AnyQuantity<Quaternion> converted = qty.Unit.GetThisUnitQuantity<Quaternion>(qty.Value);
             return converted;
         }
+
+
+
+        /// <summary>
+        /// Quantitize the complex number into Complex Quantity
+        /// </summary>
+        /// <param name="rationalValue"></param>
+        /// <param name="unit"></param>
+        /// <returns></returns>
+        public static AnyQuantity<Rational> ToQuantity(this Rational rationalValue, string unit = "1")
+        {
+            Unit un = Unit.Parse(unit);
+
+            return un.GetThisUnitQuantity<Rational>(rationalValue);
+        }
+
+
+        /// <summary>
+        /// Wrap Complex Quantity into Scalar.
+        /// </summary>
+        /// <param name="qty"></param>
+        /// <returns></returns>
+        public static QsScalar ToScalar(this AnyQuantity<Rational> qty)
+        {
+            return new QsScalar(ScalarTypes.RationalNumberQuantity) { RationalQuantity = qty };
+        }
+
 
 
         
@@ -322,5 +357,8 @@ namespace Qs
 
         
         #endregion
+
+
+
     }
 }

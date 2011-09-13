@@ -30,14 +30,21 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitsTestingProject", "UnitsTestingProject\UnitsTestingProject.csproj", "{2E1B9096-614C-405F-8587-1897F451F139}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantitySystemCalculator", "QuantitySystemCalculator\QuantitySystemCalculator.csproj", "{140E6C82-4B64-45AA-8FE1-91159322A29E}"
+	ProjectSection(ProjectDependencies) = postProject
+		{8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B} = {8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qs", "QuantitySystem.Runtime\Qs.csproj", "{615A100B-4890-434E-8869-2A9B3200D664}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QsTestProject", "QsTestProject\QsTestProject.csproj", "{70D4A4DF-115F-440E-B97F-E76974A8AC14}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QsGraphics", "QsGraphics\QsGraphics.csproj", "{8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{FDBE8316-6E9E-4864-BEE0-97641E286A28}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 7
+		SccNumberOfProjects = 8
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
 		SccLocalPath0 = .
@@ -62,6 +69,10 @@ Global
 		SccProjectUniqueName6 = QuantitySystem\\QuantitySystem.csproj
 		SccProjectName6 = QuantitySystem
 		SccLocalPath6 = QuantitySystem
+		SccProjectUniqueName7 = QsGraphics\\QsGraphics.csproj
+		SccProjectTopLevelParentUniqueName7 = QuantitySystemSolution.sln
+		SccProjectName7 = QsGraphics
+		SccLocalPath7 = QsGraphics
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = QuantitySystemSolution.vsmdi
@@ -95,6 +106,10 @@ Global
 		{70D4A4DF-115F-440E-B97F-E76974A8AC14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70D4A4DF-115F-440E-B97F-E76974A8AC14}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70D4A4DF-115F-440E-B97F-E76974A8AC14}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -103,5 +118,6 @@ Global
 		{6B22C63C-7927-4CB2-87A8-2BA3428570DC} = {11635727-736E-4C7D-93FE-CD36FE61917E}
 		{2E1B9096-614C-405F-8587-1897F451F139} = {11635727-736E-4C7D-93FE-CD36FE61917E}
 		{70D4A4DF-115F-440E-B97F-E76974A8AC14} = {11635727-736E-4C7D-93FE-CD36FE61917E}
+		{8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B} = {FDBE8316-6E9E-4864-BEE0-97641E286A28}
 	EndGlobalSection
 EndGlobal

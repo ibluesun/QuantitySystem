@@ -4,8 +4,9 @@ using System.Linq;
 using System.Text;
 using Qs.Types;
 using Microsoft.Scripting.Utils;
+using Qs;
 
-namespace Qs.Modules
+namespace QsRoot
 {
     public static class Vector
     {
@@ -109,7 +110,7 @@ namespace Qs.Modules
 
             double countd = ((QsScalar)count.QsNativeValue).NumericalQuantity.Value;
 
-            int icount = (int)  countd;
+            int icount = (int)countd;
 
             QsVector v = new QsVector(icount);
 

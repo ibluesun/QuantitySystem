@@ -1,7 +1,7 @@
 ﻿
 # Program to measure Quantity System Speed
 
-ot = Environment:TickCount;
+ot = System:Environment:TickCount;
 
 a = 1<kg/s>
 
@@ -272,5 +272,5 @@ a = a + (a + ( a + a + (((((((((((((((((((a + 1<mg/s>))))))))))))))))))) + 0.1<s
 a = a + (a + ( a + a + (((((((((((((((((((a + 1<mg/s>))))))))))))))))))) + 0.1<slug/h>)+ 0.2<g/s>)
 
 
-dur = Environment:TickCount - ot
+dur = System:Environment:TickCount - ot
 #windows:messagebox("Elapsed " + dur);

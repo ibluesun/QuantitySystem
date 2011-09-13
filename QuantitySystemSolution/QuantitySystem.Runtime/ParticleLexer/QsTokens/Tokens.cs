@@ -33,7 +33,6 @@ namespace ParticleLexer.QsTokens
     }
 
 
-
     #region Sequence tokens
 
     /// <summary>
@@ -105,15 +104,15 @@ namespace ParticleLexer.QsTokens
     /// <summary>
     /// Reference token on the form WordToken, ColonToken  x:  oh:
     /// </summary>
-    [TokenPattern(RegexPattern = @"\w+:")]
+    [TokenPattern(RegexPattern = @":*\w+:")]
     public class NameSpaceToken : TokenClass
     {
     }
 
     /// <summary>
-    /// Reference Namespace with its value  x:r   x:u  xd:Abs  etc...
+    /// Reference Namespace with its value  x:r   x:u  xd:Abs  x:r:t y:t:@e etc...
     /// </summary>
-    [TokenPattern(RegexPattern = @"\w+:\w+")]
+    [TokenPattern(RegexPattern = @"(:*\w+:)+@?\w+")]
     public class NameSpaceAndValueToken : TokenClass
     {
     }
@@ -126,6 +125,10 @@ namespace ParticleLexer.QsTokens
     {
     }
 
+    /// <summary>
+    /// Function Value followed by unit
+    /// No Regex Token
+    /// </summary>
     public class FunctionQuantityToken : TokenClass
     {
     }
@@ -222,16 +225,25 @@ namespace ParticleLexer.QsTokens
     {
     }
 
+    /// <summary>
+    /// Equality == operator
+    /// </summary>
     [TokenPattern(RegexPattern = "==", ExactWord = true)]
     public class EqualityToken : TokenClass
     {
     }
 
+    /// <summary>
+    /// AND operator keyword
+    /// </summary>
     [TokenPattern(RegexPattern = "and", ExactWord = true)]
     public class AndStatementToken : TokenClass
     {
     }
 
+    /// <summary>
+    /// OR operator keyword
+    /// </summary>
     [TokenPattern(RegexPattern = "or", ExactWord = true)]
     public class OrStatementToken : TokenClass
     {
@@ -284,6 +296,14 @@ namespace ParticleLexer.QsTokens
     }
 
     /// <summary>
+    /// @{(t) = t^2}
+    /// </summary>
+    [TokenPattern(RegexPattern = @"@\{.+\}", ShouldBeginWith = "@")]
+    public class FunctionLambdaToken : TokenClass
+    {
+    }
+
+    /// <summary>
     /// Complex number with unit C{2 1}&lt;kg&gt;
     /// </summary>
     public class ComplexQuantityToken : TokenClass
@@ -302,6 +322,22 @@ namespace ParticleLexer.QsTokens
     /// Quaternion number with unit H{2 1 5 4}&lt;kg&gt;
     /// </summary>
     public class QuaternionQuantityToken : TokenClass
+    {
+    }
+
+
+    /// <summary>
+    /// Q{1 2}
+    /// </summary>
+    [TokenPattern(RegexPattern = @"Q\{.+\}", ShouldBeginWith = "Q")]
+    public class RationalNumberToken : TokenClass
+    {
+    }
+
+    /// <summary>
+    /// Rational number with unit Q{1 2}&lt;kg&gt;
+    /// </summary>
+    public class RationalQuantityToken : TokenClass
     {
     }
 

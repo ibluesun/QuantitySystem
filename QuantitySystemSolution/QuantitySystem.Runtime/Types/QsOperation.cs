@@ -5,6 +5,15 @@ using System.Text;
 
 namespace Qs.Types
 {
+    /// <summary>
+    /// QsOperation Type is a class that express special holders for certain known mathematical operation
+    ///     how to describe it is something that should be illustrated
+    ///     it is indeed tough to describe it 
+    ///     it is a value to store operation :) thats it
+    ///     which means the operation will take place later on the program flow
+    ///     consider @|$x  which means Differentiate for x symbol or (operation that says I will differentiate the function later)
+    ///     @  contains the operation   | 
+    /// </summary>
     public class QsOperation : QsValue
     {
 
@@ -17,8 +26,8 @@ namespace Qs.Types
         {
             throw new NotImplementedException();
         }
-
-        public virtual string ToShortString()
+        
+        public override string ToShortString()
         {
             return "QsOp";
         }

@@ -12,6 +12,28 @@ namespace Qs.Types
 
         #region Scalar operations
 
+        /// <summary>
+        /// Matrix / scalar
+        /// </summary>
+        /// <param name="scalarQuantity"></param>
+        /// <returns></returns>
+        public QsMatrix MultiplyScalar(QsScalar scalar)
+        {
+            QsMatrix Total = new QsMatrix();
+            for (int IY = 0; IY < this.RowsCount; IY++)
+            {
+                List<QsScalar> row = new List<QsScalar>(ColumnsCount);
+
+                for (int IX = 0; IX < this.ColumnsCount; IX++)
+                {
+                    row.Add(this[IY, IX] * scalar);
+                }
+
+                Total.AddRow(row.ToArray());
+            }
+            return Total;
+
+        }
 
         /// <summary>
         /// Matrix / scalar
@@ -36,6 +58,11 @@ namespace Qs.Types
 
         }
 
+        /// <summary>
+        /// Matrix % Scalar   Remainder of division of matrix
+        /// </summary>
+        /// <param name="scalar"></param>
+        /// <returns></returns>
         private QsValue ModuloScalar(QsScalar scalar)
         {
             QsMatrix Total = new QsMatrix();
@@ -53,7 +80,27 @@ namespace Qs.Types
             return Total;
         }
 
+        /// <summary>
+        /// Matrix + scalar
+        /// </summary>
+        /// <param name="scalar"></param>
+        /// <returns></returns>
+        private QsMatrix AddScalar(QsScalar scalar)
+        {
+            QsMatrix Total = new QsMatrix();
+            for (int IY = 0; IY < this.RowsCount; IY++)
+            {
+                List<QsScalar> row = new List<QsScalar>(ColumnsCount);
 
+                for (int IX = 0; IX < this.ColumnsCount; IX++)
+                {
+                    row.Add(this[IY, IX] + scalar);
+                }
+
+                Total.AddRow(row.ToArray());
+            }
+            return Total;
+        }
 
         /// <summary>
         /// Matrix - scalar
@@ -126,10 +173,11 @@ namespace Qs.Types
         #endregion
         
 
+
         #region Matrix oeprators
         public static QsMatrix operator *(QsMatrix a, QsScalar b)
         {
-            return b.MultiplyMatrix(a);
+            return a.MultiplyScalar(b);
         }
 
         public static QsMatrix operator *(QsMatrix a, QsMatrix b)
@@ -139,7 +187,7 @@ namespace Qs.Types
 
         public static QsMatrix operator +(QsMatrix a, QsScalar b)
         {
-            return b.AddMatrix(a);
+            return a.AddScalar(b);
         }
 
         public static QsMatrix operator +(QsMatrix a, QsMatrix b)
@@ -149,7 +197,7 @@ namespace Qs.Types
 
         public static QsMatrix operator -(QsMatrix a, QsScalar b)
         {
-            return b.SubtractMatrix(a);
+            return a.SubtractScalar(b);
         }
 
         public static QsMatrix operator -(QsMatrix a, QsMatrix b)
@@ -230,12 +278,11 @@ namespace Qs.Types
         {
             if (value is QsScalar)
             {
-                var s = value as QsScalar;
-                return s.AddMatrix(this);
+                return this.AddScalar((QsScalar)value);
             }
             else if (value is QsVector)
             {
-                throw new NotSupportedException(); 
+                throw new NotSupportedException();
             }
             else if (value is QsMatrix)
             {
@@ -243,7 +290,7 @@ namespace Qs.Types
             }
             else
             {
-                throw new NotSupportedException(); 
+                throw new NotSupportedException();
             }
         }
 
@@ -251,8 +298,7 @@ namespace Qs.Types
         {
             if (value is QsScalar)
             {
-                var s = value as QsScalar;
-                return this.SubtractScalar(s);
+                return this.SubtractScalar((QsScalar)value);
             }
             else if (value is QsVector)
             {
@@ -272,8 +318,7 @@ namespace Qs.Types
         {
             if (value is QsScalar)
             {
-                var s = value as QsScalar;
-                return s.MultiplyMatrix(this);
+                return this.MultiplyScalar((QsScalar)value);
             }
             else if (value is QsVector)
             {
@@ -293,8 +338,7 @@ namespace Qs.Types
         {
             if (value is QsScalar)
             {
-                var s = value as QsScalar;
-                return s.MultiplyMatrix(this);
+                return this.MultiplyScalar((QsScalar)value);
             }
             else if (value is QsVector)
             {
@@ -321,8 +365,7 @@ namespace Qs.Types
         {
             if (value is QsScalar)
             {
-                var s = value as QsScalar;
-                return this.DivideScalar(s);
+                return this.DivideScalar((QsScalar)value);
             }
             else if (value is QsVector)
             {
@@ -342,8 +385,7 @@ namespace Qs.Types
         {
             if (value is QsScalar)
             {
-                var s = value as QsScalar;
-                return this.ModuloScalar(s);
+                return this.ModuloScalar((QsScalar)value);
             }
             else if (value is QsVector)
             {
@@ -418,7 +460,11 @@ namespace Qs.Types
             }
         }
 
-
+        /// <summary>
+        /// for the tensor product '(*)'  operator
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public override QsValue TensorProductOperation(QsValue value)
         {
             if (value is QsMatrix)
@@ -457,6 +503,12 @@ namespace Qs.Types
             throw new NotImplementedException();
         }
 
+
+        /// <summary>
+        /// '<<' left shift operator
+        /// </summary>
+        /// <param name="times"></param>
+        /// <returns></returns>
         public override QsValue LeftShiftOperation(QsValue times)
         {
             QsMatrix ShiftedMatrix = new QsMatrix();
@@ -467,6 +519,12 @@ namespace Qs.Types
             return ShiftedMatrix;
         }
 
+
+        /// <summary>
+        /// '>>' Right Shift Operator
+        /// </summary>
+        /// <param name="times"></param>
+        /// <returns></returns>
         public override QsValue RightShiftOperation(QsValue times)
         {
             QsMatrix ShiftedMatrix = new QsMatrix();
@@ -562,8 +620,5 @@ namespace Qs.Types
                 return base.DifferentiateOperation(value);
             }
         }
-
-
-
     }
 }

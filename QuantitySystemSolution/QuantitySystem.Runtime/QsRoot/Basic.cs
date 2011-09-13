@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Qs.Types;
 
-namespace Qs.Modules
+namespace QsRoot
 {
     /// <summary>
     /// The whole class is for testing new native binding of Qs
@@ -46,4 +46,5 @@ namespace Qs.Modules
         }
 
     }
+
 }

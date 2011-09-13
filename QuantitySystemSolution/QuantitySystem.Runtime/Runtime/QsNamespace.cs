@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -11,6 +10,7 @@ using Microsoft.Scripting.Ast;
 using Microsoft.Scripting.Runtime;
 using Qs.Types;
 using Qs.Types.Attributes;
+using QsRoot;
 
 namespace Qs.Runtime
 {
@@ -28,7 +28,7 @@ namespace Qs.Runtime
     public class QsNamespace
     {
 
-        public const string DefaultNameSpaceRoot = "Qs.Modules";
+        
 
         public string NameSpaceRoot { get; set; }
 
@@ -105,7 +105,7 @@ namespace Qs.Runtime
                     var prop = _NamespaceType.GetProperty(name, BindingFlags.IgnoreCase | BindingFlags.Static | BindingFlags.Public);
                     if (prop != null)
                     {
-                        return NativeValueToQsValue(prop.GetValue(null, null));
+                        return Root.NativeToQsConvert(prop.GetValue(null, null));
                     }
 
                 }
@@ -139,7 +139,7 @@ namespace Qs.Runtime
                     var prop = _NamespaceType.GetProperty(name, BindingFlags.IgnoreCase | BindingFlags.Static | BindingFlags.Public);
                     if (prop != null)
                     {
-                        return NativeValueToQsValue(prop.GetValue(null, null));
+                        return Root.NativeToQsConvert(prop.GetValue(null, null));
                     }
                 }
             }
@@ -225,12 +225,19 @@ namespace Qs.Runtime
             
             // The namespace is a static class with public visibility to its static members.
             var methods = _NamespaceType.GetMethods(
-             BindingFlags.IgnoreCase | BindingFlags.Static | BindingFlags.Public);
-
+             BindingFlags.IgnoreCase | BindingFlags.Static | BindingFlags.Public | BindingFlags.InvokeMethod );
+            
             Dictionary<string, object> CodedMembers = 
                 new Dictionary<string, object>(System.StringComparer.OrdinalIgnoreCase);
 
-            foreach (var member in methods)
+            var FilteredMethods = from m in methods
+                                  where 
+                                  m.IsSpecialName == false && m.ReturnType.IsArray == false &&
+                                  (m.ReturnType.BaseType == typeof(QsValue) || m.ReturnType == typeof(QsValue) ||
+                                  m.ReturnType == typeof(string) || m.ReturnType.IsValueType == true)
+                                  select m;
+
+            foreach (var member in FilteredMethods)
             {
                 var method = ((MethodInfo)member);
                 if (!method.IsSpecialName) //because properies getters are methods also :S
@@ -291,10 +298,23 @@ namespace Qs.Runtime
             var properties = _NamespaceType.GetProperties(
              BindingFlags.IgnoreCase | BindingFlags.Static | BindingFlags.Public);
 
+            var FilteredProperties = from m in properties
+                                    // m.IsSpecialName == false && m.ReturnType.IsArray == false &&
+                                  //(m.ReturnType.BaseType == typeof(QsValue) || m.ReturnType == typeof(QsValue) ||
+                                  //m.ReturnType == typeof(string) || m.ReturnType.IsValueType == true)
+                                     where m.IsSpecialName == false && m.PropertyType.IsArray == false 
+                                     && m.PropertyType != typeof(bool) &&
+                                     (
+                                        m.PropertyType.BaseType == typeof(QsValue) 
+                                        || m.PropertyType == typeof(QsValue)
+                                        || m.PropertyType == typeof(string) 
+                                        || m.PropertyType.IsValueType == true
+                                     )
+                                     select m;
 
             List<KeyValuePair<string, object>> CodedMembers = new List<KeyValuePair<string, object>>();
 
-            foreach (var prop in properties)
+            foreach (var prop in FilteredProperties)
             {
                     CodedMembers.Add(new KeyValuePair<string, object>
                         (prop.Name, prop.GetValue(null,null)));
@@ -342,14 +362,24 @@ namespace Qs.Runtime
 
 
         /// <summary>
-        /// The namespace is a static C# class under Qs.Modules.*
+        /// The namespace is a static C# class under QsRoot.*
         /// </summary>
         /// <param name="nameSpace"></param>
         /// <returns></returns>
         private static System.Type GetQsNamespaceType(string qsNamespace)
         {
+            
+            qsNamespace = qsNamespace.Replace(':', '.');
 
-            string cls = DefaultNameSpaceRoot + "." + qsNamespace;
+
+            string cls = qsNamespace;
+
+            if (cls.StartsWith(".."))
+                cls = cls.Replace("..", ""); // indicates that we used root operator in namespace  ::
+            else
+                cls = "QsRoot." + cls;
+
+
 
             //try the current assembly
 
@@ -357,6 +387,8 @@ namespace Qs.Runtime
 
             if (ns == null)
             {
+
+                /*
                 // try  another search in the Qs*.dll dlls
 
                 DirectoryInfo di = new DirectoryInfo(System.Environment.CurrentDirectory + "/Modules");
@@ -368,6 +400,9 @@ namespace Qs.Runtime
                     ns = a.GetType(cls, false, true);//+ ", " + file.Name.TrimEnd('.', 'd', 'l', 'l'));
                     if (ns != null) break;  //found the break and pop out from the loop.
                 }
+                 * */
+
+                ns = Root.GetExternalType(cls);
             }
 
             return ns;
@@ -535,9 +570,10 @@ namespace Qs.Runtime
             List<Expression> statements = new List<Expression>();
 
             var qns = typeof(QsNamespace);
+            var qsys = typeof(Root);
 
             var convparMethod = qns.GetMethod("QsParametersToNativeValues", BindingFlags.Static | BindingFlags.NonPublic);
-            var NTOQ = qns.GetMethod("NativeValueToQsValue", BindingFlags.Static | BindingFlags.NonPublic);
+            var NTOQ = qsys.GetMethod("NativeToQsConvert", BindingFlags.Static | BindingFlags.NonPublic);
             var iv = qns.GetMethod("IndirectInvoke", BindingFlags.Static | BindingFlags.NonPublic);
             Expression methodExpress = Expression.Constant(method);
 
@@ -636,26 +672,7 @@ namespace Qs.Runtime
             return NativeParameters.ToArray();
         }
 
-        internal static QsValue NativeValueToQsValue(object value)
-        {
-            if (value == null)
-            {
-                return null;
-            }
-            else if (value is QsValue)
-            {
-                return (QsValue)value;
-            }
-            else if (value is string)
-            {
-                return new QsText((string)value);
-            }
-            else
-            {
-                double vv = (double)System.Convert.ChangeType(value, typeof(double));
-                return vv.ToQuantity().ToScalar();
-            }
-        }
+
 
         internal static object IndirectInvoke(MethodInfo method, params object[] parameters)
         {

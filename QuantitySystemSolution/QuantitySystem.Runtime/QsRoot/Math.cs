@@ -5,11 +5,18 @@ using System.Text;
 using Qs.Types;
 using Qs.Runtime;
 using QuantitySystem.Quantities.BaseQuantities;
+using Qs;
+using QuantitySystem.Units;
+using QuantitySystem.Units.Metric.SI;
+using QuantitySystem.Quantities.DimensionlessQuantities;
 
-namespace Qs.Modules
+namespace QsRoot
 {
     public static class Math
     {
+
+        static Angle<double> zAngle = (Angle<double>)Unit.ParseQuantity("0<rad>");
+
 
         #region Functions
         public static QsValue Sinh(QsParameter val)
@@ -22,7 +29,7 @@ namespace Qs.Modules
 
                     if (q.Dimension.IsDimensionless)
                     {
-                        double r = System.Math.Sinh(q.Value);
+                        double r = System.Math.Sinh((zAngle + q).Value);
                         return r.ToQuantity().ToScalarValue();
                     }
                     else
@@ -40,7 +47,7 @@ namespace Qs.Modules
                     {
                         if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Sinh(var.NumericalQuantity.Value);
+                            double r = System.Math.Sinh((zAngle + var.NumericalQuantity).Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -85,7 +92,7 @@ namespace Qs.Modules
 
                     if (q.Dimension.IsDimensionless)
                     {
-                        double r = System.Math.Cosh(q.Value);
+                        double r = System.Math.Cosh((zAngle + q).Value);
                         return r.ToQuantity().ToScalarValue();
                     }
                     else
@@ -103,7 +110,7 @@ namespace Qs.Modules
                     {
                         if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Cosh(var.NumericalQuantity.Value);
+                            double r = System.Math.Cosh((zAngle + var.NumericalQuantity).Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -149,7 +156,7 @@ namespace Qs.Modules
 
                     if (q.Dimension.IsDimensionless)
                     {
-                        double r = System.Math.Sin(q.Value);
+                        double r = System.Math.Sin((zAngle + q).Value);
                         return r.ToQuantity().ToScalarValue();
                     }
                     else
@@ -167,7 +174,7 @@ namespace Qs.Modules
                     {
                         if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Sin(var.NumericalQuantity.Value);
+                            double r = System.Math.Sin((zAngle + var.NumericalQuantity).Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -212,7 +219,7 @@ namespace Qs.Modules
 
                     if (q.Dimension.IsDimensionless)
                     {
-                        double r = System.Math.Cos(q.Value);
+                        double r = System.Math.Cos((zAngle + q).Value);
                         return r.ToQuantity().ToScalarValue();
                     }
                     else
@@ -230,7 +237,7 @@ namespace Qs.Modules
                     {
                         if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Cos(var.NumericalQuantity.Value);
+                            double r = System.Math.Cos((zAngle+var.NumericalQuantity).Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -693,5 +700,8 @@ namespace Qs.Modules
 
         }
 
+
+        
     }
+
 }

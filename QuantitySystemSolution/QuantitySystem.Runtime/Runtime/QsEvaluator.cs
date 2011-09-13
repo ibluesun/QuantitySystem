@@ -307,6 +307,7 @@ namespace Qs.Runtime
         }
 
 
+
         internal object ExtraEvaluate(string line)
         {
             // f(x,y,z) = x + y + (z/2.04 * 32<kg>)
@@ -338,6 +339,8 @@ namespace Qs.Runtime
                 int sl = m.Length;
                 int scs = 0;
                 int bcs = 0;
+                int rcs = 0;
+
                 bool InText = false; 
                 while (ix < sl)
                 {
@@ -345,6 +348,9 @@ namespace Qs.Runtime
                     if (m[ix] == ')') scs--;
                     if (m[ix] == '[') bcs++;
                     if (m[ix] == ']') bcs--;
+
+                    if (m[ix] == '{') rcs++;
+                    if (m[ix] == '}') rcs--;
 
                     if (m[ix] == '"')
                     {
@@ -357,7 +363,7 @@ namespace Qs.Runtime
                             InText = !InText;
                     }
 
-                    if (m[ix] == '=' && scs == 0 && bcs == 0 && InText==false) return ix;
+                    if (m[ix] == '=' && scs == 0 && rcs == 0 && bcs == 0 && InText == false) return ix;
 
                     ix++;
                 }
@@ -578,6 +584,7 @@ namespace Qs.Runtime
                             vnToken = vnToken.MergeTokens<WordToken>();
                             vnToken = vnToken.MergeTokens<ColonToken>();
                             vnToken = vnToken.MergeTokens<NameSpaceToken>();
+                            vnToken = vnToken.MergeSequenceTokens<WordToken>(typeof(AtSignToken), typeof(WordToken));
 
                             if (vnToken.Contains(typeof(NameSpaceToken)))
                             {
@@ -593,7 +600,7 @@ namespace Qs.Runtime
                                 }
                                 else
                                 {
-                                    if (varName.StartsWith("@") && qvResult.GetType() == typeof(QsScalar))
+                                    if (vnToken[vnToken.Count - 1].TokenValue.StartsWith("@") && qvResult.GetType() == typeof(QsScalar))
                                     {
                                         var fsc = (QsScalar)qvResult;
                                         if (fsc.ScalarType == ScalarTypes.FunctionQuantity)
@@ -616,8 +623,8 @@ namespace Qs.Runtime
 
                                             var qf = QsFunction.ParseFunction(this, fh + fsc.SymbolicQuantity.Value.ToString());
 
-                                            qf.FunctionNamespace = vnToken[1][0].TokenValue;
-                                            qf.FunctionName = vnToken[2].TokenValue;
+                                            qf.FunctionNamespace = vnToken.TokenValue.TrimEnd(vnToken[vnToken.Count - 1].TokenValue.ToCharArray()).TrimEnd(':');
+                                            qf.FunctionName = vnToken[vnToken.Count - 1].TokenValue.TrimStart('@');
 
                                             StoreFunction(qf);
                                             return qf;
@@ -629,8 +636,18 @@ namespace Qs.Runtime
                                     }
                                     else
                                     {
-                                        SetVariable(vnToken[0][0].TokenValue, vnToken[1].TokenValue, qvResult);
-                                        var q = GetScopeQsValue(this.Scope, vnToken[0][0].TokenValue, vnToken[1].TokenValue);
+                                        //SetVariable(vnToken[0][0].TokenValue, vnToken[1].TokenValue, qvResult);
+                                        SetVariable(
+                                            vnToken.TokenValue.TrimEnd(vnToken[vnToken.Count-1].TokenValue.ToCharArray()).TrimEnd(':')
+                                            , vnToken[vnToken.Count - 1].TokenValue
+                                            , qvResult
+                                            );
+
+                                        //var q = GetScopeQsValue(this.Scope, vnToken[0][0].TokenValue, vnToken[1].TokenValue);
+                                        var q = GetScopeQsValue(this.Scope
+                                            , vnToken.TokenValue.TrimEnd(vnToken[vnToken.Count - 1].TokenValue.ToCharArray()).TrimEnd(':')
+                                            , vnToken[vnToken.Count - 1].TokenValue
+                                            );
                                         PrintQuantity(q);
                                         return q;
                                     }
@@ -654,14 +671,14 @@ namespace Qs.Runtime
                             }
                             else
                             {
-                                if (varName.StartsWith("@") && qvResult.GetType()==typeof(QsScalar))
+                                if (varName.StartsWith("@") && qvResult.GetType() == typeof(QsScalar))
                                 {
                                     var fsc = (QsScalar)qvResult;
                                     varName = varName.Substring(1); // remove @
                                     if (fsc.ScalarType == ScalarTypes.FunctionQuantity)
                                     {
                                         // @f = @function which means we should assign f to qsfunction f
-                                        
+
                                         var qf = (QsFunction)((QsScalar)qvResult).FunctionQuantity.Value.Clone();
                                         qf.FunctionName = varName;
                                         StoreFunction(qf);
@@ -686,10 +703,27 @@ namespace Qs.Runtime
                                 }
                                 else
                                 {
-                                    SetVariable(varName, qvResult);
-                                    var q = GetScopeQsValue(this.Scope, "", varName);
-                                    PrintQuantity(q);
-                                    return q;
+                                    if (varName.Contains("->"))
+                                    {
+                                        // setting object property
+                                        var om = varName.Split('-', '>');
+                                        var instanceName = om[0];
+                                        var property = om[2];
+                                        QsObject o = (QsObject)GetScopeQsValue(this.Scope, "", instanceName);
+                                        o.SetProperty(property, qvResult);
+
+                                        var q = o.GetProperty(property);
+                                        PrintQuantity(q);
+                                        return q;
+                                        
+                                    }
+                                    else
+                                    {
+                                        SetVariable(varName, qvResult);
+                                        var q = GetScopeQsValue(this.Scope, "", varName);
+                                        PrintQuantity(q);
+                                        return q;
+                                    }
                                 }
                             }
                         }
@@ -866,6 +900,8 @@ namespace Qs.Runtime
             }
 
         }
+
+        
         #endregion
 
 
