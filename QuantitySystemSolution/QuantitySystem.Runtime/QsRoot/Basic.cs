@@ -34,7 +34,6 @@ namespace QsRoot
 
         }
 
-
         /// <summary>
         /// Testing binding to from vector to array of integers.
         /// </summary>

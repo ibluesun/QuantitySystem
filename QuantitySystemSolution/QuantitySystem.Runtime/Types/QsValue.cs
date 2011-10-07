@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using ParticleLexer;
 
 
 namespace Qs.Types
@@ -57,6 +58,9 @@ namespace Qs.Types
         /// <param name="value"></param>
         /// <returns></returns>
         abstract public QsValue ModuloOperation(QsValue value);
+
+
+
 
 
         #region Relational operations
@@ -177,6 +181,27 @@ namespace Qs.Types
         /// <param name="indexes"></param>
         /// <returns></returns>
         abstract public QsValue GetIndexedItem(int[] indices);
+
+
+        /// <summary>
+        /// -> operator
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        virtual public QsValue Execute(Token expression)
+        {
+            throw new QsException("Execute command is not valid for " + this.GetType().ToString());
+        }
+
+        /// <summary>
+        /// ! operator
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        virtual public QsValue ExclamationOperator(string key)
+        {
+            throw new QsException("Exclamation operator is not valid for " + this.GetType().ToString());
+        }
         #endregion
 
 
@@ -564,6 +589,7 @@ namespace Qs.Types
         {
             return this.GetType().Name;
         }
+
 
     }
 }

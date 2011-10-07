@@ -554,6 +554,7 @@ namespace Qs.Types
                 return sb.ToString();
             }
         }
+
         public override string ToString()
         {
 
@@ -562,6 +563,29 @@ namespace Qs.Types
             sb.AppendLine();
 
             sb.Append(MatrixText);
+
+            return sb.ToString();
+        }
+
+        public override string ToShortString()
+        {
+            StringBuilder sb = new StringBuilder();
+
+            for (int IY = 0; IY < this.RowsCount; IY++)
+            {
+                for (int IX = 0; IX < this.ColumnsCount; IX++)
+                {
+                    string cell = this[IY, IX].ToShortString();
+
+                    sb.Append(cell);
+                    if (IX < this.ColumnsCount - 1) sb.Append(", ");
+                }
+
+                if (IY < this.RowsCount - 1) sb.Append(" ; ");
+            }
+
+            sb.Insert(0, "[");
+            sb.Append("]");
 
             return sb.ToString();
         }

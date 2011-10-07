@@ -38,6 +38,14 @@ namespace Qs.Runtime
         public const string VariableQuantityExpression = @"^(\w+)\s*=\s*(" + DoubleNumber + @")\s*(\[(.+)\])";
 
 
+        public const ConsoleColor BackgroundColor = ConsoleColor.White;
+        public const ConsoleColor ForegroundColor = ConsoleColor.Black;
+        public const ConsoleColor HelpColor = ConsoleColor.Blue;
+
+        public const ConsoleColor ValuesColor = ConsoleColor.Green;
+        public const ConsoleColor ExceptionColor = ConsoleColor.Red;
+
+
 
         public IEnumerable<string> VariablesKeys
         {
@@ -98,12 +106,36 @@ namespace Qs.Runtime
         {
             if (Scope != null)
             {
-                ((ScopeStorage)Scope.Storage).SetValue(varName, true, varValue);
+                var r = GetVariable(varName) as QsReference;
+                if (r == null)
+                    ((ScopeStorage)Scope.Storage).SetValue(varName, true, varValue);
+                else
+                    r.ContentValue = (QsValue)varValue;
             }
             else
             {
                 throw new Exception("No Scope exist");
             }
+        }
+
+        public QsReference AddReference(string nameSpace, string varName, string referencedVariableName)
+        {
+            if (string.IsNullOrEmpty(nameSpace))
+            {
+                QsReference qsr = new QsReference(referencedVariableName);
+                SetVariable(varName, qsr);
+                return qsr;
+            }
+            else
+            {
+                //try to set the property in the namespace
+
+                QsNamespace ns = QsNamespace.GetNamespace(Scope, nameSpace, true);
+
+                return ns.AddReference(varName, referencedVariableName);
+
+            }            
+
         }
 
         /// <summary>
@@ -192,7 +224,7 @@ namespace Qs.Runtime
                     //PrintUnitInfo(u);
                     UnitPathStack up = u1.PathToUnit(u2);
 
-                    Console.ForegroundColor = ConsoleColor.Gray;
+                    Console.ForegroundColor = ForegroundColor;
 
                     Console.WriteLine();
                     double ConversionFactor = up.ConversionFactor;
@@ -217,9 +249,9 @@ namespace Qs.Runtime
                     string dashes = "    ".PadRight(cf.Length, '-');
 
                     Console.WriteLine(dashes);
-                    Console.ForegroundColor = ConsoleColor.Yellow;
+                    Console.ForegroundColor = ValuesColor;
                     Console.WriteLine(cf);
-                    Console.ForegroundColor = ConsoleColor.White;
+                    Console.ForegroundColor = ForegroundColor;
 
                     return up.ConversionFactor;
                 }
@@ -634,11 +666,22 @@ namespace Qs.Runtime
                                             throw new QsException("Cannot store scalar " + fsc.ScalarType.ToString() + " into function variable");
                                         }
                                     }
+                                    else if (vnToken[vnToken.Count - 2].TokenValue.StartsWith("&") && qvResult is QsValue)
+                                    {
+                                        // store the reference of the value to the same name here
+                                        //  &b = a   it means that b and a will point to the same variable.
+                                        var existValue = GetVariable(line.Trim());
+                                        var ns = vnToken.TrimTokens(0,2).TokenValue.TrimEnd(':');
+                                        var nm = vnToken[vnToken.Count - 1].TokenValue.TrimStart('&');
+                                        var q = AddReference(ns, nm, line.Trim());
+                                        PrintQuantity(q);
+                                        return q;
+                                    }
                                     else
                                     {
                                         //SetVariable(vnToken[0][0].TokenValue, vnToken[1].TokenValue, qvResult);
                                         SetVariable(
-                                            vnToken.TokenValue.TrimEnd(vnToken[vnToken.Count-1].TokenValue.ToCharArray()).TrimEnd(':')
+                                            vnToken.TokenValue.TrimEnd(vnToken[vnToken.Count - 1].TokenValue.ToCharArray()).TrimEnd(':')
                                             , vnToken[vnToken.Count - 1].TokenValue
                                             , qvResult
                                             );
@@ -698,8 +741,17 @@ namespace Qs.Runtime
                                     }
                                     else
                                     {
+                                        
                                         throw new QsException("Cannot store scalar " + fsc.ScalarType.ToString() + " into function variable");
+                                        
                                     }
+                                }
+                                else if (varName.StartsWith("&") && qvResult is QsValue)
+                                {
+                                    var existValue = GetVariable(line.Trim());
+                                    var q = AddReference(string.Empty, varName.Substring(1), line.Trim());
+                                    PrintQuantity(q);
+                                    return q;
                                 }
                                 else
                                 {
@@ -715,7 +767,7 @@ namespace Qs.Runtime
                                         var q = o.GetProperty(property);
                                         PrintQuantity(q);
                                         return q;
-                                        
+
                                     }
                                     else
                                     {
@@ -794,7 +846,7 @@ namespace Qs.Runtime
         public void PrintUnitInfo(Unit unit)
         {
 
-            Console.ForegroundColor = ConsoleColor.Gray;
+            Console.ForegroundColor = HelpColor;
 
             Console.WriteLine("    Unit:        {0}", unit.ToString());
             Console.WriteLine("    Quantity:    {0}", unit.QuantityType.Name);
@@ -806,18 +858,18 @@ namespace Qs.Runtime
                 Console.WriteLine("    Unit overflow: {0}", unit.GetUnitOverflow());
             }
 
-            Console.ForegroundColor = ConsoleColor.White;
+            Console.ForegroundColor = ForegroundColor;
         }
 
         public void PrintQuantity(object qty)
         {
             if (!SilentOutput)
             {
-                Console.ForegroundColor = ConsoleColor.Yellow;
+                Console.ForegroundColor = ValuesColor;
 
                 Console.WriteLine("    {0}", qty.ToString());
 
-                Console.ForegroundColor = ConsoleColor.White;
+                Console.ForegroundColor = ForegroundColor;
             }
         }
 
@@ -901,7 +953,22 @@ namespace Qs.Runtime
 
         }
 
-        
+        public QsValue DeleteQsValue(string qsNamespace, string name)
+        {
+            ScopeStorage ss = (ScopeStorage)this.Scope.Storage;
+
+            if (string.IsNullOrEmpty(qsNamespace))
+            {
+                if (!ss.DeleteValue(name, true))
+                    throw new QsException("Can't delete the variable");
+                else
+                {
+                    GC.Collect();
+                }
+            }
+            return null;
+        }
+
         #endregion
 
 

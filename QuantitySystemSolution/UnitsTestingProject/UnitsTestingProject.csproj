@@ -103,6 +103,7 @@
     <Compile Include="Metric\SI\MoleTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Metric\SI\SecondTest.cs" />
+    <Compile Include="UnitConversionTest.cs" />
     <Compile Include="UnitTest.cs" />
   </ItemGroup>
   <ItemGroup>

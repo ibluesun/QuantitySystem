@@ -56,6 +56,10 @@ namespace QsRoot.Processor
             }
         }
 
+        public double Accumulate(params double[] all)
+        {
+            return all.Sum();
+        }
         
         
     }

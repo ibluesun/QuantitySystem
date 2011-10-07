@@ -179,6 +179,8 @@ namespace Qs.Types
             return ListStorage.ToArray();
         }
 
+
+
         #region IEnumerable<QsScalar> Members
 
         public IEnumerator<QsScalar> GetEnumerator()

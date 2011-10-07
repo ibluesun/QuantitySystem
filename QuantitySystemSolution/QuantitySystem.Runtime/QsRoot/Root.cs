@@ -16,15 +16,13 @@ namespace QsRoot
     /// </summary>
     public class Root
     {
-
-        private static Dictionary<string, Assembly> LoadedAssemblies = new Dictionary<string, Assembly>();
+        
         public static void LoadLibrary(string library)
         {
             Assembly a = Assembly.LoadFrom(library);
-
-            LoadedAssemblies[a.FullName] = a;
         }
 
+        static bool allrefloaded = false;
 
         /// <summary>
         /// Get External Library Type.
@@ -33,15 +31,83 @@ namespace QsRoot
         /// <returns></returns>
         internal static Type GetExternalType(string type)
         {
+            if (!allrefloaded)
+            {
+                var ss = Assembly.GetExecutingAssembly().GetReferencedAssemblies();
+                foreach (var vo in ss) Assembly.Load(vo);
+                allrefloaded = true;
+            }
+
+            var allassemblies = AppDomain.CurrentDomain.GetAssemblies();
+
+            System.Text.RegularExpressions.Regex.Match("", "");
+
             Type dt = null;
-            foreach (var a in LoadedAssemblies.Values)
+            foreach (var a in allassemblies)
             {
                 dt = a.GetType(type, false, true);
 
                 if (dt != null) break;
             }
-
+            
             return dt;
+        }
+
+        internal static object[] QsParametersToNativeValues(MethodInfo method, params QsParameter[] parameters)
+        {
+            List<object> NativeParameters = new List<object>();
+
+            int iy = 0;
+            ParameterInfo[] paramInfos = method.GetParameters();
+
+            foreach (var p in parameters)
+            {
+                if (p.QsNativeValue == null)
+                {
+                    NativeParameters.Add(null);
+                }
+                else if (p.QsNativeValue is QsScalar)
+                {
+                    var scalar = (QsScalar)p.QsNativeValue;
+                    object nativeValue = System.Convert.ChangeType(scalar.NumericalQuantity.Value, paramInfos[iy].ParameterType);
+                    NativeParameters.Add(nativeValue);
+                }
+                else if (p.QsNativeValue is QsText)
+                {
+                    NativeParameters.Add(((QsText)p.QsNativeValue).Text);
+                }
+                else if (p.QsNativeValue is QsVector)
+                {
+
+                    if (paramInfos[iy].ParameterType.IsArray)
+                    {
+
+                        QsVector vec = (QsVector)p.QsNativeValue;
+                        System.Type ArrayType = System.Type.GetType(paramInfos[iy].ParameterType.FullName.Trim('[', ']'));
+                        System.Array arr = System.Array.CreateInstance(ArrayType, vec.Count);
+                        for (int i = 0; i < vec.Count; i++)
+                        {
+                            object val = System.Convert.ChangeType(vec[i].NumericalQuantity.Value, ArrayType);
+                            arr.SetValue(val, i);
+                        }
+
+                        NativeParameters.Add(arr);
+                    }
+                    else
+                    {
+                        throw new QsException("The target parameter is not an array");
+                    }
+                }
+                else
+                {
+                    throw new QsException("Converting Qs values other than scalars to native function is not supported.");
+                }
+
+                iy++;
+
+            }
+
+            return NativeParameters.ToArray();
         }
 
 
@@ -73,10 +139,22 @@ namespace QsRoot
             if (vType.BaseType == typeof(QsValue)) return (QsValue)value;
 
             if (vType.BaseType == typeof(AnyQuantity<double>)) return new QsScalar { NumericalQuantity = (AnyQuantity<double>)value };
+            
+            if (vType == typeof(int[]) || vType == typeof(double[]) || vType == typeof(Single[]) || vType == typeof(float[]) || vType == typeof(Int64[]) || vType == typeof(uint[]) || vType == typeof(UInt16[]) || vType == typeof(UInt64[]))
+            {
+                Array rr = (Array)value;
+                QsVector v = new QsVector(rr.Length);
+                foreach (var m in rr)
+                {
+                    var r = (double)System.Convert.ChangeType(value, typeof(double));
+                    v.AddComponent(new QsScalar { NumericalQuantity = r.ToQuantity() });
+                }
+                return v;
+            }
+
 
             // the last thing is to return object from this type
             if (!vType.IsValueType) return QsObject.CreateNativeObject(value);
-
 
             throw new QsException(vType + " doesn't have corresponding type in Quantity System");
         }
@@ -116,7 +194,8 @@ namespace QsRoot
 
             }
 
-            if (targetType == typeof(int) || targetType == typeof(double) || targetType == typeof(Single) || targetType == typeof(float))
+
+            if (targetType == typeof(int) || targetType == typeof(double) || targetType == typeof(Single) || targetType == typeof(float) || targetType == typeof(Int64) || targetType == typeof(uint) || targetType == typeof(UInt16) || targetType == typeof(UInt64))
             {
                 var nq = Expression.Property(Expression.Convert(value, typeof(QsScalar)), "NumericalQuantity");
 
@@ -124,11 +203,51 @@ namespace QsRoot
                 return Expression.Convert(nqv, targetType);
             }
 
+            if (targetType == typeof(int[]) || targetType == typeof(double[]) || targetType == typeof(Single[]) || targetType == typeof(float[]) || targetType == typeof(Int64[]) || targetType == typeof(uint[]) || targetType == typeof(UInt16[]) || targetType == typeof(UInt64[]))
+            {
+                // then the value should be a qsvector or qsmatrix
+                
+                
+                var mi = typeof(Root).GetMethod("ToNumericArray", BindingFlags.Static | BindingFlags.NonPublic).MakeGenericMethod(targetType.GetElementType());
+
+                return Expression.Call(mi, value);
+                
+            }
+            
+            // at last test if the target type may be a an object 
+            // and the source may be a QsObject <===>  I can't test the type of the expression because everything is QsValue
+            //  so I will make an assumption that the target type
+            if (!targetType.IsSubclassOf(typeof(QsValue)) && !targetType.IsValueType)
+            {
+                var v = Expression.Convert(Expression.Property(Expression.Convert(value, typeof(QsObject)), "ThisObject"), targetType);
+                return v;
+            }
 
             throw new QsException("Couldn't convert the value (" + value.Type.ToString() + ") expression to the target type (" + targetType.ToString() + ")");
         }
 
+        /// <summary>
+        /// Gets the double values of the vector components
+        /// Warning: Unit information will be missed.
+        /// </summary>
+        /// <returns></returns>
+        internal static Numeric[] ToNumericArray<Numeric>(QsValue value) where Numeric : struct
+        {
+            if (value is QsVector)
+            {
+                var ListStorage = ((QsVector)value).ToArray();
 
+                Numeric[] dd = new Numeric[ListStorage.Length];
+                int ix = ListStorage.Length - 1;
+                while (ix >= 0)
+                {
+                    dd[ix] = (Numeric)(object)ListStorage[ix].NumericalQuantity.Value;
+                    ix--;
+                }
+                return dd;
+            }
+            throw new QsException("Not Vector");
+        }
 
         internal static object QsToNativeConvert(Type targetType, object value)
         {
@@ -145,7 +264,7 @@ namespace QsRoot
 
             if (targetType == typeof(string))
             {
-                return new QsText((string)value);
+                return  value.ToString();
 
             }
 

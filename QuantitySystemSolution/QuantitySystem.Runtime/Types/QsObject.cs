@@ -51,8 +51,8 @@ namespace Qs.Types
                 return _NativeObject.GetType();
             }
         }
-
-        public QsValue Execute(Token expression)
+        
+        public override  QsValue Execute(Token expression)
         {
             Expression ResultExpression = null;
             if (expression.TokenClassType == typeof(ParenthesisCallToken))
@@ -152,7 +152,6 @@ namespace Qs.Types
             }
 
         }
-
 
         public void SetProperty(string propertyName, object value)
         {
@@ -279,8 +278,12 @@ namespace Qs.Types
         }
 
         public override QsValue GetIndexedItem(int[] indices)
-        {
-            throw new NotImplementedException();
+        {            
+            var pi = InstanceType.GetProperty("Item", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.IgnoreCase);
+
+            var r = from m in indices select (object)m;
+
+            return Root.NativeToQsConvert(pi.GetValue(_NativeObject, r.ToArray()));   
         }
         #endregion
     }
