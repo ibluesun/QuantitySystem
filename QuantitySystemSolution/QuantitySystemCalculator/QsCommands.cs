@@ -17,15 +17,12 @@ using Microsoft.Scripting;
 
         public static ScriptEngine Engine { get; set; }
         public static ScriptScope ScriptScope { get; set; }
+        public const ConsoleColor BackgroundColor = ConsoleColor.White;
+        public const ConsoleColor ForegroundColor = ConsoleColor.Black;
+        public const ConsoleColor HelpColor = ConsoleColor.Blue;
 
-        public const ConsoleColor BackgroundColor = ConsoleColor.DarkBlue;
-        public const ConsoleColor ForegroundColor = ConsoleColor.White;
-        public const ConsoleColor HelpColor = ConsoleColor.Gray;
-        
-        public const ConsoleColor ValuesColor = ConsoleColor.Yellow;
-
+        public const ConsoleColor ValuesColor = ConsoleColor.Green;
         public const ConsoleColor ExceptionColor = ConsoleColor.Red;
-
 
         /// <summary>
         /// Console Commands.
@@ -94,6 +91,8 @@ using Microsoft.Scripting;
                 string[] names = (from name in ss.GetItems() select name.Key).ToArray();
                 foreach (var name in names)
                     ss.DeleteValue(name, true);
+
+                GC.Collect();
 
                 CommandProcessed = true;
             }

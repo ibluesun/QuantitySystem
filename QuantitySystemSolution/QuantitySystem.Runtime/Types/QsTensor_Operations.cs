@@ -14,8 +14,13 @@ namespace Qs.Types
             get { throw new NotImplementedException(); }
         }
 
-        public override QsValue AddOperation(QsValue value)
+        public override QsValue AddOperation(QsValue vl)
         {
+            QsValue value;
+            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            else value = vl;
+
+
             if (value is QsScalar)
             {
                 var scalar = value as QsScalar;
@@ -80,8 +85,13 @@ namespace Qs.Types
             throw new QsException("Summing Operation with " + value.GetType().Name + " Failed");
         }
 
-        public override QsValue SubtractOperation(QsValue value)
+        public override QsValue SubtractOperation(QsValue vl)
         {
+            QsValue value;
+            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            else value = vl;
+
+
             if (value is QsScalar)
             {
                 var scalar = value as QsScalar;
@@ -146,8 +156,13 @@ namespace Qs.Types
             throw new QsException("Tensor Subtract Operation with " + value.GetType().Name + " Failed");
         }
 
-        public override QsValue MultiplyOperation(QsValue value)
+        public override QsValue MultiplyOperation(QsValue vl)
         {
+            QsValue value;
+            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            else value = vl;
+
+
             if (value is QsScalar)
             {
                 var scalar = (QsScalar)value;
@@ -254,8 +269,13 @@ namespace Qs.Types
             throw new NotImplementedException();
         }
 
-        public override QsValue DotProductOperation(QsValue value)
+        public override QsValue DotProductOperation(QsValue vl)
         {
+            QsValue value;
+            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            else value = vl;
+
+
             
             QsTensor tensor;
 
@@ -418,8 +438,13 @@ namespace Qs.Types
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public override QsValue DifferentiateOperation(QsValue value)
+        public override QsValue DifferentiateOperation(QsValue vl)
         {
+            QsValue value;
+            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            else value = vl;
+
+
             if (value is QsScalar)
             {
                 var t = new QsTensor();

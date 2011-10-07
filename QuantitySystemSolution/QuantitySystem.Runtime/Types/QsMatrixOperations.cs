@@ -274,8 +274,13 @@ namespace Qs.Types
 
         }
 
-        public override QsValue AddOperation(QsValue value)
+        public override QsValue AddOperation(QsValue vl)
         {
+            QsValue value;
+            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            else value = vl;
+
+
             if (value is QsScalar)
             {
                 return this.AddScalar((QsScalar)value);
@@ -294,8 +299,13 @@ namespace Qs.Types
             }
         }
 
-        public override QsValue SubtractOperation(QsValue value)
+        public override QsValue SubtractOperation(QsValue vl)
         {
+            QsValue value;
+            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            else value = vl;
+
+
             if (value is QsScalar)
             {
                 return this.SubtractScalar((QsScalar)value);
@@ -314,8 +324,13 @@ namespace Qs.Types
             }
         }
 
-        public override QsValue MultiplyOperation(QsValue value)
+        public override QsValue MultiplyOperation(QsValue vl)
         {
+            QsValue value;
+            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            else value = vl;
+
+
             if (value is QsScalar)
             {
                 return this.MultiplyScalar((QsScalar)value);
@@ -334,8 +349,13 @@ namespace Qs.Types
             }
         }
 
-        public override QsValue DotProductOperation(QsValue value)
+        public override QsValue DotProductOperation(QsValue vl)
         {
+            QsValue value;
+            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            else value = vl;
+
+
             if (value is QsScalar)
             {
                 return this.MultiplyScalar((QsScalar)value);
@@ -361,8 +381,13 @@ namespace Qs.Types
             throw new NotImplementedException();
         }
 
-        public override QsValue DivideOperation(QsValue value)
+        public override QsValue DivideOperation(QsValue vl)
         {
+            QsValue value;
+            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            else value = vl;
+
+
             if (value is QsScalar)
             {
                 return this.DivideScalar((QsScalar)value);
@@ -381,8 +406,13 @@ namespace Qs.Types
             }
         }
 
-        public override QsValue ModuloOperation(QsValue value)
+        public override QsValue ModuloOperation(QsValue vl)
         {
+            QsValue value;
+            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            else value = vl;
+
+
             if (value is QsScalar)
             {
                 return this.ModuloScalar((QsScalar)value);
@@ -402,8 +432,13 @@ namespace Qs.Types
         }
 
 
-        public override QsValue PowerOperation(QsValue value)
+        public override QsValue PowerOperation(QsValue vl)
         {
+            QsValue value;
+            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            else value = vl;
+
+
             if (value is QsScalar)
             {
                 var s = value as QsScalar;
@@ -439,8 +474,13 @@ namespace Qs.Types
         }
 
 
-        public override QsValue PowerDotOperation(QsValue value)
+        public override QsValue PowerDotOperation(QsValue vl)
         {
+            QsValue value;
+            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            else value = vl;
+
+
             if (value is QsScalar)
             {
                 var s = value as QsScalar;
@@ -465,8 +505,13 @@ namespace Qs.Types
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public override QsValue TensorProductOperation(QsValue value)
+        public override QsValue TensorProductOperation(QsValue vl)
         {
+            QsValue value;
+            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            else value = vl;
+
+
             if (value is QsMatrix)
             {
                 // Kronecker product
@@ -509,8 +554,13 @@ namespace Qs.Types
         /// </summary>
         /// <param name="times"></param>
         /// <returns></returns>
-        public override QsValue LeftShiftOperation(QsValue times)
+        public override QsValue LeftShiftOperation(QsValue vl)
         {
+            QsValue times;
+            if (vl is QsReference) times = ((QsReference)vl).ContentValue;
+            else times = vl;
+
+
             QsMatrix ShiftedMatrix = new QsMatrix();
             foreach (var vec in this)
             {
@@ -525,8 +575,13 @@ namespace Qs.Types
         /// </summary>
         /// <param name="times"></param>
         /// <returns></returns>
-        public override QsValue RightShiftOperation(QsValue times)
+        public override QsValue RightShiftOperation(QsValue vl)
         {
+            QsValue times;
+            if (vl is QsReference) times = ((QsReference)vl).ContentValue;
+            else times = vl;
+
+
             QsMatrix ShiftedMatrix = new QsMatrix();
             foreach (var vec in this)
             {
@@ -604,8 +659,13 @@ namespace Qs.Types
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        public override QsValue DifferentiateOperation(QsValue value)
+        public override QsValue DifferentiateOperation(QsValue vl)
         {
+            QsValue value;
+            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            else value = vl;
+
+
             if (value is QsScalar)
             {
                 QsMatrix n = new QsMatrix();

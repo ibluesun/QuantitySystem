@@ -7,6 +7,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 		Multiplication Product Notes.txt = Multiplication Product Notes.txt
+		OO Features.txt = OO Features.txt
 		QuantitySystemSolution.vsmdi = QuantitySystemSolution.vsmdi
 		What's New.txt = What's New.txt
 	EndProjectSection
@@ -20,6 +21,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{B97E2DDA-3B38-465E-93A4-F48A3FD5D633}"
 	ProjectSection(SolutionItems) = preProject
 		Libraries\ParticleLexer.dll = Libraries\ParticleLexer.dll
+		Libraries\PassiveFlow.dll = Libraries\PassiveFlow.dll
 		Libraries\SymbolicAlgebra.dll = Libraries\SymbolicAlgebra.dll
 	EndProjectSection
 EndProject

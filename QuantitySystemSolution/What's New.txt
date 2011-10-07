@@ -1,3 +1,37 @@
+[Qs 1.2.2]
+- delete [variable]   added 
+	it means you can create instances and delete them like this
+	Qs> s = new ::System:Windows:Forms:Form
+	Qs> l = new ::System:Windows:Forms:Label
+
+	Qs> l->Text = "Hello There"
+	Qs> l->top = 60
+	Qs> l->left = 40
+	Qs> s->Controls->Add(l)
+	Qs> s->Text = "Hello There"
+
+	Qs> s->ShowDialog()
+	Qs> delete s
+
+- Reference Assigning
+   Qs> a = 30
+   Qs> &b = a       #resemble the c++ lreference
+   now b point to the same value as a and you can use the two variables equally.
+
+- Differentiation operation now works also on symbolic quantitis
+   Qs> sq = 4*$x^4 + 2*$x^3*$y^4 + 2*$y^3
+   Qs> @|$x * sq
+
+- Tuple Implementation
+    Qs> s = (4,2,"HEllo World")
+	Qs> GearBox = (ReverseShift[-1], Neutral[0], FirstShift[1], SecondShift[2], ThirdShift[3], FourthShift[4], FifthSift[5])
+	Qs> GearBox!FirstShift   # access the named value of 'FirstShift'
+
+R.I.P Steve Jobs 
+
+
+
+
 [Qs 1.2.1]
 - Rational Number  Q{1 2} == 1/2 == 0.5  but in rational format has been added.
 - support to multiple inner namespaces like  p:g:j=30

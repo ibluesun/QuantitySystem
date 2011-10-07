@@ -61,16 +61,46 @@ namespace Qs.Types
             var sc = value as QsScalar;
             if (!Object.ReferenceEquals(sc, null))
             {
-                if (!Object.ReferenceEquals(sc.FunctionQuantity, null))
+                if (sc.ScalarType == ScalarTypes.FunctionQuantity)
                 {
-                    var f = (QsFunction)sc.FunctionQuantity.Value;
+                    if (!Object.ReferenceEquals(sc.FunctionQuantity, null))
+                    {
+                        var f = (QsFunction)sc.FunctionQuantity.Value;
+
+                        foreach (var op in operations)
+                        {
+                            switch (op.Operation)
+                            {
+                                case Operator.Differentiate:
+                                    f = (QsFunction)f.DifferentiateOperation(op.value);
+                                    break;
+                                default:
+                                    throw new NotImplementedException();
+                            }
+                        }
+
+                        return f.ToQuantity().ToScalar();
+                    }
+                }
+                else if (sc.ScalarType == ScalarTypes.SymbolicQuantity)
+                {
+                    var f = sc.SymbolicQuantity.Value;
 
                     foreach (var op in operations)
                     {
                         switch (op.Operation)
                         {
                             case Operator.Differentiate:
-                                f = (QsFunction)f.DifferentiateOperation(op.value);
+                                {
+                                    var dsv = ((QsScalar)op.value).SymbolicQuantity.Value;
+                                    int times = (int)dsv.SymbolPower;
+                                    while (times > 0)
+                                    {
+                                        f = f.Differentiate(dsv.Symbol);
+                                        times--;
+                                    }
+                                }
+                                
                                 break;
                             default:
                                 throw new NotImplementedException();
@@ -79,6 +109,8 @@ namespace Qs.Types
 
                     return f.ToQuantity().ToScalar();
                 }
+                else
+                    throw new QsException("Can't multiply current operation for this scalar " + sc.ScalarType.ToString());
             }
 
             throw new NotImplementedException();

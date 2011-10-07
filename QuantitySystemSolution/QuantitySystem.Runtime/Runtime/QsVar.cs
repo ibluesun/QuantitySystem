@@ -14,6 +14,7 @@ using Qs.Types;
 using SymbolicAlgebra;
 using Qs.Types.Operators;
 using QsRoot;
+using Microsoft.Scripting;
 
 
 
@@ -330,16 +331,35 @@ namespace Qs.Runtime
                     goto ExpressionCompleted;
                 }
 
+                if (q.Equals("delete", StringComparison.OrdinalIgnoreCase))
+                {
+                    op = string.Empty;
+                    ix++;
+
+                    quantityExpression = DeleteInstance(tokens[ix]);
+
+                    goto ExpressionCompleted;
+                }
 
                 bool FactorialPostfix = false;
                 if (!string.IsNullOrEmpty(op))
                 {
                     if (op == "!")
                     {
-                        FactorialPostfix = true;
-                    }
+                        // if the ! followed by Word then we want the  "operator !"  otherwise it is a normal factorial.
 
+                        var afterTok = ix + 2 < tokens.Count ? tokens[ix + 2] : null;
+
+                        if (afterTok == null)
+                            FactorialPostfix = true;
+                        else if (afterTok.TokenClassType == typeof(WordToken))
+                            FactorialPostfix = false;
+                        else
+                            FactorialPostfix = true;
+                        
+                    }
                 }
+
                 if(tokens[ix].TokenClassType == typeof(SequenceCallToken))
                 {
                     quantityExpression = IndexerExpression(
@@ -376,8 +396,21 @@ namespace Qs.Runtime
                 }
                 else if (tokens[ix].TokenClassType == typeof(ParenthesisGroupToken))
                 {
-                    // take the inner tokens and send it to be parsed again.
-                    quantityExpression = ParseArithmatic(tokens[ix].RemoveSpaceTokens().TrimTokens(1, 1));
+                    var x = tokens[ix].RemoveSpaceTokens().TrimTokens(1, 1);
+                    // count the ',' comma token
+                    // if the existence is more than 0 then we are expressing a tuple
+                    var commaCount = x.Count(c => c.TokenClassType == typeof(CommaToken));
+
+                    if (commaCount > 0)
+                    {
+                        // tuple
+                        quantityExpression = ConstructTupleExpression(x);
+                    }
+                    else
+                    {
+                        // take the inner tokens and send it to be parsed again.
+                        quantityExpression = ParseArithmatic(x);
+                    }
                     
                 }
                 else if (tokens[ix].TokenClassType == typeof(UnitizedNumberToken))
@@ -578,6 +611,10 @@ namespace Qs.Runtime
                                 // previous operation were calling for object member
                                 quantityExpression = Expression.Constant(tokens[ix]);   // this is the name of the property 
                             }
+                            else if (eop.Operation == "!")
+                            {
+                                quantityExpression = Expression.Constant(tokens[ix].TokenValue); // this is  the name after the exlamination mark
+                            }
                             else
                             {
                                 //quantity variable  //get it from evaluator  global heap
@@ -643,6 +680,65 @@ namespace Qs.Runtime
 
             //then form the calculation expression
             return  ConstructExpression(FirstEop);
+
+        }
+
+        private Expression ConstructTupleExpression(Token x)
+        {
+            List<Expression> ps = new List<Expression>();
+
+            var tpvcp1 = typeof(QsTupleValue).GetConstructor(new Type[]{typeof(QsValue)});
+            var tpvcp2 = typeof(QsTupleValue).GetConstructor(new Type[]{typeof(string), typeof(QsValue)});
+            var tpvcp3 = typeof(QsTupleValue).GetConstructor(new Type[]{typeof(int), typeof(string), typeof(QsValue)});
+
+            foreach (Token t in x)
+            {
+                Token be = new Token();
+                
+                if (t.TokenClassType == typeof(SequenceCallToken))
+                {
+                    string nm = t[0].TokenValue;
+                    if (t[1].Contains(typeof(CommaToken)))
+                    {
+                        // Name[id, value]   
+                        
+                        int i = int.Parse(t[1][1].TokenValue);
+                        
+                        var r = ParseArithmatic(t[1][3]);
+
+                        ps.Add(Expression.New(tpvcp3, Expression.Constant(i), Expression.Constant(nm), r));
+
+                    }
+                    else
+                    {
+                        //Name[value]
+                        
+                        var r = ParseArithmatic(t[1][1]);
+                        ps.Add(Expression.New(tpvcp2, Expression.Constant(nm), r));
+                    }
+                }
+                else if (t.TokenClassType != typeof(CommaToken))
+                {
+                    be.AppendSubToken(t);
+                    var r = ParseArithmatic(be);
+                    ps.Add(Expression.New(tpvcp1, r));
+                }
+                
+            }
+            var cp = typeof(QsFlowingTuple).GetConstructor(new Type[] { typeof(QsTupleValue[]) });
+
+            return Expression.New(cp, Expression.NewArrayInit(typeof(QsTupleValue), ps.ToArray()));
+        }
+
+        private Expression DeleteInstance(Token token)
+        {
+            
+            var ex = Expression.Constant(this.Evaluator);
+
+            return Expression.Call(ex, typeof(QsEvaluator).GetMethod("DeleteQsValue")
+                , Expression.Constant(string.Empty)
+                , Expression.Constant(token.TokenValue)
+                );
 
         }
 
@@ -1945,7 +2041,9 @@ namespace Qs.Runtime
 
             Type aqType = typeof(QsValue);
 
-            if (op == "->") return Expression.Call(Expression.Convert(left, typeof(QsObject)), typeof(QsObject).GetMethod("Execute"), right);
+            if (op == "!") return Expression.Call(left, aqType.GetMethod("ExclamationOperator"), right);
+
+            if (op == "->") return Expression.Call(left, aqType.GetMethod("Execute"), right);
             
             if (op == "..") return Expression.Call(left, aqType.GetMethod("RangeOperation"), right);
 
@@ -2062,7 +2160,8 @@ namespace Qs.Runtime
                                "^."   /* Power for dot product */,
                                "^x"   /* Power for cross product */,
                                ".."   /* Vector Range operator {from..to} */,
-                               "->"   /* object member calling */
+                               "->"   /* object member calling */,
+                               "!"    /* Exclamation operation */
                              };
 
             string[] SymGroup = { "|" /* Derivation operator */};

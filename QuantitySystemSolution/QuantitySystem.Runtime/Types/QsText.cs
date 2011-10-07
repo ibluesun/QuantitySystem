@@ -21,6 +21,11 @@ namespace Qs.Types
             return  Text ;
         }
 
+        public override string ToShortString()
+        {
+            return "\"" + Text + "\"";
+        }
+
 
         #region QsValue Operations
         public override QsValue Identity

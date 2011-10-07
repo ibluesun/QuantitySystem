@@ -60,17 +60,16 @@ namespace QsGraphics
 
             _FormTask = Task.Factory.StartNew(_FormDialog);
 
-            // here we will go into infinite loop based on timer
-            // and 
-
             OffBitmap = new Bitmap(_Width, _Height);
 
-            OffGraphics = Graphics.FromImage(OffBitmap);            
+            OffGraphics = Graphics.FromImage(OffBitmap);
 
         }
 
         public void End()
         {
+            Reset();
+            
             Action a = _Form.Close;
             if(_Form.IsHandleCreated)
                 _Form.Invoke(a);          //execute the code of the form in its running thread by invoke
@@ -78,6 +77,7 @@ namespace QsGraphics
 
         ~Screen()
         {
+            
             End();
         }
 
@@ -124,6 +124,7 @@ namespace QsGraphics
         {
             loop = false;
             foreach (Shape sh in Shapes) sh.Reset();
+            Task.WaitAll(runningTasks.ToArray());
         }
 
 
@@ -152,6 +153,7 @@ namespace QsGraphics
 
         }
 
+        List<Task> runningTasks = new List<Task>();
         public void UpdateFor(Time<double> time)
         {
             Stopwatch sw = new Stopwatch();
@@ -161,7 +163,7 @@ namespace QsGraphics
 
             sw.Start();
 
-            Task.Factory.StartNew(() =>
+            var t = Task.Factory.StartNew(() =>
             {
                 while (sw.ElapsedMilliseconds < mtime.Value && loop==true)
                     Update();
@@ -169,6 +171,8 @@ namespace QsGraphics
                 //stop the timer.
                 sw.Stop();
             });
+
+            runningTasks.Add(t);
 
         }
         
@@ -180,7 +184,7 @@ namespace QsGraphics
 
             sw.Start();
 
-            Task.Factory.StartNew(() =>
+            var t = Task.Factory.StartNew(() =>
             {
                 while (loop)
                     Update();
@@ -189,11 +193,22 @@ namespace QsGraphics
                 sw.Stop();
             });
 
+            runningTasks.Add(t);
         }
 
         public void Stop()
         {
             loop = false;
+            Task.WaitAll(runningTasks.ToArray());
+
+        }
+
+        public Shape this[int i]
+        {
+            get
+            {
+                return Shapes[i];
+            }
         }
 
 

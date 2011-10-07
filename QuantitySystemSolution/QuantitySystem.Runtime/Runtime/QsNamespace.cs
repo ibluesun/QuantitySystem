@@ -54,6 +54,16 @@ namespace Qs.Runtime
 
         private Dictionary<string, object> Values = new Dictionary<string, object>(System.StringComparer.OrdinalIgnoreCase);
 
+        public QsReference AddReference(string newVariable, string targetVariable)
+        {
+            QsReference qsr = new QsReference(targetVariable);
+
+            Values.Add(newVariable, qsr);
+
+            return qsr;
+
+        }
+
         public void SetValue(string name, object value)
         {
             if (char.IsLetter(name[0]))
@@ -72,7 +82,14 @@ namespace Qs.Runtime
                 }
                 else
                 {
-                    Values[name] = value;
+                    object o;
+                    Values.TryGetValue(name, out o);
+                    var r = o as QsReference;
+                    if (r == null)
+                        Values[name] = value;
+                    else
+                        r.ContentValue = (QsValue)value;
+
                 }
             }
             else
@@ -572,7 +589,7 @@ namespace Qs.Runtime
             var qns = typeof(QsNamespace);
             var qsys = typeof(Root);
 
-            var convparMethod = qns.GetMethod("QsParametersToNativeValues", BindingFlags.Static | BindingFlags.NonPublic);
+            var convparMethod = qsys.GetMethod("QsParametersToNativeValues", BindingFlags.Static | BindingFlags.NonPublic);
             var NTOQ = qsys.GetMethod("NativeToQsConvert", BindingFlags.Static | BindingFlags.NonPublic);
             var iv = qns.GetMethod("IndirectInvoke", BindingFlags.Static | BindingFlags.NonPublic);
             Expression methodExpress = Expression.Constant(method);
@@ -615,62 +632,6 @@ namespace Qs.Runtime
 
         }
 
-        internal static object[] QsParametersToNativeValues(MethodInfo method, params QsParameter[] parameters)
-        {
-            List<object> NativeParameters = new List<object>();
-
-            int iy = 0;
-            ParameterInfo[] paramInfos = method.GetParameters();
-
-            foreach (var p in parameters)
-            {
-                if (p.QsNativeValue == null)
-                {
-                    NativeParameters.Add(null);
-                }
-                else if (p.QsNativeValue is QsScalar)
-                {
-                    var scalar = (QsScalar)p.QsNativeValue;
-                    object nativeValue = System.Convert.ChangeType(scalar.NumericalQuantity.Value, paramInfos[iy].ParameterType);
-                    NativeParameters.Add(nativeValue);
-                }
-                else if (p.QsNativeValue is QsText)
-                {
-                    NativeParameters.Add(((QsText)p.QsNativeValue).Text);
-                }
-                else if (p.QsNativeValue is QsVector)
-                {
-
-                    if (paramInfos[iy].ParameterType.IsArray)
-                    {
-
-                        QsVector vec = (QsVector)p.QsNativeValue;
-                        System.Type ArrayType = System.Type.GetType(paramInfos[iy].ParameterType.FullName.Trim('[', ']'));
-                        System.Array arr = System.Array.CreateInstance(ArrayType, vec.Count);
-                        for (int i = 0; i < vec.Count; i++)
-                        {
-                            object val = System.Convert.ChangeType(vec[i].NumericalQuantity.Value, ArrayType);
-                            arr.SetValue(val, i);
-                        }
-                        
-                        NativeParameters.Add(arr);
-                    }
-                    else
-                    {
-                        throw new QsException("The target parameter is not an array");
-                    }
-                }
-                else
-                {
-                    throw new QsException("Converting Qs values other than scalars to native function is not supported.");
-                }
-
-                iy++;
-
-            }
-
-            return NativeParameters.ToArray();
-        }
 
 
 
