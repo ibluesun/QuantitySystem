@@ -299,6 +299,21 @@ namespace Qs.Types
             return sb.ToString();
         }
 
+        public override string ToShortString()
+        {
+            StringBuilder sb = new StringBuilder();
+            string rankText = Order.ToString();
+            if (Order == 0) rankText += "th";
+            if (Order == 1) rankText += "st";
+            if (Order == 2) rankText += "nd";
+            if (Order == 3) rankText += "rd";
+            if (Order > 3) rankText += "th";
+
+            sb.Append("QsTensor: " + rankText + " Order");
+
+            return sb.ToString();
+        }
+
 
 
         #region This region for rotation of tensor 
@@ -306,5 +321,9 @@ namespace Qs.Types
         //  I mean tensor of rank 0 (looks like scalar)  will have no dimention to rotate around
         //  tensor of 2nd rank will have two dimension to rotate around
         #endregion
+    
+    
+    
+    
     }
 }

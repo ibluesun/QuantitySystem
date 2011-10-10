@@ -104,7 +104,7 @@ namespace ParticleLexer.QsTokens
     /// <summary>
     /// Reference token on the form WordToken, ColonToken  x:  oh:
     /// </summary>
-    [TokenPattern(RegexPattern = @":*\w+:")]
+    [TokenPattern(RegexPattern = @"(:*[a-zA-Z]+:)+", ContinueTestAfterSuccess = true)]   // when merging tokens if a success happen then continue merge until a failure happen or consume success as much as you can
     public class NameSpaceToken : TokenClass
     {
     }
@@ -112,11 +112,12 @@ namespace ParticleLexer.QsTokens
     /// <summary>
     /// Reference Namespace with its value  x:r   x:u  xd:Abs  x:r:t y:t:@e etc...
     /// </summary>
-    [TokenPattern(RegexPattern = @"(:*\w+:)+@?\w+")]
-    public class NameSpaceAndValueToken : TokenClass
+    [TokenPattern(RegexPattern = @"(:*[a-zA-Z]+:)+@?[a-zA-Z]+")]
+    public class NameSpaceAndVariableToken : TokenClass
     {
     }
 
+    
     /// <summary>
     /// Adding '@' before function name like @f(x)  return the function body
     /// </summary>
@@ -432,7 +433,7 @@ namespace ParticleLexer.QsTokens
                     if (
                         (
                               c.TokenClassType == typeof(WordToken)               // word token
-                           || c.TokenClassType == typeof(NameSpaceAndValueToken)  // or namespace:value token
+                           || c.TokenClassType == typeof(NameSpaceAndVariableToken)  // or namespace:value token
                         )
                         && ignoreWords.Contains(c.TokenValue, stringComparer) == false         // and the whole value is not in  the ignore words
                         )
@@ -626,7 +627,11 @@ namespace ParticleLexer.QsTokens
 
 
 
-
+        /// <summary>
+        /// Parse text between " TEXT "
+        /// </summary>
+        /// <param name="tokens"></param>
+        /// <returns></returns>
         public static Token DiscoverQsTextTokens(this Token tokens)
         {
 

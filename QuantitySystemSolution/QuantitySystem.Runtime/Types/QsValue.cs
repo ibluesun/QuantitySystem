@@ -198,9 +198,14 @@ namespace Qs.Types
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        virtual public QsValue ExclamationOperator(string key)
+        virtual public QsValue ExclamationOperator(QsValue key)
         {
             throw new QsException("Exclamation operator is not valid for " + this.GetType().ToString());
+        }
+
+        virtual public QsValue ColonOperator(QsValue value)
+        {
+            throw new QsException("Colon operator is not valid for " + this.GetType().ToString());
         }
         #endregion
 

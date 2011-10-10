@@ -61,3 +61,25 @@ gb = GearBox!FourthShift   #gb now holds a state of Flow instance in FourthShift
 Clock = ( One[1<h>], Two[2<h>], Three[3<h>], Four[4<h>], Five[5<h>], Six[6<h>], Seven[7<h>])
 
 
+I am changing the tuple syntax :)
+why ;) ??
+
+because I want to reach a syntax that resemble AJAX pattern and more compact :)
+let's see what we can do
+
+#normal tuple
+tuple = (3,2,1,5)
+
+#tuple that is also dictionary
+tuple = ( T!3<K>, R!90<L>, P!{32 2 1}, G![3 2 ; 2 4], L!<|2 3 ; 3 2| 3 4; 1 4|>, H!(3,4,1))
+
+#tuple that is dictionary with name and integer
+tuple = ( 3:T!400<K>, 500, 200, 20:RT!"Hello there", L!<|3 2 1 4|>);
+
+	
+# To access this tuple
+tuple[0] # by indexer
+tuple!T  # by key
+tuple:3  # by id
+
+

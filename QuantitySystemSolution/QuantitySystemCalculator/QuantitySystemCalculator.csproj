@@ -110,6 +110,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="AccumulatedTest.qs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="app.config" />
     <None Include="func.qs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

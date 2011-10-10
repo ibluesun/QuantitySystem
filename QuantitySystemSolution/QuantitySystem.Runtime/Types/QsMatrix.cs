@@ -569,6 +569,8 @@ namespace Qs.Types
 
         public override string ToShortString()
         {
+            return "Matrix";
+            /*
             StringBuilder sb = new StringBuilder();
 
             for (int IY = 0; IY < this.RowsCount; IY++)
@@ -588,6 +590,7 @@ namespace Qs.Types
             sb.Append("]");
 
             return sb.ToString();
+            */
         }
 
         #region Matrix Attributes

@@ -212,5 +212,12 @@ namespace Qs.Types
 
         #endregion
 
+
+
+        public override string ToShortString()
+        {
+            return "Vector";
+        }
+    
     }
 }
