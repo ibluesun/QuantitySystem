@@ -238,11 +238,11 @@ namespace Qs.Runtime
 
             // merge the namespaces.
             tokens = tokens.MergeTokens<NameSpaceToken>();
-            tokens = tokens.MergeTokens<NameSpaceAndValueToken>();
+            tokens = tokens.MergeTokens<NameSpaceAndVariableToken>();
 
             // manually merge function value and quantity into its namespace because it can't be done with regular expression
-            tokens = tokens.MergeSequenceTokens<NameSpaceAndValueToken>(typeof(NameSpaceToken), typeof(FunctionValueToken));
-            tokens = tokens.MergeSequenceTokens<NameSpaceAndValueToken>(typeof(NameSpaceToken), typeof(FunctionQuantityToken));
+            //tokens = tokens.MergeSequenceTokens<NameSpaceAndVariableToken>(typeof(NameSpaceToken), typeof(FunctionValueToken));
+            tokens = tokens.MergeSequenceTokens<NameSpaceAndVariableToken>(typeof(NameSpaceToken), typeof(FunctionQuantityToken));
 
 
             // Assemble '\''/' into \/ to form the nabla operator
@@ -260,7 +260,7 @@ namespace Qs.Runtime
             tokens = tokens.RemoveSpaceTokens();                           //remove all spaces
 
             tokens = tokens.DiscoverQsCalls(StringComparer.OrdinalIgnoreCase,
-                new string[] { "When", "Otherwise", "And", "Or" }
+                new string[] { "When", "Otherwise", "And", "Or" } 
                 );
 
             return ParseArithmatic(tokens);
@@ -276,7 +276,7 @@ namespace Qs.Runtime
         {
 
             // I remove the spaces here because the function called here sometimes have extra unneeded spaces
-            // one scenario is || {3 4 5} >> 1 ||  
+            // one scenario is _|| {3 4 5} >> 1 ||_  
             // the magnitude token will take the inner tokens as it is then send it for evaluation again.
 
             var tokens = toks.RemoveSpaceTokens();                           //remove all spaces
@@ -352,7 +352,7 @@ namespace Qs.Runtime
 
                         if (afterTok == null)
                             FactorialPostfix = true;
-                        else if (afterTok.TokenClassType == typeof(WordToken))
+                        else if (afterTok.TokenClassType == typeof(WordToken) || afterTok.TokenClassType == typeof(TextToken))  //either direct word or text i.e. o!word or o!"Word"
                             FactorialPostfix = false;
                         else
                             FactorialPostfix = true;
@@ -410,8 +410,7 @@ namespace Qs.Runtime
                     {
                         // take the inner tokens and send it to be parsed again.
                         quantityExpression = ParseArithmatic(x);
-                    }
-                    
+                    }                    
                 }
                 else if (tokens[ix].TokenClassType == typeof(UnitizedNumberToken))
                 {
@@ -503,6 +502,18 @@ namespace Qs.Runtime
                     };
 
                     quantityExpression = Expression.Constant(sf);
+                }
+                else if (tokens[ix].TokenClassType == typeof(NameSpaceToken))
+                {
+                    // ok this is something like  N:N:L:  
+                    // so we will extract the last
+                    op = ":";    // make colon an operation
+                    
+                    var mtk = tokens[ix].TrimEnd(typeof(ColonToken)); // removce the latest colon from the tokens.
+                    
+                    quantityExpression = GetQsVariable(mtk);
+
+                    --ix;   //decrease ix with one because operator was fused in this token.
                 }
                 else
                 {
@@ -611,9 +622,9 @@ namespace Qs.Runtime
                                 // previous operation were calling for object member
                                 quantityExpression = Expression.Constant(tokens[ix]);   // this is the name of the property 
                             }
-                            else if (eop.Operation == "!")
+                            else if (eop.Operation == "!" || eop.Operation == ":")
                             {
-                                quantityExpression = Expression.Constant(tokens[ix].TokenValue); // this is  the name after the exlamination mark
+                                quantityExpression = Expression.Constant(new QsText(tokens[ix].TokenValue));   
                             }
                             else
                             {
@@ -688,43 +699,81 @@ namespace Qs.Runtime
             List<Expression> ps = new List<Expression>();
 
             var tpvcp1 = typeof(QsTupleValue).GetConstructor(new Type[]{typeof(QsValue)});
+
             var tpvcp2 = typeof(QsTupleValue).GetConstructor(new Type[]{typeof(string), typeof(QsValue)});
+
             var tpvcp3 = typeof(QsTupleValue).GetConstructor(new Type[]{typeof(int), typeof(string), typeof(QsValue)});
 
-            foreach (Token t in x)
+            var tpvcp4 = typeof(QsTupleValue).GetConstructor(new Type[]{typeof(int), typeof(QsValue)});
+
+
+            /*
+                #normal tuple
+                tuple = (3,2,1,5)
+
+                #tuple that is also dictionary
+                tuple = ( T!3<K>, R!90<L>, P!{32 2 1}, G![3 2 ; 2 4], L!<|2 3 ; 3 2| 3 4; 1 4|>, H!(3,4,1))
+
+                #tuple that is dictionary with name and integer
+                tuple = ( 3:T!400<K>, 500, 200, 20:RT!"Hello there", 40:<|3|>)
+
+             */
+
+            var p = from pp in x.MergeAllBut<ParameterToken>(new CommaToken())
+                    where pp.TokenClassType != typeof(CommaToken)
+                    select pp;
+
+            foreach (Token t in p)
             {
                 Token be = new Token();
-                
-                if (t.TokenClassType == typeof(SequenceCallToken))
-                {
-                    string nm = t[0].TokenValue;
-                    if (t[1].Contains(typeof(CommaToken)))
-                    {
-                        // Name[id, value]   
-                        
-                        int i = int.Parse(t[1][1].TokenValue);
-                        
-                        var r = ParseArithmatic(t[1][3]);
 
-                        ps.Add(Expression.New(tpvcp3, Expression.Constant(i), Expression.Constant(nm), r));
+                bool NameExist = false;
+                bool IdExist = false;
 
-                    }
-                    else
-                    {
-                        //Name[value]
-                        
-                        var r = ParseArithmatic(t[1][1]);
-                        ps.Add(Expression.New(tpvcp2, Expression.Constant(nm), r));
-                    }
-                }
-                else if (t.TokenClassType != typeof(CommaToken))
+                if( t.Count(el => el.TokenClassType == typeof(ExclamationToken))>0) NameExist=true;
+                if( t.Count(el => el.TokenClassType == typeof(ColonToken))>0) IdExist=true;
+
+                if (NameExist && IdExist)
                 {
-                    be.AppendSubToken(t);
+                    // Integer-Id:Name!Value
+                    int i = int.Parse(t[0].TokenValue);
+                    string nm = t[2].TokenValue;
+
+                    be.AppendSubToken(t[4]);
                     var r = ParseArithmatic(be);
+
+                    ps.Add(Expression.New(tpvcp3, Expression.Constant(i), Expression.Constant(nm), r));
+                }
+                else if (NameExist)
+                {
+                    // Name!value
+                    string nm = t[0].TokenValue;
+
+                    be.AppendSubToken(t[2]);
+                    var r = ParseArithmatic(be);
+
+                    ps.Add(Expression.New(tpvcp2, Expression.Constant(nm), r));
+                }
+                else if (IdExist)
+                {
+                    // Integer-Id:value              which is clearly not namespace
+
+                    int i = int.Parse(t[0].TokenValue);
+                    be.AppendSubToken(t[2]);
+                    var r = ParseArithmatic(be);
+
+                    ps.Add(Expression.New(tpvcp4, Expression.Constant(i), r));
+                }
+                else
+                {
+                    
+                    var r = ParseArithmatic(t);
                     ps.Add(Expression.New(tpvcp1, r));
                 }
-                
+
+
             }
+
             var cp = typeof(QsFlowingTuple).GetConstructor(new Type[] { typeof(QsTupleValue[]) });
 
             return Expression.New(cp, Expression.NewArrayInit(typeof(QsTupleValue), ps.ToArray()));
@@ -2041,6 +2090,8 @@ namespace Qs.Runtime
 
             Type aqType = typeof(QsValue);
 
+            if (op == ":") return Expression.Call(left, aqType.GetMethod("ColonOperator"), right);
+
             if (op == "!") return Expression.Call(left, aqType.GetMethod("ExclamationOperator"), right);
 
             if (op == "->") return Expression.Call(left, aqType.GetMethod("Execute"), right);
@@ -2161,7 +2212,8 @@ namespace Qs.Runtime
                                "^x"   /* Power for cross product */,
                                ".."   /* Vector Range operator {from..to} */,
                                "->"   /* object member calling */,
-                               "!"    /* Exclamation operation */
+                               "!"    /* Exclamation operation */,
+                               ":"    /* colon operation*/
                              };
 
             string[] SymGroup = { "|" /* Derivation operator */};

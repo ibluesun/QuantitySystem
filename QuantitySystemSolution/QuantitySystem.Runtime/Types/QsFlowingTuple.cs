@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using PassiveFlow;
 using System.Diagnostics.Contracts;
+using ParticleLexer;
 
 namespace Qs.Types
 {
@@ -34,6 +35,13 @@ namespace Qs.Types
             Name = name;
             Value = value;
         }
+
+        public QsTupleValue(int id, QsValue value)
+        {
+            Id = id;
+            Name = string.Empty;
+            Value = value;
+        }
     }
 
     /// <summary>
@@ -47,12 +55,17 @@ namespace Qs.Types
 
         public QsFlowingTuple(params QsTupleValue[] values)
         {
-            int sid = 0;
+            // get the maximum id defined in the array 
+            // [to be the ground that will be increased whenever we find element without id]
+
+            int sid = values.Max(s => s.Id);  
+
             foreach (var v in values)
             {
                 if (v.Id == 0) sid += 10;
 
                 var st = ThisFlow.Add(v.Name, v.Id == 0 ? sid : v.Id);
+
                 st.Value = v.Value;
             }
 
@@ -241,9 +254,16 @@ namespace Qs.Types
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public override QsValue ExclamationOperator(string key)
+        public override QsValue ExclamationOperator(QsValue value)
         {
-            return (QsValue)ThisFlow[key].Value;
+            string vt = ((QsText)value).Text;
+            return (QsValue)ThisFlow[vt].Value;
+        }
+
+        public override QsValue ColonOperator(QsValue value)
+        {
+            int p = (int)((QsScalar)value).NumericalQuantity.Value;
+            return (QsValue)ThisFlow[p].Value;
         }
         
         /// <summary>

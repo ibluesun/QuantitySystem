@@ -1,3 +1,27 @@
+[Qs 1.2.25]
+- Tuple Syntax modified :)
+	#normal tuple
+	tuple = (3,2,1,5)
+
+	#tuple that is also dictionary
+	tuple = ( T!3<K>, R!90<L>, P!{32 2 1}, G![3 2 ; 2 4], L!<|2 3 ; 3 2| 3 4; 1 4|>, H!(3,4,1))
+
+	#tuple that is dictionary with name and integer
+	tuple = ( 3:T!400<K>, 500, 200, 20:RT!"Hello there", L!<|3 2 1 4|>);
+
+	so all variations are valid  number:key!value, number:value, name!value or values only
+
+	however the tuple should have two items minimum to be a tuple, {no meaning in tuple of single value}
+
+	it should be noted that automatic id is given to the items if not specified by increment of 10s over the largest id defined in the tuple
+
+- Tuple Access
+	Qs> tuple[0]   # indexer
+	Qs> tuple!T    # key
+	Qs> tuple:3    # id
+
+
+
 [Qs 1.2.2]
 - delete [variable]   added 
 	it means you can create instances and delete them like this
