@@ -179,7 +179,7 @@ namespace Qs.Types
             throw new NotImplementedException();
         }
 
-        public override QsValue GetIndexedItem(int[] indices)
+        public override QsValue GetIndexedItem(QsParameter[] indices)
         {
             throw new NotImplementedException();
         }

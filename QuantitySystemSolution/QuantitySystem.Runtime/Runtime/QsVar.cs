@@ -237,12 +237,13 @@ namespace Qs.Runtime
             tokens = tokens.MergeSequenceTokens<FunctionQuantityToken>(typeof(FunctionValueToken), typeof(UnitToken));
 
             // merge the namespaces.
-            tokens = tokens.MergeTokens<NameSpaceToken>();
+            tokens = tokens.MergeTokens<NamespaceToken>();
             tokens = tokens.MergeTokens<NameSpaceAndVariableToken>();
+            //tokens = tokens.MergeSequenceTokens<NameSpaceAndVariableToken>(typeof(NameSpaceToken), typeof(WordToken));
 
             // manually merge function value and quantity into its namespace because it can't be done with regular expression
             //tokens = tokens.MergeSequenceTokens<NameSpaceAndVariableToken>(typeof(NameSpaceToken), typeof(FunctionValueToken));
-            tokens = tokens.MergeSequenceTokens<NameSpaceAndVariableToken>(typeof(NameSpaceToken), typeof(FunctionQuantityToken));
+            tokens = tokens.MergeSequenceTokens<NameSpaceAndVariableToken>(typeof(NamespaceToken), typeof(FunctionQuantityToken));
 
 
             // Assemble '\''/' into \/ to form the nabla operator
@@ -291,7 +292,8 @@ namespace Qs.Runtime
             while (ix < tokens.Count)
             {
                 string q = tokens[ix].TokenValue;
-                string op = ix + 1 < tokens.Count ? tokens[ix + 1].TokenValue : string.Empty;
+
+                string OperatorTokenText = ix + 1 < tokens.Count ? tokens[ix + 1].TokenValue : string.Empty;
 
                 if (q == "+" || q == "-")
                 {
@@ -309,7 +311,7 @@ namespace Qs.Runtime
                         quantityExpression = Expression.Constant(QsScalar.MinusOne, typeof(QsValue));
                     }
 
-                    op = "_h*";
+                    OperatorTokenText = "_h*";
                     ix--;
                     goto ExpressionCompleted;
                     
@@ -319,7 +321,7 @@ namespace Qs.Runtime
                 {
                     // creating object
 
-                    op = string.Empty;
+                    OperatorTokenText = string.Empty;
                     ix++;
 
                     Type dt;
@@ -333,7 +335,7 @@ namespace Qs.Runtime
 
                 if (q.Equals("delete", StringComparison.OrdinalIgnoreCase))
                 {
-                    op = string.Empty;
+                    OperatorTokenText = string.Empty;
                     ix++;
 
                     quantityExpression = DeleteInstance(tokens[ix]);
@@ -342,9 +344,9 @@ namespace Qs.Runtime
                 }
 
                 bool FactorialPostfix = false;
-                if (!string.IsNullOrEmpty(op))
+                if (!string.IsNullOrEmpty(OperatorTokenText))
                 {
-                    if (op == "!")
+                    if (OperatorTokenText == "!")
                     {
                         // if the ! followed by Word then we want the  "operator !"  otherwise it is a normal factorial.
 
@@ -362,12 +364,13 @@ namespace Qs.Runtime
 
                 if(tokens[ix].TokenClassType == typeof(SequenceCallToken))
                 {
-                    quantityExpression = IndexerExpression(
-                        tokens[ix][0].TokenValue,
-                        tokens[ix][1],
-                        tokens[ix].Count > 2 ? tokens[ix][2] : null                   //if arguments exist we must include them   form  S[n](x,y,z)
-                        );
-
+                    
+                        quantityExpression = IndexerExpression(
+                            tokens[ix][0].TokenValue,
+                            tokens[ix][1],
+                            tokens[ix].Count > 2 ? tokens[ix][2] : null                   //if arguments exist we must include them   form  S[n](x,y,z)
+                            );
+                    
                 }
                 else if (tokens[ix].TokenClassType == typeof(ParenthesisCallToken))
                 {
@@ -503,11 +506,11 @@ namespace Qs.Runtime
 
                     quantityExpression = Expression.Constant(sf);
                 }
-                else if (tokens[ix].TokenClassType == typeof(NameSpaceToken))
+                else if (tokens[ix].TokenClassType == typeof(NamespaceToken))
                 {
                     // ok this is something like  N:N:L:  
                     // so we will extract the last
-                    op = ":";    // make colon an operation
+                    OperatorTokenText = ":";    // make colon an operation
                     
                     var mtk = tokens[ix].TrimEnd(typeof(ColonToken)); // removce the latest colon from the tokens.
                     
@@ -521,48 +524,8 @@ namespace Qs.Runtime
                     if (ParseMode == QsVarParseModes.Function)
                     {
                         #region Variable in Function Parsing
-                        //get it from the parameters of the lambda
-                        //  :) if it is found here then it will not be obtained from the global heap :)
-                        //      now I understand how variable scopes occure :D
 
-                        try
-                        {
-                            Expression eu = lambdaBuilder.Parameters.Single(c => c.Name.Equals(q, StringComparison.OrdinalIgnoreCase));
-
-
-                            // parameter is having quantity in normal cases
-                            Expression directQuantity = Expression.Property(eu, "QsNativeValue");
-
-                            // another expression for getting the quantity from the variable passed 
-                            //   this case only occure if I called a function declared like this   f(a) = a(5,3)+a
-                            //      because when calling f(u)  where u=50 and u(x,y)=x+y  then I want the evaluation to get the calculations right
-                            //      because 'a' alone is expressing single global variable.
-
-
-
-                            Expression indirectQuantity = Expression.Call(
-                                                    eu,
-                                                    typeof(QsParameter).GetMethod("GetIndirectQuantity"),
-                                                    Expression.Constant(Scope)
-                                                    );
-
-                            //if the quantity in parameter == null then get it as indirect quantity from the scope of the variables
-
-                            quantityExpression = Expression.Condition(
-                                Expression.Equal(directQuantity, Expression.Constant(null)),
-                                indirectQuantity,
-                                directQuantity
-                            );
-
-                        }
-                        catch (Exception e)
-                        {
-                            System.Diagnostics.Debug.Print(e.ToString());
-
-                            //quantity variable  //get it from evaluator  global heap
-                            //quantityExpression = GetVariable(q);
-                            throw new QsParameterNotFoundException(q);
-                        }
+                        quantityExpression = GetFunctionParameter(q);
                         #endregion
                     }
                     else if (ParseMode == QsVarParseModes.Sequence)
@@ -615,6 +578,7 @@ namespace Qs.Runtime
                     }
                     else
                     {
+                        #region variable in main context
                         if (eop != null)
                         {
                             if (eop.Operation == "->")
@@ -637,22 +601,43 @@ namespace Qs.Runtime
                             //quantity variable  //get it from evaluator  global heap
                             quantityExpression = GetQsVariable(tokens[ix]);
                         }
-
+                        #endregion
                     }
 
                 }
 
-                //apply the postfix here
-
+                // Apply the postfix here
                 if (FactorialPostfix)
                 {
                     quantityExpression = Expression.Call(typeof(QsGamma).GetMethod("Factorial"), quantityExpression);
 
                     //get the next operator.
                     ix++;
-                    op = ix + 1 < tokens.Count ? tokens[ix + 1].TokenValue : string.Empty;
+                    OperatorTokenText = ix + 1 < tokens.Count ? tokens[ix + 1].TokenValue : string.Empty;
 
                     FactorialPostfix = false;
+                }
+
+            ConsumeOtherBrackets:
+                if (ix + 1 < tokens.Count)
+                {
+                    if (tokens[ix + 1].TokenClassType == typeof(SquareBracketsGroupToken))
+                    {
+                        // call indexer here
+                        //int iix = int.Parse(tokens[ix+1][1].TokenValue);
+                        //var iia = Expression.NewArrayInit(typeof(int), Expression.Constant(iix));
+
+                        //quantityExpression = Expression.Call(quantityExpression, typeof(QsValue).GetMethod("GetIndexedItem"), iia);
+
+                        quantityExpression = ValueIndexExpression(quantityExpression, tokens[ix + 1]);
+
+                        //get the next operator
+                        ix++;
+
+                        OperatorTokenText = ix + 1 < tokens.Count ? tokens[ix + 1].TokenValue : string.Empty;
+
+                        goto ConsumeOtherBrackets;    //because their might be other indexers tokens i don't know about.
+                    }
                 }
                 
             ExpressionCompleted:
@@ -670,7 +655,7 @@ namespace Qs.Runtime
                     eop = eop.Next;
                 }
 
-                eop.Operation = op;
+                eop.Operation = OperatorTokenText;
                 eop.QuantityExpression = quantityExpression;
 
                 ix += 2;
@@ -824,7 +809,7 @@ namespace Qs.Runtime
 
             if (discoveredType == null) discoveredType = Root.GetExternalType(cls);
 
-            if (discoveredType == null) throw new QsException("There is no such type.");
+            if (discoveredType == null) throw new QsException(string.Format("[{0}] type doesn't exist.", cls));
 
             if (args.Length == 0)
             {
@@ -1480,10 +1465,27 @@ namespace Qs.Runtime
                 string valName = valueName.Substring(valueName.LastIndexOf(':') + 1);
 
                 QsValue value = QsEvaluator.GetScopeValueOrNull(this.Scope, ns, valName) as QsValue;
-                if (value == null)
+                if (value == null )
                 {
-                    // value is null then it is difinitely  a sequence
+                    // null value means that there is currently no qsvalue with the same name of the global code context
+                    // it means we need a sequence call
+                    // however if we are in a function mode, we will have two conditions
+                    //   either the required valueName is inside the parameter list of the function (which means we are passing the value)
+                    //   or it doesn't exist so we take it 
+                    if (ParseMode == QsVarParseModes.Function)
+                    {
+                        int occ = this.Function.ParametersNames.Count(s => s.Equals(valueName, StringComparison.OrdinalIgnoreCase));
+                        if (occ > 0)
+                        {
+                            // parameter exist
+                            return ValueIndexExpression(GetFunctionParameter(valueName), indexes);
+                        }
+                    }
+                    
+                    // we are in global code context  
+                    //   or we didn't find the variable name in the parameters list of the function
                     return SequenceCallExpression(valueName, indexes, args);
+                    
                 }
                 else
                 {
@@ -1518,20 +1520,64 @@ namespace Qs.Runtime
 
             MethodInfo mi =  typeof(QsValue).GetMethod("GetIndexedItem");
 
-            int[] parameters = new int[Tokens.Count];
+            Expression[] ExpressionParameters = new Expression[Tokens.Count];
+
+            var mpm = typeof(QsParameter).GetMethod("MakeParameter");
 
             for (int ix = 0; ix < Tokens.Count; ix++)
             {
-                parameters[ix] = int.Parse(Tokens[ix].TokenValue);
+                var t = Tokens[ix].TokenClassType == typeof(MergedToken) ? Tokens[ix][0] : Tokens[ix];
+
+                var vp = ParseArithmatic(t);
+
+                ExpressionParameters[ix] = Expression.Call(
+                            mpm,
+                            vp,                                                                       //Evaluated value.
+                            Expression.Constant(Tokens[ix].TokenValue)                                //Raw Value
+                            );
             }
 
             Expression result = Expression.Call(Expression.Constant(value),
                 mi,
-                Expression.Constant(parameters));
+                Expression.NewArrayInit(typeof(QsParameter), ExpressionParameters));
 
             return result;
 
         }
+
+        public Expression ValueIndexExpression(Expression value, Token indexes)
+        {
+
+            var Tokens = indexes.TrimStart<LeftSquareBracketToken>().TrimEnd<RightSquareBracketToken>();
+            Tokens = Tokens.MergeAllBut<MergedToken>(new CommaToken()).RemoveTokens(typeof(CommaToken));
+
+            MethodInfo mi = typeof(QsValue).GetMethod("GetIndexedItem");
+
+            Expression[] ExpressionParameters = new Expression[Tokens.Count];
+
+            var mpm = typeof(QsParameter).GetMethod("MakeParameter");
+
+            for (int ix = 0; ix < Tokens.Count; ix++)
+            {
+                var t = Tokens[ix].TokenClassType == typeof(MergedToken) ? Tokens[ix][0] : Tokens[ix];
+
+                var vp = ParseArithmatic(t);
+
+                ExpressionParameters[ix] = Expression.Call(
+                            mpm,
+                            vp,                                                                       //Evaluated value.
+                            Expression.Constant(Tokens[ix].TokenValue)                                //Raw Value
+                            );
+            }
+
+            Expression result = Expression.Call(value,
+                mi,
+                Expression.NewArrayInit(typeof(QsParameter), ExpressionParameters));
+
+            return result;
+
+        }
+
 
         
 
@@ -2068,6 +2114,60 @@ namespace Qs.Runtime
 
                 throw new QsFunctionNotFoundException(functionName + " Can't be found.");
 
+            }
+
+        }
+
+
+
+        /// <summary>
+        /// Get the parameter expression when parsing in function mode
+        /// </summary>
+        /// <param name="parameterName"></param>
+        /// <returns></returns>
+        Expression GetFunctionParameter(string parameterName)
+        {
+            //get it from the parameters of the lambda
+            //  :) if it is found here then it will not be obtained from the global heap :)
+            //      now I understand how variable scopes occure :D
+
+            try
+            {
+                Expression eu = lambdaBuilder.Parameters.Single(c => c.Name.Equals(parameterName, StringComparison.OrdinalIgnoreCase));
+
+
+                // parameter is having quantity in normal cases
+                Expression directQuantity = Expression.Property(eu, "QsNativeValue");
+
+                // another expression for getting the quantity from the variable passed 
+                //   this case only occure if I called a function declared like this   f(a) = a(5,3)+a
+                //      because when calling f(u)  where u=50 and u(x,y)=x+y  then I want the evaluation to get the calculations right
+                //      because 'a' alone is expressing single global variable.
+
+
+
+                Expression indirectQuantity = Expression.Call(
+                                        eu,
+                                        typeof(QsParameter).GetMethod("GetIndirectQuantity"),
+                                        Expression.Constant(Scope)
+                                        );
+
+                //if the quantity in parameter == null then get it as indirect quantity from the scope of the variables
+
+                return Expression.Condition(
+                    Expression.Equal(directQuantity, Expression.Constant(null)),
+                    indirectQuantity,
+                    directQuantity
+                );
+
+            }
+            catch (Exception e)
+            {
+                System.Diagnostics.Debug.Print(e.ToString());
+
+                //quantity variable  //get it from evaluator  global heap
+                //quantityExpression = GetVariable(q);
+                throw new QsParameterNotFoundException(parameterName);
             }
 
         }

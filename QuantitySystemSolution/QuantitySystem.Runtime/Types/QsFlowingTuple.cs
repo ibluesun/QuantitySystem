@@ -243,9 +243,19 @@ namespace Qs.Types
             
         }
 
-        public override QsValue GetIndexedItem(int[] indices)
+        public override QsValue GetIndexedItem(QsParameter[] indices)
         {
-            return (QsValue)ThisFlow.FlowSteps[indices[0]].Value;
+            var t = indices[0].QsNativeValue as QsText;
+            if (t!=null)
+            {
+                Flow FlowStateMachine = ThisFlow[t.Text];
+                return QsObject.CreateNativeObject(FlowStateMachine);
+            }
+            else
+            {
+                int ix = (int)((QsScalar)indices[0].QsNativeValue).NumericalQuantity.Value;
+                return (QsValue)ThisFlow.FlowSteps[ix].Value;
+            }
         }
 
 

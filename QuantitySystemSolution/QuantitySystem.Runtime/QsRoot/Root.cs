@@ -156,6 +156,8 @@ namespace QsRoot
             // the last thing is to return object from this type
             if (!vType.IsValueType) return QsObject.CreateNativeObject(value);
 
+            
+
             throw new QsException(vType + " doesn't have corresponding type in Quantity System");
         }
 

@@ -1,3 +1,71 @@
+[Qs 1.2.3]
+- Fixed  Intermediate operation  when calling   dp(fx,n) = @|$x^n * fx
+   the operations were cached and accumulated {fixed by copying it}
+
+- Fixed that when dividing function over numerical scalar generated from inner operation in QsFunction.FOperation
+    however its hard to say :) just check it
+
+- fixed the cross product of two vectors to produce Area
+
+- indexing now detect index operator for functions or sequences that return types that has inner elements
+   which mean if you define a tensor like following code
+   
+		a = {4 3 2}
+		b = {3 2 7}
+		c = {5 3 1}
+		T3 = <| a;b;c | b;c;a | c;a;b |>
+	you can access the inner value  with this valid expression
+
+	T3[1][1][1]   # returns 3
+
+- Fixed tokenization error when merging namespace:word  to be able to only merge names that begins with letters and leave numbers as it is
+
+
+- calling the function by its scalar representation
+
+	f(x) = x^4
+	@f[4]  # is a valid expression and returns the f(4) value
+
+	(@F|$x)[4] #  returns result of _(x)= 4*x^3    
+
+	let us try something funny :)
+
+	Qs> g[n](f,v) ..>  (f|$x^n)[v]   #the series differentiate the function over n and calculate the value of it
+	Qs> u(x) = x^5
+	Qs> g[0..10](@u,4)          # returns vector of 10 values based on the sequence declaration above
+
+	now also this adds another form of passing the function to another function
+	let's review the forward differeniation 
+
+	Qs> df(f,x,h) = (f(x+h)-f(x))/h
+	Qs> df(u,3,0.5)
+
+	now we can write it as follows
+
+	Qs> dg(g,x,h) = (g[x+h]-g[x])/h
+	Qs> dg(@u,3,0.5)
+
+
+- Indexing Tuple with text index returns the instance of State Machine
+     GearBox = (ReverseShift!(-1), Neutral!0, FirstShift!1, SecondShift!2, ThirdShift!3, FourthShift!4, FifthSift!5)
+     GearBox!Neutral             # returns value of hash
+	 g = GearBox["Neutral"]      # returns state machine
+
+	 g->StepForward()            # put g on the FirstShift
+	 g->StepLast()				 # put g on the FifthShift
+	 g->StepBack()               # put g on the FourthShift
+	 g->StepFirst()              # put g on the ReverseShift
+
+	 I intended to put the state machine implementation in Qs because I thought I will find something useful for it in future.  ## stay tuned ;)
+
+
+- vectors, and matrices can be treated as objects  (simple actually)
+  {3  5 6 2} -> length
+  [4 5; 4 5] -> Identity    or  []->Tranapose()         
+  Other functions will be added as needed.
+
+
+
 [Qs 1.2.25]
 - Tuple Syntax modified :)
 	#normal tuple
@@ -19,6 +87,7 @@
 	Qs> tuple[0]   # indexer
 	Qs> tuple!T    # key
 	Qs> tuple:3    # id
+
 
 
 
@@ -54,8 +123,6 @@
 R.I.P Steve Jobs 
 
 
-
-
 [Qs 1.2.1]
 - Rational Number  Q{1 2} == 1/2 == 0.5  but in rational format has been added.
 - support to multiple inner namespaces like  p:g:j=30
@@ -73,6 +140,7 @@ R.I.P Steve Jobs
 - Ability to create instance of .net classes (Qs now try to map the class public properties between native and qs types)
 - I already added a library to draw simple and I mean simple circle on screen.
    please refer to the demo.qs in the executable folder.
+
 
 [Quantity System Framework 1.2]
 	- Fixed accumulating metric prefixes problem that 1<m/s> * 1<s/m> ==  2<1>   which is wrong ofcourse

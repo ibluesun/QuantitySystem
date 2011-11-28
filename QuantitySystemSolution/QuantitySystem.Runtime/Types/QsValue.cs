@@ -180,7 +180,7 @@ namespace Qs.Types
         /// </summary>
         /// <param name="indexes"></param>
         /// <returns></returns>
-        abstract public QsValue GetIndexedItem(int[] indices);
+        abstract public QsValue GetIndexedItem(QsParameter[] indices);
 
 
         /// <summary>

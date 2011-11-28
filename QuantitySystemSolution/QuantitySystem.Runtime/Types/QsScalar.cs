@@ -223,40 +223,50 @@ namespace Qs.Types
         /// <returns></returns>
         public string ToExpressionParsableString()
         {
+            string rv = string.Empty;
+
             switch (_ScalarType)
             {
                 case ScalarTypes.NumericalQuantity:
-                    return NumericalQuantity.ToShortString();
+                    rv =  NumericalQuantity.ToShortString();
+                    break;
 
                 case ScalarTypes.ComplexNumberQuantity:  // return C{Real, Imaginary}
-                    return "C{" + ComplexQuantity.Value.Real.ToString(CultureInfo.InvariantCulture) + ", " + ComplexQuantity.Value.Imaginary.ToString(CultureInfo.InvariantCulture) + "}" + this.ComplexQuantity.UnitText;
+                    rv =  "C{" + ComplexQuantity.Value.Real.ToString(CultureInfo.InvariantCulture) + ", " 
+                        + ComplexQuantity.Value.Imaginary.ToString(CultureInfo.InvariantCulture) + "}" 
+                        + this.ComplexQuantity.UnitText;
+                    break;
 
                 case ScalarTypes.QuaternionNumberQuantity: // return H{a, b, c, d}
-                    return "H{" + QuaternionQuantity.Value.Real.ToString(CultureInfo.InvariantCulture) + ", "
+                    rv =  "H{" + QuaternionQuantity.Value.Real.ToString(CultureInfo.InvariantCulture) + ", "
                         + QuaternionQuantity.Value.i.ToString(CultureInfo.InvariantCulture) + ", "
                         + QuaternionQuantity.Value.j.ToString(CultureInfo.InvariantCulture) + ", "
                         + QuaternionQuantity.Value.k.ToString(CultureInfo.InvariantCulture) + "}"
                         + this.QuaternionQuantity.UnitText;
+                    break;
 
                 case ScalarTypes.SymbolicQuantity: // return symbolic quantity into parsable format 
-                    {
-                        //add $ before any symbol
-                        string sq = SymbolicQuantity.Value.ToString();
-                        foreach (string sym in SymbolicQuantity.Value.InvolvedSymbols)
-                            sq = sq.Replace(sym, "$" + sym);
-                        return sq + SymbolicQuantity.UnitText;
-                        
-                    }
+                    //add $ before any symbol
+                    string sq = SymbolicQuantity.Value.ToString();
+                    foreach (string sym in SymbolicQuantity.Value.InvolvedSymbols)
+                        sq = sq.Replace(sym, "$" + sym);
+                    rv =  sq + SymbolicQuantity.UnitText;
+                    break;
+
                 case ScalarTypes.FunctionQuantity:    // return the body of the function
-                    {
-                        return FunctionQuantity.Value.SymbolicBodyText;
-                    }
+                    rv = FunctionQuantity.Value.SymbolicBodyText;
+                    break;
                 case ScalarTypes.RationalNumberQuantity:  // return Q{a, b}
-                    return "Q{" + this.RationalQuantity.Value.num.ToString(CultureInfo.InvariantCulture) + ", "
-                        + this.RationalQuantity.Value.den.ToString(CultureInfo.InvariantCulture) + "}";
+                    rv = "Q{" + this.RationalQuantity.Value.num.ToString(CultureInfo.InvariantCulture) + ", "
+                        + this.RationalQuantity.Value.den.ToString(CultureInfo.InvariantCulture) + "}"
+                        + this.RationalQuantity.UnitText;
+                    break;
                 default:
                     throw new NotImplementedException(_ScalarType.ToString() + " ToExpression String is not implemented yet");
             }
+
+            if (rv.EndsWith("<1>")) return rv.Substring(0, rv.Length - 3);
+            else return rv;
 
         }
 
@@ -900,7 +910,10 @@ namespace Qs.Types
                         }
 
                 case ScalarTypes.QsOperation:
-                        return (QsScalar)this.Operation.DifferentiateOperation(scalar);
+                        {
+                            var o = (QsScalar)this.Clone();
+                            return (QsScalar)o.Operation.DifferentiateOperation(scalar);
+                        }
                 default:
                         throw new NotImplementedException(_ScalarType.ToString() + " | " + scalar.ScalarType.ToString());
             }
@@ -1623,9 +1636,30 @@ namespace Qs.Types
 
         #endregion
 
-        public override QsValue GetIndexedItem(int[] indices)
+        public override QsValue GetIndexedItem(QsParameter[] indices)
         {
-            throw new NotImplementedException();
+            // I am adding new feature here that
+            //  I can execute the function if it was as a scalar value of function type.
+            //  which means if f(x) = x^2
+            //  you can call the function   as      f(3)
+            //  or better you can call it  as  @f[3]
+            // -------------
+            //  why I am doing this  ??
+            //   because I was  want to be able to call the function directly after differentiating it
+            //   @f|$x[3]   
+            //  why I didn't use  normal brackets??
+            //   because it is reserved to know the function itself by parameters (as I have overloaded functions by parameter names) not types
+            //   @f(x,y)  !=  @f(u,v)    etc.
+
+
+            if (this._ScalarType == ScalarTypes.FunctionQuantity)
+            {
+                return this.FunctionQuantity.Value.InvokeByQsParameters(indices);
+            }
+            else
+            {
+                throw new QsException(string.Format("Indexer is not implemented for Scalar type {0}", _ScalarType.ToString()));
+            }
         }
 
         #region ICloneable Members

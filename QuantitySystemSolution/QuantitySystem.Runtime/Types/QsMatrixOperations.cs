@@ -632,9 +632,11 @@ namespace Qs.Types
         /// </summary>
         /// <param name="indices"></param>
         /// <returns></returns>
-        public override QsValue GetIndexedItem(int[] indices)
+        public override QsValue GetIndexedItem(QsParameter[] allIndices)
         {
-            
+            int[] indices = new int[allIndices.Length];
+            for (int ix = 0; ix < indices.Length; ix++) indices[ix] = (int)((QsScalar)allIndices[ix].QsNativeValue).NumericalQuantity.Value;                
+
             int icount = indices.Count();
             if (icount == 2)
             {
@@ -679,6 +681,23 @@ namespace Qs.Types
             {
                 return base.DifferentiateOperation(value);
             }
+        }
+
+
+
+
+        public override QsValue Execute(ParticleLexer.Token expression)
+        {
+            string operation = expression.TokenValue;
+
+            if (operation.Equals("Transpose()", StringComparison.OrdinalIgnoreCase))
+                return this.Transpose();
+
+            if (operation.Equals("Identity", StringComparison.OrdinalIgnoreCase))
+                return this.Identity;
+
+
+            return base.Execute(expression);
         }
     }
 }

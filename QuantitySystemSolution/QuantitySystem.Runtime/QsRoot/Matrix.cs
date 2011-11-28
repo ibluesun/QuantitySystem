@@ -11,6 +11,12 @@ namespace QsRoot
     public static class Matrix
     {
 
+        public static QsMatrix Identity(int diagonal)
+        {
+
+            return QsMatrix.MakeIdentity(diagonal);
+        }
+
         public static QsValue Transpose(QsParameter matrix)
         {
             if (matrix.QsNativeValue is QsMatrix)

@@ -455,9 +455,9 @@ namespace Qs.Runtime
                         seq = seq.MergeTokens<WordToken>();
                         seq = seq.MergeTokens<ColonToken>();
                         seq = seq.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
-                        seq = seq.MergeTokens<NameSpaceToken>(); //discover namespace tokens
+                        seq = seq.MergeTokens<NamespaceToken>(); //discover namespace tokens
                         
-                        if (seq[0].TokenClassType == typeof(NameSpaceToken))
+                        if (seq[0].TokenClassType == typeof(NamespaceToken))
                         {
                             nsidx = 1; //the function begin with namespace.
                             seqNamespace = seq[0][0].TokenValue;
@@ -615,10 +615,10 @@ namespace Qs.Runtime
                             vnToken = vnToken.RemoveSpaceTokens();
                             vnToken = vnToken.MergeTokens<WordToken>();
                             vnToken = vnToken.MergeTokens<ColonToken>();
-                            vnToken = vnToken.MergeTokens<NameSpaceToken>();
+                            vnToken = vnToken.MergeTokens<NamespaceToken>();
                             vnToken = vnToken.MergeSequenceTokens<WordToken>(typeof(AtSignToken), typeof(WordToken));
 
-                            if (vnToken.Contains(typeof(NameSpaceToken)))
+                            if (vnToken.Contains(typeof(NamespaceToken)))
                             {
                                 var qvResult = qv.Execute();
                                 if (qvResult is QsFunction)

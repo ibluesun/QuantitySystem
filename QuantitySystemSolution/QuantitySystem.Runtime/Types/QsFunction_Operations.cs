@@ -181,7 +181,12 @@ namespace Qs.Types
                 fbody += " " + operation + svl.ToExpressionParsableString();
                 
                 QsScalar fb = (QsScalar)QsEvaluator.CurrentEvaluator.SilentEvaluate(fbody);
-                string FuncBody = fb.SymbolicQuantity.Value.ToString().Replace("__FAC__", "!");
+
+                string FuncBody = string.Empty;
+                if(fb.ScalarType == ScalarTypes.SymbolicQuantity)
+                    FuncBody = fb.SymbolicQuantity.Value.ToString().Replace("__FAC__", "!");
+                else
+                    FuncBody = fb.ToExpressionParsableString();
 
                 string[] functionParametersArray = this.ParametersNames; // this is the available parameters for the original function.
 
@@ -359,7 +364,7 @@ namespace Qs.Types
             throw new NotImplementedException();
         }
 
-        public override QsValue GetIndexedItem(int[] indices)
+        public override QsValue GetIndexedItem(QsParameter[] indices)
         {
             throw new NotImplementedException();
         }

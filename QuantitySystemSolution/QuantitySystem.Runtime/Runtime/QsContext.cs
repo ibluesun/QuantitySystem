@@ -10,7 +10,7 @@ namespace Qs.Runtime
 {
     public sealed class QsContext : LanguageContext
     {
-
+        
         QsBinder _binder;
 
         public QsContext(ScriptDomainManager manager, IDictionary<string, object> options)
@@ -52,7 +52,7 @@ namespace Qs.Runtime
         {
             get
             {
-                return new Version(0, 1);
+                return new Version(1, 2, 3);
             }
         }
     }
@@ -84,10 +84,6 @@ namespace Qs.Runtime
             {
                 return target.Clone(Expression.Constant(0, typeof(int)));
             }
-
-            
-            
-            
         }
     }
 }

@@ -265,57 +265,12 @@ namespace Qs.Types
         {
             if (this.Count != v2.Count) throw new QsException("Vectors are not equal");
 
+            // cross product as determinant of matrix.
 
-            QsVector units = new QsVector(this.Count);
-            QsVector a = new QsVector(this.Count);
-            QsVector b = new QsVector(v2.Count);
-
-            for (int i = 0; i < this.Count; i++)
-            {
-                // first row is the units.
-                var utou = this[i].Unit.PathToUnit(v2[i].Unit).ConversionFactor; //the units may be different but the quantities are the same.
-                Unit u = (Unit)this[i].Unit.Clone();
-
-                // unit with the conversion factor
-                units.AddComponent(new QsScalar { NumericalQuantity = u.GetThisUnitQuantity<double>(utou) });
-
-                // second row is first vector
-
-                //take the value of the quantity and convert it to dimensionless value.
-                switch (this[i].ScalarType)
-                {
-                    case ScalarTypes.NumericalQuantity:
-                        a.AddComponent(new QsScalar { NumericalQuantity = this[i].NumericalQuantity.Value.ToQuantity() });
-                        break;
-                    case ScalarTypes.SymbolicQuantity:
-                        a.AddComponent(new QsScalar( ScalarTypes.SymbolicQuantity) { SymbolicQuantity = this[i].SymbolicQuantity.Value.ToQuantity()});
-                        break;
-                    case ScalarTypes.QsOperation:
-                        a.AddComponent((QsScalar)this[i].Clone());
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
-
-                // third row is the second vector
-                switch (v2[i].ScalarType)
-                {
-                    case ScalarTypes.NumericalQuantity:
-                        b.AddComponent(new QsScalar { NumericalQuantity = v2[i].NumericalQuantity.Value.ToQuantity() });
-                        break;
-                    case ScalarTypes.SymbolicQuantity:
-                        b.AddComponent(new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = v2[i].SymbolicQuantity.Value.ToQuantity() });
-                        break;
-                    case ScalarTypes.QsOperation:
-                        b.AddComponent((QsScalar)v2[i].Clone());
-                        break;
-                    default:
-                        throw new NotImplementedException();
-                }
-
-            }
-
-            QsMatrix mat = new QsMatrix(units, a, b);
+            QsMatrix mat = new QsMatrix(
+                new QsVector(QsScalar.One, QsScalar.One, QsScalar.One)
+                , this
+                , v2);
 
             return mat.Determinant();
 
@@ -827,11 +782,28 @@ namespace Qs.Types
             }
         }
 
-        public override QsValue GetIndexedItem(int[] indices)
+        public override QsValue GetIndexedItem(QsParameter[] allIndices)
         {
-            if (indices.Count() > 1) throw new QsException("Vector have one index only");
+            if (allIndices.Count() > 1) throw new QsException("Vector have one index only");
+            int[] indices = new int[allIndices.Length];
+            for (int ix = 0; ix < indices.Length; ix++) indices[ix] = (int)((QsScalar)allIndices[ix].QsNativeValue).NumericalQuantity.Value;                
             int index = indices[0];
             return ListStorage[index];
+        }
+
+
+        /// <summary>
+        /// Some operations on the vector.
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public override QsValue Execute(ParticleLexer.Token expression)
+        {
+            if (expression.TokenValue.Equals("length", StringComparison.OrdinalIgnoreCase))
+                return this.Count.ToScalarValue();
+
+            return base.Execute(expression);
+
         }
     }
 }
