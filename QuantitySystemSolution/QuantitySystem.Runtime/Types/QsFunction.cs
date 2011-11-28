@@ -522,7 +522,7 @@ namespace Qs.Types
             functionToken = functionToken.MergeTokens<UnitizedNumberToken>();
 
             //merge namespace  word+':'  but in multiple namespaces it makes them separate
-            functionToken = functionToken.MergeTokens<NameSpaceToken>();
+            functionToken = functionToken.MergeTokens<NamespaceToken>();
 
             functionToken = functionToken.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
             functionToken = functionToken.RemoveSpaceTokens();
@@ -571,7 +571,7 @@ namespace Qs.Types
             string functionNamespace = "";
             foreach (var tok in functionToken)
             {
-                if (tok.TokenClassType == typeof(NameSpaceToken))
+                if (tok.TokenClassType == typeof(NamespaceToken))
                 {
                     nsidx++;
                     functionNamespace += tok.TokenValue;

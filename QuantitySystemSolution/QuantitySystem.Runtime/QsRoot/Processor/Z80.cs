@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+
+using Qs;
 using Qs.Types;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
@@ -9,6 +11,10 @@ using QuantitySystem.Units;
 namespace QsRoot.Processor
 {
     
+    /// <summary>
+    /// Z80 Class is for testing purposes only
+    /// there are no important thing here
+    /// </summary>
     public class Z80
     {
 
@@ -60,7 +66,13 @@ namespace QsRoot.Processor
         {
             return all.Sum();
         }
-        
-        
+
+
+        public static Z80 LoadPC(int step)
+        {
+            var z = new Z80();
+            z.PC = ((double)step).ToQuantity().ToScalar();
+            return z;
+        }
     }
 }

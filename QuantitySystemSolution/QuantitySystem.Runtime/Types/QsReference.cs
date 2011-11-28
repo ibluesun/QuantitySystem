@@ -169,7 +169,7 @@ namespace Qs.Types
             return ContentValue.LeftShiftOperation(times);
         }
 
-        public override QsValue GetIndexedItem(int[] indices)
+        public override QsValue GetIndexedItem(QsParameter[] indices)
         {
             return ContentValue.GetIndexedItem(indices);
         }

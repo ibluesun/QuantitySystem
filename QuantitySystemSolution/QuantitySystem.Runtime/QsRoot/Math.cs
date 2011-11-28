@@ -9,14 +9,25 @@ using Qs;
 using QuantitySystem.Units;
 using QuantitySystem.Units.Metric.SI;
 using QuantitySystem.Quantities.DimensionlessQuantities;
+using System.Diagnostics.Contracts;
 
 namespace QsRoot
 {
     public static class Math
     {
 
-        static Angle<double> zAngle = (Angle<double>)Unit.ParseQuantity("0<rad>");
+        static Angle<double> ZeroAngle = (Angle<double>)Unit.ParseQuantity("0<rad>");
 
+
+        #region Constants
+        public static QsValue PI
+        {
+            get
+            {
+                return System.Math.PI.ToQuantity().ToScalarValue();
+            }
+        }
+        #endregion
 
         #region Functions
         public static QsValue Sinh(QsParameter val)
@@ -29,7 +40,7 @@ namespace QsRoot
 
                     if (q.Dimension.IsDimensionless)
                     {
-                        double r = System.Math.Sinh((zAngle + q).Value);
+                        double r = System.Math.Sinh((ZeroAngle + q).Value);
                         return r.ToQuantity().ToScalarValue();
                     }
                     else
@@ -47,7 +58,7 @@ namespace QsRoot
                     {
                         if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Sinh((zAngle + var.NumericalQuantity).Value);
+                            double r = System.Math.Sinh((ZeroAngle + var.NumericalQuantity).Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -92,7 +103,7 @@ namespace QsRoot
 
                     if (q.Dimension.IsDimensionless)
                     {
-                        double r = System.Math.Cosh((zAngle + q).Value);
+                        double r = System.Math.Cosh((ZeroAngle + q).Value);
                         return r.ToQuantity().ToScalarValue();
                     }
                     else
@@ -110,7 +121,7 @@ namespace QsRoot
                     {
                         if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Cosh((zAngle + var.NumericalQuantity).Value);
+                            double r = System.Math.Cosh((ZeroAngle + var.NumericalQuantity).Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -156,7 +167,7 @@ namespace QsRoot
 
                     if (q.Dimension.IsDimensionless)
                     {
-                        double r = System.Math.Sin((zAngle + q).Value);
+                        double r = System.Math.Sin((ZeroAngle + q).Value);
                         return r.ToQuantity().ToScalarValue();
                     }
                     else
@@ -174,7 +185,7 @@ namespace QsRoot
                     {
                         if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Sin((zAngle + var.NumericalQuantity).Value);
+                            double r = System.Math.Sin((ZeroAngle + var.NumericalQuantity).Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -219,7 +230,7 @@ namespace QsRoot
 
                     if (q.Dimension.IsDimensionless)
                     {
-                        double r = System.Math.Cos((zAngle + q).Value);
+                        double r = System.Math.Cos((ZeroAngle + q).Value);
                         return r.ToQuantity().ToScalarValue();
                     }
                     else
@@ -237,7 +248,7 @@ namespace QsRoot
                     {
                         if (var.NumericalQuantity.Dimension.IsDimensionless)
                         {
-                            double r = System.Math.Cos((zAngle+var.NumericalQuantity).Value);
+                            double r = System.Math.Cos((ZeroAngle+var.NumericalQuantity).Value);
                             rv.AddComponent(r.ToQuantity().ToScalar());
                         }
                         else
@@ -272,13 +283,6 @@ namespace QsRoot
             }
         }
 
-        public static QsValue PI
-        {
-            get
-            {
-                return System.Math.PI.ToQuantity().ToScalarValue();
-            }
-        }
 
         public static QsValue Log(QsParameter val)
         {
@@ -659,6 +663,22 @@ namespace QsRoot
                 //not known may be ordinary string
                 return null;
             }
+        }
+
+
+        public static QsValue Atan2(QsParameter x, QsParameter y)
+        {
+            var xs = x.QsNativeValue as QsScalar;
+            var ys = y.QsNativeValue as QsScalar;
+
+            Contract.Requires(xs.ScalarType == ScalarTypes.NumericalQuantity);
+
+            Contract.Requires(ys.ScalarType == ScalarTypes.NumericalQuantity);
+
+            double r = System.Math.Atan2(ys.NumericalQuantity.Value, xs.NumericalQuantity.Value);
+
+            return r.ToQuantity().ToScalarValue();
+
         }
 
         #endregion

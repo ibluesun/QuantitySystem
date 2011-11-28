@@ -28,6 +28,13 @@ namespace Qs.Types
 
         private List<InnerOperation> operations = new List<InnerOperation>();
 
+        public override object Clone()
+        {
+            QsFunctionOperation fo = new QsFunctionOperation();
+            fo.operations.AddRange(operations);
+            return fo;
+        }
+
         /// <summary>
         /// @|$value  will store this operation 
         /// </summary>
@@ -44,7 +51,7 @@ namespace Qs.Types
 
                     operations.Add(new InnerOperation { Operation = Operator.Differentiate, value = a });
 
-                    return new QsScalar(ScalarTypes.QsOperation) { Operation = this };
+                    return new QsScalar(ScalarTypes.QsOperation) { Operation = (QsOperation)this.Clone() };
                 }
             }
             throw new NotImplementedException();

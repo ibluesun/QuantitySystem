@@ -137,7 +137,7 @@ namespace Qs.Runtime
             t = t.MergeTokens<NumberToken>();
             t = t.MergeTokens<UnitizedNumberToken>();
 
-            t = t.MergeTokens<NameSpaceToken>();
+            t = t.MergeTokens<NamespaceToken>();
 
             t = t.MergeTokensInGroups(new ParenthesisGroupToken(), new SquareBracketsGroupToken());
             t = t.RemoveSpaceTokens();
@@ -149,7 +149,7 @@ namespace Qs.Runtime
             
             foreach (var tok in t)
             {
-                if (tok.TokenClassType == typeof(NameSpaceToken))
+                if (tok.TokenClassType == typeof(NamespaceToken))
                 {
                     nsidx++;
                     declaredNamespace += tok.TokenValue;

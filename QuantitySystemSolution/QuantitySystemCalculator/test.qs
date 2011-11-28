@@ -1,4 +1,8 @@
-﻿Cr(n,k) = n!/(k!*(n-k)!)			#Combinications
+﻿# This is the standard testing file for the quantity system
+# Written by Ahmed Sadek
+# Copyright 2009-2012
+
+Cr(n,k) = n!/(k!*(n-k)!)			#Combinications
 Pr(n,r) = n!/(n-r)!					#Permutations
 
 # Radius length based functions
@@ -51,6 +55,10 @@ fun:a = fun:v(fun:d, 3, 4);
 fun:b = fun:v(fun:c, sin, 8);
 
 fun:a + fun:b
+
+# Function as scalar object into another function
+fun:H(f,x) = f[x]
+fun:H(fun:@g, 3)
 
 
 #test the condition statement 

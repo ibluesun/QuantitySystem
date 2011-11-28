@@ -247,11 +247,20 @@ namespace Qs.Runtime
             Dictionary<string, object> CodedMembers = 
                 new Dictionary<string, object>(System.StringComparer.OrdinalIgnoreCase);
 
+            /*
             var FilteredMethods = from m in methods
                                   where 
-                                  m.IsSpecialName == false && m.ReturnType.IsArray == false &&
+                                  m.IsSpecialName == false 
+             
+                                  && m.ReturnType.IsArray == false &&
                                   (m.ReturnType.BaseType == typeof(QsValue) || m.ReturnType == typeof(QsValue) ||
                                   m.ReturnType == typeof(string) || m.ReturnType.IsValueType == true)
+
+                                  select m;
+            */
+            var FilteredMethods = from m in methods
+                                  where
+                                  m.IsSpecialName == false 
                                   select m;
 
             foreach (var member in FilteredMethods)

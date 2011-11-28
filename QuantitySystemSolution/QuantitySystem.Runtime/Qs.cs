@@ -13,6 +13,10 @@ namespace Qs
 {
     public static class Qs
     {
+        /// <summary>
+        /// Creates the language runtime to be used in hosting.
+        /// </summary>
+        /// <returns></returns>
         public static ScriptRuntime CreateRuntime()
         {
             string[] QsNames = { "QuantitySystem", "Qs" };

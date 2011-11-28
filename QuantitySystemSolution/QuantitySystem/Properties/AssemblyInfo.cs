@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Lost Particles Network (http://www.lostparticles.net)")]
 [assembly: AssemblyProduct("Quantity System")]
-[assembly: AssemblyCopyright("Copyright (c) 2007-2009 at Lost Particles by Ahmed Sadek")]
+[assembly: AssemblyCopyright("Copyright (c) 2007-2012 at Lost Particles by Ahmed Sadek")]
 [assembly: AssemblyTrademark("Lost Particles Network")]
 [assembly: AssemblyCulture("")]
 

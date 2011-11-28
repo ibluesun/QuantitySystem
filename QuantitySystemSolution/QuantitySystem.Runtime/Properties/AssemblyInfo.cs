@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Lost Particles Network (http://www.lostparticles.net)")]
 [assembly: AssemblyProduct("Quantity System Runtime")]
-[assembly: AssemblyCopyright("Copyright (c) 2008-2010 at Lost Particles Network by Ahmed Sadek")]
+[assembly: AssemblyCopyright("Copyright (c) 2008-2012 at Lost Particles Network by Ahmed Sadek")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -32,5 +32,5 @@ using System.Runtime.InteropServices;
 // You can specify all the values or you can default the Build and Revision Numbers 
 // by using the '*' as shown below:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("1.2.25")]
-[assembly: AssemblyFileVersion("1.2.25")]
+[assembly: AssemblyVersion("1.2.3")]
+[assembly: AssemblyFileVersion("1.2.3")]

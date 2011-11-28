@@ -14,7 +14,7 @@ namespace Qs.Types
     ///     consider @|$x  which means Differentiate for x symbol or (operation that says I will differentiate the function later)
     ///     @  contains the operation   | 
     /// </summary>
-    public class QsOperation : QsValue
+    public class QsOperation : QsValue, ICloneable
     {
 
         public override QsValue DifferentiateOperation(QsValue value)
@@ -34,9 +34,10 @@ namespace Qs.Types
 
         #region ICloneable Members
 
-        public object Clone()
+        public virtual object Clone()
         {
-            return this.MemberwiseClone();
+
+            throw new QsException("Qs Base Operation Class cannot be cloned, It only occure in sub classes");
         }
 
         #endregion   
@@ -136,7 +137,7 @@ namespace Qs.Types
             throw new NotImplementedException();
         }
 
-        public override QsValue GetIndexedItem(int[] indices)
+        public override QsValue GetIndexedItem(QsParameter[] indices)
         {
             throw new NotImplementedException();
         }

@@ -277,7 +277,7 @@ namespace Qs.Types
             throw new NotImplementedException();
         }
 
-        public override QsValue GetIndexedItem(int[] indices)
+        public override QsValue GetIndexedItem(QsParameter[] indices)
         {            
             var pi = InstanceType.GetProperty("Item", System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.IgnoreCase);
 

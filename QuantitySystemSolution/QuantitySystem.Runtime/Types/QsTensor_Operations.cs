@@ -360,8 +360,12 @@ namespace Qs.Types
             throw new NotImplementedException();
         }
 
-        public override QsValue GetIndexedItem(int[] indices)
+        public override QsValue GetIndexedItem(QsParameter[] allIndices)
         {
+            int[] indices = new int[allIndices.Length];
+
+            for (int ix = 0; ix < indices.Length; ix++) indices[ix] = (int)((QsScalar)allIndices[ix].QsNativeValue).NumericalQuantity.Value;                
+
             int dr = this.Order - indices.Count();
             if (dr < 0)
             {
