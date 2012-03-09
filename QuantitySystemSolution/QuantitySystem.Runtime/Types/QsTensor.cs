@@ -9,7 +9,7 @@ namespace Qs.Types
     /// <summary>
     /// Represeneted by &lt;| [Matrix or Tensor] | [Matrix or Tensor] |&gt;
     /// </summary>
-    public partial class QsTensor : QsValue
+    public partial class QsTensor : QsValue, IEnumerable<QsMatrix>
     {
 
         protected List<QsMatrix> MatrixLayers = new List<QsMatrix>();
@@ -321,9 +321,19 @@ namespace Qs.Types
         //  I mean tensor of rank 0 (looks like scalar)  will have no dimention to rotate around
         //  tensor of 2nd rank will have two dimension to rotate around
         #endregion
-    
-    
-    
-    
+
+
+
+
+
+        public IEnumerator<QsMatrix> GetEnumerator()
+        {
+            return MatrixLayers.GetEnumerator();
+        }
+
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+        {
+            return MatrixLayers.GetEnumerator();
+        }
     }
 }

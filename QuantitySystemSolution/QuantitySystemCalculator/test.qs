@@ -12,14 +12,14 @@ CA(r) = 0<m^2> + 3.14159265<rad^2> * r^2					#Circle Area
 SA(r) = 0<m^2> + 4 * 3.14159265<rad^2> * r^2				#Sphere Area
 SV(r) = 0<m^3> + ((4/3) * 3.14159265<rad^3> * r^3)			#Sphere Volume
 
-e[n](x) ..> x^n/n!				#Exponential sequence
-e(x) = e[0++50](x)				#Exponential function
+math:e[n](x) ..> x^n/n!				#Exponential sequence
+math:e(x) = math:e[0++50](x)				#Exponential function
 
-sin[n](x) ..> ((-1)^n*x^(2*n+1))/(2*n+1)!		#Sin sequence
-sin(x) = sin[0++50](x)							#Sin function
+math:sin[n](x) ..> ((-1)^n*x^(2*n+1))/(2*n+1)!		#Sin sequence
+math:sin(x) = math:sin[0++50](x)							#Sin function
 
-cos[n](x) ..> ((-1)^n*x^(2*n))/(2*n)!			#cos sequence
-cos(x) = cos[0++50](x)							#cos function
+math:cos[n](x) ..> ((-1)^n*x^(2*n))/(2*n)!			#cos sequence
+math:cos(x) = math:cos[0++50](x)							#cos function
 
 fib[n] ..> 0; 1; fib[n-1] + fib[n-2]			#fibonaccy sequence
 
@@ -66,18 +66,18 @@ fun:H(fun:@g, 3)
 wave:tri(t) = 1-_|t|_ when _|t|_<1 otherwise 0						#http://en.wikipedia.org/wiki/Triangular_function 
 																# remember that _|x|_ is absolute when x is scalar and determinant if x is n x n matrix
 										
-wave:saw(t) = t - math:floor(t)									#http://en.wikipedia.org/wiki/Sawtooth_wave
+wave:saw(t) = t - floor(t)									#http://en.wikipedia.org/wiki/Sawtooth_wave
 
 math:sgn(x) = -1 when x<0 otherwise 0 when x==0 otherwise 1 	#http://en.wikipedia.org/wiki/Sign_function
 math:sgna(x) = x/_|x|_												# also the same but include more range of numbers
 
-wave:Square(x) = math:sgn(math:sin(x))  						#http://en.wikipedia.org/wiki/Square_wave
+wave:Square(x) = math:sgn(sin(x))  						#http://en.wikipedia.org/wiki/Square_wave
 
 MsgBox(text) = Windows:MessageBox(text)
 
-@exp = e[0++20]
+math:@exp = math:e[0++20]
 
-exp(x=1)
+math:exp(x=1)
 
 
 #The torque magic

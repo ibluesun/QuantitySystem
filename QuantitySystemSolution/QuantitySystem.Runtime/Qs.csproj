@@ -111,13 +111,20 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CoMath.cs" />
     <Compile Include="QsRoot\Basic.cs" />
     <Compile Include="QsRoot\Environment.cs" />
-    <Compile Include="QsRoot\Math.cs">
+    <Compile Include="QsRoot\QsMath.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="QsRoot\Matrix.cs" />
+    <Compile Include="QsRoot\Processor\Curve.cs" />
     <Compile Include="QsRoot\Processor\Z80.cs" />
+    <Compile Include="QsRoot\QsMath.generated.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>QsMath.tt</DependentUpon>
+    </Compile>
     <Compile Include="QsRoot\Vector.cs" />
     <Compile Include="QsRoot\Windows.cs" />
     <Compile Include="Numerics\Complex.cs" />
@@ -131,7 +138,7 @@
     <Compile Include="Qs.cs" />
     <Compile Include="QsInvalidOperationException.cs" />
     <Compile Include="QsRoot\Root.cs" />
-    <Compile Include="Types\QsFunctionOperation.cs" />
+    <Compile Include="Types\QsDifferentialOperation.cs" />
     <Compile Include="Types\QsNablaOperation.cs" />
     <Compile Include="Types\QsMatrix_Determinant.cs" />
     <Compile Include="QsSyntaxErrorException.cs" />
@@ -206,7 +213,15 @@
       <Install>true</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="QsRoot\QsMath.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>QsMath.generated.cs</LastGenOutput>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

@@ -114,5 +114,14 @@ namespace Qs.Numerics
             return "(" + num.ToString(CultureInfo.InvariantCulture) + "/" + den.ToString(CultureInfo.InvariantCulture) + ")";
         }
 
+
+        public string ToQsSyntax()
+        {
+
+            return "Q{ "
+            + num.ToString(CultureInfo.InvariantCulture) + ", "
+            + den.ToString(CultureInfo.InvariantCulture) + "}";
+        }
+
     }
 }

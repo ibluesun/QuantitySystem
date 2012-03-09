@@ -112,6 +112,18 @@ namespace Qs.Numerics
                 + d.ToString(CultureInfo.InvariantCulture) + "k )";
         }
 
+
+        public string ToQsSyntax()
+        {
+            
+                return "H{ "
+                + a.ToString(CultureInfo.InvariantCulture) + ", "
+                + b.ToString(CultureInfo.InvariantCulture) + ", "
+                + c.ToString(CultureInfo.InvariantCulture) + ", "
+                + d.ToString(CultureInfo.InvariantCulture) + " }";
+            
+        }
+
         #region The code is based on http://www.boost.org/doc/libs/1_43_0/boost/math/quaternion.hpp
 
 

@@ -1,0 +1,298 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".generated.cs" #>
+// 
+// This is an auto generated math class for Quantity system that hold the root functions
+//  sin, cos , etc..
+// but with ability to consume scalar vectors matrices, and later tensors also
+//
+
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Qs.Types;
+using Qs.Runtime;
+using QuantitySystem.Quantities.BaseQuantities;
+using Qs;
+using QuantitySystem.Units;
+using QuantitySystem.Units.Metric.SI;
+using QuantitySystem.Quantities.DimensionlessQuantities;
+using System.Diagnostics.Contracts;
+using Qs.Numerics;
+
+namespace QsRoot
+{
+    public static partial class QsMath
+    {
+	    static Angle<double> ZeroAngle = (Angle<double>)Unit.ParseQuantity("0<rad>");
+
+        #region Constants
+        public static QsValue PI
+        {
+            get
+            {
+                return System.Math.PI.ToQuantity().ToScalarValue();
+            }
+        }
+        #endregion
+
+		#region Functions
+<#
+string[] functions = {"Sin", "Cos", "Tan", "Sinh", "Cosh", "Tanh", "Acos", "Asin", "Atan", "Log", "Log10", "Floor", "Ceiling", "Exp"};
+foreach(var fn in  functions)
+{
+#>
+	    public static QsValue <#= fn #>(QsParameter val)
+        {
+            if (val.IsQsValue)
+            {
+                if (val.ParameterValue is QsScalar)
+                {
+                    QsScalar pval = (QsScalar)val.ParameterValue;
+                    if(pval.ScalarType == ScalarTypes.SymbolicQuantity)
+                    {
+                        return SymbolicAlgebra.SymbolicVariable.Parse("<#= fn #>(" + pval.SymbolicQuantity.Value.ToString() + ")").ToQuantity().ToScalar();
+                    }
+                    else if (pval.ScalarType == ScalarTypes.NumericalQuantity)
+                    {
+                        AnyQuantity<double> q = pval.NumericalQuantity;
+
+                        if (q.Dimension.IsDimensionless)
+                        {
+                            double r = System.Math.<#= fn #>((ZeroAngle + q).Value);
+                            return r.ToQuantity().ToScalarValue();
+                        }
+                        else
+                        {
+                            throw new QsInvalidInputException("Non dimensionless number");
+                        }
+                    }
+                    else if(pval.ScalarType == ScalarTypes.RationalNumberQuantity)
+                    {
+                        AnyQuantity<Rational> rr = pval.RationalQuantity;
+                        AnyQuantity<double> q = rr.Value.Value.ToQuantity();
+                        if (q.Dimension.IsDimensionless)
+                        {
+                            double r = System.Math.<#= fn #>((ZeroAngle + q).Value);
+                            return r.ToQuantity().ToScalarValue();
+                        }
+                        else
+                        {
+                            throw new QsInvalidInputException("Non dimensionless number");
+                        }
+                    }
+                    else
+                    {
+                        throw new QsException("Not Supported Scalar Type");
+                    }
+				}
+                else if (val.ParameterValue is QsVector)
+                {
+                    QsVector vec = (QsVector)val.ParameterValue;
+
+                    QsVector rv = new QsVector(vec.Count);
+
+                    foreach (QsScalar pval in vec)
+                    {
+                        if(pval.ScalarType == ScalarTypes.SymbolicQuantity)
+						{
+							var r= SymbolicAlgebra.SymbolicVariable.Parse("<#= fn #>(" + pval.SymbolicQuantity.Value.ToString() + ")");
+							rv.AddComponent(r.ToQuantity().ToScalar());
+						}
+						else if (pval.ScalarType == ScalarTypes.NumericalQuantity)
+						{
+							AnyQuantity<double> q = pval.NumericalQuantity;
+
+							if (q.Dimension.IsDimensionless)
+							{
+								double r = Math.<#= fn #>((ZeroAngle + q).Value);
+								rv.AddComponent(r.ToQuantity().ToScalar());
+							}
+							else
+							{
+								throw new QsInvalidInputException("Non dimensionless number");
+							}
+						}
+						else if(pval.ScalarType == ScalarTypes.RationalNumberQuantity)
+						{
+							AnyQuantity<Rational> rr = pval.RationalQuantity;
+							AnyQuantity<double> q = rr.Value.Value.ToQuantity();
+							if (q.Dimension.IsDimensionless)
+							{
+								double r = Math.<#= fn #>((ZeroAngle + q).Value);
+								rv.AddComponent(r.ToQuantity().ToScalar());
+							}
+							else
+							{
+								throw new QsInvalidInputException("Non dimensionless number");
+							}
+						}
+						else
+						{
+							throw new QsException("Not Supported Scalar Type");
+						}
+
+                    }
+
+                    return rv;
+                }
+                else if (val.ParameterValue is QsMatrix)
+                {
+                    QsMatrix mat = (QsMatrix)val.ParameterValue;
+                    QsMatrix rm = new QsMatrix();
+
+                    foreach (var vec in mat.Rows)
+                    {
+                        rm.AddVector((QsVector)<#= fn #>(QsParameter.MakeParameter(vec, string.Empty)));
+
+                    }
+                    return rm;
+                }
+                else
+                {
+                    throw new QsException("This type is not supported for <#=fn#> function");
+                }
+            }
+            else
+            {
+                
+                throw new QsException("This type is not supported for <#=fn#> function");
+            }
+        }
+		
+<#
+}
+#>
+		#endregion
+
+		#region Rest of Functions in CoMath class
+<#
+string[] RestFunctions = { "Sec", "Csc", "Cot", "Sech", "Csch", "Coth" ,
+                           "Acosh", "Asinh", "Atanh",
+                           "Asec", "Acsc", "Acot", "Asech", "Acsch", "Acoth"};
+
+foreach(var fn in RestFunctions)
+{
+#>
+		
+		public static QsValue <#= fn #>(QsParameter val)
+        {
+            if (val.IsQsValue)
+            {
+                if (val.ParameterValue is QsScalar)
+                {
+                    QsScalar pval = (QsScalar)val.ParameterValue;
+                    if(pval.ScalarType == ScalarTypes.SymbolicQuantity)
+                    {
+                        return SymbolicAlgebra.SymbolicVariable.Parse("<#= fn #>(" + pval.SymbolicQuantity.Value.ToString() + ")").ToQuantity().ToScalar();
+                    }
+                    else if (pval.ScalarType == ScalarTypes.NumericalQuantity)
+                    {
+                        AnyQuantity<double> q = pval.NumericalQuantity;
+
+                        if (q.Dimension.IsDimensionless)
+                        {
+                            double r = Qs.CoMath.<#= fn #>((ZeroAngle + q).Value);
+                            return r.ToQuantity().ToScalarValue();
+                        }
+                        else
+                        {
+                            throw new QsInvalidInputException("Non dimensionless number");
+                        }
+                    }
+                    else if(pval.ScalarType == ScalarTypes.RationalNumberQuantity)
+                    {
+                        AnyQuantity<Rational> rr = pval.RationalQuantity;
+                        AnyQuantity<double> q = rr.Value.Value.ToQuantity();
+                        if (q.Dimension.IsDimensionless)
+                        {
+                            double r = Qs.CoMath.<#= fn #>((ZeroAngle + q).Value);
+                            return r.ToQuantity().ToScalarValue();
+                        }
+                        else
+                        {
+                            throw new QsInvalidInputException("Non dimensionless number");
+                        }
+                    }
+                    else
+                    {
+                        throw new QsException("Not Supported Scalar Type");
+                    }
+				}
+                else if (val.ParameterValue is QsVector)
+                {
+                    QsVector vec = (QsVector)val.ParameterValue;
+
+                    QsVector rv = new QsVector(vec.Count);
+
+                    foreach (QsScalar pval in vec)
+                    {
+						if(pval.ScalarType == ScalarTypes.SymbolicQuantity)
+						{
+							var r= SymbolicAlgebra.SymbolicVariable.Parse("<#= fn #>(" + pval.SymbolicQuantity.Value.ToString() + ")");
+							rv.AddComponent(r.ToQuantity().ToScalar());
+						}
+						else if (pval.ScalarType == ScalarTypes.NumericalQuantity)
+						{
+							AnyQuantity<double> q = pval.NumericalQuantity;
+
+							if (q.Dimension.IsDimensionless)
+							{
+								double r = Qs.CoMath.<#= fn #>((ZeroAngle + q).Value);
+								rv.AddComponent(r.ToQuantity().ToScalar());
+							}
+							else
+							{
+								throw new QsInvalidInputException("Non dimensionless number");
+							}
+						}
+						else if(pval.ScalarType == ScalarTypes.RationalNumberQuantity)
+						{
+							AnyQuantity<Rational> rr = pval.RationalQuantity;
+							AnyQuantity<double> q = rr.Value.Value.ToQuantity();
+							if (q.Dimension.IsDimensionless)
+							{
+								double r = Qs.CoMath.<#= fn #>((ZeroAngle + q).Value);
+								rv.AddComponent(r.ToQuantity().ToScalar());
+							}
+							else
+							{
+								throw new QsInvalidInputException("Non dimensionless number");
+							}
+						}
+						else
+						{
+							throw new QsException("Not Supported Scalar Type");
+						}
+                    }
+
+                    return rv;
+                }
+                else if (val.ParameterValue is QsMatrix)
+                {
+                    QsMatrix mat = (QsMatrix)val.ParameterValue;
+                    QsMatrix rm = new QsMatrix();
+
+                    foreach (var vec in mat.Rows)
+                    {
+                        rm.AddVector((QsVector)<#= fn #>(QsParameter.MakeParameter(vec, string.Empty)));
+
+                    }
+                    return rm;
+                }
+                else
+                {
+                    throw new QsException("This type is not supported for <#=fn#> function");
+                }
+            }
+            else
+            {
+                
+                throw new QsException("This type is not supported for <#=fn#> function");
+            }
+        }
+		
+<#}#>
+	#endregion
+	}
+}

@@ -489,6 +489,24 @@ namespace Qs.Runtime
 
             return NameSpace;
         }
+
+        /// <summary>
+        /// Gets a strongly typed namespace that were defined with static class type and has static methods
+        /// that can be used to provide qs compatible methods.
+        /// </summary>
+        /// <param name="moduleNamespace"></param>
+        /// <returns></returns>
+        public static QsNamespace GetTypedNamespace(string moduleNamespace)
+        {
+            QsNamespace NameSpace = new QsNamespace(moduleNamespace);
+
+            // search if this namespace represent hardcoded namespace
+            System.Type nst = GetQsNamespaceType(moduleNamespace);
+            NameSpace._NamespaceType = nst;
+
+            return NameSpace;
+        }
+
         #endregion
 
 

@@ -64,7 +64,7 @@ namespace Qs.Runtime
         /// <param name="evaluator"></param>
         /// <param name="line"></param>
         /// <param name="lb"></param>
-        public QsVar(QsEvaluator evaluator, string line, QsFunction function, LambdaBuilder lb)
+        public QsVar(QsEvaluator evaluator, string line, QsFunction function, LambdaBuilder lb, out Token tokenizedBody)
         {
             this.evaluator = evaluator;
             if (function != null)
@@ -76,7 +76,7 @@ namespace Qs.Runtime
                 ParseMode = QsVarParseModes.Function;
             }
 
-            ResultExpression = ParseArithmatic(line);
+            ResultExpression = ParseArithmatic(line, out tokenizedBody);
 
         }
 
@@ -96,7 +96,7 @@ namespace Qs.Runtime
         public QsVar(QsEvaluator evaluator, string line)
         {
             this.evaluator = evaluator;
-
+            
             ResultExpression = ParseArithmatic(line);
 
         }
@@ -128,6 +128,7 @@ namespace Qs.Runtime
                 ParseMode = QsVarParseModes.Sequence;
             }
 
+            
             ResultExpression = ParseArithmatic(line);
         }
 
@@ -149,6 +150,12 @@ namespace Qs.Runtime
         }
 
         internal Expression ParseArithmatic(string codeLine)
+        {
+            Token dummy;
+            return ParseArithmatic(codeLine, out dummy);
+        }
+
+        internal Expression ParseArithmatic(string codeLine, out Token tokenizedExpression)
         {
             var tokens = Token.ParseText(codeLine);
 
@@ -207,6 +214,7 @@ namespace Qs.Runtime
                 );
 
             // merge the $ + Word into Symbolic and get the symbolic variables.
+            tokens = tokens.MergeTokens<SymbolicToken>();
             tokens = tokens.MergeSequenceTokens<SymbolicToken>(typeof(DollarToken), typeof(WordToken));
             tokens = tokens.MergeSequenceTokens<SymbolicQuantityToken>(typeof(SymbolicToken), typeof(UnitToken));
 
@@ -263,6 +271,8 @@ namespace Qs.Runtime
             tokens = tokens.DiscoverQsCalls(StringComparer.OrdinalIgnoreCase,
                 new string[] { "When", "Otherwise", "And", "Or" } 
                 );
+
+            tokenizedExpression = tokens;
 
             return ParseArithmatic(tokens);
 
@@ -464,16 +474,21 @@ namespace Qs.Runtime
                     // convert '@' into function operation.
                     var oo = new QsScalar(ScalarTypes.QsOperation)
                     {
-                         Operation = new QsFunctionOperation()
+                         Operation = new QsDifferentialOperation()
                     };
 
                     quantityExpression = Expression.Constant(oo, typeof(QsValue));
                 }
                 else if (tokens[ix].TokenClassType == typeof(Nabla))
                 {
+                    string[] xi = (
+                        from x in tokens[ix].TrimTokens(1,1).TokenValue.Split(' ', ',') 
+                        where x.Trim() != string.Empty
+                        select x.Trim()).ToArray() ;
+
                     var oo = new QsScalar(ScalarTypes.QsOperation)
                     {
-                        Operation = new QsNablaOperation()
+                        Operation = new QsNablaOperation(xi)
                     };
                     quantityExpression = Expression.Constant(oo, typeof(QsValue));
                 }
@@ -1011,6 +1026,35 @@ namespace Qs.Runtime
         #region QsValue Parsers
 
         /// <summary>
+        /// Returns the text components of {Vector} {a b c} I mean a,b, and  c  in text format
+        /// </summary>
+        /// <param name="vectorToken"></param>
+        /// <returns></returns>
+        public static ICollection<string> VectorComponents(Token tok)
+        {
+            if (tok.TokenClassType != typeof(CurlyBracketGroupToken)) throw new QsException("The passed token type is not curly bracket group token, it is " + tok.TokenClassType.Name);
+
+            List<string> qtyExpressions = new List<string>();
+            Token token = tok.TrimStart(typeof(LeftCurlyBracketToken));
+            token = token.TrimEnd(typeof(RightCurlyBracketToken));
+
+
+            token = token.MergeAllBut(typeof(MergedToken), new CommaToken(), new MultipleSpaceToken());
+            token = token.RemoveTokens(typeof(CommaToken), typeof(MultipleSpaceToken));
+
+
+            for (int i = 0; i < token.Count; i++)
+            {
+                if (token[i].TokenClassType == typeof(MergedToken))
+                {
+                    qtyExpressions.Add(token[i].TokenValue);
+                }
+            }
+
+            return qtyExpressions;
+        }
+        
+        /// <summary>
         /// Vector of the format { 40, 20, f(2), S[10], 23}
         /// </summary>
         /// <param name="vectorText"></param>
@@ -1378,14 +1422,22 @@ namespace Qs.Runtime
             string unit = "1";
             if (token.TokenClassType == typeof(SymbolicToken))
             {
-                s = token[1].TokenValue;
+                if (token.TokenValue.StartsWith("${"))
+                    s = token.TokenValue.Substring(2).TrimEnd('}');
+                else
+                    s = token[1].TokenValue;
             }
             else
             {
-                s = token[0][1].TokenValue;
+                if (token[0].TokenValue.StartsWith("${"))
+                    s = token[0].TokenValue.Substring(2).TrimEnd('}');
+                else
+                    s = token[0][1].TokenValue;
+
+                
                 unit = token[1].TokenValue.Trim('<', '>');
             }
-            SymbolicVariable sv  = new SymbolicVariable(s);
+            SymbolicVariable sv  = SymbolicVariable.Parse(s);
             QsScalar SymbolicScalar = sv.ToQuantity(unit).ToScalar();
 
             return Expression.Constant(SymbolicScalar, typeof(QsValue));
@@ -1528,6 +1580,8 @@ namespace Qs.Runtime
             {
                 var t = Tokens[ix].TokenClassType == typeof(MergedToken) ? Tokens[ix][0] : Tokens[ix];
 
+                var ST = new Token();
+                ST.AppendSubToken(t);
                 var vp = ParseArithmatic(t);
 
                 ExpressionParameters[ix] = Expression.Call(
@@ -1561,7 +1615,9 @@ namespace Qs.Runtime
             {
                 var t = Tokens[ix].TokenClassType == typeof(MergedToken) ? Tokens[ix][0] : Tokens[ix];
 
-                var vp = ParseArithmatic(t);
+                var ST = new Token();
+                ST.AppendSubToken(t);
+                var vp = ParseArithmatic(ST);
 
                 ExpressionParameters[ix] = Expression.Call(
                             mpm,
@@ -2163,10 +2219,12 @@ namespace Qs.Runtime
             }
             catch (Exception e)
             {
-                System.Diagnostics.Debug.Print(e.ToString());
+                //System.Diagnostics.Debug.Print(e.ToString());
 
                 //quantity variable  //get it from evaluator  global heap
-                //quantityExpression = GetVariable(q);
+
+                //return GetQsVariable(parameterName.tok
+                
                 throw new QsParameterNotFoundException(parameterName);
             }
 
@@ -2318,9 +2376,10 @@ namespace Qs.Runtime
 
             string[] SymGroup = { "|" /* Derivation operator */};
 
+            string[] Group0 = { "x"   /* cross product */};
+
             string[] Group1 = { "*"   /* normal multiplication */, 
-                                "."   /* dot product */, 
-                                "x"   /* cross product */, 
+                                "."   /* dot product */,                     
                                 "(*)" /* Tensor product */,
                                 "/"   /* normal division */, 
                                 "%"   /* modulus */ };
@@ -2338,7 +2397,7 @@ namespace Qs.Runtime
 
 
             /// Operator Groups Ordered by Priorities.
-            string[][] OperatorGroups = { HigherGroup, Group, SymGroup, Group1, Group2, Shift, RelationalGroup, EqualityGroup, AndGroup, OrGroup, WhenOtherwiseGroup };
+            string[][] OperatorGroups = { HigherGroup, Group, SymGroup, Group0, Group1, Group2, Shift, RelationalGroup, EqualityGroup, AndGroup, OrGroup, WhenOtherwiseGroup };
 
             foreach (var opg in OperatorGroups)
             {

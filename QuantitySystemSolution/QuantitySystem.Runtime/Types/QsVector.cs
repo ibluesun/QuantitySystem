@@ -80,20 +80,14 @@ namespace Qs.Types
         /// <returns></returns>
         public QsScalar Magnitude()
         {
-            var exponent = "2".ToQuantity();
+            
 
-            AnyQuantity<double> Total = AnyQuantity<double>.Power(this[0].NumericalQuantity, exponent);
+            var v_dot_v = this.DotProductOperation(this) as QsScalar;
 
-            for (int i = 1; i < ListStorage.Count; i++)
-            {
-                Total = Total + AnyQuantity<double>.Power(this[i].NumericalQuantity, exponent);
-            }
+            var sqrt_v_dot_v = v_dot_v.PowerScalar("0.5".ToScalar());
 
-            exponent = "0.5".ToQuantity();
 
-            Total = AnyQuantity<double>.Power(Total, exponent);
-
-            return new QsScalar { NumericalQuantity = Total };
+            return sqrt_v_dot_v;
         }
 
         /// <summary>

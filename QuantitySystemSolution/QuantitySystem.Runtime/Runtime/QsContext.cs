@@ -52,7 +52,7 @@ namespace Qs.Runtime
         {
             get
             {
-                return new Version(1, 2, 3);
+                return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;       
             }
         }
     }

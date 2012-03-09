@@ -264,6 +264,7 @@ namespace Qs.Types
         public QsVector VectorProduct(QsVector v2)
         {
             if (this.Count != v2.Count) throw new QsException("Vectors are not equal");
+            if (this.Count != 3) throw new QsException("Cross product only happens with 3 component vector");
 
             // cross product as determinant of matrix.
 

@@ -208,6 +208,8 @@ namespace Qs.Types
 
         }
 
+
+
         public QsMatrix LowerMatrix
         {
             get

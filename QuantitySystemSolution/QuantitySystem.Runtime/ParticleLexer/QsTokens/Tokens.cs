@@ -187,7 +187,7 @@ namespace ParticleLexer.QsTokens
     /// <summary>
     /// \/ nabla operator :)
     /// </summary>
-    [TokenPattern(RegexPattern = @"\\\/", ExactWord = true)]
+    [TokenPattern(RegexPattern = @"\\.*\/")]
     public class Nabla : TokenClass
     {
     }
@@ -281,7 +281,9 @@ namespace ParticleLexer.QsTokens
 
     /// <summary>
     /// Dollar Sign followed by word token. $x or $y  $ROI 
+    /// also can be used for ${x*x*y}   any text between brackets will be parsed by the symbolicvariable praser
     /// </summary>
+    [TokenPattern(RegexPattern = @"\$\{.+\}", ShouldBeginWith = "$")]
     public class SymbolicToken : TokenClass
     {
     }

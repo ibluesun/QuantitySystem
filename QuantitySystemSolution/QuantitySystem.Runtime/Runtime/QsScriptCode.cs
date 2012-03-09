@@ -45,7 +45,17 @@ namespace Qs.Runtime
             {
                 if (!string.IsNullOrEmpty(line))
                 {
-                    if (!line.StartsWith("#"))
+                    // test for directive like  %module  %unitdef gogo m/s^6
+                    if(line.TrimStart().StartsWith("%"))
+                    {
+                        // this is a directive
+                        var dir = line.TrimStart();
+                        if (dir.StartsWith("%module", StringComparison.OrdinalIgnoreCase))
+                        {
+                            QsRoot.Root.LoadLibrary(dir.Substring(8).Trim());
+                        }
+                    }
+                    else if (!line.StartsWith("#"))
                     {
                         //I want to exclude # if it was between parentthesis.
                         //  oo(ferwe#kd adflk ) # 
