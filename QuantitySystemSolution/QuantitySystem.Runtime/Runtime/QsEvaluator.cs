@@ -12,6 +12,7 @@ using Qs.Types;
 using QuantitySystem;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
+using System.Text;
 
 
 namespace Qs.Runtime
@@ -641,8 +642,8 @@ namespace Qs.Runtime
                                             
                                             var qf = (QsFunction)((QsScalar)qvResult).FunctionQuantity.Value.Clone();
 
-                                            qf.FunctionNamespace = vnToken[1][0].TokenValue;
-                                            qf.FunctionName = vnToken[2].TokenValue;
+                                            qf.FunctionNamespace = vnToken[0][0].TokenValue;
+                                            qf.FunctionName = vnToken[1][1].TokenValue;
 
                                             StoreFunction(qf);
                                             return qf;
@@ -745,6 +746,89 @@ namespace Qs.Runtime
                                         throw new QsException("Cannot store scalar " + fsc.ScalarType.ToString() + " into function variable");
                                         
                                     }
+                                }
+                                else if(varName.StartsWith("@") && (qvResult.GetType()==typeof(QsVector) || qvResult.GetType()==typeof(QsMatrix)||qvResult.GetType()==typeof(QsTensor)))
+                                {
+                                    varName = varName.Substring(1); // remove @
+
+                                    // vector or matrix or tensor
+                                    // the parsing to function should know the symbolic variables in the expression
+                                    //  and get the parameters required arranged by alphabet ofcourse
+
+                                    QsScalar[] AllComponents = null;
+                                    Type qvType = qvResult.GetType();
+
+                                    if(qvType == typeof(QsVector))
+                                        AllComponents = ((QsVector)qvResult).ToArray();
+                                    if(qvType == typeof(QsMatrix))
+                                        AllComponents = ((QsMatrix)qvResult).ToArray();
+
+                                     if(qvType == typeof(QsTensor))
+                                        throw new QsException("Tensor parsing to function is not supported yet");
+
+  
+                                    List<string> vparameters = new List<string>();
+                                    foreach(var c in AllComponents)
+                                        if(c.ScalarType ==  ScalarTypes.SymbolicQuantity)
+                                        {
+                                            foreach (var sym in c.SymbolicQuantity.Value.InvolvedSymbols)
+                                            {
+                                                if (!vparameters.Contains(sym)) vparameters.Add(sym);
+                                            }
+                                        }
+
+
+                                    var fh = "_(";
+                                        foreach (var p in vparameters) fh += p + ", ";
+                                        fh = fh.TrimEnd(',', ' ') + ") = ";
+                                    if(qvType == typeof(QsVector))
+                                    {
+                                        StringBuilder fhb = new StringBuilder();
+                                        fhb.Append('{');
+                                        foreach(var c in AllComponents)
+                                        {
+                                            fhb.Append(c.ToParsableValuedString());
+                                            fhb.Append(' ');
+                                        }
+                                        fhb.Append('}');
+
+                                        var qf = QsFunction.ParseFunction(this, fh + fhb.ToString());
+                                        qf.FunctionName = varName;
+
+                                        StoreFunction(qf);
+                                        return qf;
+                                    }
+                                    else if (qvType == typeof(QsMatrix))
+                                    {
+                                        QsMatrix m = (QsMatrix)qvResult;
+                                        StringBuilder fhb = new StringBuilder();
+                                        fhb.Append('[');
+                                        foreach (var vv in m)
+                                        {
+                                            fhb.Append(' ');
+                                            foreach (var c in vv)
+                                            {
+                                                fhb.Append(c.ToParsableValuedString());
+                                                fhb.Append(' ');
+                                            }
+                                            fhb.Append("; ");
+                                        }
+
+                                        var all = fh + fhb.ToString().Trim(';', ' ') + "]";
+
+
+                                        var qf = QsFunction.ParseFunction(this, all);
+                                        qf.FunctionName = varName;
+
+                                        StoreFunction(qf);
+                                        return qf;
+
+                                    }
+                                    else
+                                    {
+                                        throw new QsException("QsType " + qvType.Name + " is not supported to be converted into function");
+                                    }
+
                                 }
                                 else if (varName.StartsWith("&") && qvResult is QsValue)
                                 {
@@ -934,6 +1018,18 @@ namespace Qs.Runtime
                 }
                 else
                 {
+                    // look for enum in the QsRoot namespace
+                    var t = Type.GetType("QsRoot." + name);
+                    if (t != null)
+                    {
+                        if (t.IsEnum)
+                        {
+                            // convert enum into Flowing Tuple and return it.
+                            
+                            return QsRoot.Root.NativeToQsConvert(t);
+                        }
+                    }
+
                     throw new QsVariableNotFoundException("Variable '" + name + "' Not Found.")
                         {
                             Namespace = qsNamespace,

@@ -10,7 +10,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Lost Particles Network (http://www.lostparticles.net)")]
 [assembly: AssemblyProduct("Quantity System Calculator")]
-[assembly: AssemblyCopyright("Copyright (c) 2009 - 2011 at Lost Particles Network by Ahmed Sadek")]
+[assembly: AssemblyCopyright("Copyright (c) 2009 - 2012 at Lost Particles Network by Ahmed Sadek")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

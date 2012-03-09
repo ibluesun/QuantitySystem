@@ -11,7 +11,7 @@ namespace Qs.Types
     /// @|$x  is deriving function operator over x symbol [this will store this operation inside this class]
     /// 
     /// </summary>
-    public class QsFunctionOperation : QsOperation
+    public class QsDifferentialOperation : QsOperation
     {
         /*
          * The function will store the operations in some cases and release those operations when 
@@ -30,10 +30,11 @@ namespace Qs.Types
 
         public override object Clone()
         {
-            QsFunctionOperation fo = new QsFunctionOperation();
+            QsDifferentialOperation fo = new QsDifferentialOperation();
             fo.operations.AddRange(operations);
             return fo;
         }
+
 
         /// <summary>
         /// @|$value  will store this operation 
@@ -107,7 +108,7 @@ namespace Qs.Types
                                         times--;
                                     }
                                 }
-                                
+
                                 break;
                             default:
                                 throw new NotImplementedException();
@@ -117,7 +118,8 @@ namespace Qs.Types
                     return f.ToQuantity().ToScalar();
                 }
                 else
-                    throw new QsException("Can't multiply current operation for this scalar " + sc.ScalarType.ToString());
+                    //throw new QsException("Can't multiply current operation for this scalar " + sc.ScalarType.ToString());
+                    return QsScalar.Zero;
             }
 
             throw new NotImplementedException();

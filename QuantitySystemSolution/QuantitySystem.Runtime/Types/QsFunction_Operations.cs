@@ -7,6 +7,9 @@ using ParticleLexer.QsTokens;
 using ParticleLexer.StandardTokens;
 using Microsoft.Scripting.Ast;
 using SymbolicAlgebra;
+using QuantitySystem.Quantities.BaseQuantities;
+using QuantitySystem.Units;
+using System.Text;
 
 namespace Qs.Types
 {
@@ -176,11 +179,15 @@ namespace Qs.Types
 
                 var fname = "_";
 
-                var fbody = this.SymbolicBodyText;
+                var fbody = this.FunctionBody;
+                if (svl.ScalarType == ScalarTypes.SymbolicQuantity) fbody = "(" + fbody + ")" + operation + "(" + svl.SymbolicQuantity.Value.ToString() + ")";
+                else if (svl.ScalarType == ScalarTypes.NumericalQuantity) fbody = "(" + fbody + ")" + operation + svl.NumericalQuantity.Value.ToString();
+                else if (svl.ScalarType == ScalarTypes.RationalNumberQuantity) fbody = "(" + fbody + ")" + operation + svl.RationalQuantity.Value.Value.ToString();
+                else if (svl.ScalarType == ScalarTypes.FunctionQuantity) fbody = "(" + fbody + ")" + operation + "(" + svl.FunctionQuantity.Value.FunctionBody + ")";
+                else throw new QsException("Operation '" + operation + "' for the target scalar type (" + svl.ScalarType + ") is not supported");
 
-                fbody += " " + operation + svl.ToExpressionParsableString();
-                
-                QsScalar fb = (QsScalar)QsEvaluator.CurrentEvaluator.SilentEvaluate(fbody);
+
+                QsScalar fb = SymbolicVariable.Parse(fbody).ToQuantity().ToScalar();
 
                 string FuncBody = string.Empty;
                 if(fb.ScalarType == ScalarTypes.SymbolicQuantity)
@@ -239,15 +246,31 @@ namespace Qs.Types
             }
         }
 
+
+        public SymbolicVariable ToSymbolicVariable()
+        {
+            return SymbolicVariable.Parse(this.FunctionBody);
+        }
+
+        public AnyQuantity<SymbolicVariable> ToSymbolicQuantity()
+        {
+            
+            var fv = SymbolicVariable.Parse(this.FunctionBody);
+            return fv.ToQuantity();
+            
+
+        }
+
         /// <summary>
         /// Returns the function body as symbolic quantity scalar.
         /// </summary>
-        public QsScalar SymbolicBodyScalar
+        public QsScalar ToSymbolicScalar()
         {
-            get
-            {
-                return (QsScalar)QsEvaluator.CurrentEvaluator.SilentEvaluate(SymbolicBodyText);
-            }
+            
+            //return (QsScalar)QsEvaluator.CurrentEvaluator.SilentEvaluate(SymbolicBodyText);
+            var fv = SymbolicVariable.Parse(this.FunctionBody);
+            return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = fv.ToQuantity() };
+            
         }
 
 
@@ -382,17 +405,45 @@ namespace Qs.Types
             {
                 var dsv = sval.SymbolicQuantity.Value;
 
-                SymbolicVariable nsv = SymbolicBodyScalar.SymbolicQuantity.Value;
-                int times = (int)dsv.SymbolPower;
-                while (times > 0)
+                string fname = "_";
+                string WholeFunction = string.Empty;
+                if (this.FunctionBodyToken[0].TokenClassType == typeof(CurlyBracketGroupToken))
                 {
-                    nsv = nsv.Differentiate(dsv.Symbol);
-                    times--;
+                    // vector differentiation 
+                    // take every term in the vector and differentiate it
+                    var vcs = QsVar.VectorComponents(this.FunctionBodyToken[0]);
+                    StringBuilder sc = new StringBuilder();
+                    sc.Append(fname + "(" + RemoveRedundantParameters(this.ParametersNames) + ") = ");
+                    sc.Append("{ ");
+                    foreach (var c in vcs)
+                    {
+                        SymbolicVariable nsv = SymbolicVariable.Parse(c);
+                        int times = (int)dsv.SymbolPower;
+                        while (times > 0)
+                        {
+                            nsv = nsv.Differentiate(dsv.Symbol);
+                            times--;
+                        }
+                        sc.Append(nsv.ToString());
+                        sc.Append(" ");
+                    }
+                    sc.Append("}");
+
+                    WholeFunction = sc.ToString();
+                }
+                else
+                {
+                    SymbolicVariable nsv = ToSymbolicVariable();
+                    int times = (int)dsv.SymbolPower;
+                    while (times > 0)
+                    {
+                        nsv = nsv.Differentiate(dsv.Symbol);
+                        times--;
+                    }
+                    
+                    WholeFunction = fname + "(" + RemoveRedundantParameters(this.ParametersNames) + ") = " + nsv.ToString();
                 }
 
-                var fname = "_";
-
-                var WholeFunction = fname + "(" + RemoveRedundantParameters(this.ParametersNames) + ") = " + nsv.ToString();
 
                 return QsFunction.ParseFunction(QsEvaluator.CurrentEvaluator, WholeFunction);
             }

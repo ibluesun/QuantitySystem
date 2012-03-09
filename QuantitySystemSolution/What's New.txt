@@ -1,3 +1,94 @@
+[Qs 1.2.4]
+- Fixed calling a static function from class with quantities parameters like Length<double>
+
+- Transfered the Math namespace to be in root so calling the mathematical functions like 
+	sin and cos done on the root level direclty.
+
+- after the update of the symbolic algebra library functions that call built functions like g(x)=sin(x) can be differintiated normally 
+  now you will enjoy the differentiation at its fullest (mostly)
+
+- cross product 'x' is higher order that dot product '.'  so in case of v1 . v2 x v3  the result is volume between these three vectors
+  in a scalar value.  (if your vectors are all lengths you will find a volume scalar result)
+
+- Parsing to complex symbolics may be done by ${x*x*(a-b)^2}  so this is an advanced way to declare a symbolic quantity.
+
+- DifferentialOperation * numerical  implemented always return zero (also implemented in scalar part)
+
+- Back to Del Operation  \/  *  function  gives the gradient of the function based on its parameters names
+   for example \/ * @f   where  @f = f(g,h) = g^2+h  will be like {@|$g @|$h} * g^2+h = {2*g 1}
+
+   however this is not valid when multiplying with vector because the vector may contain 
+   parametric equations that describe its behaviour
+   like  v= { ${x+2*y+a*z} ${b*x-3*y-z} ${4*x+c*y+2*z}}           #solved problem 32 in Schaum vector analysis chapter 2
+
+   to be able to do such multiplication in quantity system
+   you may make 
+   Qs> \x y z/ x v
+   or 
+   Qs> {@|$x @|$y @|$z}  x v
+
+   result is  QsVector: c+1<1> a-4<1> b-2<1>  # which is correct in schaum also
+
+   also \x y z/^2 * v  is valid expression also.
+
+- First Addition of the directive concept    %directive
+   %module  directive is to load external assembly into the current session  {please check demo.qs file}
+   it resemble the Haskel way
+
+   %module modules/qsgraphics.dll     
+
+   somehow it is a dynamic directive because there is no preprocessor in this :) but i like the condensed form
+   and it will be an escape to define things that is not related to the concept of Qs itself.
+
+- now you can differentiate the function when it is equal a vector.
+    r(u) = {u^2 2*u+5*u^3 u^3}
+	Qs> @r|$u 
+		DimensionlessQuantity: _(u) = { 2*u 2+15*u^2 3*u^2 } <1>
+
+- a lot of Sqrt fixes
+	* sqrt(-ve) or -ve^0.5 return complex number   (vey funny :))
+	* sqrt(vector)  also has been corrected.  it produce square roots of inner components
+
+-  magnitude of vector _|vector|_  has been fixed to act on scalar values
+	   Qs> _|{3 ${x+y} ${x*Y}}|_ 
+		   DimensionlessQuantity: Sqrt(9+x^2+2*y*x+y^2+x^2*Y^2) <1>
+
+
+- Ability to make a vector and a matrix into a function of vector field or matrix field if they has symbolic quantities inside them
+  so that Qs> @v = { ${sin(t)*cos(t)} $phi 4/${sin(phi)} }  
+  result is _(t, phi) = {sin(t)*cos(t) phi 4/sin(phi) }
+
+- Matrix Calcs:   
+	* Cofactors   # m->Cofactors  
+	* Inverse     # m->Inverse
+	* m^-1 or m^-2  is also working
+	* and in turn dividing square matrices works also :) :) :)
+	
+	and you can imagine that symbolic quantities are also working in this scenario :) 
+
+- Triongometric function when take a symbolic quantity parameter it returns the function and its parameter as a whole symbolic quantity
+   I used a T4 generation for the math (it is very useful indeed :))
+   the function list are 
+   
+   {"Sin", "Cos", "Tan", "Sinh", "Cosh", "Tanh", "Acos", "Asin", "Atan", "Log", "Log10", "Floor", "Ceiling", "Exp"}
+   and rest of unimplemented functions
+   { "Sec", "Csc", "Cot", "Sech", "Csch", "Coth",
+	 "Acosh", "Asinh", "Atanh",
+	 "Asec", "Acsc", "Acot", "Asech", "Acsch", "Acoth" }
+
+	 Examples: 
+
+	 Qs> acoth({3 4 ${x*y} })
+		 QsVector: 0.346573590279973<1> 0.255412811882995<1> Acoth(x*y)<1>
+
+	 Qs> acot(${x^2*y})|$x
+		 DimensionlessQuantity: -2*y*x/(x^4*y^2+1) <1>
+
+- Now if the return value of a function is enum value, then the return value in Qs will be Flow Instance on that value
+	this way you will have the  flow object as a state machine (which actually you can't do myuch with it)
+	however its a start for something I don't know it yet.
+   
+
 [Qs 1.2.3]
 - Fixed  Intermediate operation  when calling   dp(fx,n) = @|$x^n * fx
    the operations were cached and accumulated {fixed by copying it}

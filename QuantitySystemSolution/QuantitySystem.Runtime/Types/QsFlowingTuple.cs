@@ -258,6 +258,20 @@ namespace Qs.Types
             }
         }
 
+        /// <summary>
+        /// Return Flow Object hosted in QsObject
+        /// </summary>
+        /// <param name="stepName"></param>
+        /// <returns></returns>
+        public QsValue this[string stepName]
+        {
+            get
+            {
+                Flow FlowStateMachine = ThisFlow[stepName];
+                return QsObject.CreateNativeObject(FlowStateMachine);
+            }
+        }
+
 
         /// <summary>
         /// ! Operator

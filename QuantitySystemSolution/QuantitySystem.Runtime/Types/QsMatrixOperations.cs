@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 using Qs.Runtime;
+using ParticleLexer;
+using ParticleLexer.StandardTokens;
 
 namespace Qs.Types
 {
@@ -137,9 +139,24 @@ namespace Qs.Types
 
             int count = Qs.IntegerFromQsValue(value);
 
-            for (int i = 1; i <= count; i++)
+            if (count > 0)
             {
-                Total = Total.MultiplyMatrix(this);
+                for (int i = 1; i <= count; i++)
+                {
+                    Total = Total.MultiplyMatrix(this);
+                }
+            }
+            else if (count == 0)
+            {
+                return Total;   //which id identity already
+            }
+            else
+            {
+                count = Math.Abs(count);
+                for (int i = 1; i <= count; i++)
+                {
+                    Total = Total.MultiplyMatrix(this.Inverse);    //multiply the inverses many times
+                }
             }
 
             return Total;
@@ -398,7 +415,7 @@ namespace Qs.Types
             }
             else if (value is QsMatrix)
             {
-                throw new NotSupportedException();
+                return this.MultiplyMatrix(((QsMatrix)value).Inverse);
             }
             else
             {
@@ -684,10 +701,90 @@ namespace Qs.Types
         }
 
 
-
-
-        public override QsValue Execute(ParticleLexer.Token expression)
+        /// <summary>
+        /// Removes row at index
+        /// </summary>
+        /// <param name="rowIndex"></param>
+        /// <returns></returns>
+        public QsMatrix RemoveRow(int rowIndex)
         {
+            QsMatrix m = new QsMatrix();
+            for (int iy = 0; iy < this.RowsCount; iy++)
+            {
+                if (iy != rowIndex) m.AddVector(this[iy]);
+            }
+            return m;
+        }
+
+
+        /// <summary>
+        /// Removes column at index
+        /// </summary>
+        /// <param name="columnIndex"></param>
+        /// <returns></returns>
+        public QsMatrix RemoveColumn(int columnIndex)
+        {
+            QsMatrix m = new QsMatrix();
+            for (int ix = 0; ix < this.ColumnsCount; ix++)
+            {
+                if (ix != columnIndex) m.AddColumnVector(this.GetColumnVector(ix));
+            }
+            return m;
+        }
+
+        private QsMatrix _Cofactors;
+        public QsMatrix Cofactors
+        {
+            get
+            {
+                if (object.ReferenceEquals( _Cofactors , null))
+                {
+                    _Cofactors = new QsMatrix();
+
+                    bool FirstNegative = false;
+                    for (int i = 0; i < RowsCount; i++)
+                    {
+                        QsVector v = new QsVector(this.ColumnsCount);
+                        
+                        for (int j = 0; j < ColumnsCount; j++)
+                        {
+                            var minor = this.RemoveRow(i).RemoveColumn(j);
+                            var d = Determinant(minor);
+                            if (Math.Pow(-1, i + j) < 0) d = QsScalar.Zero - d;
+                            v.AddComponent(d);
+                        }
+
+                        FirstNegative = !FirstNegative; //
+                        _Cofactors.AddVector(v);
+                    }
+                }
+                return _Cofactors;
+            }
+        }
+
+        /// <summary>
+        /// Transpose of Cofactors matrix
+        /// </summary>
+        public QsMatrix Adjoint
+        {
+            get
+            {
+                return Cofactors.Transpose();
+            }
+        }
+
+        public QsMatrix Inverse
+        {
+            get
+            {
+                return Adjoint.DivideScalar( Determinant(this));
+            }
+        }
+
+
+        public override QsValue Execute(Token expression)
+        {
+
             string operation = expression.TokenValue;
 
             if (operation.Equals("Transpose()", StringComparison.OrdinalIgnoreCase))
@@ -696,8 +793,20 @@ namespace Qs.Types
             if (operation.Equals("Identity", StringComparison.OrdinalIgnoreCase))
                 return this.Identity;
 
+            if (operation.Equals("Determinant", StringComparison.OrdinalIgnoreCase))
+                return QsMatrix.Determinant(this);
 
-            return base.Execute(expression);
+            if (operation.Equals("Cofactors", StringComparison.OrdinalIgnoreCase))
+                return this.Cofactors;
+
+            if (operation.Equals("Adjoint", StringComparison.OrdinalIgnoreCase))
+                return this.Adjoint;
+
+            if (operation.Equals("Inverse", StringComparison.OrdinalIgnoreCase))
+                return this.Inverse;
+
+
+            throw new QsException("Not implemented or Unknow method for the matrix type");
         }
     }
 }

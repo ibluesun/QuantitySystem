@@ -8,6 +8,8 @@ using Qs;
 using System.Linq.Expressions;
 using QuantitySystem.Quantities.BaseQuantities;
 using System.Runtime.CompilerServices;
+using Qs.Numerics;
+using SymbolicAlgebra;
 
 namespace QsRoot
 {
@@ -55,6 +57,7 @@ namespace QsRoot
 
         internal static object[] QsParametersToNativeValues(MethodInfo method, params QsParameter[] parameters)
         {
+
             List<object> NativeParameters = new List<object>();
 
             int iy = 0;
@@ -69,8 +72,31 @@ namespace QsRoot
                 else if (p.QsNativeValue is QsScalar)
                 {
                     var scalar = (QsScalar)p.QsNativeValue;
-                    object nativeValue = System.Convert.ChangeType(scalar.NumericalQuantity.Value, paramInfos[iy].ParameterType);
-                    NativeParameters.Add(nativeValue);
+
+                    //test the corresponding parameter if it is scalar or quantity or normal
+
+                    if(paramInfos[iy].ParameterType.IsSubclassOf(typeof(QsValue)))
+                    {
+                        object nativeValue = System.Convert.ChangeType(scalar, paramInfos[iy].ParameterType);
+                        NativeParameters.Add(nativeValue);
+                    }
+                    else if(paramInfos[iy].ParameterType.IsGenericType)
+                    {
+                        if (paramInfos[iy].ParameterType == typeof(AnyQuantity<double>))
+                        {
+                            NativeParameters.Add(scalar.NumericalQuantity);
+                        }
+                        else
+                        {
+                            object nativeValue = System.Convert.ChangeType(scalar.NumericalQuantity, paramInfos[iy].ParameterType);
+                            NativeParameters.Add(nativeValue);
+                        }
+                    }
+                    else
+                    {
+                        object nativeValue = System.Convert.ChangeType(scalar.NumericalQuantity.Value, paramInfos[iy].ParameterType);
+                        NativeParameters.Add(nativeValue);
+                    }
                 }
                 else if (p.QsNativeValue is QsText)
                 {
@@ -117,10 +143,36 @@ namespace QsRoot
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-
         internal static QsValue NativeToQsConvert(object value)
         {
             if (value == null) return null;
+
+            if (value is Type)
+            {
+                var EnumType = value as Type;
+                if (EnumType != null)
+                {
+                    List<QsTupleValue> tupleValues = new List<QsTupleValue>();
+
+                    foreach(var eval in Enum.GetValues(EnumType))
+                    {
+                        int ival = (int)eval;
+
+                        QsTupleValue tpv = new QsTupleValue(
+                            ival, Enum.GetName(EnumType, eval), ival.ToScalarValue());
+
+                        tupleValues.Add(tpv);
+                    }
+                    return new QsFlowingTuple(tupleValues.ToArray());
+                }
+            }
+
+            if (value.GetType().BaseType == typeof(Enum))
+            {
+                // return the result as a flowing tuple instance 
+                var ff = QsFlowingTuple.FromCSharpEnum(value.GetType());
+                return ff[Enum.GetName(value.GetType(), value)];
+            }
 
             Type vType = value.GetType();
 
@@ -156,8 +208,6 @@ namespace QsRoot
             // the last thing is to return object from this type
             if (!vType.IsValueType) return QsObject.CreateNativeObject(value);
 
-            
-
             throw new QsException(vType + " doesn't have corresponding type in Quantity System");
         }
 
@@ -172,6 +222,18 @@ namespace QsRoot
         /// <returns></returns>
         internal static Expression QsToNativeConvert(Type targetType, Expression value)
         {
+            if (value.Type == typeof(QsScalar))
+            {
+                // checking for conversion for inner types in the scalar
+                if (targetType == typeof(QsFunction)) return Expression.Property(Expression.Property(Expression.Convert(value, typeof(QsScalar)), "FunctionQuantity"), "Value"); 
+                if (targetType == typeof(Complex)) return Expression.Property(Expression.Property(Expression.Convert(value, typeof(QsScalar)), "ComplexQuantity"), "Value"); 
+                if (targetType == typeof(Quaternion)) return Expression.Property(Expression.Property(Expression.Convert(value, typeof(QsScalar)), "QuaternionQuantity"), "Value"); 
+                if (targetType == typeof(Rational)) return Expression.Property(Expression.Property(Expression.Convert(value, typeof(QsScalar)), "RationalQuantity"), "Value");
+                if (targetType == typeof(SymbolicVariable)) return Expression.Property(Expression.Property(Expression.Convert(value, typeof(QsScalar)), "SymbolicQuantity"), "Value");
+                if (targetType == typeof(double)) return Expression.Property(Expression.Property(Expression.Convert(value, typeof(QsScalar)), "NumericalQuantity"), "Value"); 
+
+            }
+
             if (targetType == typeof(QsValue) || targetType.BaseType == typeof(QsValue)) 
                 return Expression.Convert(value, targetType);   //no need to change because target type is QsValue which is the Qs primary type.
 

@@ -205,7 +205,7 @@ using Microsoft.Scripting;
 
             Console.WriteLine("       - Scalar Quantity");
             Console.WriteLine("         Ordinary Real Number: 3, 3e4 or 2.3<L>");
-            Console.WriteLine("         Symbolic Real Number: $x,  $ROI or $POP<m>");
+            Console.WriteLine("         Symbolic Real Number: $x, $y<m>, or ${x^2-y^32}");
             Console.WriteLine("         Complex Number      : C{3 2} or C{2 1}<K>");
             Console.WriteLine("         Quaternion Number   : H{3 2 1 9} or H{8 4 2 1}<J>");
             Console.WriteLine();

@@ -59,6 +59,10 @@ namespace Qs.Numerics
         {
             return "(" + Real.ToString(CultureInfo.InvariantCulture) + ", " + Imaginary.ToString(CultureInfo.InvariantCulture) + "i)";
         }
+        public string ToQsSyntax()
+        {
+            return "C{" + Real.ToString(CultureInfo.InvariantCulture) + ", " + Imaginary.ToString(CultureInfo.InvariantCulture) + "}";
+        }
 
 
         public static implicit operator Complex(double d)

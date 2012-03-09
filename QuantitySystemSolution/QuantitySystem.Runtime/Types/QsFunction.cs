@@ -190,7 +190,7 @@ namespace Qs.Types
                 else
                 {
                     //normal variable
-
+                    
                     nakedParameter = vario.ParseArithmatic(args[ip]);
 
                     // if this was another function name without like  v(c,g,8)  where g is a function name will be passed to c
@@ -644,7 +644,8 @@ namespace Qs.Types
 
                 qf.FunctionBody = functionDeclaration.Substring(functionToken[nsidx + 2].IndexInText + functionToken[nsidx + 2].TokenValueLength).Trim();
 
-                QsVar qv = new QsVar(qse, qf.FunctionBody, qf, lb);
+                Token functionBodyTokens;
+                QsVar qv = new QsVar(qse, qf.FunctionBody, qf, lb, out functionBodyTokens);
 
                 statements.Add(qv.ResultExpression);   //making the variable expression itself make it the return value of the function.
 
@@ -654,7 +655,7 @@ namespace Qs.Types
 
                 qf.FunctionExpression = lbe;
 
-                qf.FunctionBodyToken = functionToken.TrimTokens(3, 0);
+                qf.FunctionBodyToken = functionBodyTokens;
 
                 return qf;
 
@@ -664,6 +665,8 @@ namespace Qs.Types
                 return null;
             }
         }
+
+        static QsNamespace MathNamespace = QsNamespace.GetTypedNamespace("QsMath");
 
         /// <summary>
         /// Get the function that is stored in the scope.
@@ -678,7 +681,17 @@ namespace Qs.Types
             {
                 // no namespace included then it is from the local scope.
 
-                var function = (QsFunction)QsEvaluator.GetScopeValueOrNull(scope, qsNamespace, functionName);
+
+                // I am adding the mathmatical functions in the root namespace
+                // so I will test for the function namespace and
+
+                QsFunction function = (QsFunction)MathNamespace.GetValueOrNull(functionName);
+
+                // built int math functions will be overwrite any other functions
+                if (function != null) 
+                    return function;
+                else 
+                    function = (QsFunction)QsEvaluator.GetScopeValueOrNull(scope, qsNamespace, functionName);
 
                 return function;
                 

@@ -27,6 +27,17 @@ namespace QsRoot
                 throw new QsInvalidInputException("Expected matrix input");
         }
 
+        public static QsValue Determinant(QsParameter matrix)
+        {
+            if (matrix.QsNativeValue is QsMatrix)
+            {
+                return QsMatrix.Determinant(((QsMatrix)matrix.QsNativeValue));
+            }
+            else
+                throw new QsInvalidInputException("Expected matrix input");
+        }
+
+
     }
 
 }
