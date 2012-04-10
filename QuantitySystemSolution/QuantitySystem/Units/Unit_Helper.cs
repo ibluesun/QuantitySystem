@@ -499,6 +499,8 @@ namespace QuantitySystem.Units
         }
 
 
+        private static Dictionary<Type, UnitAttribute> UnitsAttributes = new Dictionary<Type, UnitAttribute>();
+
         /// <summary>
         /// Get the unit attribute which hold the unit information.
         /// </summary>
@@ -506,10 +508,15 @@ namespace QuantitySystem.Units
         /// <returns></returns>
         public static UnitAttribute GetUnitAttribute(Type unitType)
         {
-            object[] attributes = (object[])unitType.GetCustomAttributes(true);
+            UnitAttribute ua;
+            if (!UnitsAttributes.TryGetValue(unitType, out ua))
+            {
+                object[] attributes = unitType.GetCustomAttributes(typeof(UnitAttribute), true);
 
-            //get the UnitAttribute
-            UnitAttribute ua = (UnitAttribute)attributes.SingleOrDefault<object>(ut => ut is UnitAttribute);
+                //get the UnitAttribute
+                ua = (UnitAttribute)attributes.SingleOrDefault<object>(ut => ut is UnitAttribute);
+                UnitsAttributes.Add(unitType, ua);
+            }
 
             return ua;
 

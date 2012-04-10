@@ -11,7 +11,7 @@ namespace ParticleLexer.QsTokens
     /// </summary>
     [TokenPattern(
         RegexPattern = "<(°?\\w+!?(\\^\\d+)?\\.?)+(/(°?\\w+!?(\\^\\d+)?\\.?)+)?>"
-        , ShouldBeginWith = "<"
+        , ShouldBeginWith = "<", ShouldEndWith = ">"
         )
     ]
     public class UnitToken : TokenClass { }
@@ -118,7 +118,7 @@ namespace ParticleLexer.QsTokens
     /// Reference Namespace with its value  x:r   x:u  xd:Abs  x:r:t y:t:@e etc...   
     /// NamespaceToken
     /// </summary>
-    [TokenPattern(RegexPattern = @"(:*[a-zA-Z]\w*:)+@?[a-zA-Z]\w*")]
+    [TokenPattern(RegexPattern = @"(:*[a-zA-Z]\w*:)+@?[a-zA-Z]\w*", ContinousToken = true)]
     public class NameSpaceAndVariableToken : TokenClass
     {
     }
@@ -191,6 +191,7 @@ namespace ParticleLexer.QsTokens
     public class Nabla : TokenClass
     {
     }
+
 
 
     /// <summary>
@@ -283,9 +284,10 @@ namespace ParticleLexer.QsTokens
     /// Dollar Sign followed by word token. $x or $y  $ROI 
     /// also can be used for ${x*x*y}   any text between brackets will be parsed by the symbolicvariable praser
     /// </summary>
-    [TokenPattern(RegexPattern = @"\$\{.+\}", ShouldBeginWith = "$")]
+    [TokenPattern(RegexPattern = @"\$\{.+\}", ShouldBeginWith = "$", ShouldEndWith = "}")]
     public class SymbolicToken : TokenClass
     {
+
     }
 
     /// <summary>
@@ -299,7 +301,7 @@ namespace ParticleLexer.QsTokens
     /// <summary>
     /// C{3 4}  
     /// </summary>
-    [TokenPattern(RegexPattern = @"C\{.+\}", ShouldBeginWith = "C")]
+    [TokenPattern(RegexPattern = @"C\{.+\}", ShouldBeginWith = "C", ShouldEndWith = "}")]
     public class ComplexNumberToken : TokenClass
     {
     }
@@ -307,7 +309,7 @@ namespace ParticleLexer.QsTokens
     /// <summary>
     /// @{(t) = t^2}
     /// </summary>
-    [TokenPattern(RegexPattern = @"@\{.+\}", ShouldBeginWith = "@")]
+    [TokenPattern(RegexPattern = @"@\{.+\}", ShouldBeginWith = "@", ShouldEndWith = "}")]
     public class FunctionLambdaToken : TokenClass
     {
     }
@@ -322,7 +324,7 @@ namespace ParticleLexer.QsTokens
     /// <summary>
     /// H{3 4 2 1}
     /// </summary>
-    [TokenPattern(RegexPattern = @"H\{.+\}", ShouldBeginWith = "H")]
+    [TokenPattern(RegexPattern = @"H\{.+\}", ShouldBeginWith = "H", ShouldEndWith = "}")]
     public class QuaternionNumberToken : TokenClass
     {
     }
@@ -338,7 +340,7 @@ namespace ParticleLexer.QsTokens
     /// <summary>
     /// Q{1 2}
     /// </summary>
-    [TokenPattern(RegexPattern = @"Q\{.+\}", ShouldBeginWith = "Q")]
+    [TokenPattern(RegexPattern = @"Q\{.+\}", ShouldBeginWith = "Q", ShouldEndWith = "}")]
     public class RationalNumberToken : TokenClass
     {
     }
@@ -545,91 +547,6 @@ namespace ParticleLexer.QsTokens
             first.TokenClassType = token.TokenClassType;
 
             return Token.Zabbat(first);
-        }
-
-
-
-
-        /// <summary>
-        /// returns the value of tokens starting from specific token.
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="startIndex"></param>
-        /// <returns></returns>
-        public static string SubTokensValue(this Token token, int startIndex)
-        {
-            int idx = startIndex;
-            string total = string.Empty;
-            while (idx < token.Count)
-            {
-                total += token[idx].TokenValue;
-                idx++;
-            }
-            return total;
-
-        }
-
-
-        /// <summary>
-        /// Get inner tokens from leftIndex to the rightIndex 
-        /// --->   tokens &lt; -- 
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="leftIndex"></param>
-        /// <param name="rightIndex"></param>
-        /// <returns>Return new token with sub tokens trimmed</returns>
-        public static Token TrimTokens(this Token token, int leftIndex, int rightIndex)
-        {
-            int count = token.Count;
-
-
-            Token rtk = new Token();
-            for (int b = leftIndex; b < count - rightIndex; b++)
-            {
-                rtk.AppendSubToken(token[b]);
-            }
-
-            return rtk;
-
-        }
-
-
-        
-
-        /// <summary>
-        /// Extend Tokens from Left and Right and Fuse them into one Token with specific token class
-        /// </summary>
-        /// <param name="token"></param>
-        /// <param name="leftText"></param>
-        /// <param name="rightText"></param>
-        /// <returns>Return token with sub tokens extended and fused</returns>
-        public static Token FuseTokens<FusedTokenClass>(this Token token, string leftText, string rightText) 
-            where FusedTokenClass : TokenClass
-        {
-            int count = token.Count;
-
-            Token rtk = new Token();
-
-            foreach (var t in Token.ParseText(leftText))
-            {
-                rtk.AppendSubToken(t);
-            }
-
-            for (int b = 0; b < count; b++)
-            {
-                rtk.AppendSubToken(token[b]);
-            }
-            foreach (var t in Token.ParseText(rightText))
-            {
-                rtk.AppendSubToken(t);
-            }
-
-            rtk.TokenClassType = typeof(FusedTokenClass);
-
-            Token tk = new Token();
-            tk.AppendSubToken(rtk);
-
-            return tk;
         }
 
 
