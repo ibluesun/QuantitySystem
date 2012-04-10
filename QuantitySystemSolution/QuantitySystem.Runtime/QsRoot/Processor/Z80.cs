@@ -67,6 +67,7 @@ namespace QsRoot.Processor
         }
 
 
+
         public static QsVector Func(QsFunction f, DimensionlessQuantity<double> from, DimensionlessQuantity<double> to)
         {
             var increment = (to - from) / (40).ToQuantity();
@@ -99,6 +100,11 @@ namespace QsRoot.Processor
             var z = new Z80();
             z.PC = ((double)step).ToQuantity().ToScalar();
             return z;
+        }
+
+        public static double length(QsVector v)
+        {
+            return v.Count;
         }
     }
 }

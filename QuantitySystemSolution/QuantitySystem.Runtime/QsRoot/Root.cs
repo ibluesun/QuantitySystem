@@ -119,9 +119,13 @@ namespace QsRoot
 
                         NativeParameters.Add(arr);
                     }
+                    else if (paramInfos[iy].ParameterType == typeof(QsVector))
+                    {
+                        NativeParameters.Add((QsVector)p.QsNativeValue);
+                    }
                     else
                     {
-                        throw new QsException("The target parameter is not an array");
+                        throw new QsException("The target parameter is neither QsVector nor Array");
                     }
                 }
                 else

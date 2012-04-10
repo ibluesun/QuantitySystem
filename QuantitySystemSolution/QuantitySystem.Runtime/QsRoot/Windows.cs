@@ -31,6 +31,7 @@ namespace QsRoot
                 );
 
             return ((int)d).ToScalarValue();
+            //return d;
         }
 
         public static QsValue MessageBox(

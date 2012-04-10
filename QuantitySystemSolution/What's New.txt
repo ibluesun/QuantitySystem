@@ -1,3 +1,17 @@
+[Qs 1.2.5]
+- Enhancments to the lexer.  
+	(more speed)
+
+- Enhancments to the symbolic algebra. (using 0.83 version)
+	Fixed the logarithmic differentiation try ${x^x}|$x  and see the result.
+
+- Performance boosting through enabling cach in framework on unit attributes retreival.
+	run speed.qs is now giving me 1900 ms instead of previous 5000 ms
+	
+
+
+
+
 [Qs 1.2.4]
 - Fixed calling a static function from class with quantities parameters like Length<double>
 
