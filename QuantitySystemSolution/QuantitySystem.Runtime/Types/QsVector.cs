@@ -212,6 +212,16 @@ namespace Qs.Types
         {
             return "Vector";
         }
-    
+
+        public QsMatrix ToVectorMatrix()
+        {
+            return new QsMatrix(this);
+        }
+
+        public QsMatrix ToCoVectorMatrix()
+        {
+            return new QsMatrix(this).Transpose();
+        }
+
     }
 }

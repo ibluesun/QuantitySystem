@@ -365,7 +365,6 @@ namespace Qs.Types
                 for (int iy = 0; iy < RowsCount; iy++)
                 {
                     var vec = this.Rows[iy];
-
                     QsScalar[] tvec = new QsScalar[matrix.ColumnsCount]; //the target row in the Total Matrix.
 
                     //loop through all co vectors in the target matrix.
@@ -378,7 +377,7 @@ namespace Qs.Types
                         QsScalar[] snum = new QsScalar[vec.Count];
                         for (int i = 0; i < vec.Count; i++)
                         {
-                            snum[i] = vec[i] * covec[i];
+                            snum[i] = vec[i].MultiplyScalar(covec[i]);
                         }
 
                         QsScalar tnum = snum[0];

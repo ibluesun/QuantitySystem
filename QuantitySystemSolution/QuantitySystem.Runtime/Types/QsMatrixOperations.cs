@@ -347,14 +347,17 @@ namespace Qs.Types
             if (vl is QsReference) value = ((QsReference)vl).ContentValue;
             else value = vl;
 
-
             if (value is QsScalar)
             {
                 return this.MultiplyScalar((QsScalar)value);
             }
             else if (value is QsVector)
             {
-                throw new NotSupportedException();
+                // return value is column vector
+                QsMatrix mvec =  this.MultiplyMatrix(((QsVector)value).ToCoVectorMatrix());
+
+                // make it ordinary vector again.
+                return mvec.Columns[0];
             }
             else if (value is QsMatrix)
             {

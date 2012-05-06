@@ -120,6 +120,9 @@
     <None Include="matrix.qs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Include="MetricTensor.qs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="speed.qs">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

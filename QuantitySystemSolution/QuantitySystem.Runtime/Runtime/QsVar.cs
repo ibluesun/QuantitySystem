@@ -2256,9 +2256,37 @@ namespace Qs.Runtime
             
             if (op == "..") return Expression.Call(left, aqType.GetMethod("RangeOperation"), right);
 
-            if (op == "_h*") return Expression.Multiply(left, right);
+            if (op == "_h*") return Expression.Multiply(left, right);  // higher multiplication priority in case of 5^-3 to be 5^(-1*3) == 5^-1_h*3
 
-            if (op == "^") return Expression.Power(left, right, aqType.GetMethod("Pow"));
+            if (op == "^")
+            {
+                // This will be right associative operator
+                // which means if more than one power appeared like this 3^2^4  then it will be processed like this 3^(2^4)
+
+                if (eop.Next.Next != null)
+                {
+                    if (eop.Next.Operation == "^")
+                    {
+                        short iskip;
+                        var powerResult = Expression.Power(left, ArithExpression
+                            (
+                             eop.Next, out iskip
+                            ), aqType.GetMethod("Pow"));
+
+                        skip += iskip;
+                        return powerResult;
+                    }
+                    else
+                    {
+                        return Expression.Power(left, right, aqType.GetMethod("Pow"));
+                    }
+                }
+                else
+                {
+                    return Expression.Power(left, right, aqType.GetMethod("Pow"));
+                }
+            }
+
             if (op == "^.") return Expression.Power(left, right, aqType.GetMethod("PowDot"));
 
             if (op.Equals("^x", StringComparison.OrdinalIgnoreCase))
