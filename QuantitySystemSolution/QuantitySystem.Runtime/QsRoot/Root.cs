@@ -77,13 +77,16 @@ namespace QsRoot
 
                     if(paramInfos[iy].ParameterType.IsSubclassOf(typeof(QsValue)))
                     {
+                        // target is QsValue type so we make direct cast  
                         object nativeValue = System.Convert.ChangeType(scalar, paramInfos[iy].ParameterType);
                         NativeParameters.Add(nativeValue);
                     }
                     else if(paramInfos[iy].ParameterType.IsGenericType)
                     {
+                        // target is generic type which maybe AnyQuantity<double> 
                         if (paramInfos[iy].ParameterType == typeof(AnyQuantity<double>))
                         {
+                            // yes convert safely to the AnyQuantity<double>
                             NativeParameters.Add(scalar.NumericalQuantity);
                         }
                         else
@@ -104,10 +107,10 @@ namespace QsRoot
                 }
                 else if (p.QsNativeValue is QsVector)
                 {
-
+                    // source is vector
                     if (paramInfos[iy].ParameterType.IsArray)
                     {
-
+                        // target is array
                         QsVector vec = (QsVector)p.QsNativeValue;
                         System.Type ArrayType = System.Type.GetType(paramInfos[iy].ParameterType.FullName.Trim('[', ']'));
                         System.Array arr = System.Array.CreateInstance(ArrayType, vec.Count);
@@ -121,6 +124,7 @@ namespace QsRoot
                     }
                     else if (paramInfos[iy].ParameterType == typeof(QsVector))
                     {
+                        // target is QsVector
                         NativeParameters.Add((QsVector)p.QsNativeValue);
                     }
                     else
@@ -128,9 +132,25 @@ namespace QsRoot
                         throw new QsException("The target parameter is neither QsVector nor Array");
                     }
                 }
+                else if (p.QsNativeValue is QsObject)
+                {
+                    // source is an object
+                    // we need to test the target type if it is the same as this object type or not then make conversion or throw exception
+                    QsObject qso = (QsObject)p.QsNativeValue;
+                    if (qso.InstanceType.IsSubclassOf(paramInfos[iy].ParameterType) || qso.InstanceType.Equals(paramInfos[iy].ParameterType))
+                    {
+                        //NativeParameters.Add(Convert.ChangeType((object)qso.ThisObject, paramInfos[iy].ParameterType));
+                        NativeParameters.Add(qso.ThisObject);
+                    }
+                    else
+                    {
+                        throw new QsException(string.Format("Converting {0} to {1} is not supported", qso.InstanceType.Name, paramInfos[iy].Name));
+                    }
+
+                }
                 else
                 {
-                    throw new QsException("Converting Qs values other than scalars to native function is not supported.");
+                    throw new QsException(string.Format("Converting from {0} to {1} is not supported.", p.ParameterRawText, paramInfos[iy].GetType().Name));
                 }
 
                 iy++;

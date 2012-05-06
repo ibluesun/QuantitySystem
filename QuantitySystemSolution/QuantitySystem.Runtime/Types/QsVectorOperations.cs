@@ -366,6 +366,12 @@ namespace Qs.Types
             {
                 return this.MultiplyVector((QsVector)value);
             }
+            else if (value is QsMatrix)
+            {
+                QsMatrix mvec =  this.ToVectorMatrix().MultiplyMatrix((QsMatrix)value);
+                // make it vector again.
+                return mvec[0];
+            }
             else
             {
                 throw new NotSupportedException();

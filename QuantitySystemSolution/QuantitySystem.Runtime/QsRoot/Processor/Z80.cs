@@ -16,7 +16,7 @@ namespace QsRoot.Processor
     /// Z80 Class is for testing purposes only
     /// there are no important thing here
     /// </summary>
-    public class Z80
+    public class Z80 : EightBitProcessor
     {
 
         public static QsScalar R { get; set; }
@@ -27,28 +27,7 @@ namespace QsRoot.Processor
             R = QsScalar.Zero;
         }
 
-        public QsValue AF { get; set; }
-        public QsValue BC { get; set; }
-        public QsValue DE { get; set; }
-        public QsValue HL { get; set; }
-
-        public QsValue IX { get; set; }
-        public QsValue IY { get; set; }
-
-        public QsValue SP { get; set; }
-        public QsValue PC { get; set; }
-
-        public Z80()
-        {
-            AF = QsScalar.Zero;
-            BC = QsScalar.Zero;
-            DE = QsScalar.Zero;
-            HL = QsScalar.Zero;
-            IX = QsScalar.Zero;
-            IY = QsScalar.Zero;
-            SP = QsScalar.Zero;
-            PC = QsScalar.Zero;
-        }
+        
 
         public double Sum(double a, double b) 
         { 
@@ -105,6 +84,14 @@ namespace QsRoot.Processor
         public static double length(QsVector v)
         {
             return v.Count;
+        }
+
+
+        
+
+        public QsValue AddHL(Z80 z80)
+        {
+            return this.HL + z80.HL;
         }
     }
 }

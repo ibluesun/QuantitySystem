@@ -114,6 +114,7 @@
     <Compile Include="CoMath.cs" />
     <Compile Include="QsRoot\Basic.cs" />
     <Compile Include="QsRoot\Environment.cs" />
+    <Compile Include="QsRoot\Processor\EightBitProcessor.cs" />
     <Compile Include="QsRoot\QsMath.cs">
       <SubType>Code</SubType>
     </Compile>
