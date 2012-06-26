@@ -182,6 +182,8 @@ namespace Qs.Types
         /// <returns></returns>
         abstract public QsValue GetIndexedItem(QsParameter[] indices);
 
+        abstract public void SetIndexedItem(QsParameter[] indices, QsValue value);
+
 
         /// <summary>
         /// -> operator

@@ -1,3 +1,17 @@
+[Qs 1.2.7]
+- Now you can perform the basic operations between the objects  + - * and /
+- converting between symbolic scalars and native scalars in functions and object creation now is working.
+- Fixing a parsing error in symbolic calcs ${3e-3} parsed as "3e" and "-3" after fix it is now parsed as a number 3e-3 or 0.003
+- First Appearence of loops
+	* Syntax:   Loop [Expression] On [Vector Name | Tuple Name | Text Variable Name] 
+	the return values are returned in tuple
+	c = 5..14
+	g = loop sin(c) on c   #will return sin values in flowing tuple
+	and you can access the counter itself by add underscore before the name
+	so that
+	result = loop _c on c  # result will contain a flowing tuple of indexer.
+
+
 [Qs 1.2.6]
 - New Operations
 	Matrix * vector  == Matrix * Matrix Column Vector  ;  result is vector

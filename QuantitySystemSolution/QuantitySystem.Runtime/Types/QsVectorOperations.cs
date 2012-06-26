@@ -798,6 +798,11 @@ namespace Qs.Types
             return ListStorage[index];
         }
 
+        public override void SetIndexedItem(QsParameter[] indices, QsValue value)
+        {
+            throw new NotImplementedException();
+        }
+
 
         /// <summary>
         /// Some operations on the vector.

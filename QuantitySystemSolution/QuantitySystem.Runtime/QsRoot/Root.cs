@@ -55,6 +55,12 @@ namespace QsRoot
             return dt;
         }
 
+        /// <summary>
+        /// This function try to convert the Qs Parameters into the native corresponding parameters in the target method and return the converted parameters into array.
+        /// </summary>
+        /// <param name="method"></param>
+        /// <param name="parameters"></param>
+        /// <returns></returns>
         internal static object[] QsParametersToNativeValues(MethodInfo method, params QsParameter[] parameters)
         {
 
@@ -94,6 +100,11 @@ namespace QsRoot
                             object nativeValue = System.Convert.ChangeType(scalar.NumericalQuantity, paramInfos[iy].ParameterType);
                             NativeParameters.Add(nativeValue);
                         }
+                    }
+                    else if (paramInfos[iy].ParameterType == typeof(SymbolicVariable))
+                    {
+                        // target is symbolic variable 
+                        NativeParameters.Add(scalar.SymbolicQuantity.Value);
                     }
                     else
                     {
@@ -171,6 +182,7 @@ namespace QsRoot
         {
             if (value == null) return null;
 
+            
             if (value is Type)
             {
                 var EnumType = value as Type;
@@ -228,6 +240,7 @@ namespace QsRoot
                 return v;
             }
 
+            if (vType == typeof(SymbolicVariable)) return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = ((SymbolicVariable)value).ToQuantity() };
 
             // the last thing is to return object from this type
             if (!vType.IsValueType) return QsObject.CreateNativeObject(value);
@@ -246,7 +259,14 @@ namespace QsRoot
         /// <returns></returns>
         internal static Expression QsToNativeConvert(Type targetType, Expression value)
         {
-            if (value.Type == typeof(QsScalar))
+
+            Type SourceType = value.Type;
+
+            ConstantExpression ce = value as ConstantExpression;
+            if (ce != null) SourceType = ce.Value.GetType();
+            
+
+            if (SourceType == typeof(QsScalar))
             {
                 // checking for conversion for inner types in the scalar
                 if (targetType == typeof(QsFunction)) return Expression.Property(Expression.Property(Expression.Convert(value, typeof(QsScalar)), "FunctionQuantity"), "Value"); 

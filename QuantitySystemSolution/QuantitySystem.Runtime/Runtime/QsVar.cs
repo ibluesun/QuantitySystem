@@ -210,7 +210,9 @@ namespace Qs.Runtime
                 typeof(WhenStatementToken),
                 typeof(OtherwiseStatementToken),
                 typeof(AndStatementToken),
-                typeof(OrStatementToken)
+                typeof(OrStatementToken),
+                typeof(LoopStatementToken),
+                typeof(OnStatementToken)
                 );
 
             // merge the $ + Word into Symbolic and get the symbolic variables.
@@ -269,14 +271,19 @@ namespace Qs.Runtime
             tokens = tokens.RemoveSpaceTokens();                           //remove all spaces
 
             tokens = tokens.DiscoverQsCalls(StringComparer.OrdinalIgnoreCase,
-                new string[] { "When", "Otherwise", "And", "Or" } 
+                new string[] { "When", "Otherwise", "And", "Or", "Loop", "On" } 
                 );
 
+            tokens = tokens.DiscoverQsLoopsTokens();
+ 
             tokenizedExpression = tokens;
 
             return ParseArithmatic(tokens);
 
         }
+
+        Stack<string> loopIteratorContainer = new Stack<string>();
+        Dictionary<string, ParameterExpression> loopIteratorParameter = new Dictionary<string, ParameterExpression>();
 
         /// <summary>
         /// Main parsing method.
@@ -285,7 +292,6 @@ namespace Qs.Runtime
         /// <returns>Microsoft DLR Expression</returns>
         internal Expression ParseArithmatic(Token toks)
         {
-
             // I remove the spaces here because the function called here sometimes have extra unneeded spaces
             // one scenario is _|| {3 4 5} >> 1 ||_  
             // the magnitude token will take the inner tokens as it is then send it for evaluation again.
@@ -353,6 +359,7 @@ namespace Qs.Runtime
                     goto ExpressionCompleted;
                 }
 
+                
                 bool FactorialPostfix = false;
                 if (!string.IsNullOrEmpty(OperatorTokenText))
                 {
@@ -532,6 +539,60 @@ namespace Qs.Runtime
                     quantityExpression = GetQsVariable(mtk);
 
                     --ix;   //decrease ix with one because operator was fused in this token.
+
+                }
+                else if (tokens[ix].TokenClassType == typeof(LoopBodyToken))
+                {
+                    // get the count of the loop
+                    QsValue v = Evaluator.GetVariable(tokens[ix][3].TokenValue) as QsValue;
+
+                    if (v == null) throw new QsException(tokens[ix][3].TokenValue + " doesn't exist in memoir");
+                    int count = 0;
+
+                    if (v is QsVector) count = ((QsVector)v).Count;
+                    else if (v is QsFlowingTuple) count = ((QsFlowingTuple)v).Count;
+                    else if (v is QsText) count = ((QsText)v).Text.Length;
+                    else throw new QsException(tokens[ix][3].TokenValue + " of type " + v.GetType().Name + " is not supported");
+
+                    // expression that hold the counter.
+                    ParameterExpression counter = Expression.Parameter(typeof(int), "Counter_" + loopIteratorContainer.Count.ToString());
+
+
+                    // the statement in tokens[ix][1] will be repeated on the count of vector or tuple on tokens[ix][3]
+                    LabelTarget LoopBreakLabel = Expression.Label(typeof(QsValue), "LoopBreak_" + loopIteratorContainer.Count.ToString());
+
+                    // Creating an expression to hold a local variable. 
+                    ParameterExpression result = Expression.Parameter(typeof(QsFlowingTuple), "result");
+
+
+                    // modify the state of this qsvar to indicate there is a difference in getting the value 
+                    loopIteratorContainer.Push(tokens[ix][3].TokenValue);
+                    loopIteratorParameter.Add(tokens[ix][3].TokenValue, counter);
+                    //QsFlowingTuple ss = new QsFlowingTuple();
+                    //ss.AddOperation(null);
+
+                    MethodInfo fltAdd = typeof(QsFlowingTuple).GetMethod("AddTupleValue");
+
+                    
+                    quantityExpression = Expression.Block(
+                          new[] { counter, result },
+                          
+                          Expression.Assign(result, Expression.New(typeof(QsFlowingTuple))),
+                          Expression.Assign(counter, Expression.Constant(0)),
+                             Expression.Loop(
+                                 Expression.IfThenElse(
+                                    Expression.LessThan(counter, Expression.Constant(count)),
+                                    Expression.Block(
+                                        Expression.Call(result, fltAdd, ParseArithmatic(tokens[ix][1]))
+                                        ,Expression.PostIncrementAssign(counter)
+                                        ),
+                                    Expression.Break(LoopBreakLabel, result)
+                                    ), LoopBreakLabel)
+                                );
+
+                    loopIteratorContainer.Pop();
+                    loopIteratorParameter.Remove(tokens[ix][3].TokenValue);
+
                 }
                 else
                 {
@@ -593,6 +654,26 @@ namespace Qs.Runtime
                     }
                     else
                     {
+                        Action<string, ParameterExpression> GetIteratorElement = (s, vp) =>
+                            {
+                                // the variable here is iterated over declared tuple or vector 
+                                // we will get the value from vector or tuple based on counter parameter
+
+                                quantityExpression = GetQsVariable(tokens[ix]);
+                                var mix = typeof(QsValue).GetMethod("GetIndexedItem");
+                                var mpm = typeof(QsParameter).GetMethod("MakeParameter");
+
+                                var ItoQsv = typeof(Qs).GetMethod("ToScalarValue", new Type[] { typeof(int) });
+
+                                var lip = Expression.Call(ItoQsv, vp);
+
+                                var IndexArg = Expression.Call(mpm
+                                    , Expression.Convert(lip, typeof(object))
+                                    , Expression.Constant("Counter_" + s));
+
+                                quantityExpression = Expression.Call(quantityExpression, mix, Expression.NewArrayInit(typeof(QsParameter), IndexArg));
+                            };
+
                         #region variable in main context
                         if (eop != null)
                         {
@@ -603,18 +684,55 @@ namespace Qs.Runtime
                             }
                             else if (eop.Operation == "!" || eop.Operation == ":")
                             {
-                                quantityExpression = Expression.Constant(new QsText(tokens[ix].TokenValue));   
+                                quantityExpression = Expression.Constant(new QsText(tokens[ix].TokenValue));
+                            }
+                            else
+                            {
+                                if (loopIteratorContainer.Count > 0 && loopIteratorContainer.Contains(tokens[ix].TokenValue))
+                                {
+                                    GetIteratorElement(tokens[ix].TokenValue, loopIteratorParameter[tokens[ix].TokenValue]);
+                                }
+                                else if (loopIteratorContainer.Count > 0
+                                    && tokens[ix].TokenValue.Length > 1
+                                    && tokens[ix].TokenValue.StartsWith("_")
+                                    && loopIteratorContainer.Contains(tokens[ix].TokenValue.Substring(1))
+                                    )
+                                {
+                                    // case of loop counter
+                                    var ItoQsv = typeof(Qs).GetMethod("ToScalarValue", new Type[] { typeof(int) });
+
+                                    quantityExpression = Expression.Call(ItoQsv, loopIteratorParameter[tokens[ix].TokenValue.Substring(1)]);
+                                }
+                                else
+                                {
+                                    //quantity variable  //get it from evaluator  global heap
+                                    quantityExpression = GetQsVariable(tokens[ix]);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            if (loopIteratorContainer.Count > 0 && loopIteratorContainer.Contains(tokens[ix].TokenValue))
+                            {
+                                // the case of accessing the iterator
+                                GetIteratorElement(tokens[ix].TokenValue, loopIteratorParameter[tokens[ix].TokenValue]);
+                            }
+                            else if (loopIteratorContainer.Count > 0 
+                                && tokens[ix].TokenValue.Length > 1
+                                && tokens[ix].TokenValue.StartsWith("_") 
+                                && loopIteratorContainer.Contains(tokens[ix].TokenValue.Substring(1))
+                                )
+                            {
+                                // case of loop counter
+                                var ItoQsv = typeof(Qs).GetMethod("ToScalarValue", new Type[] { typeof(int) });
+
+                                quantityExpression = Expression.Call(ItoQsv, loopIteratorParameter[tokens[ix].TokenValue.Substring(1)]);                                
                             }
                             else
                             {
                                 //quantity variable  //get it from evaluator  global heap
                                 quantityExpression = GetQsVariable(tokens[ix]);
                             }
-                        }
-                        else
-                        {
-                            //quantity variable  //get it from evaluator  global heap
-                            quantityExpression = GetQsVariable(tokens[ix]);
                         }
                         #endregion
                     }

@@ -542,52 +542,70 @@ namespace Qs.Runtime
                                 #region Non indexed sequence
 
                                 //match for a[1]
-                                int n = int.Parse(seq[nsidx + 1].TokenValue.Trim('[', ']'));
 
-                                if (seq.Count == nsidx + 3)
+                                string SequenceParameter = seq[nsidx + 1].TokenValue.Trim('[', ']');
+                                int n;
+                                if (int.TryParse(SequenceParameter, out n))
                                 {
-                                    #region Parametrized non indexed sequence
-
-                                    string[] parameters = { }; //array with zero count :)
-                                    if (seq[nsidx + 2].TokenClassType == typeof(ParenthesisGroupToken))
+                                    if (seq.Count == nsidx + 3)
                                     {
-                                        parameters = (from c in seq[nsidx + 2]
-                                                      where c.TokenClassType == typeof(WordToken)
-                                                      select c.TokenValue).ToArray();
+                                        #region Parametrized non indexed sequence
+
+                                        string[] parameters = { }; //array with zero count :)
+                                        if (seq[nsidx + 2].TokenClassType == typeof(ParenthesisGroupToken))
+                                        {
+                                            parameters = (from c in seq[nsidx + 2]
+                                                          where c.TokenClassType == typeof(WordToken)
+                                                          select c.TokenValue).ToArray();
+                                        }
+                                        else
+                                        {
+                                            throw new QsException("Expected Parenthesis for sequence element assignation");
+                                        }
+
+                                        string sqname = QsSequence.FormSequenceSymbolicName(seq[nsidx + 0].TokenValue, 1, parameters.Length);
+
+                                        QsSequence sq = QsSequence.GetSequence(Scope, seqNamespace, sqname);
+
+                                        string evline = line;
+
+                                        //replace the parameter names with parameters with the real parameter names of sequence
+                                        for (int i = 0; i < parameters.Length; i++)
+                                        {
+                                            evline = evline.Replace(parameters[i], sq.Parameters[i].Name);
+                                        }
+
+                                        sq[n] = QsSequenceElement.Parse(evline, this, sq);
+                                        #endregion
                                     }
                                     else
                                     {
-                                        throw new QsException("Expected Parenthesis for sequence element assignation");
+                                        #region Parameterless Sequence
+                                        string sqname = QsSequence.FormSequenceSymbolicName(seq[nsidx + 0].TokenValue, 1, 0);
+
+                                        QsSequence sq = QsSequence.GetSequence(Scope, seqNamespace, sqname);
+
+                                        sq[n] = QsSequenceElement.Parse(line, this, sq);
+                                        #endregion
                                     }
-
-                                    string sqname = QsSequence.FormSequenceSymbolicName(seq[nsidx + 0].TokenValue, 1, parameters.Length);
-
-                                    QsSequence sq = QsSequence.GetSequence(Scope, seqNamespace, sqname);
-
-                                    string evline = line;
-
-                                    //replace the parameter names with parameters with the real parameter names of sequence
-                                    for (int i = 0; i < parameters.Length; i++)
-                                    {
-                                        evline = evline.Replace(parameters[i], sq.Parameters[i].Name);
-                                    }
-
-                                    sq[n] = QsSequenceElement.Parse(evline, this, sq);
-                                    #endregion
-
                                 }
                                 else
                                 {
+                                    // not a number may be  then it is a text :) :)
+                                    SequenceParameter = SequenceParameter.Trim('"');  // remove 
+                                    // get the name of this variable
+                                    
+                                    string oname = seq[nsidx + 0].TokenValue;
+                                    var oinstance = GetVariable(oname) as QsValue;
+                                    QsVar qv = new QsVar(this, line);
 
-                                    #region Parameterless Sequence
-                                    string sqname = QsSequence.FormSequenceSymbolicName(seq[nsidx + 0].TokenValue, 1, 0);
-
-                                    QsSequence sq = QsSequence.GetSequence(Scope, seqNamespace, sqname);
-
-                                    sq[n] = QsSequenceElement.Parse(line, this, sq);
-                                    #endregion
+                                    oinstance.SetIndexedItem(
+                                        new QsParameter[] { QsParameter.MakeParameter(new QsText(SequenceParameter), SequenceParameter) }
+                                        , (QsValue)qv.Execute()
+                                        );
 
                                 }
+
                                 #endregion
                             }
 
@@ -603,7 +621,7 @@ namespace Qs.Runtime
                     }
                     else
                     {
-
+                        
                         #region Normal Variable
                         //Normal Variable.
                         // get the after assign expression value
@@ -615,6 +633,7 @@ namespace Qs.Runtime
                             vnToken = vnToken.MergeTokens<MultipleSpaceToken>();
                             vnToken = vnToken.RemoveSpaceTokens();
                             vnToken = vnToken.MergeTokens<WordToken>();
+                            vnToken = vnToken.MergeTokens<NumberToken>();
                             vnToken = vnToken.MergeTokens<ColonToken>();
                             vnToken = vnToken.MergeTokens<NamespaceToken>();
                             vnToken = vnToken.MergeSequenceTokens<WordToken>(typeof(AtSignToken), typeof(WordToken));

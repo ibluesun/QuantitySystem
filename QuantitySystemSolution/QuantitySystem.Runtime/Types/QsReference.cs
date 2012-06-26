@@ -174,6 +174,11 @@ namespace Qs.Types
             return ContentValue.GetIndexedItem(indices);
         }
 
+        public override void SetIndexedItem(QsParameter[] indices, QsValue value)
+        {
+            ContentValue.SetIndexedItem(indices, value);
+        }
+
         /// <summary>
         /// when executing object->method or property
         /// </summary>
