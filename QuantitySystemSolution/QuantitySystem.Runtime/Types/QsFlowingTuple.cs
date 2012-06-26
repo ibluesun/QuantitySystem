@@ -53,6 +53,11 @@ namespace Qs.Types
 
         QsTupleValue[] InitialValues;
 
+        public QsFlowingTuple()
+        {
+        }
+
+
         public QsFlowingTuple(params QsTupleValue[] values)
         {
             // get the maximum id defined in the array 
@@ -73,6 +78,17 @@ namespace Qs.Types
 
         }
 
+
+
+        public void AddTupleValue(QsValue value)
+        {
+            int sid = this.Count > 0 ? ThisFlow.FlowSteps.Max(s => s.Id) : 0;
+            sid += 10;
+            var v = ThisFlow.Add("Step " + sid, sid);
+            if (value == null) v.Value = new QsText("n/a");
+            else v.Value = value;
+        }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -86,6 +102,22 @@ namespace Qs.Types
             return lll;
         }
 
+
+        public override string ToShortString()
+        {
+            return string.Format("QsTuple[{0} Elements]", Count);
+        }
+
+        /// <summary>
+        /// Returns number of elements in tuple
+        /// </summary>
+        public int Count
+        {
+            get
+            {
+                return ThisFlow.Count();
+            }
+        }
 
         public override QsValue Identity
         {
@@ -256,6 +288,11 @@ namespace Qs.Types
                 int ix = (int)((QsScalar)indices[0].QsNativeValue).NumericalQuantity.Value;
                 return (QsValue)ThisFlow.FlowSteps[ix].Value;
             }
+        }
+
+        public override void SetIndexedItem(QsParameter[] indices, QsValue value)
+        {
+            throw new NotImplementedException();
         }
 
         /// <summary>

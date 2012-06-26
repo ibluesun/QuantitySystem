@@ -672,6 +672,11 @@ namespace Qs.Types
             }
         }
 
+        public override void SetIndexedItem(QsParameter[] indices, QsValue value)
+        {
+            throw new NotImplementedException();
+        }
+
 
         #endregion
 

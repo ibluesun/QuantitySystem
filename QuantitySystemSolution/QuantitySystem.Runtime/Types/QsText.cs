@@ -181,6 +181,12 @@ namespace Qs.Types
 
         public override QsValue GetIndexedItem(QsParameter[] indices)
         {
+            int i = (int)((QsScalar)indices[0].QsNativeValue).NumericalQuantity.Value;
+            return Char.ConvertToUtf32(Text, i).ToQuantity().ToScalar();
+        }
+
+        public override void SetIndexedItem(QsParameter[] indices, QsValue value)
+        {
             throw new NotImplementedException();
         }
         #endregion

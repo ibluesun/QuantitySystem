@@ -45,6 +45,11 @@ namespace QsRoot.Processor
             return x * x;
         }
 
+        public static SymbolicAlgebra.SymbolicVariable Register()
+        {
+            return SymbolicAlgebra.SymbolicVariable.Parse("R+HL");
+        }
+
 
 
         public static QsVector Func(QsFunction f, DimensionlessQuantity<double> from, DimensionlessQuantity<double> to)
@@ -92,6 +97,99 @@ namespace QsRoot.Processor
         public QsValue AddHL(Z80 z80)
         {
             return this.HL + z80.HL;
+        }
+
+
+        public static Z80 operator +(Z80 left, Z80 right)
+        {
+
+            var l = new Z80();
+            l.AF = left.AF + right.AF;
+            return l;
+        }
+
+        public static Z80 operator -(Z80 left, Z80 right)
+        {
+
+            var l = new Z80();
+            l.AF = left.AF - right.AF;
+            return l;
+        }
+
+        public static Z80 operator *(Z80 left, Z80 right)
+        {
+
+            var l = new Z80();
+            l.AF = left.AF * right.AF;
+            return l;
+        }
+
+        public static Z80 operator /(Z80 left, Z80 right)
+        {
+
+            var l = new Z80();
+            l.AF = left.AF / right.AF;
+            return l;
+        }
+
+        public QsValue this[string register]
+        {
+            get
+            {
+                switch (register)
+                {
+                    case "AF":
+                        return this.AF;
+                    case "BC":
+                        return BC;
+                    case "DE":
+                        return DE;
+                    case "HL":
+                        return HL;
+                    case "IX":
+                        return IX;
+                    case "IY":
+                        return IY;
+                    case "SP":
+                        return SP;
+                    case "PC":
+                        return PC;
+                    default:
+                        throw new QsException("Register not found");
+                }
+            }
+            set
+            {
+                switch (register)
+                {
+                    case "AF":
+                        this.AF = value;
+                        break;
+                    case "BC":
+                        BC = value;
+                        break;
+                    case "DE":
+                        DE = value;
+                        break;
+                    case "HL":
+                        HL = value;
+                        break;
+                    case "IX":
+                        IX = value;
+                        break;
+                    case "IY":
+                        IY = value;
+                        break;
+                    case "SP":
+                        SP = value;
+                        break;
+                    case "PC":
+                        PC = value;
+                        break;
+                    default:
+                        throw new QsException("Register not found");
+                }
+            }
         }
     }
 }

@@ -135,7 +135,6 @@ using Microsoft.Scripting;
             {
                 MetricPrefix pr = MetricPrefix.FromExponent(e);
                 Console.WriteLine("     {0}         {1}        10^{2}", pr.Prefix.PadRight(10), pr.Symbol.PadRight(10), pr.Exponent);
-
             }
 
             Console.ForegroundColor = ForegroundColor;
@@ -156,7 +155,6 @@ using Microsoft.Scripting;
             Console.WriteLine("Type \"help\" for more information.");
 
             Console.ForegroundColor = ForegroundColor;
-
         }
 
         internal static void PrintCopyright()
@@ -169,8 +167,11 @@ using Microsoft.Scripting;
 
             var calc_ver = (AssemblyFileVersionAttribute)Assembly.GetEntryAssembly().GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false)[0];
 
+            var symb_ver = (AssemblyFileVersionAttribute)Assembly.GetAssembly(typeof(SymbolicAlgebra.SymbolicVariable)).GetCustomAttributes(typeof(AssemblyFileVersionAttribute), false)[0];
+
             Console.WriteLine("Quantity System Framework  ver " + lib_ver.Version);
             Console.WriteLine("Quantity System DLR        ver " + qsc_ver.Version);
+            Console.WriteLine("Symbolic Algebra Library   ver " + symb_ver.Version);
             Console.WriteLine("Quantity System Calculator ver " + calc_ver.Version);
 
 
@@ -182,7 +183,7 @@ using Microsoft.Scripting;
             Console.WriteLine();
             Console.WriteLine("-------------------------------------------------------------------");
             Console.WriteLine("--                Ahmed Sadek Mohamed Tawfik                     --");
-            Console.WriteLine("--  Email: Ahmed.Sadek@LostParticles.net; Ahmed.Amara@gmail.com  --");
+            Console.WriteLine("--              Ahmed.Sadek@LostParticles.net                    --");
             Console.WriteLine("-------------------------------------------------------------------");
 
             Console.ForegroundColor = ForegroundColor;

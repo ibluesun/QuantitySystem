@@ -5,21 +5,39 @@ using System.Text;
 using Qs.Types;
 using QuantitySystem.Quantities.DimensionlessQuantities;
 using QuantitySystem.Quantities.BaseQuantities;
+using SymbolicAlgebra;
+using Qs;
 
 namespace QsRoot.Processor
 {
     public class Curve
     {
-        QsFunction iv;
-        public Curve(QsFunction s)
+        readonly SymbolicVariable fx;
+        readonly SymbolicVariable fy;
+        readonly SymbolicVariable fz;
+
+        public Curve(SymbolicVariable x, SymbolicVariable y, SymbolicVariable z)
         {
-            iv = s;
+            fx = x;
+            fy = y;
+            fz = z;
         }
 
-        public AnyQuantity<double> GetValue(AnyQuantity<double> s)
+        public QsVector Point(double t)
         {
-            return iv.Invoke(s);
+            var x = fx.Execute(t);
+            var y = fy.Execute(t);
+            var z = fz.Execute(t);
+
+            return new QsVector(x.ToQuantity().ToScalar(), y.ToQuantity().ToScalar(), z.ToQuantity().ToScalar());
+
         }
+
+        public static Curve GetCurve(SymbolicVariable x, SymbolicVariable y, SymbolicVariable z)
+        {
+            return new Curve(x, y, z);
+        }
+
 
     }
 }

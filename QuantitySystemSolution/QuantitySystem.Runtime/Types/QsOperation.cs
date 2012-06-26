@@ -141,5 +141,10 @@ namespace Qs.Types
         {
             throw new NotImplementedException();
         }
+
+        public override void SetIndexedItem(QsParameter[] indices, QsValue value)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

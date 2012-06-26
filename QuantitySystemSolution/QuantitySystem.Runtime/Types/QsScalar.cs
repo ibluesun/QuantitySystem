@@ -1730,6 +1730,11 @@ namespace Qs.Types
             }
         }
 
+        public override void SetIndexedItem(QsParameter[] indices, QsValue value)
+        {
+            throw new NotImplementedException();
+        }
+
         #region ICloneable Members
 
         public object Clone()

@@ -2,6 +2,7 @@
 using ParticleLexer.StandardTokens;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace ParticleLexer.QsTokens
 {
@@ -210,7 +211,36 @@ namespace ParticleLexer.QsTokens
     {
     }
 
+    /// <summary>
+    /// Loop
+    /// </summary>
+    [TokenPattern(RegexPattern="Loop", ExactWord = true)]
+    public class LoopStatementToken : TokenClass
+    {
+    }
 
+    /// <summary>
+    /// On
+    /// </summary>
+    [TokenPattern(RegexPattern="On", ExactWord=true)]
+    public class OnStatementToken : TokenClass
+    {
+    }
+
+
+    /// <summary>
+    /// Express the loop expression
+    /// </summary>
+    public class LoopBodyToken : TokenClass
+    {
+    }
+
+    /// <summary>
+    /// The expression that will be repeated in loop
+    /// </summary>
+    public class LoopBodyExpressionToken : TokenClass
+    {
+    }
 
     [TokenPattern(RegexPattern = @"\^\.", ExactWord = true)]
     public class PowerDotToken : TokenClass
@@ -605,6 +635,64 @@ namespace ParticleLexer.QsTokens
 
                 ix++;
             
+            }
+
+
+            return root;
+        }
+    
+        /// <summary>
+        /// Parsing the loop body 
+        /// Loop Music:Play(c) On c   # where c = ("C", "D", "E", "F", "G", "A", "B")
+        /// Loop Loop IO:Poke(i, j, u(i)+v(j)) on i on j  
+        /// </summary>
+        /// <param name="tokens"></param>
+        /// <returns></returns>
+        public static Token DiscoverQsLoopsTokens(this Token tokens)
+        {
+            // here I will discover the looping statement  loop expression on vector name
+
+            Token root = new Token();
+            Token runner = root;
+
+            //add every token until you encounter "loop"  then "on"
+            int ix = 0;
+
+            Stack<Token> s = new Stack<Token>();
+            
+            while (ix < tokens.Count)
+            {
+                if (tokens[ix].TokenClassType == typeof(LoopStatementToken))
+                {
+                    Token loopBody = new Token();
+                    loopBody.TokenClassType = typeof(LoopBodyToken);
+                    runner.AppendSubToken(loopBody);
+
+                    loopBody.AppendSubToken(tokens[ix]); // add the "loop" token 
+                    
+                    Token bodyexpr = new Token() { TokenClassType = typeof(LoopBodyExpressionToken) };
+                    loopBody.AppendSubToken(bodyexpr);
+
+                    runner = bodyexpr;
+
+
+                }
+                else if (tokens[ix].TokenClassType == typeof(OnStatementToken))
+                {
+                    runner = runner.ParentToken;
+
+                    runner.AppendSubToken(tokens[ix]);      // the name of on
+                    runner.AppendSubToken(tokens[ix + 1]);  // the name of the container we are counting on
+                    ix++;
+                    runner = runner.ParentToken;
+                }
+                else
+                {
+                    // add the expressions normally
+                    runner.AppendSubToken(tokens[ix]);
+                }
+
+                ix++;
             }
 
 
