@@ -192,7 +192,7 @@ namespace Qs.Types
         /// <returns></returns>
         virtual public QsValue Execute(Token expression)
         {
-            throw new QsException("Execute command is not valid for " + this.GetType().ToString());
+            throw new QsException(string.Format("Execute ({0}) command is not valid for {1}", expression.TokenValue, this.GetType().ToString()));
         }
 
         /// <summary>

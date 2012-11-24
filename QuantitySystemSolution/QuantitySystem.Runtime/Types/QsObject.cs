@@ -65,10 +65,11 @@ namespace Qs.Types
                 int argn = args.Length;
                 
                 if (args.Length == 1 && args[0] == string.Empty) argn=0;
-                
+
                 var d_method = InstanceType.GetMethods().First(
-                    c => c.GetParameters().Length == argn 
+                    c => c.GetParameters().Length == argn
                         && c.Name.Equals(MethodName, StringComparison.OrdinalIgnoreCase)
+                        && c.IsStatic == false    // important .. calling a function from object instance is for sure not static
                       );
 
                 var d_method_params = d_method.GetParameters();
@@ -117,7 +118,7 @@ namespace Qs.Types
                 else
                 {
                     // determine the return type to conver it into suitable QsValue
-                    var mi = typeof(Root).GetMethod("NativeToQsConvert", System.Reflection.BindingFlags.IgnoreCase| System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+                    var mi = typeof(Root).GetMethod("NativeToQsConvert", System.Reflection.BindingFlags.IgnoreCase| System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
                     ResultExpression = Expression.Call(mi, Expression.Convert(ResultExpression, typeof(object)));
 
                     Expression<Func<QsValue>> cq = Expression.Lambda<Func<QsValue>>(ResultExpression);
@@ -135,7 +136,7 @@ namespace Qs.Types
                 // property access.
                ResultExpression =  Expression.Property(Expression.Constant(_NativeObject), expression.TokenValue);
 
-               var mi = typeof(Root).GetMethod("NativeToQsConvert", System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Static);
+               var mi = typeof(Root).GetMethod("NativeToQsConvert", System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
                ResultExpression = Expression.Call(mi, Expression.Convert(ResultExpression, typeof(object)));
 
 

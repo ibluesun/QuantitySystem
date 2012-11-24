@@ -1,3 +1,9 @@
+[Qs 1.2.8]
+- Native arrays that return array of objects is now returning a tuple of the inner objects instead of array.
+   made a unit test for this functionality   {{ and I will try to add more unit tests in future for code consistency }}
+- When calling a function in native object the search of this function gets only the non static functions to limit the selection
+    searching for method with parameters types not implemented yet.
+
 [Qs 1.2.7]
 - Now you can perform the basic operations between the objects  + - * and /
 - converting between symbolic scalars and native scalars in functions and object creation now is working.

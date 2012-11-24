@@ -39,5 +39,24 @@ namespace QsRoot.Processor
         }
 
 
+
+        /// <summary>
+        /// Test method for returning array of objects
+        /// handled in qs as a tuple containing the native objects
+        /// </summary>
+        /// <returns></returns>
+        public static Z80[] GetProcessors()
+        {
+            Z80[] z = new Z80[5];
+
+            Random r = new Random();
+            for (int i = 0; i < 5; i++)
+            {
+                z[i] = new Z80() { PC = r.NextDouble().ToQuantity().ToScalar() };
+            }
+
+            return z;
+        }
+
     }
 }

@@ -31,7 +31,7 @@ namespace QsRoot
         /// </summary>
         /// <param name="type"></param>
         /// <returns></returns>
-        internal static Type GetExternalType(string type)
+        public static Type GetExternalType(string type)
         {
             if (!allrefloaded)
             {
@@ -61,7 +61,7 @@ namespace QsRoot
         /// <param name="method"></param>
         /// <param name="parameters"></param>
         /// <returns></returns>
-        internal static object[] QsParametersToNativeValues(MethodInfo method, params QsParameter[] parameters)
+        public static object[] QsParametersToNativeValues(MethodInfo method, params QsParameter[] parameters)
         {
 
             List<object> NativeParameters = new List<object>();
@@ -178,7 +178,7 @@ namespace QsRoot
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
-        internal static QsValue NativeToQsConvert(object value)
+        public static QsValue NativeToQsConvert(object value)
         {
             if (value == null) return null;
 
@@ -240,6 +240,18 @@ namespace QsRoot
                 return v;
             }
 
+            if (vType.IsArray)
+            {
+                // this is array of non numerical type and it should be returned as tuple
+                Array rr = (Array)value;
+                QsFlowingTuple v = new QsFlowingTuple();
+                foreach (var m in rr)
+                {
+                    v.AddTupleValue(QsObject.CreateNativeObject(m));
+                }
+                return v;
+            }
+
             if (vType == typeof(SymbolicVariable)) return new QsScalar(ScalarTypes.SymbolicQuantity) { SymbolicQuantity = ((SymbolicVariable)value).ToQuantity() };
 
             // the last thing is to return object from this type
@@ -257,7 +269,7 @@ namespace QsRoot
         /// <param name="targetType">The type which we will convert to.</param>
         /// <param name="value">the value expression needed to be converted.</param>
         /// <returns></returns>
-        internal static Expression QsToNativeConvert(Type targetType, Expression value)
+        public static Expression QsToNativeConvert(Type targetType, Expression value)
         {
 
             Type SourceType = value.Type;
@@ -275,7 +287,6 @@ namespace QsRoot
                 if (targetType == typeof(Rational)) return Expression.Property(Expression.Property(Expression.Convert(value, typeof(QsScalar)), "RationalQuantity"), "Value");
                 if (targetType == typeof(SymbolicVariable)) return Expression.Property(Expression.Property(Expression.Convert(value, typeof(QsScalar)), "SymbolicQuantity"), "Value");
                 if (targetType == typeof(double)) return Expression.Property(Expression.Property(Expression.Convert(value, typeof(QsScalar)), "NumericalQuantity"), "Value"); 
-
             }
 
             if (targetType == typeof(QsValue) || targetType.BaseType == typeof(QsValue)) 
@@ -339,7 +350,7 @@ namespace QsRoot
         /// Warning: Unit information will be missed.
         /// </summary>
         /// <returns></returns>
-        internal static Numeric[] ToNumericArray<Numeric>(QsValue value) where Numeric : struct
+        public static Numeric[] ToNumericArray<Numeric>(QsValue value) where Numeric : struct
         {
             if (value is QsVector)
             {
@@ -357,7 +368,7 @@ namespace QsRoot
             throw new QsException("Not Vector");
         }
 
-        internal static object QsToNativeConvert(Type targetType, object value)
+        public static object QsToNativeConvert(Type targetType, object value)
         {
             if (targetType == typeof(QsValue)) return value;   //no need to change because target type is QsValue which is the Qs primary type.
 
