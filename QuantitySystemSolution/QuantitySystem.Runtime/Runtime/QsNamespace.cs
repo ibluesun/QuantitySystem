@@ -616,8 +616,8 @@ namespace Qs.Runtime
             var qns = typeof(QsNamespace);
             var qsys = typeof(Root);
 
-            var convparMethod = qsys.GetMethod("QsParametersToNativeValues", BindingFlags.Static | BindingFlags.NonPublic);
-            var NTOQ = qsys.GetMethod("NativeToQsConvert", BindingFlags.Static | BindingFlags.NonPublic);
+            var convparMethod = qsys.GetMethod("QsParametersToNativeValues", BindingFlags.Static | BindingFlags.Public);
+            var NTOQ = qsys.GetMethod("NativeToQsConvert", BindingFlags.Static | BindingFlags.Public);
             var iv = qns.GetMethod("IndirectInvoke", BindingFlags.Static | BindingFlags.NonPublic);
             Expression methodExpress = Expression.Constant(method);
 

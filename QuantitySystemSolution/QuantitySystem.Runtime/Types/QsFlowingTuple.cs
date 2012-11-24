@@ -119,6 +119,12 @@ namespace Qs.Types
             }
         }
 
+        public override QsValue Execute(Token expression)
+        {
+            if (expression.TokenValue.ToUpper() == "COUNT") return ThisFlow.Count().ToScalarValue();
+            return base.Execute(expression);
+        }
+
         public override QsValue Identity
         {
             get { throw new NotImplementedException(); }

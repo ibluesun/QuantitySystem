@@ -79,6 +79,12 @@ namespace QsRoot.Processor
         }
 
 
+        public Z80 GetZ80(int pc, Z80 z)
+        {
+            
+            return new Z80 { PC = this.PC + z.PC };
+        }
+
         public static Z80 LoadPC(int step)
         {
             var z = new Z80();
