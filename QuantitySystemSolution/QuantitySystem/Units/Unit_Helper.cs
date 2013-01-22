@@ -95,9 +95,7 @@ namespace QuantitySystem.Units
         /// <returns>Unit Type Based on the unit system</returns>
         public static Type GetDefaultUnitTypeOf(Type quantityType, string unitSystem)
         {
-
-
-            unitSystem = unitSystem.ToUpper(CultureInfo.InvariantCulture);
+            unitSystem = unitSystem.ToUpperInvariant();
 
             if (unitSystem.Contains("METRIC.SI"))
             {
@@ -175,8 +173,8 @@ namespace QuantitySystem.Units
 
                     //prepare the query that we will search in
                     var SystemUnitTypes = from ut in UnitTypes
-                                          where ut.Namespace.ToUpper(CultureInfo.InvariantCulture).EndsWith(CurrentUnitSystem, StringComparison.Ordinal)
-                                                || ut.Namespace.ToUpper(CultureInfo.InvariantCulture).EndsWith("SHARED", StringComparison.Ordinal)
+                                          where ut.Namespace.ToUpperInvariant().EndsWith(CurrentUnitSystem, StringComparison.Ordinal)
+                                                || ut.Namespace.ToUpperInvariant().EndsWith("SHARED", StringComparison.Ordinal)
                                           select ut;
 
                     //select the default by predictor from the query
@@ -231,7 +229,7 @@ namespace QuantitySystem.Units
 
             //don't forget to include second in si units it is shared between all metric systems
             var SIUnitTypes = from si in UnitTypes
-                              where si.Namespace.ToUpper(CultureInfo.InvariantCulture).EndsWith("SI", StringComparison.Ordinal) || si.Namespace.ToUpper(CultureInfo.InvariantCulture).EndsWith("SHARED", StringComparison.Ordinal)
+                              where si.Namespace.ToUpperInvariant().EndsWith("SI", StringComparison.Ordinal) || si.Namespace.ToUpperInvariant().EndsWith("SHARED", StringComparison.Ordinal)
                               select si;
 
 
@@ -587,7 +585,7 @@ namespace QuantitySystem.Units
         private const string DoubleNumber = @"[-+]?\d+(\.\d+)*([eE][-+]?\d+)*";
 
         private const string UnitizedNumber = "^(?<num>" + DoubleNumber + @")\s*<(?<unit>([\w\.\^/!]+)?)>$";
-        private static Regex UnitizedNumberRegex = new Regex(UnitizedNumber, RegexOptions.Compiled);
+        private static Regex UnitizedNumberRegex = new Regex(UnitizedNumber);
 
         public static bool TryParseQuantity(string quantity, out AnyQuantity<double> qty)
         {

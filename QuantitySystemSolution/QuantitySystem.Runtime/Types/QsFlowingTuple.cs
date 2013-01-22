@@ -5,10 +5,17 @@ using System.Text;
 using PassiveFlow;
 using System.Diagnostics.Contracts;
 using ParticleLexer;
+using QsRoot;
+using System.Linq.Expressions;
+using ParticleLexer.StandardTokens;
+using Qs.Runtime;
 
 namespace Qs.Types
 {
 
+    /// <summary>
+    /// Tuple Element
+    /// </summary>
     public struct QsTupleValue
     {
         public int Id;
@@ -95,6 +102,9 @@ namespace Qs.Types
             sb.Append("FlowingTuple (");
             foreach (Step s in ThisFlow)
             {
+                if (!string.IsNullOrEmpty(s.Name))
+                    sb.Append(s.Name + "!");
+
                 sb.Append(((QsValue)s.Value).ToShortString());
                 sb.Append(", ");
             }
@@ -121,7 +131,64 @@ namespace Qs.Types
 
         public override QsValue Execute(Token expression)
         {
-            if (expression.TokenValue.ToUpper() == "COUNT") return ThisFlow.Count().ToScalarValue();
+            if (expression.TokenValue.ToUpperInvariant() == "COUNT") return Count.ToScalarValue();
+
+            if (expression.TokenClassType == typeof(ParenthesisCallToken))
+            {
+                var arg = expression[1].TrimTokens(1, 1).TokenValue;
+                if (expression[0].TokenValue.Equals("GetName", StringComparison.OrdinalIgnoreCase))
+                {
+                    // one parameter only 
+                    int ordinal = (int)((QsScalar)QsEvaluator.CurrentEvaluator.SilentEvaluate(arg)).NumericalQuantity.Value;
+                    return new QsText(this.ThisFlow.FlowSteps[ordinal].Name);
+                }
+
+                if (expression[0].TokenValue.Equals("GetValue", StringComparison.OrdinalIgnoreCase))
+                {
+                    // one parameter only 
+                    int ordinal = (int)((QsScalar)QsEvaluator.CurrentEvaluator.SilentEvaluate(arg)).NumericalQuantity.Value;
+                    return (QsValue)this.ThisFlow.FlowSteps[ordinal].Value;
+                }
+
+                if (expression[0].TokenValue.Equals("GetId", StringComparison.OrdinalIgnoreCase))
+                {
+                    int ordinal = (int)((QsScalar)QsEvaluator.CurrentEvaluator.SilentEvaluate(arg)).NumericalQuantity.Value;
+                    return this.ThisFlow.FlowSteps[ordinal].Id.ToScalarValue();
+                }
+
+                if (expression[0].TokenValue.Equals("GetOrdinal", StringComparison.OrdinalIgnoreCase))
+                {
+                    // gets the index of element whether it was name or id
+                    int id;
+
+                    var param = QsEvaluator.CurrentEvaluator.SilentEvaluate(arg);
+
+                    if (param is QsScalar)
+                    {
+                        id = (int)((QsScalar)QsEvaluator.CurrentEvaluator.SilentEvaluate(arg)).NumericalQuantity.Value;
+                        for (int ix = 0; ix < ThisFlow.FlowSteps.Length; ix++)
+                        {
+                            if (ThisFlow.FlowSteps[ix].Id == id) return ix.ToScalarValue();
+                        }
+
+                        return QsScalar.NegativeOne;
+                    }
+                    else
+                    {
+                        var argtext = ((QsText)param).Text;
+
+
+                        for (int ix = 0; ix < ThisFlow.FlowSteps.Length; ix++)
+                        {
+                            if (ThisFlow.FlowSteps[ix].Name.Equals(argtext, StringComparison.OrdinalIgnoreCase)) 
+                                return ix.ToScalarValue();
+                        }
+
+                        return QsScalar.NegativeOne;
+                    }
+                }
+            }
+
             return base.Execute(expression);
         }
 
@@ -355,6 +422,60 @@ namespace Qs.Types
             }
             
             return new QsFlowingTuple(fefe);
+        }
+
+        public static QsFlowingTuple FromStruct(ValueType value)
+        {
+            var StructType = value.GetType();
+
+            var props = StructType.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance );
+
+            var all = from o in props
+                      where o.IsSpecialName == false && o.GetIndexParameters().Length == 0
+                      select o;
+
+            QsTupleValue[] fefe = new QsTupleValue[all.Count()];
+
+            int id = 0;
+            for (int ix = 0; ix < all.Count(); ix++)
+            {
+                
+                fefe[ix].Name = all.ElementAt(ix).Name;
+                fefe[ix].Id = id;
+                fefe[ix].Value = Root.NativeToQsConvert(all.ElementAt(ix).GetValue(value, null));
+                
+                id += 10;
+            }
+
+            return new QsFlowingTuple(fefe);
+        }
+
+        public ValueType FromTuple(Type structType)
+        {
+            var q = Expression.New(structType);
+
+            var props = structType.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
+            var all = from o in props
+                      where o.IsSpecialName == false && o.CanWrite == true && o.GetIndexParameters().Length == 0
+                      select o;
+
+            var svt = Activator.CreateInstance(structType);
+            // fill the available names from this tuple and 
+            foreach (var step in ThisFlow.FlowSteps)
+            {
+                var prop = all.FirstOrDefault(p => p.Name.Equals(step.Name, StringComparison.OrdinalIgnoreCase));
+
+                if (prop != null)
+                {
+                    // property exist
+
+                    prop.SetValue(svt, Root.QsToNativeConvert(prop.PropertyType, step.Value), null);
+
+                }
+            }
+
+            return (ValueType)svt;
         }
     }
 }

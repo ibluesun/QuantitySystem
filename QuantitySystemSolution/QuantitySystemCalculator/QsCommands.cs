@@ -8,6 +8,7 @@ using Microsoft.Scripting.Hosting;
 using QuantitySystem.Units;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting;
+using Qs;
 
     public static class QsCommands
     {
@@ -29,7 +30,7 @@ using Microsoft.Scripting;
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
-        public static bool CheckCommand(string command, Scope scope)
+        public static bool CheckCommand(string command)
         {
             string[] commands = command.ToLower().Split(' ');
 
@@ -57,7 +58,7 @@ using Microsoft.Scripting;
 
                 if (commands.Length < 2)
                 {
-                    ListVariables(scope);
+                    ListVariables();
                 }
                 else
                 {
@@ -87,10 +88,8 @@ using Microsoft.Scripting;
 
             if (commands[0] == "new")
             {
-                ScopeStorage ss = (ScopeStorage)scope.Storage;
-                string[] names = (from name in ss.GetItems() select name.Key).ToArray();
-                foreach (var name in names)
-                    ss.DeleteValue(name, true);
+                QsEvaluator.CurrentEvaluator.Scope.Storage.Clear();
+
 
                 GC.Collect();
 
@@ -294,46 +293,32 @@ using Microsoft.Scripting;
         }
 
 
-        public static IEnumerable<string> GetVariablesKeys(Scope scope)
+        public static IEnumerable<string> GetVariablesKeys()
         {
-          
-            if (scope != null)
-            {
-                var varo = from item in ((ScopeStorage)scope.Storage).GetItems()
-                           select item.Key;
-                return varo;
-            }
-
-            throw new Exception("Where is the Scope");
-                
+            var varo = from item in QsEvaluator.CurrentEvaluator.Scope.Storage.GetItems()
+                        select item.Key;
+            return varo;       
         }
 
 
-        public static object GetVariable(Scope scope, string varName)
+        public static object GetVariable(string varName)
         {
-            if (scope != null)
-            {
-                object q;
-                ((ScopeStorage)scope.Storage).TryGetValue(varName, true, out q);
-                return q;
-            }
-            else
-            {
-                throw new NotImplementedException("you should be running in DLR");
-            }
+            object q;
+            QsEvaluator.CurrentEvaluator.Scope.Storage.TryGetValue(varName, out q);
+            return q;   
         }
 
         /// <summary>
         /// List Command
         /// </summary>
-        internal static void ListVariables(Scope scope)
+        internal static void ListVariables()
         {
             Console.WriteLine();
             Console.ForegroundColor = ValuesColor;
 
-            foreach (string var in GetVariablesKeys(scope))
+            foreach (string var in GetVariablesKeys())
             {
-                var v = GetVariable(scope, var);
+                var v = GetVariable(var);
                 Console.WriteLine("    " + var + " = " + v.ToString());
                 if (v is QsNamespace)
                 {

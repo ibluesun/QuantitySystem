@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 
 namespace Qs
 {
-    [Serializable()]
     public class QsInvalidInputException : QsException
     {
       public QsInvalidInputException()
@@ -20,10 +19,6 @@ namespace Qs
       {
          // Add any type-specific logic for inner exceptions.
       }
-      protected QsInvalidInputException(SerializationInfo info, 
-         StreamingContext context) : base(info, context)
-      {
-         // Implement type-specific serialization constructor logic.
-      }    
+ 
     }
 }

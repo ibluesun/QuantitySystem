@@ -17,6 +17,12 @@ namespace Qs.Runtime.Operators
         /// <returns></returns>
         public static QsValue Factorial(QsValue value)
         {
+            if (value is QsBoolean)
+            {
+                var b = (QsBoolean)value;
+                return new QsBoolean { Value = !b.Value };
+            }
+
             if (value is QsScalar)
             {
                 QsScalar sv = (QsScalar)value;
@@ -77,7 +83,7 @@ namespace Qs.Runtime.Operators
             int v = (int)number.Value;
 
             //if (v > 170) throw new ArgumentOutOfRangeException("Number", number, "Number is greater than 170");
-            if (v < 0) throw new ArgumentOutOfRangeException("Number", number, "Number is less than 0");
+            if (v < 0) throw new ArgumentOutOfRangeException("Number", "Number is less than 0");
 
             AnyQuantity<double> num = (AnyQuantity<double>)number.Clone();
             num.Value = System.Math.Floor(num.Value);

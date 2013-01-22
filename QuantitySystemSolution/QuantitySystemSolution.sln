@@ -44,9 +44,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QsGraphics", "QsGraphics\Qs
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{FDBE8316-6E9E-4864-BEE0-97641E286A28}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qs.Scripting", "Qs.Scripting\Qs.Scripting.csproj", "{9D9327DD-4B4C-4FB5-A671-1287D1C15341}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qs.RT", "Qs.RT\Qs.RT.csproj", "{EFF13160-FB38-439E-A824-14838DF636A5}"
+EndProject
 Global
 	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 8
+		SccNumberOfProjects = 10
 		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
 		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
 		SccLocalPath0 = .
@@ -75,6 +79,12 @@ Global
 		SccProjectTopLevelParentUniqueName7 = QuantitySystemSolution.sln
 		SccProjectName7 = QsGraphics
 		SccLocalPath7 = QsGraphics
+		SccProjectUniqueName8 = Qs.Scripting\\Qs.Scripting.csproj
+		SccProjectName8 = Qs.Scripting
+		SccLocalPath8 = Qs.Scripting
+		SccProjectUniqueName9 = Qs.RT\\Qs.RT.csproj
+		SccProjectName9 = Qs.RT
+		SccLocalPath9 = Qs.RT
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = QuantitySystemSolution.vsmdi
@@ -112,6 +122,14 @@ Global
 		{8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9D9327DD-4B4C-4FB5-A671-1287D1C15341}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9D9327DD-4B4C-4FB5-A671-1287D1C15341}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9D9327DD-4B4C-4FB5-A671-1287D1C15341}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9D9327DD-4B4C-4FB5-A671-1287D1C15341}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EFF13160-FB38-439E-A824-14838DF636A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EFF13160-FB38-439E-A824-14838DF636A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EFF13160-FB38-439E-A824-14838DF636A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EFF13160-FB38-439E-A824-14838DF636A5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -382,6 +382,12 @@ namespace ParticleLexer.QsTokens
     {
     }
 
+    [TokenPattern(RegexPattern = @"True", ExactWord=true)]
+    public class TrueToken : TokenClass { }
+
+    [TokenPattern(RegexPattern = @"False", ExactWord = true)]
+    public class FalseToken : TokenClass { }
+
 
     /// <summary>
     /// Express groups of '&lt;| a b c |>'
@@ -411,22 +417,7 @@ namespace ParticleLexer.QsTokens
     }
 
 
-    /// <summary>
-    /// Mathches \"    
-    /// </summary>
-    [TokenPattern(RegexPattern = @"\\""", ExactWord = true)]
-    public class QuotationMarkEscapeToken : TokenClass
-    {
-        
-    }
-
-    /// <summary>
-    /// Text between two single qutation.
-    /// </summary>
-    public class TextToken : TokenClass
-    {
-    }
-
+    
 
     /// <summary>
     /// This token type is for internal use only.
@@ -580,67 +571,7 @@ namespace ParticleLexer.QsTokens
         }
 
 
-
-
-        /// <summary>
-        /// Parse text between " TEXT "
-        /// </summary>
-        /// <param name="tokens"></param>
-        /// <returns></returns>
-        public static Token DiscoverQsTextTokens(this Token tokens)
-        {
-
-            // merge \" to be one charachter after this
-            
-            tokens = tokens.MergeTokens<QuotationMarkEscapeToken>();
-
-            Token root = new Token();
-
-            Token runner = root;
-
-            //add every token until you encounter '
-
-
-            int ix = 0;
-            bool TextMode = false;
-            while (ix < tokens.Count)
-            {
-                if (tokens[ix].TokenClassType == typeof(QuotationMarkToken))
-                {
-                    TextMode = !TextMode;
-
-                    if (TextMode)
-                    {
-                        //true create the token
-                        runner = new Token();
-                        runner.TokenClassType = typeof(TextToken);
-                        root.AppendSubToken(runner);
-
-                        runner.AppendSubToken(tokens[ix]);
-
-                    }
-                    else
-                    {
-                        //false: return to root tokens
-                        runner.AppendSubToken(tokens[ix]);
-
-                        runner = root;
-                    }
-                }
-                else
-                {
-                    runner.AppendSubToken(tokens[ix]);
-                }
-
-
-                ix++;
-            
-            }
-
-
-            return root;
-        }
-    
+  
         /// <summary>
         /// Parsing the loop body 
         /// Loop Music:Play(c) On c   # where c = ("C", "D", "E", "F", "G", "A", "B")

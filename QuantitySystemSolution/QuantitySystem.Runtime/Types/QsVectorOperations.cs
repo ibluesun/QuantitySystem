@@ -5,7 +5,6 @@ using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
 using Qs.Runtime;
-using System.Threading.Tasks;
 
 namespace Qs.Types
 {
@@ -13,6 +12,7 @@ namespace Qs.Types
     {
         
         #region Scalar Operations
+
         /// <summary>
         /// Add Scalar to the vector components.
         /// </summary>
@@ -132,12 +132,7 @@ namespace Qs.Types
 
             QsVector v = QsVector.CopyVector(this);
 
-            Parallel.For(0, this.Count, (i) =>
-                {
-                    v[i] = v[i] + vector[i];
-                }
-            );
-
+            for (int ix = 0; ix < this.Count; ix++) v[ix] = v[ix] + vector[ix];
 
             return v;
         }
@@ -154,13 +149,7 @@ namespace Qs.Types
 
             QsVector v = QsVector.CopyVector(this);
 
-            Parallel.For(0, this.Count, (i) =>
-            {
-                v[i] = v[i] - vector[i];
-            }
-            );
-
-
+            for (int ix = 0; ix < this.Count; ix++) v[ix] = v[ix] - vector[ix];
 
             return v;
         }
@@ -178,12 +167,7 @@ namespace Qs.Types
 
             QsVector v = QsVector.CopyVector(this);
 
-            Parallel.For(0, this.Count, (i) =>
-            {
-                v[i] = v[i].MultiplyScalar(vector[i]);
-            }
-            );
-
+            for (int ix = 0; ix < this.Count; ix++) v[ix] = v[ix].MultiplyScalar( vector[ix]);
 
             return v;
         }
@@ -200,11 +184,8 @@ namespace Qs.Types
 
             QsVector v = QsVector.CopyVector(this);
 
-            Parallel.For(0, this.Count, (i) =>
-            {
-                v[i] = v[i] / vector[i];
-            }
-            );
+            for (int ix = 0; ix < this.Count; ix++) v[ix] = v[ix] / vector[ix];
+
 
             return v;
         }
@@ -216,12 +197,7 @@ namespace Qs.Types
 
             QsVector v = QsVector.CopyVector(this);
 
-            Parallel.For(0, this.Count, (i) =>
-            {
-                v[i] = v[i] % vector[i];
-            }
-            );
-
+            for (int ix = 0; ix < this.Count; ix++) v[ix] = v[ix] % vector[ix];
 
             return v;
         }

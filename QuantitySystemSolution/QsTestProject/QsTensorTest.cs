@@ -74,8 +74,7 @@ namespace QsTestProject
         public void GetScalarTest()
         {
 
-
-            ScriptRuntime qsruntime =  Qs.Qs.CreateRuntime();
+            ScriptRuntime qsruntime =  Qs.Scripting.QsContext.CreateRuntime();
             ScriptEngine QsEngine = qsruntime.GetEngine("Qs");
 
             QsTensor  t = QsEngine.Execute("<|3 4; 3 1 | 9 8; 4 7  |>") as QsTensor;

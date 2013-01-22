@@ -5,7 +5,7 @@ using Microsoft.Scripting.Ast;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting.Utils;
 
-namespace Qs.Runtime
+namespace Qs.Scripting
 {
     public class QsBinder : DefaultBinder
     {

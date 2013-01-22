@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.Serialization;
 
 namespace QuantitySystem.Units
 {
-    [Serializable()]
     public class UnitException : QuantityException
     {
       public UnitException()
@@ -23,10 +18,6 @@ namespace QuantitySystem.Units
       {
          // Add any type-specific logic for inner exceptions.
       }
-      protected UnitException(SerializationInfo info, 
-         StreamingContext context) : base(info, context)
-      {
-         // Implement type-specific serialization constructor logic.
-      }    
+     
     }
 }

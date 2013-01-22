@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 
 namespace Qs.Runtime
 {
-    [Serializable()]
+
     public class QsVariableNotFoundException : QsException
     {
       public QsVariableNotFoundException()
@@ -23,11 +23,7 @@ namespace Qs.Runtime
       {
          // Add any type-specific logic for inner exceptions.
       }
-      protected QsVariableNotFoundException(SerializationInfo info, 
-         StreamingContext context) : base(info, context)
-      {
-         // Implement type-specific serialization constructor logic.
-      }
+      
 
 
 

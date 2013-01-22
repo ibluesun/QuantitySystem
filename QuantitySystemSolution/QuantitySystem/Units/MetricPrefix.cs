@@ -185,7 +185,7 @@ namespace QuantitySystem.Units
 
         public static MetricPrefix FromPrefixName(string prefixName)
         {
-            switch (prefixName.ToLower(CultureInfo.InvariantCulture))
+            switch (prefixName.ToLowerInvariant())
             {
 
                 case "yocto":

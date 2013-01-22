@@ -2,17 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-
 using System.Linq.Expressions;
 using System.Globalization;
 
-
-
 namespace QuantitySystem.Units
 {
-
-
-    public class UnitPathStack:Stack<UnitPathItem>, ICloneable
+    public class UnitPathStack:Stack<UnitPathItem>
     {
 
         public override bool Equals(object obj)
@@ -67,7 +62,7 @@ namespace QuantitySystem.Units
 
         #region ICloneable Members
 
-        public object Clone()
+        public UnitPathStack Clone()
         {
             UnitPathStack up = new UnitPathStack();
             foreach (UnitPathItem upi in this.Reverse())

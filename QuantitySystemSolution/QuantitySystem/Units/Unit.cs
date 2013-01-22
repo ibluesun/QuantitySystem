@@ -11,7 +11,7 @@ using QuantitySystem.Quantities;
 
 namespace QuantitySystem.Units
 {
-    public partial class Unit : ICloneable
+    public partial class Unit
     {
         #region Fields
         
@@ -468,9 +468,9 @@ namespace QuantitySystem.Units
 
         #region ICloneable Members
 
-        public object Clone()
+        public Unit Clone()
         {
-            return this.MemberwiseClone();
+            return (Unit)this.MemberwiseClone();
         }
 
         #endregion

@@ -15,7 +15,7 @@ namespace Qs.Types
     /// <summary>
     /// Wrapper for AnyQuantit&lt;double&gt; and it serve the basic number in the Qs
     /// </summary>
-    public sealed class QsScalar : QsValue, ICloneable, IConvertible
+    public sealed class QsScalar : QsValue, IConvertible
     {
 
         #region Scalar Types Storage
@@ -1135,7 +1135,7 @@ namespace Qs.Types
         /// <summary>
         /// Returns -1 as dimensionless quantity scalar.
         /// </summary>
-        public static QsScalar MinusOne
+        public static QsScalar NegativeOne
         {
             get 
             { 

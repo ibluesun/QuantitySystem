@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using Microsoft.Scripting.Hosting;
 using Qs.Types;
 using QuantitySystem;
 using QuantitySystem.Quantities.BaseQuantities;
@@ -13,29 +12,6 @@ namespace Qs
 {
     public static class Qs
     {
-        /// <summary>
-        /// Creates the language runtime to be used in hosting.
-        /// </summary>
-        /// <returns></returns>
-        public static ScriptRuntime CreateRuntime()
-        {
-            string[] QsNames = { "QuantitySystem", "Qs" };
-            string[] QsExtensions = { ".Qs" };
-            string QsType = typeof(Runtime.QsContext).FullName + ", " + typeof(Runtime.QsContext).Assembly.FullName;
-
-            LanguageSetup QsSetup = new LanguageSetup(QsType, "Quantity System Calculator", QsNames, QsExtensions);
-
-            ScriptRuntimeSetup srs = new ScriptRuntimeSetup();
-
-            srs.LanguageSetups.Add(QsSetup);
-
-            ScriptRuntime sr = new ScriptRuntime(srs);
-
-            return sr;
-
-
-        }
-
         #region Extensions and helper methods
 
         /// <summary>

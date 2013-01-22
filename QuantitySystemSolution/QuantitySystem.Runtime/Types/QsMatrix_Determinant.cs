@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Qs.Types
 {
-    public partial class QsMatrix : QsValue, IEnumerable<QsVector>, ICloneable
+    public partial class QsMatrix : QsValue, IEnumerable<QsVector>
     {
 
         // Contribution by Edward Popko, a well commented version: determinant.c for Microsoft C++ Visual Studio 6.
