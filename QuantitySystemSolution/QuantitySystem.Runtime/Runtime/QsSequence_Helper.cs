@@ -5,14 +5,12 @@ using System.Text;
 using ParticleLexer;
 using ParticleLexer.StandardTokens;
 using QuantitySystem.Units;
-using Microsoft.Scripting.Runtime;
-using Microsoft.Scripting;
 using System.Globalization;
 using ParticleLexer.QsTokens;
 
 namespace Qs.Runtime
 {
-    public partial class QsSequence : SortedList<int, QsSequenceElement>
+    public partial class QsSequence
     {
         private string _SequenceDeclaration;
         public string SequenceDeclaration 
@@ -376,7 +374,7 @@ namespace Qs.Runtime
         /// <param name="qsNamespace"></param>
         /// <param name="sequenceName"></param>
         /// <returns></returns>
-        public static QsSequence GetSequence(Scope scope, string qsNamespace, string sequenceName)
+        public static QsSequence GetSequence(QsScope scope, string qsNamespace, string sequenceName)
         {
             if (string.IsNullOrEmpty(qsNamespace))
             {

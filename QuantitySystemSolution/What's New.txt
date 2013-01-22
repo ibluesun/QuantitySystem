@@ -1,3 +1,25 @@
+[Qs 1.2.9]
+- Transforming {ParticleLexer.dll PassiveFlow.dll and QuantitySystem.dll} into Portable Class Libraries.
+- Removing the DLR hosting from Qs and putting them in new library Qs.Scripting to convert the Qs into portable library later
+    {made a lot of changes to support this change}
+
+- Added True and False as QsBoolean   also  negating them with factorial   like  true! == false  etc  {the operator is after the value}
+- ability to see value types (struct) as tuples and setting them too in  object instances.
+- in QsObject  added  QsObject!Properties and QsObject!Methods  to see what are the supported properties/methods of current native object
+- supporting creating objects with structs inside them -- using tuple technique  like  p = new planet( (ElementName!"Earth, ElementNumber!50, Rare!true) )
+
+- QsFlowingTuple (shortly Tuple) have many execute functions now
+       Tuple->GetName(index)  
+	   Tuple->GetId(index)
+	   Tuple->GetValue(index)    equivalent to Tuple[index]
+	   Tuple->GetOrdinal(name or id)   you can get ordinal (index) of name or id
+
+- Made a new project Qs.RT which reference all code from Qs and have WINRT conditional compilation 
+       this library to be used in windows rt projects and to leave original Qs as it is.
+
+- Some testing for the RT library .. it can load types from the calling assembly
+
+
 [Qs 1.2.8]
 - Native arrays that return array of objects is now returning a tuple of the inner objects instead of array.
    made a unit test for this functionality   {{ and I will try to add more unit tests in future for code consistency }}

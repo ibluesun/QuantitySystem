@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Qs.Types;
-using Microsoft.Scripting.Utils;
 using Qs;
+using System.Diagnostics.Contracts;
 
 namespace QsRoot
 {
@@ -18,8 +18,8 @@ namespace QsRoot
         /// <returns></returns>
         public static QsValue Range(QsParameter from, QsParameter to)
         {
-            ContractUtils.Requires(from.QsNativeValue is QsScalar);
-            ContractUtils.Requires(to.QsNativeValue is QsScalar);
+            Contract.Requires(from.QsNativeValue is QsScalar);
+            Contract.Requires(to.QsNativeValue is QsScalar);
 
             double fd = ((QsScalar)from.QsNativeValue).NumericalQuantity.Value;
             double td = ((QsScalar)to.QsNativeValue).NumericalQuantity.Value;
@@ -54,9 +54,9 @@ namespace QsRoot
         /// <returns></returns>
         public static QsValue Range(QsParameter from, QsParameter to, QsParameter step)
         {
-            ContractUtils.Requires(from.QsNativeValue is QsScalar);
-            ContractUtils.Requires(to.QsNativeValue is QsScalar);
-            ContractUtils.Requires(step.QsNativeValue is QsScalar);
+            Contract.Requires(from.QsNativeValue is QsScalar);
+            Contract.Requires(to.QsNativeValue is QsScalar);
+            Contract.Requires(step.QsNativeValue is QsScalar);
 
 
             double fd = ((QsScalar)from.QsNativeValue).NumericalQuantity.Value;
@@ -92,7 +92,7 @@ namespace QsRoot
         /// <returns></returns>
         public static QsValue Count(QsParameter vector)
         {
-            ContractUtils.Requires(vector.QsNativeValue is QsVector);
+            Contract.Requires(vector.QsNativeValue is QsVector);
 
             return ((QsVector)vector.QsNativeValue).Count.ToScalarValue();
         }
@@ -105,8 +105,8 @@ namespace QsRoot
         /// <returns></returns>
         public static QsValue ConstantRange(QsParameter count, QsParameter constant)
         {
-            ContractUtils.Requires(count.QsNativeValue is QsScalar);
-            ContractUtils.Requires(constant.QsNativeValue is QsScalar);
+            Contract.Requires(count.QsNativeValue is QsScalar);
+            Contract.Requires(constant.QsNativeValue is QsScalar);
 
             double countd = ((QsScalar)count.QsNativeValue).NumericalQuantity.Value;
 

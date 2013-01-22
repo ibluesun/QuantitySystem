@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 using Qs.Types;
-using Microsoft.Scripting.Runtime;
 using Qs.Runtime;
 
 namespace Qs.Types
@@ -83,7 +82,7 @@ namespace Qs.Types
         /// <summary>
         /// Get the quantity from the parameter body on the form  ([namespace:]variable)  x:var or var
         /// </summary>
-        public QsValue GetIndirectQuantity(Scope scope)
+        public QsValue GetIndirectQuantity(QsScope scope)
         {
             try
             {

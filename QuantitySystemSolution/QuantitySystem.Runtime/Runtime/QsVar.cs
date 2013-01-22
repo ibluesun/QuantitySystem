@@ -4,7 +4,6 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using Microsoft.Scripting.Ast;
 using ParticleLexer;
 using ParticleLexer.QsTokens;
 using ParticleLexer.StandardTokens;
@@ -14,20 +13,20 @@ using Qs.Types;
 using SymbolicAlgebra;
 using Qs.Types.Operators;
 using QsRoot;
-using Microsoft.Scripting;
+using ParticleLexer.CommonTokens;
 
 
 
 namespace Qs.Runtime
 {
-    public enum QsVarParseModes
+    enum QsVarParseModes
     {
         None,
         Function,
         Sequence
     }
 
-    public class QsVar
+    class QsVar
     {
 
         private readonly QsEvaluator evaluator;
@@ -51,7 +50,9 @@ namespace Qs.Runtime
 
         public QsVarParseModes ParseMode { get; set; }
 
-        LambdaBuilder lambdaBuilder = null;
+        SimpleLambdaBuilder lambdaBuilder = null;
+
+        
 
 
         private QsFunction Function;
@@ -64,8 +65,9 @@ namespace Qs.Runtime
         /// <param name="evaluator"></param>
         /// <param name="line"></param>
         /// <param name="lb"></param>
-        public QsVar(QsEvaluator evaluator, string line, QsFunction function, LambdaBuilder lb, out Token tokenizedBody)
+        public QsVar(QsEvaluator evaluator, string line, QsFunction function, SimpleLambdaBuilder lb, out Token tokenizedBody)
         {
+            
             this.evaluator = evaluator;
             if (function != null)
             {
@@ -117,7 +119,7 @@ namespace Qs.Runtime
         /// <param name="evaluator"></param>
         /// <param name="line"></param>
         /// <param name="sequenceName"></param>
-        public QsVar(QsEvaluator evaluator, string line, QsSequence sequence, LambdaBuilder lb)
+        public QsVar(QsEvaluator evaluator, string line, QsSequence sequence, SimpleLambdaBuilder lb)
         {
             this.evaluator = evaluator;
 
@@ -159,12 +161,10 @@ namespace Qs.Runtime
         {
             var tokens = Token.ParseText(codeLine);
 
-            tokens = tokens.DiscoverQsTextTokens();
-
+            tokens = tokens.TokenizeTextStrings();
 
             // assemble all spaces
             tokens = tokens.MergeTokens<MultipleSpaceToken>();
-
 
             // assemble all units <*>    //before tokenization of tensor operator
             tokens = tokens.MergeTokens<UnitToken>();
@@ -212,7 +212,9 @@ namespace Qs.Runtime
                 typeof(AndStatementToken),
                 typeof(OrStatementToken),
                 typeof(LoopStatementToken),
-                typeof(OnStatementToken)
+                typeof(OnStatementToken),
+                typeof(TrueToken),
+                typeof(FalseToken)
                 );
 
             // merge the $ + Word into Symbolic and get the symbolic variables.
@@ -324,7 +326,7 @@ namespace Qs.Runtime
                     }
                     else
                     {
-                        quantityExpression = Expression.Constant(QsScalar.MinusOne, typeof(QsValue));
+                        quantityExpression = Expression.Constant(QsScalar.NegativeOne, typeof(QsValue));
                     }
 
                     OperatorTokenText = "_h*";
@@ -371,7 +373,7 @@ namespace Qs.Runtime
 
                         if (afterTok == null)
                             FactorialPostfix = true;
-                        else if (afterTok.TokenClassType == typeof(WordToken) || afterTok.TokenClassType == typeof(TextToken))  //either direct word or text i.e. o!word or o!"Word"
+                        else if (afterTok.TokenClassType == typeof(WordToken) || afterTok.TokenClassType == typeof(TextStringToken))  //either direct word or text i.e. o!word or o!"Word"
                             FactorialPostfix = false;
                         else
                             FactorialPostfix = true;
@@ -379,15 +381,15 @@ namespace Qs.Runtime
                     }
                 }
 
-                if(tokens[ix].TokenClassType == typeof(SequenceCallToken))
+                if (tokens[ix].TokenClassType == typeof(SequenceCallToken))
                 {
-                    
-                        quantityExpression = IndexerExpression(
-                            tokens[ix][0].TokenValue,
-                            tokens[ix][1],
-                            tokens[ix].Count > 2 ? tokens[ix][2] : null                   //if arguments exist we must include them   form  S[n](x,y,z)
-                            );
-                    
+
+                    quantityExpression = IndexerExpression(
+                        tokens[ix][0].TokenValue,
+                        tokens[ix][1],
+                        tokens[ix].Count > 2 ? tokens[ix][2] : null                   //if arguments exist we must include them   form  S[n](x,y,z)
+                        );
+
                 }
                 else if (tokens[ix].TokenClassType == typeof(ParenthesisCallToken))
                 {
@@ -430,7 +432,7 @@ namespace Qs.Runtime
                     {
                         // take the inner tokens and send it to be parsed again.
                         quantityExpression = ParseArithmatic(x);
-                    }                    
+                    }
                 }
                 else if (tokens[ix].TokenClassType == typeof(UnitizedNumberToken))
                 {
@@ -456,7 +458,7 @@ namespace Qs.Runtime
                 {
                     quantityExpression = ParseTensor(tokens[ix]);
                 }
-                else if (tokens[ix].TokenClassType == typeof(TextToken))
+                else if (tokens[ix].TokenClassType == typeof(TextStringToken))
                 {
                     quantityExpression = ParseText(tokens[ix]);
                 }
@@ -481,7 +483,7 @@ namespace Qs.Runtime
                     // convert '@' into function operation.
                     var oo = new QsScalar(ScalarTypes.QsOperation)
                     {
-                         Operation = new QsDifferentialOperation()
+                        Operation = new QsDifferentialOperation()
                     };
 
                     quantityExpression = Expression.Constant(oo, typeof(QsValue));
@@ -489,9 +491,9 @@ namespace Qs.Runtime
                 else if (tokens[ix].TokenClassType == typeof(Nabla))
                 {
                     string[] xi = (
-                        from x in tokens[ix].TrimTokens(1,1).TokenValue.Split(' ', ',') 
+                        from x in tokens[ix].TrimTokens(1, 1).TokenValue.Split(' ', ',')
                         where x.Trim() != string.Empty
-                        select x.Trim()).ToArray() ;
+                        select x.Trim()).ToArray();
 
                     var oo = new QsScalar(ScalarTypes.QsOperation)
                     {
@@ -517,7 +519,7 @@ namespace Qs.Runtime
                 }
                 else if (tokens[ix].TokenClassType == typeof(FunctionLambdaToken))
                 {
-                    var g = tokens[ix].TrimTokens(2,1);
+                    var g = tokens[ix].TrimTokens(2, 1);
                     var funcbody = g.TokenValue;
                     if (funcbody.StartsWith("(")) funcbody = "_" + funcbody;
 
@@ -533,14 +535,16 @@ namespace Qs.Runtime
                     // ok this is something like  N:N:L:  
                     // so we will extract the last
                     OperatorTokenText = ":";    // make colon an operation
-                    
+
                     var mtk = tokens[ix].TrimEnd(typeof(ColonToken)); // removce the latest colon from the tokens.
-                    
+
                     quantityExpression = GetQsVariable(mtk);
 
                     --ix;   //decrease ix with one because operator was fused in this token.
 
                 }
+                else if (tokens[ix].TokenClassType == typeof(TrueToken)) quantityExpression = Expression.Constant(QsBoolean.True);
+                else if (tokens[ix].TokenClassType == typeof(FalseToken)) quantityExpression = Expression.Constant(QsBoolean.False);
                 else if (tokens[ix].TokenClassType == typeof(LoopBodyToken))
                 {
                     // get the count of the loop
@@ -573,10 +577,10 @@ namespace Qs.Runtime
 
                     MethodInfo fltAdd = typeof(QsFlowingTuple).GetMethod("AddTupleValue");
 
-                    
+
                     quantityExpression = Expression.Block(
                           new[] { counter, result },
-                          
+
                           Expression.Assign(result, Expression.New(typeof(QsFlowingTuple))),
                           Expression.Assign(counter, Expression.Constant(0)),
                              Expression.Loop(
@@ -584,7 +588,7 @@ namespace Qs.Runtime
                                     Expression.LessThan(counter, Expression.Constant(count)),
                                     Expression.Block(
                                         Expression.Call(result, fltAdd, ParseArithmatic(tokens[ix][1]))
-                                        ,Expression.PostIncrementAssign(counter)
+                                        , Expression.PostIncrementAssign(counter)
                                         ),
                                     Expression.Break(LoopBreakLabel, result)
                                     ), LoopBreakLabel)
@@ -627,6 +631,7 @@ namespace Qs.Runtime
                             //try to get the variable from the sequence index
                             try
                             {
+
                                 quantityExpression = lambdaBuilder.Parameters.Single(c => c.Name == q);
 
                                 //we should check if q is index or parameter of sequence.
@@ -717,16 +722,16 @@ namespace Qs.Runtime
                                 // the case of accessing the iterator
                                 GetIteratorElement(tokens[ix].TokenValue, loopIteratorParameter[tokens[ix].TokenValue]);
                             }
-                            else if (loopIteratorContainer.Count > 0 
+                            else if (loopIteratorContainer.Count > 0
                                 && tokens[ix].TokenValue.Length > 1
-                                && tokens[ix].TokenValue.StartsWith("_") 
+                                && tokens[ix].TokenValue.StartsWith("_")
                                 && loopIteratorContainer.Contains(tokens[ix].TokenValue.Substring(1))
                                 )
                             {
                                 // case of loop counter
                                 var ItoQsv = typeof(Qs).GetMethod("ToScalarValue", new Type[] { typeof(int) });
 
-                                quantityExpression = Expression.Call(ItoQsv, loopIteratorParameter[tokens[ix].TokenValue.Substring(1)]);                                
+                                quantityExpression = Expression.Call(ItoQsv, loopIteratorParameter[tokens[ix].TokenValue.Substring(1)]);
                             }
                             else
                             {
@@ -922,7 +927,19 @@ namespace Qs.Runtime
             if(token.TokenClassType == typeof(ParenthesisCallToken))
             {
                 cls = token[0].TokenValue;
-                args = token[1].TrimTokens(1,1).TokenValue.Split(',');
+
+
+                List<string> parms = new List<string>();
+                //discover parameters
+                for (int ai = 1; ai < token[1].Count - 1; ai++)
+                {
+                    if (token[1][ai].TokenValue != ",")
+                    {
+                        parms.Add(token[1][ai].TokenValue);
+                    }
+                }
+
+                args = parms.ToArray();
             }
             else
             {
@@ -938,9 +955,13 @@ namespace Qs.Runtime
                 cls = "QsRoot." + cls;
 
 
-            discoveredType = Type.GetType(cls, false, true);
 
+#if WINRT
+            discoveredType = Root.GetInternalType(cls);
+#else
+            discoveredType = Type.GetType(cls, false);
             if (discoveredType == null) discoveredType = Root.GetExternalType(cls);
+#endif
 
             if (discoveredType == null) throw new QsException(string.Format("[{0}] type doesn't exist.", cls));
 
@@ -951,7 +972,7 @@ namespace Qs.Runtime
             else
             {
                 //constructor included
-                //know the paramaeter type
+                //know the parameters types
                 List<Expression> Arguments = new List<Expression>(args.Length);
                 var argsToken = token[1];
 
@@ -969,7 +990,9 @@ namespace Qs.Runtime
                         // we have to check the corresponding parameter type to make convertion if needed.
                         Type targetType = d_ctor_params[ctorArgIndex].ParameterType;
 
-                        Arguments.Add(Root.QsToNativeConvert(targetType, expr));
+                        var exprArg = Expression.Convert(Root.QsToNativeConvert(targetType, expr)
+                            , targetType);
+                        Arguments.Add(exprArg);
                         ctorArgIndex++;
                     }
                 }
@@ -1398,7 +1421,7 @@ namespace Qs.Runtime
         {
             QsFunction f;
 
-            if (functionValueToken.TokenValue.Contains('('))
+            if (functionValueToken.TokenValue.Contains("("))
             {
                 // the existence of open parenthesis indicates that we refered to the function name with its parameters list also
                 // like this   @f(x,y)  or Y:@F(u,v)
@@ -1415,7 +1438,7 @@ namespace Qs.Runtime
 
                 string ns = string.Empty;
 
-                if (functionValueToken.TokenValue.Contains(':'))
+                if (functionValueToken.TokenValue.Contains(":"))
                     ns = functionValueToken.TokenValue.Substring(0, functionValueToken.TokenValue.LastIndexOf(':'));
                 string nsfnname = functionValueToken.TokenValue.Substring(functionValueToken.TokenValue.LastIndexOf(':') + 2);
                 nsfnname = nsfnname.Substring(0, nsfnname.IndexOf('('));
@@ -1590,13 +1613,14 @@ namespace Qs.Runtime
         }
 
 
-        public Microsoft.Scripting.Runtime.Scope Scope
+        public QsScope Scope
         {
             get
             {
                 return this.Evaluator.Scope;
             }
         }
+
         #endregion
 
         public Type ScopeType { get { return Scope.GetType(); } }
@@ -2151,7 +2175,7 @@ namespace Qs.Runtime
                             //occurs if the passing parameter contains expression not standalone variable.
                         }
 
-                        
+                        /*
                         var tc = Utils.Try(
                          Expression.Call(
                             typeof(QsParameter).GetMethod("MakeParameter"),
@@ -2167,6 +2191,24 @@ namespace Qs.Runtime
                             ));
 
                         Expression qp = tc.ToExpression();
+                         */
+
+                        Expression qp = Expression.TryCatch(
+                            Expression.Call(
+                                typeof(QsParameter).GetMethod("MakeParameter"),
+                                q,                                //Evaluated value.
+                                rw                                //Raw Value
+                                )
+                            , 
+                            Expression.Catch(typeof(QsVariableNotFoundException),
+                            Expression.Call(
+                                    typeof(QsParameter).GetMethod("MakeParameter"),
+                                    Expression.Constant(null),                                //no value 
+                                    rw                                //Raw Value
+                                    )
+                                )
+                            );
+
 
                         FunctorParams.Add(qp);
 

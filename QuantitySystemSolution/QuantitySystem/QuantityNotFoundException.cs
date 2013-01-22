@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Runtime.Serialization;
 
 namespace QuantitySystem
 {
-    [Serializable()]
     public class QuantityNotFoundException : QuantityException
     {
       public QuantityNotFoundException()
@@ -20,10 +18,5 @@ namespace QuantitySystem
       {
          // Add any type-specific logic for inner exceptions.
       }
-      protected QuantityNotFoundException(SerializationInfo info, 
-         StreamingContext context) : base(info, context)
-      {
-         // Implement type-specific serialization constructor logic.
-      }    
     }
 }

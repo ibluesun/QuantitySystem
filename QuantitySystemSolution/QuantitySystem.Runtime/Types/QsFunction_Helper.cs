@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Microsoft.Scripting.Runtime;
-using Microsoft.Scripting;
 using Qs.Runtime;
 
 namespace Qs.Types
@@ -22,14 +20,14 @@ namespace Qs.Types
         /// <param name="parametersNames"></param>
         /// <returns></returns>
         public static QsFunction[] FindFunctionByParameters(
-            Scope scope,
+            QsScope scope,
             string qsNamespace,
             string functionName,
             int parametersCount,
             params string[] parametersNames)
         {
 
-            ScopeStorage storage = (ScopeStorage)scope.Storage;
+            QsScopeStorage storage = (QsScopeStorage)scope.Storage;
 
             IEnumerable<KeyValuePair<string, object>> Items = null;
 
@@ -69,7 +67,7 @@ namespace Qs.Types
         /// <param name="parametersNames"></param>
         /// <returns></returns>
         public static QsFunction GetExactFunctionWithParameters(
-            Scope scope,
+            QsScope scope,
             string nameSpace,
             string functionName,
             params string[] parametersNames)
@@ -106,7 +104,7 @@ namespace Qs.Types
         /// <param name="parameterCount"></param>
         /// <returns></returns>
         public static QsFunction GetDefaultFunction(
-            Scope scope,
+            QsScope scope,
             string nameSpace,
             string functionName,
             int parametersCount)
@@ -130,12 +128,12 @@ namespace Qs.Types
         /// <param name="functionName"></param>
         /// <returns></returns>
         public static QsFunction GetFirstDeclaredFunction(
-            Scope scope,
+            QsScope scope,
             string nameSpace,
             string functionName)
         {
 
-            ScopeStorage storage = (ScopeStorage)scope.Storage;
+            QsScopeStorage storage = (QsScopeStorage)scope.Storage;
 
             IEnumerable<KeyValuePair<string, object>> Items = null;
 

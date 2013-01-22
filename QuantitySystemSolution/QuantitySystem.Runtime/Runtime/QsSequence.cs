@@ -8,7 +8,11 @@ namespace Qs.Runtime
     /// <summary>
     /// Single indexed sequence.
     /// </summary>
+#if WINRT
+    public partial class QsSequence : Dictionary<int, QsSequenceElement>, IEnumerable<QsValue>
+#else
     public partial class QsSequence : SortedList<int, QsSequenceElement> , IEnumerable<QsValue>
+#endif
     {
 
         /// <summary>

@@ -6,7 +6,7 @@ using System.Runtime.Serialization;
 
 namespace Qs
 {
-    [Serializable()]
+
     public class QsSyntaxErrorException : QsException
     {
               public QsSyntaxErrorException()
@@ -23,10 +23,5 @@ namespace Qs
       {
          // Add any type-specific logic for inner exceptions.
       }
-      protected QsSyntaxErrorException(SerializationInfo info, 
-         StreamingContext context) : base(info, context)
-      {
-         // Implement type-specific serialization constructor logic.
-      }    
     }
 }

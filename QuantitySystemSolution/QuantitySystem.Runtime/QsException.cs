@@ -3,7 +3,6 @@ using System.Runtime.Serialization;
 
 namespace Qs
 {
-    [Serializable()]
     public class QsException : Exception
     {
         public QsException()
@@ -20,11 +19,7 @@ namespace Qs
         {
          // Add any type-specific logic for inner exceptions.
         }
-        protected QsException(SerializationInfo info, 
-         StreamingContext context) : base(info, context)
-        {
-         // Implement type-specific serialization constructor logic.
-        }
+
 
         public string ExtraData { get; set; }
     }

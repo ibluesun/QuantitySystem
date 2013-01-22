@@ -3,9 +3,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using Microsoft.Scripting.Ast;
-using Microsoft.Scripting.Runtime;
-using Microsoft.Scripting.Utils;
 using ParticleLexer;
 using ParticleLexer.StandardTokens;
 using Qs.Types;
@@ -21,7 +18,7 @@ namespace Qs.Types
     /// <summary>
     /// Function that declared in Qs
     /// </summary>
-    public partial class QsFunction : QsValue, ICloneable
+    public partial class QsFunction : QsValue
     {
         private string functionName;
 
@@ -158,7 +155,7 @@ namespace Qs.Types
         /// </summary>
         /// <param name="vario"></param>
         /// <returns></returns>
-        public Expression GetInvokeExpression(QsVar vario, string[] args)
+        internal Expression GetInvokeExpression(QsVar vario, string[] args)
         {
 
             List<Expression> parameters = new List<Expression>();
@@ -209,11 +206,15 @@ namespace Qs.Types
                         rawParameter);
 
                     // The try catch block when catch exception will execute the call but by passing the parameter as text only
+                    /*
                     var tt = Utils.Try(tryBody);
 
                     tt.Catch(e, catchBody);
+                     Expression tryc  = tt.ToExpression()
+                     */
+                    Expression tryc = Expression.TryCatch(tryBody, Expression.Catch(e, catchBody));
 
-                    parameters.Add(tt.ToExpression());
+                    parameters.Add(tryc);
                 }
             }
 
@@ -445,8 +446,27 @@ namespace Qs.Types
         /// <returns></returns>
         public int GetParameterOrdinal(string parameterName)
         {
-            int idx = Parameters.FindIndex((vv) => vv.Name.Equals(parameterName, System.StringComparison.InvariantCultureIgnoreCase));
+
+
+            for (int ix = 0; ix < Parameters.Length; ix++)
+            {
+                if (Parameters[ix].Name.Equals(parameterName, StringComparison.OrdinalIgnoreCase))
+                    return ix;
+            }
+
+            return -1;
+
+            /*
+            return
+                Array.FindIndex<QsParamInfo>(Parameters
+                , (vv) => vv.Name.Equals(parameterName, System.StringComparison.InvariantCultureIgnoreCase)
+                );
+
+            int idx = Parameters.FindIndex(
+                    (vv) => vv.Name.Equals(parameterName, System.StringComparison.InvariantCultureIgnoreCase)
+                );
             return idx;
+            */
         }
 
         /// <summary>
@@ -597,8 +617,6 @@ namespace Qs.Types
                 //remove the last : from namespace
                 functionNamespace = functionNamespace.TrimEnd(':');
 
-                
-
                 List<string> textParams = new List<string>();
                 List<QsParamInfo> prms = new List<QsParamInfo>();
                 foreach (var c in functionToken[nsidx + 1])
@@ -633,7 +651,8 @@ namespace Qs.Types
                 };
 
                
-                LambdaBuilder lb = Utils.Lambda(typeof(QsValue), functionName);
+                //LambdaBuilder lb = Utils.Lambda(typeof(QsValue), functionName);
+                SimpleLambdaBuilder lb = SimpleLambdaBuilder.Create(typeof(QsValue), functionName);
 
                 foreach (QsParamInfo prm in prms)
                 {
@@ -650,6 +669,8 @@ namespace Qs.Types
                 statements.Add(qv.ResultExpression);   //making the variable expression itself make it the return value of the function.
 
                 lb.Body = Expression.Block(statements);
+
+
 
                 LambdaExpression lbe = lb.MakeLambda();
 
@@ -674,7 +695,7 @@ namespace Qs.Types
         /// <param name="scope"></param>
         /// <param name="realName"></param>
         /// <returns></returns>
-        public static QsFunction GetFunction(Scope scope, string qsNamespace, string functionName)
+        public static QsFunction GetFunction(QsScope scope, string qsNamespace, string functionName)
         {
 
             if (string.IsNullOrEmpty(qsNamespace))
@@ -726,12 +747,12 @@ namespace Qs.Types
         /// <param name="scope"></param>
         /// <param name="realName"></param>
         /// <returns></returns>
-        public static QsFunction GetFunctionAndThrowIfNotFound(Scope scope, string functionFullName)
+        public static QsFunction GetFunctionAndThrowIfNotFound(QsScope scope, string functionFullName)
         {
             string nameSpace = string.Empty;
             string functionName = functionFullName;
 
-            if (functionFullName.Contains(':'))
+            if (functionFullName.Contains(":"))
             {
                 nameSpace = functionFullName.Substring(0, functionFullName.IndexOf(':'));
                 functionName = functionFullName.Substring(functionFullName.IndexOf(':') + 1);

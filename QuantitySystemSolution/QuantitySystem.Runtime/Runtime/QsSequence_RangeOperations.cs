@@ -7,7 +7,7 @@ using Qs.Types;
 
 namespace Qs.Runtime
 {
-    public partial class QsSequence : SortedList<int, QsSequenceElement>, IEnumerable<QsValue>
+    public partial class QsSequence
     {
 
 

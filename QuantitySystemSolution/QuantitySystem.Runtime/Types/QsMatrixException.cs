@@ -6,7 +6,6 @@ using System.Runtime.Serialization;
 
 namespace Qs.Types
 {
-    [Serializable()]
     public class QsMatrixException : QsException
     {
       public QsMatrixException()
@@ -23,10 +22,6 @@ namespace Qs.Types
       {
          // Add any type-specific logic for inner exceptions.
       }
-      protected QsMatrixException(SerializationInfo info, 
-         StreamingContext context) : base(info, context)
-      {
-         // Implement type-specific serialization constructor logic.
-      }    
+ 
     }
 }

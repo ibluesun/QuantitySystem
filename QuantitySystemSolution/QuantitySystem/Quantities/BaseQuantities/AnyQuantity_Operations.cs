@@ -1,29 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection.Emit;
-using System.Collections.ObjectModel;
-using System.Reflection;
-using System.Globalization;
 
 using QuantitySystem.Units;
 using System.Diagnostics;
+using System.Linq.Expressions;
 
 namespace QuantitySystem.Quantities.BaseQuantities
 {
-
-    public abstract partial class AnyQuantity<T> : BaseQuantity, ICloneable
+    public abstract partial class AnyQuantity<T> : BaseQuantity
     {
-
-
         #region Operation Methods
 
         public static AnyQuantity<T> Add(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
         {
             if (firstQuantity.Equals(secondQuantity))
             {
-
                 AnyQuantity<T> AQ = null;
                 try
                 {
@@ -57,10 +47,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                         //secondVal =  stof.ConversionFactor * secondVal;  //original line without shift
 
                         secondVal = stof.ConversionFactor * secondVal;
-
                     }
-
-
 
                     ////sum the values
 
@@ -81,46 +68,6 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 }
                 else
                 {
-
-                    //define the new dynamically created method
-                    //with the return type and the input types
-
-                    DynamicMethod method = new DynamicMethod(
-                        "Add_Method" + ":" + typeof(T).ToString(),
-                        typeof(T),
-                        new Type[] { typeof(T), typeof(T) });
-
-
-                    //get generator to construct the function.
-
-                    ILGenerator gen = method.GetILGenerator();
-
-
-                    gen.Emit(OpCodes.Ldarg_0);  //load the first value
-                    gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-                    if (typeof(T).IsPrimitive)
-                    {
-                        gen.Emit(OpCodes.Add);              //adding them if they were premitive
-                    }
-                    else
-                    {
-                        MethodInfo info = typeof(T).GetMethod
-                            (
-                            "op_Addition",
-                            new Type[] { typeof(T), typeof(T) },
-                            null
-                            );
-
-                        gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
-
-                    }
-
-                    gen.Emit(OpCodes.Ret);
-
-
-
                     T firstVal = (firstQuantity.Value);
 
                     T secondVal = (secondQuantity.Value);
@@ -138,10 +85,16 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     }
 
 
+                    var expr = Expression.Add(Expression.Constant(firstVal), Expression.Constant(secondVal));
 
-                    ////sum the values
+                    // Construct Lambda function which return one object.
+                    Expression<Func<T>> cq = Expression.Lambda<Func<T>>(expr);
 
-                    T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
+                    // compile the function
+                    Func<T> aqf = cq.Compile();
+
+                    // execute the function
+                    T result = aqf();
 
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                     {
@@ -161,7 +114,6 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 throw new QuantitiesNotDimensionallyEqualException();
             }
         }
-
 
         /// <summary>
         /// Adding quantities with different storage types
@@ -187,34 +139,6 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 }
 
 
-                //define the new dynamically created method
-                //with the return type and the input types
-
-                DynamicMethod method = new DynamicMethod(
-                    "Add_Method" + ":" + typeof(T).ToString(),
-                    typeof(T),
-                    new Type[] { typeof(T), typeof(Q) });
-
-
-                //get generator to construct the function.
-
-                ILGenerator gen = method.GetILGenerator();
-
-
-                gen.Emit(OpCodes.Ldarg_0);  //load the first value
-                gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-                MethodInfo info = typeof(T).GetMethod
-                    (
-                    "op_Addition",
-                    new Type[] { typeof(T), typeof(Q) },
-                    null
-                    );
-
-                gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
-
-                gen.Emit(OpCodes.Ret);
-
                 T firstVal = (firstQuantity.Value);
 
                 Q secondVal = (secondQuantity.Value);
@@ -230,9 +154,17 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     secondVal = MultiplyScalarByGeneric<Q>(stof.ConversionFactor, secondVal);
                 }
 
-                ////sum the values
 
-                T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
+                var expr = Expression.Add(Expression.Constant(firstVal), Expression.Constant(secondVal));
+
+                // Construct Lambda function which return one object.
+                Expression<Func<T>> cq = Expression.Lambda<Func<T>>(expr);
+
+                // compile the function
+                Func<T> aqf = cq.Compile();
+
+                // execute the function
+                T result = aqf();
 
                 if (firstQuantity.Unit != null && secondQuantity.Unit != null)
                 {
@@ -308,44 +240,6 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 }
                 else
                 {
-                    //define the new dynamically created method
-                    //with the return type and the input types
-
-                    DynamicMethod method = new DynamicMethod(
-                        "Subtract_Method" + ":" + typeof(T).ToString(),
-                        typeof(T),
-                        new Type[] { typeof(T), typeof(T) });
-
-
-                    //get generator to construct the function.
-
-                    ILGenerator gen = method.GetILGenerator();
-
-
-                    gen.Emit(OpCodes.Ldarg_0);  //load the first value
-                    gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-                    if (typeof(T).IsPrimitive)
-                    {
-                        gen.Emit(OpCodes.Sub);              //adding them if they were premitive
-                    }
-                    else
-                    {
-                        MethodInfo info = typeof(T).GetMethod
-                            (
-                            "op_Subtraction",
-                            new Type[] { typeof(T), typeof(T) },
-                            null
-                            );
-
-                        gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
-
-                    }
-
-                    gen.Emit(OpCodes.Ret);
-
-
 
                     T firstVal = (firstQuantity.Value);
                     T secondVal = (secondQuantity.Value);
@@ -362,7 +256,16 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     }
 
 
-                    T result = (T)method.Invoke(null, new object[] { firstVal, secondVal });
+                    var expr = Expression.Subtract(Expression.Constant(firstVal), Expression.Constant(secondVal));
+
+                    // Construct Lambda function which return one object.
+                    Expression<Func<T>> cq = Expression.Lambda<Func<T>>(expr);
+
+                    // compile the function
+                    Func<T> aqf = cq.Compile();
+
+                    // execute the function
+                    T result = aqf();
 
 
                     if (firstQuantity.Unit != null && secondQuantity.Unit != null)
@@ -604,38 +507,8 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 }
                 else
                 {
+
                     #region Custom Types
-                    //define the new dynamically created method
-                    //with the return type and the input types
-
-                    DynamicMethod method = new DynamicMethod(
-                        "Relation_Method" + ":" + typeof(T).ToString(),
-                        typeof(bool),
-                        new Type[] { typeof(T), typeof(T) });
-
-
-                    //get generator to construct the function.
-
-                    ILGenerator gen = method.GetILGenerator();
-
-
-                    gen.Emit(OpCodes.Ldarg_0);  //load the first value
-                    gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-                    MethodInfo info = typeof(T).GetMethod
-                        (
-                        "op_LessThan",
-                        new Type[] { typeof(T), typeof(T) },
-                        null
-                        );
-
-                    gen.EmitCall(OpCodes.Call, info, null);
-
-
-                    gen.Emit(OpCodes.Ret);
-
-
 
                     T firstVal = (firstQuantity.Value);
 
@@ -653,7 +526,19 @@ namespace QuantitySystem.Quantities.BaseQuantities
                         secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
                     }
 
-                    return (bool)method.Invoke(null, new object[] { firstVal, secondVal });
+                    var expr = Expression.LessThan(Expression.Constant(firstVal), Expression.Constant(secondVal));
+
+                    // Construct Lambda function which return one object.
+                    Expression<Func<bool>> cq = Expression.Lambda<Func<bool>>(expr);
+
+                    // compile the function
+                    Func<bool> aqf = cq.Compile();
+
+                    // execute the function
+                    bool result = aqf();
+
+                    return result;
+
                     #endregion
 
                 }
@@ -663,6 +548,8 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 throw new QuantitiesNotDimensionallyEqualException();
             }
         }
+
+
         public static bool LessThanOrEqual(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
         {
             if (firstQuantity.Equals(secondQuantity))
@@ -696,38 +583,9 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 }
                 else
                 {
+
                     #region Custom Types
-                    //define the new dynamically created method
-                    //with the return type and the input types
-
-                    DynamicMethod method = new DynamicMethod(
-                        "Relation_Method" + ":" + typeof(T).ToString(),
-                        typeof(bool),
-                        new Type[] { typeof(T), typeof(T) });
-
-
-                    //get generator to construct the function.
-
-                    ILGenerator gen = method.GetILGenerator();
-
-
-                    gen.Emit(OpCodes.Ldarg_0);  //load the first value
-                    gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-                    MethodInfo info = typeof(T).GetMethod
-                        (
-                        "op_LessThanOrEqual",
-                        new Type[] { typeof(T), typeof(T) },
-                        null
-                        );
-
-                    gen.EmitCall(OpCodes.Call, info, null);
-
-
-                    gen.Emit(OpCodes.Ret);
-
-
+                    
 
                     T firstVal = (firstQuantity.Value);
 
@@ -745,7 +603,18 @@ namespace QuantitySystem.Quantities.BaseQuantities
                         secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
                     }
 
-                    return (bool)method.Invoke(null, new object[] { firstVal, secondVal });
+                    var expr = Expression.LessThanOrEqual(Expression.Constant(firstVal), Expression.Constant(secondVal));
+
+                    // Construct Lambda function which return one object.
+                    Expression<Func<bool>> cq = Expression.Lambda<Func<bool>>(expr);
+
+                    // compile the function
+                    Func<bool> aqf = cq.Compile();
+
+                    // execute the function
+                    bool result = aqf();
+
+                    return result;
                     #endregion
 
                 }
@@ -755,6 +624,8 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 throw new QuantitiesNotDimensionallyEqualException();
             }
         }
+
+
         public static bool GreaterThan(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
         {
             if (firstQuantity.Equals(secondQuantity))
@@ -788,37 +659,10 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 }
                 else
                 {
+
+
                     #region Custom Types
-                    //define the new dynamically created method
-                    //with the return type and the input types
-
-                    DynamicMethod method = new DynamicMethod(
-                        "Relation_Method" + ":" + typeof(T).ToString(),
-                        typeof(bool),
-                        new Type[] { typeof(T), typeof(T) });
-
-
-                    //get generator to construct the function.
-
-                    ILGenerator gen = method.GetILGenerator();
-
-
-                    gen.Emit(OpCodes.Ldarg_0);  //load the first value
-                    gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-                    MethodInfo info = typeof(T).GetMethod
-                        (
-                        "op_GreaterThan",
-                        new Type[] { typeof(T), typeof(T) },
-                        null
-                        );
-
-                    gen.EmitCall(OpCodes.Call, info, null);
-
-
-                    gen.Emit(OpCodes.Ret);
-
+                    
 
 
                     T firstVal = (firstQuantity.Value);
@@ -837,7 +681,18 @@ namespace QuantitySystem.Quantities.BaseQuantities
                         secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
                     }
 
-                    return (bool)method.Invoke(null, new object[] { firstVal, secondVal });
+                    var expr = Expression.GreaterThan(Expression.Constant(firstVal), Expression.Constant(secondVal));
+
+                    // Construct Lambda function which return one object.
+                    Expression<Func<bool>> cq = Expression.Lambda<Func<bool>>(expr);
+
+                    // compile the function
+                    Func<bool> aqf = cq.Compile();
+
+                    // execute the function
+                    bool result = aqf();
+
+                    return result;
                     #endregion
 
                 }
@@ -847,6 +702,8 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 throw new QuantitiesNotDimensionallyEqualException();
             }
         }
+
+
         public static bool GreaterThanOrEqual(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
         {
             if (firstQuantity.Equals(secondQuantity))
@@ -880,39 +737,8 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 }
                 else
                 {
+
                     #region Custom Types
-                    //define the new dynamically created method
-                    //with the return type and the input types
-
-                    DynamicMethod method = new DynamicMethod(
-                        "Relation_Method" + ":" + typeof(T).ToString(),
-                        typeof(bool),
-                        new Type[] { typeof(T), typeof(T) });
-
-
-                    //get generator to construct the function.
-
-                    ILGenerator gen = method.GetILGenerator();
-
-
-                    gen.Emit(OpCodes.Ldarg_0);  //load the first value
-                    gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-                    MethodInfo info = typeof(T).GetMethod
-                        (
-                        "op_GreaterThanOrEqual",
-                        new Type[] { typeof(T), typeof(T) },
-                        null
-                        );
-
-                    gen.EmitCall(OpCodes.Call, info, null);
-
-
-                    gen.Emit(OpCodes.Ret);
-
-
-
                     T firstVal = (firstQuantity.Value);
 
                     T secondVal = (secondQuantity.Value);
@@ -929,9 +755,19 @@ namespace QuantitySystem.Quantities.BaseQuantities
                         secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
                     }
 
-                    return (bool)method.Invoke(null, new object[] { firstVal, secondVal });
-                    #endregion
+                    var expr = Expression.GreaterThanOrEqual(Expression.Constant(firstVal), Expression.Constant(secondVal));
 
+                    // Construct Lambda function which return one object.
+                    Expression<Func<bool>> cq = Expression.Lambda<Func<bool>>(expr);
+
+                    // compile the function
+                    Func<bool> aqf = cq.Compile();
+
+                    // execute the function
+                    bool result = aqf();
+
+                    return result;
+                    #endregion
                 }
             }
             else
@@ -939,6 +775,8 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 throw new QuantitiesNotDimensionallyEqualException();
             }
         }
+
+
         public static bool Equality(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
         {
             if (firstQuantity.Equals(secondQuantity))
@@ -972,38 +810,8 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 }
                 else
                 {
+
                     #region Custom Types
-                    //define the new dynamically created method
-                    //with the return type and the input types
-
-                    DynamicMethod method = new DynamicMethod(
-                        "Relation_Method" + ":" + typeof(T).ToString(),
-                        typeof(bool),
-                        new Type[] { typeof(T), typeof(T) });
-
-
-                    //get generator to construct the function.
-
-                    ILGenerator gen = method.GetILGenerator();
-
-
-                    gen.Emit(OpCodes.Ldarg_0);  //load the first value
-                    gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-                    MethodInfo info = typeof(T).GetMethod
-                        (
-                        "op_Equality",
-                        new Type[] { typeof(T), typeof(T) },
-                        null
-                        );
-
-                    gen.EmitCall(OpCodes.Call, info, null);
-
-
-                    gen.Emit(OpCodes.Ret);
-
-
 
                     T firstVal = (firstQuantity.Value);
 
@@ -1021,8 +829,20 @@ namespace QuantitySystem.Quantities.BaseQuantities
                         secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
                     }
 
-                    return (bool)method.Invoke(null, new object[] { firstVal, secondVal });
+                    var expr = Expression.Equal(Expression.Constant(firstVal), Expression.Constant(secondVal));
+
+                    // Construct Lambda function which return one object.
+                    Expression<Func<bool>> cq = Expression.Lambda<Func<bool>>(expr);
+
+                    // compile the function
+                    Func<bool> aqf = cq.Compile();
+
+                    // execute the function
+                    bool result = aqf();
+
+                    return result;
                     #endregion
+
 
                 }
             }
@@ -1031,6 +851,8 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 throw new QuantitiesNotDimensionallyEqualException();
             }
         }
+
+
         public static bool Inequality(AnyQuantity<T> firstQuantity, AnyQuantity<T> secondQuantity)
         {
             if (firstQuantity.Equals(secondQuantity))
@@ -1053,10 +875,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                         //factor from second unit to first unit
                         UnitPathStack stof = secondQuantity.Unit.PathToUnit(firstQuantity.Unit);
 
-                        //secondVal =  stof.ConversionFactor * secondVal;  //original line without shift
-
                         secondVal = stof.ConversionFactor * secondVal;
-
                     }
 
                     return firstVal != secondVal;
@@ -1064,36 +883,10 @@ namespace QuantitySystem.Quantities.BaseQuantities
                 }
                 else
                 {
+
+
+
                     #region Custom Types
-                    //define the new dynamically created method
-                    //with the return type and the input types
-
-                    DynamicMethod method = new DynamicMethod(
-                        "Relation_Method" + ":" + typeof(T).ToString(),
-                        typeof(bool),
-                        new Type[] { typeof(T), typeof(T) });
-
-
-                    //get generator to construct the function.
-
-                    ILGenerator gen = method.GetILGenerator();
-
-
-                    gen.Emit(OpCodes.Ldarg_0);  //load the first value
-                    gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-                    MethodInfo info = typeof(T).GetMethod
-                        (
-                        "op_Inequality",
-                        new Type[] { typeof(T), typeof(T) },
-                        null
-                        );
-
-                    gen.EmitCall(OpCodes.Call, info, null);
-
-
-                    gen.Emit(OpCodes.Ret);
 
 
 
@@ -1113,8 +906,20 @@ namespace QuantitySystem.Quantities.BaseQuantities
                         secondVal = MultiplyScalarByGeneric(stof.ConversionFactor, secondVal);
                     }
 
-                    return (bool)method.Invoke(null, new object[] { firstVal, secondVal });
+                    var expr = Expression.NotEqual(Expression.Constant(firstVal), Expression.Constant(secondVal));
+
+                    // Construct Lambda function which return one object.
+                    Expression<Func<bool>> cq = Expression.Lambda<Func<bool>>(expr);
+
+                    // compile the function
+                    Func<bool> aqf = cq.Compile();
+
+                    // execute the function
+                    bool result = aqf();
+
+                    return result;
                     #endregion
+
 
                 }
             }

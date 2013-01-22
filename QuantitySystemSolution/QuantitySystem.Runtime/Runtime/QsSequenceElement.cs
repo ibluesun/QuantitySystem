@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Linq.Expressions;
-using Microsoft.Scripting.Ast;
 using Qs.Types;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
@@ -253,7 +252,7 @@ namespace Qs.Runtime
                 
                 //try one index delegate without parameters
                 //Create the lambda function that will pass the index and parameters to the expression.
-                LambdaBuilder lb = Utils.Lambda(typeof(QsValue), "ElementValue");
+                SimpleLambdaBuilder lb = SimpleLambdaBuilder.Create(typeof(QsValue), "ElementValue");
 
                 //add the index parameter
                 lb.Parameter(typeof(int), sequence.SequenceIndexName);

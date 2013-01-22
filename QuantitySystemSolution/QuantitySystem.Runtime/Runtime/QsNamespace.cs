@@ -5,9 +5,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using Microsoft.Scripting;
-using Microsoft.Scripting.Ast;
-using Microsoft.Scripting.Runtime;
 using Qs.Types;
 using Qs.Types.Attributes;
 using QsRoot;
@@ -242,7 +239,9 @@ namespace Qs.Runtime
             
             // The namespace is a static class with public visibility to its static members.
             var methods = _NamespaceType.GetMethods(
-             BindingFlags.IgnoreCase | BindingFlags.Static | BindingFlags.Public | BindingFlags.InvokeMethod );
+             BindingFlags.IgnoreCase | BindingFlags.Static | BindingFlags.Public
+             /*| BindingFlags.InvokeMethod */
+             );
             
             Dictionary<string, object> CodedMembers = 
                 new Dictionary<string, object>(System.StringComparer.OrdinalIgnoreCase);
@@ -408,8 +407,14 @@ namespace Qs.Runtime
 
 
             //try the current assembly
+#if WINRT
+            // in Windows RT get only the types under the QsRoot
+
+            System.Type ns = Root.GetInternalType(cls);            
+#else
 
             System.Type ns = System.Type.GetType(cls, false, true);
+#endif
 
             if (ns == null)
             {
@@ -442,7 +447,7 @@ namespace Qs.Runtime
         /// <param name="scope"></param>
         /// <param name="moduleNamespace"></param>
         /// <returns></returns>
-        public static QsNamespace GetNamespace(Scope scope, string moduleNamespace)
+        public static QsNamespace GetNamespace(QsScope scope, string moduleNamespace)
         {
             return GetNamespace(scope, moduleNamespace, false);
         }
@@ -455,7 +460,7 @@ namespace Qs.Runtime
         /// <param name="moduleNamespace"></param>
         /// <param name="forceCreation">force creation of namespace in scope if dosen't exist before.</param>
         /// <returns></returns>
-        public static QsNamespace GetNamespace(Scope scope, string moduleNamespace, bool forceCreation)
+        public static QsNamespace GetNamespace(QsScope scope, string moduleNamespace, bool forceCreation)
         {
             QsNamespace NameSpace = null;
 
@@ -465,9 +470,9 @@ namespace Qs.Runtime
             if (scope != null)
             {
 
-                if (((ScopeStorage)scope.Storage).HasValue(moduleNamespace, true))
+                if (((QsScopeStorage)scope.Storage).HasValue(moduleNamespace))
                 {
-                    NameSpace = (QsNamespace)((ScopeStorage)scope.Storage).GetValue(moduleNamespace, true);
+                    NameSpace = (QsNamespace)((QsScopeStorage)scope.Storage).GetValue(moduleNamespace);
                 }
 
                 if (NameSpace == null)
@@ -481,7 +486,7 @@ namespace Qs.Runtime
 
                     if (forceCreation | (nst != null))
                     {
-                        ((ScopeStorage)scope.Storage).SetValue(moduleNamespace, true, NameSpace);
+                        ((QsScopeStorage)scope.Storage).SetValue(moduleNamespace, NameSpace);
                     }
                 }
             }
@@ -524,7 +529,7 @@ namespace Qs.Runtime
             if (method.ReturnType != typeof(QsValue)) DecorateNativeFunction = true;
             //construct the lambda
 
-            LambdaBuilder lb = Utils.Lambda(typeof(QsValue), method.Name);
+            SimpleLambdaBuilder lb = SimpleLambdaBuilder.Create(typeof(QsValue), method.Name);
             
 
             //prepare parameters with the same name of native function but with qsparameter type

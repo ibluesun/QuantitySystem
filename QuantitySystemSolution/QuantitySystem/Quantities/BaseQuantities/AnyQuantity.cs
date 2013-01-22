@@ -1,27 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Reflection.Emit;
-using System.Collections.ObjectModel;
-using System.Reflection;
-using System.Globalization;
-
 using QuantitySystem.Units;
+using System.Linq.Expressions;
 
 namespace QuantitySystem.Quantities.BaseQuantities
 {
     /// <summary>
     /// This class hold the mathmatical operations of quantity.
     /// </summary>
-    public abstract partial class AnyQuantity<T> : BaseQuantity, ICloneable
+    public abstract partial class AnyQuantity<T> : BaseQuantity
     {
 
         #region constructors
 
         protected AnyQuantity() : base(1) { }
         protected AnyQuantity(float exponent) : base(exponent) { }
-
 
         #endregion
 
@@ -78,8 +70,6 @@ namespace QuantitySystem.Quantities.BaseQuantities
         #endregion
 
 
-
-
         #region Helper Functions
         public static DerivedQuantity<T> ConstructDerivedQuantity<T>(params AnyQuantity<T>[] quantities)
         {
@@ -90,51 +80,30 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
 
         #region Generic Helper Calculations
-        
+
+        /// <summary>
+        /// Multiply scalar value by generic values
+        /// </summary>
+        /// <typeparam name="Q"></typeparam>
+        /// <param name="factor"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static Q MultiplyScalarByGeneric<Q>(double factor, Q value)
         {
-            if (factor == 1.0) return value;
+            if (factor == 1.0) return value;  // return the same value
 
-            //create the dynamic method here 
+            var expr = Expression.Multiply(Expression.Constant(factor), Expression.Constant(value));
 
-            DynamicMethod method = new DynamicMethod(
-                "Multiply_Method" + ":" + typeof(Q).ToString(),
-                typeof(Q),
-                new Type[] { typeof(double), typeof(Q) });
+            // Construct Lambda function which return one object.
+            Expression<Func<Q>> cq = Expression.Lambda<Func<Q>>(expr);
 
+            // compile the function
+            Func<Q> aqf = cq.Compile();
 
-            //get generator to construct the function.
+            // execute the function
+            Q result = aqf();
 
-            ILGenerator gen = method.GetILGenerator();
-
-
-            gen.Emit(OpCodes.Ldarg_0);  //load the first value
-            gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-            if (typeof(Q).IsPrimitive)
-            {
-                gen.Emit(OpCodes.Mul);              //adding them if they were premitive
-            }
-            else
-            {
-                MethodInfo info = typeof(Q).GetMethod
-                    (
-                    "op_Multiply",
-                    new Type[] { typeof(double), typeof(Q) },
-                    null
-                    );
-
-                gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
-
-            }
-
-            gen.Emit(OpCodes.Ret);
-
-
-            Q result = (Q)method.Invoke(null, new object[] { factor, value });
-
-
+            // return the result
             return result;
         }
 
@@ -146,131 +115,53 @@ namespace QuantitySystem.Quantities.BaseQuantities
             }
             else
             {
-                //create the dynamic method here 
+                var expr = Expression.Divide(Expression.Constant(factor), Expression.Constant(value));
 
-                DynamicMethod method = new DynamicMethod(
-                    "Multiply_Method" + ":" + typeof(T).ToString(),
-                    typeof(T),
-                    new Type[] { typeof(double), typeof(T) });
+                // Construct Lambda function which return one object.
+                Expression<Func<T>> cq = Expression.Lambda<Func<T>>(expr);
 
+                // compile the function
+                Func<T> aqf = cq.Compile();
 
-                //get generator to construct the function.
+                // execute the function
+                T result = aqf();
 
-                ILGenerator gen = method.GetILGenerator();
-
-
-                gen.Emit(OpCodes.Ldarg_0);  //load the first value
-                gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-                if (typeof(T).IsPrimitive)
-                {
-                    gen.Emit(OpCodes.Div);              //adding them if they were premitive
-                }
-                else
-                {
-                    MethodInfo info = typeof(T).GetMethod
-                        (
-                        "op_Division",
-                        new Type[] { typeof(double), typeof(T) },
-                        null
-                        );
-
-                    gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
-
-                }
-
-                gen.Emit(OpCodes.Ret);
-
-
-                T result = (T)method.Invoke(null, new object[] { factor, value });
-
-
+                // return the result
                 return result;
             }
         }
 
         public static T MultiplyGenericByGeneric(T firstValue, T secondValue)
         {
-            DynamicMethod method = new DynamicMethod(
-                "Multiply_Method" + ":" + typeof(T).ToString(),
-                typeof(T),
-                new Type[] { typeof(T), typeof(T) });
+            var expr = Expression.Multiply(Expression.Constant(firstValue), Expression.Constant(secondValue));
 
+            // Construct Lambda function which return one object.
+            Expression<Func<T>> cq = Expression.Lambda<Func<T>>(expr);
 
-            //get generator to construct the function.
+            // compile the function
+            Func<T> aqf = cq.Compile();
 
-            ILGenerator gen = method.GetILGenerator();
+            // execute the function
+            T result = aqf();
 
-
-            gen.Emit(OpCodes.Ldarg_0);  //load the first value
-            gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-            if (typeof(T).IsPrimitive)
-            {
-                gen.Emit(OpCodes.Mul);              //adding them if they were premitive
-            }
-            else
-            {
-                MethodInfo info = typeof(T).GetMethod
-                    (
-                    "op_Multiply",
-                    new Type[] { typeof(T), typeof(T) },
-                    null
-                    );
-
-                gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
-
-            }
-
-            gen.Emit(OpCodes.Ret);
-
-
-            T result = (T)method.Invoke(null, new object[] { firstValue, secondValue });
-
+            // return the result
             return result;
         }
 
         public static T DivideGenericByGeneric(T firstValue, T secondValue)
         {
-            DynamicMethod method = new DynamicMethod(
-                "Multiply_Method" + ":" + typeof(T).ToString(),
-                typeof(T),
-                new Type[] { typeof(T), typeof(T) });
+            var expr = Expression.Divide(Expression.Constant(firstValue), Expression.Constant(secondValue));
 
+            // Construct Lambda function which return one object.
+            Expression<Func<T>> cq = Expression.Lambda<Func<T>>(expr);
 
-            //get generator to construct the function.
+            // compile the function
+            Func<T> aqf = cq.Compile();
 
-            ILGenerator gen = method.GetILGenerator();
+            // execute the function
+            T result = aqf();
 
-
-            gen.Emit(OpCodes.Ldarg_0);  //load the first value
-            gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-            if (typeof(T).IsPrimitive)
-            {
-                gen.Emit(OpCodes.Div);              //adding them if they were premitive
-            }
-            else
-            {
-                MethodInfo info = typeof(T).GetMethod
-                    (
-                    "op_Division",
-                    new Type[] { typeof(T), typeof(T) },
-                    null
-                    );
-
-                gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
-
-            }
-
-            gen.Emit(OpCodes.Ret);
-
-
-            T result = (T)method.Invoke(null, new object[] { firstValue, secondValue });
-
+            // return the result
             return result;
         }
 
@@ -289,55 +180,19 @@ namespace QuantitySystem.Quantities.BaseQuantities
             }
             else
             {
-                //create the dynamic method here 
+                var m = typeof(T).GetMethod("Pow", new Type[]{typeof(T), typeof(double)});
+                var expr = Expression.Power(Expression.Constant(value), Expression.Constant(factor), m );
 
-                DynamicMethod method = new DynamicMethod(
-                    "Power_Method" + ":" + typeof(T).ToString(),
-                    typeof(T),
-                    new Type[] { typeof(T), typeof(double) });
+                // Construct Lambda function which return one object.
+                Expression<Func<T>> cq = Expression.Lambda<Func<T>>(expr);
 
+                // compile the function
+                Func<T> aqf = cq.Compile();
 
-                //get generator to construct the function.
+                // execute the function
+                T result = aqf();
 
-                ILGenerator gen = method.GetILGenerator();
-
-
-                gen.Emit(OpCodes.Ldarg_0);  //load the first value
-                gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-                if (typeof(T).IsPrimitive)
-                {
-
-                    MethodInfo info = typeof(Math).GetMethod
-                        (
-                        "Pow",
-                        new Type[] { typeof(double), typeof(double) },
-                        null
-                        );
-
-                    gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
-
-                }
-                else
-                {
-                    MethodInfo info = typeof(T).GetMethod
-                        (
-                        "Pow",
-                        new Type[] { typeof(T), typeof(double) },
-                        null
-                        );
-
-                    gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
-
-                }
-
-                gen.Emit(OpCodes.Ret);
-
-
-                T result = (T)method.Invoke(null, new object[] { value, factor });
-
-
+                // return the result
                 return result;
             }
         }
@@ -351,53 +206,19 @@ namespace QuantitySystem.Quantities.BaseQuantities
         /// <returns></returns>
         public static T RaiseGenericByGeneric(T value, T factor)
         {
-            //create the dynamic method here 
+            var expr = Expression.Power(Expression.Constant(value), Expression.Constant(factor));
 
-            DynamicMethod method = new DynamicMethod(
-                "Power_Method" + ":" + typeof(T).ToString(),
-                typeof(T),
-                new Type[] { typeof(T), typeof(T) });
+            // Construct Lambda function which return one object.
+            Expression<Func<T>> cq = Expression.Lambda<Func<T>>(expr);
 
-            //get generator to construct the function.
+            // compile the function
+            Func<T> aqf = cq.Compile();
 
-            ILGenerator gen = method.GetILGenerator();
+            // execute the function
+            T result = aqf();
 
-            gen.Emit(OpCodes.Ldarg_0);  //load the first value
-            gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-            if (typeof(T).IsPrimitive)
-            {
-
-                MethodInfo info = typeof(Math).GetMethod
-                    (
-                    "Pow",
-                    new Type[] { typeof(double), typeof(double) },
-                    null
-                    );
-
-                gen.EmitCall(OpCodes.Call, info, null);   
-
-            }
-            else
-            {
-                MethodInfo info = typeof(T).GetMethod
-                    (
-                    "Pow",
-                    new Type[] { typeof(T), typeof(T) },
-                    null
-                    );
-
-                gen.EmitCall(OpCodes.Call, info, null);   
-
-            }
-
-            gen.Emit(OpCodes.Ret);
-
-            T result = (T)method.Invoke(null, new object[] { value, factor });
-
+            // return the result
             return result;
-
-
         }
 
 
@@ -410,43 +231,18 @@ namespace QuantitySystem.Quantities.BaseQuantities
         /// <returns></returns>
         public static T ModuloGenericByGeneric(T firstValue, T secondValue)
         {
-            DynamicMethod method = new DynamicMethod(
-                "Modulo_Method" + ":" + typeof(T).ToString(),
-                typeof(T),
-                new Type[] { typeof(T), typeof(T) });
+            var expr = Expression.Modulo(Expression.Constant(firstValue), Expression.Constant(secondValue));
 
+            // Construct Lambda function which return one object.
+            Expression<Func<T>> cq = Expression.Lambda<Func<T>>(expr);
 
-            //get generator to construct the function.
+            // compile the function
+            Func<T> aqf = cq.Compile();
 
-            ILGenerator gen = method.GetILGenerator();
+            // execute the function
+            T result = aqf();
 
-
-            gen.Emit(OpCodes.Ldarg_0);  //load the first value
-            gen.Emit(OpCodes.Ldarg_1);  //load the second value
-
-
-            if (typeof(T).IsPrimitive)
-            {
-                gen.Emit(OpCodes.Rem);              //adding them if they were premitive
-            }
-            else
-            {
-                MethodInfo info = typeof(T).GetMethod
-                    (
-                    "op_Modulus",
-                    new Type[] { typeof(T), typeof(T) },
-                    null
-                    );
-
-                gen.EmitCall(OpCodes.Call, info, null);   //otherwise call its op_Addition method.
-
-            }
-
-            gen.Emit(OpCodes.Ret);
-
-
-            T result = (T)method.Invoke(null, new object[] { firstValue, secondValue });
-
+            // return the result
             return result;
         }
 
@@ -502,13 +298,12 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
         #region ICloneable Members
 
-        public object Clone()
+        public AnyQuantity<T> Clone()
         {
             object t = this.MemberwiseClone();
             var t2 = ((AnyQuantity<T>)t);
             if (t2.Unit != null) t2.Unit = (Unit)Unit.Clone();
             return t2;
-        
         }
 
         #endregion

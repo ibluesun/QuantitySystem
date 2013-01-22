@@ -5,8 +5,9 @@ using System.Linq.Expressions;
 using Microsoft.Scripting;
 using Microsoft.Scripting.Runtime;
 using Qs.Types;
+using Microsoft.Scripting.Hosting;
 
-namespace Qs.Runtime
+namespace Qs.Scripting
 {
     public sealed class QsContext : LanguageContext
     {
@@ -54,6 +55,28 @@ namespace Qs.Runtime
             {
                 return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;       
             }
+        }
+
+
+        /// <summary>
+        /// Creates the language runtime to be used in hosting.
+        /// </summary>
+        /// <returns></returns>
+        public static ScriptRuntime CreateRuntime()
+        {
+            string[] QsNames = { "QuantitySystem", "Qs" };
+            string[] QsExtensions = { ".Qs" };
+            string QsType = typeof(QsContext).FullName + ", " + typeof(QsContext).Assembly.FullName;
+
+            LanguageSetup QsSetup = new LanguageSetup(QsType, "Quantity System Runtime", QsNames, QsExtensions);
+
+            ScriptRuntimeSetup srs = new ScriptRuntimeSetup();
+
+            srs.LanguageSetups.Add(QsSetup);
+
+            ScriptRuntime sr = new ScriptRuntime(srs);
+
+            return sr;
         }
     }
 

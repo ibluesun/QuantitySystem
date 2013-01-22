@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Linq.Expressions;
+using System.Reflection;
 using ParticleLexer;
 using ParticleLexer.StandardTokens;
-using ParticleLexer.QsTokens;
 using QsRoot;
-using System.Reflection.Emit;
-using System.Reflection;
 
 
 namespace Qs.Types
@@ -190,7 +187,8 @@ namespace Qs.Types
             get { throw new NotImplementedException(); }
         }
 
-
+        /*
+        
         /// <summary>
         /// Get the operation method dynamically between the current object and the target object.
         /// </summary>
@@ -238,10 +236,11 @@ namespace Qs.Types
 
             return null;
         }
-
+        */
 
         public override QsValue AddOperation(QsValue value)
         {
+            /*
             DynamicMethod dm = GetOperationMethod(Operator.Plus, value);
 
             if (dm != null)
@@ -250,12 +249,34 @@ namespace Qs.Types
                 return QsObject.CreateNativeObject(result);
 
             }
+            */
 
-            throw new NotImplementedException("Addition Operation between " + this.ToString() + " and " + value.ToString() + " is not supported");
+            var o = value as QsObject;
+            if (o != null)
+            {
+                var expr = Expression.Add(Expression.Constant(_NativeObject), Expression.Constant(o._NativeObject));
+
+                // Construct Lambda function which return one object.
+                Expression<Func<object>> cq = Expression.Lambda<Func<object>>(expr);
+
+                // compile the function
+                Func<object> aqf = cq.Compile();
+
+                // execute the function
+                object result = aqf();
+
+                // return the result
+                return new QsObject(result);
+            }
+            else
+            {
+                throw new NotImplementedException("Operation between " + this.ToString() + " and " + value.ToString() + " is not supported");
+            }
         }
 
         public override QsValue SubtractOperation(QsValue value)
         {
+            /*
             DynamicMethod dm = GetOperationMethod(Operator.Minus, value);
 
             if (dm != null)
@@ -264,12 +285,35 @@ namespace Qs.Types
                 return QsObject.CreateNativeObject(result);
 
             }
+            */
 
-            throw new NotImplementedException("Addition Operation between " + this.ToString() + " and " + value.ToString() + " is not supported");
+            var o = value as QsObject;
+            if (o != null)
+            {
+                var expr = Expression.Subtract(Expression.Constant(_NativeObject), Expression.Constant(o._NativeObject));
+
+                // Construct Lambda function which return one object.
+                Expression<Func<object>> cq = Expression.Lambda<Func<object>>(expr);
+
+                // compile the function
+                Func<object> aqf = cq.Compile();
+
+                // execute the function
+                object result = aqf();
+
+                // return the result
+                return new QsObject(result);
+
+            }
+            else
+            {
+                throw new NotImplementedException("Operation between " + this.ToString() + " and " + value.ToString() + " is not supported");
+            }
         }
 
         public override QsValue MultiplyOperation(QsValue value)
         {
+            /*
             DynamicMethod dm = GetOperationMethod(Operator.Multiply, value);
 
             if (dm != null)
@@ -278,12 +322,35 @@ namespace Qs.Types
                 return QsObject.CreateNativeObject(result);
 
             }
+            */
 
-            throw new NotImplementedException("Addition Operation between " + this.ToString() + " and " + value.ToString() + " is not supported");
+            var o = value as QsObject;
+            if (o != null)
+            {
+                var expr = Expression.Multiply(Expression.Constant(_NativeObject), Expression.Constant(o._NativeObject));
+
+                // Construct Lambda function which return one object.
+                Expression<Func<object>> cq = Expression.Lambda<Func<object>>(expr);
+
+                // compile the function
+                Func<object> aqf = cq.Compile();
+
+                // execute the function
+                object result = aqf();
+
+                // return the result
+                return new QsObject(result);
+
+            }
+            else
+            {
+                throw new NotImplementedException("Operation between " + this.ToString() + " and " + value.ToString() + " is not supported");
+            }
         }
 
         public override QsValue DivideOperation(QsValue value)
         {
+            /*
             DynamicMethod dm = GetOperationMethod(Operator.Divide, value);
 
             if (dm != null)
@@ -292,10 +359,32 @@ namespace Qs.Types
                 return QsObject.CreateNativeObject(result);
 
             }
+            */
+            var o = value as QsObject;
+            if (o != null)
+            {
+                var expr = Expression.Divide(Expression.Constant(_NativeObject), Expression.Constant(o._NativeObject));
 
-            throw new NotImplementedException("Addition Operation between " + this.ToString() + " and " + value.ToString() + " is not supported");
+                // Construct Lambda function which return one object.
+                Expression<Func<object>> cq = Expression.Lambda<Func<object>>(expr);
+
+                // compile the function
+                Func<object> aqf = cq.Compile();
+
+                // execute the function
+                object result = aqf();
+
+                // return the result
+                return new QsObject(result);
+
+            }
+            else
+            {
+                throw new NotImplementedException("Operation between " + this.ToString() + " and " + value.ToString() + " is not supported");
+            }
         }
 
+        
         public override QsValue PowerOperation(QsValue value)
         {
             throw new NotImplementedException();
@@ -395,5 +484,56 @@ namespace Qs.Types
             pi.SetValue(_NativeObject, value, r);
         }
         #endregion
+
+
+        public override QsValue ExclamationOperator(QsValue key)
+        {
+            if (key.ToString().Equals("TypeName", StringComparison.OrdinalIgnoreCase))
+            {
+                return new QsText(InstanceType.Name);
+            }
+
+            if (key.ToString().Equals("Properties", StringComparison.OrdinalIgnoreCase))
+            {
+                QsFlowingTuple f = new QsFlowingTuple();
+                var mms = InstanceType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+
+                QsTupleValue[] fefe = new QsTupleValue[mms.Length];
+            
+                for (int ix = 0; ix < mms.Length; ix++)
+                {
+                    fefe[ix].Name = (string) mms[ix].Name;
+                    
+                    fefe[ix].Value = new QsText(mms[ix].PropertyType.Name);
+                }
+                if (fefe.Length == 0) return new QsFlowingTuple();
+                return new QsFlowingTuple(fefe);
+            }
+
+            if (key.ToString().Equals("Methods", StringComparison.OrdinalIgnoreCase))
+            {
+                QsFlowingTuple f = new QsFlowingTuple();
+                var mms = from m in InstanceType.GetMethods(BindingFlags.Public | BindingFlags.Instance)
+                          where m.IsSpecialName == false
+                          select m;
+
+                QsTupleValue[] fefe = new QsTupleValue[mms.Count()];
+
+                for (int ix = 0; ix < mms.Count(); ix++)
+                {
+                    fefe[ix].Name = (string)mms.ElementAt(ix).Name;
+
+                    fefe[ix].Value = new QsText(mms.ElementAt(ix).ReturnType.Name);
+                }
+                if (fefe.Length == 0) return new QsFlowingTuple();
+                return new QsFlowingTuple(fefe);
+            }
+
+            if (key.ToString().Equals("Type", StringComparison.OrdinalIgnoreCase))
+            {
+                return new QsObject(InstanceType);
+            }
+            return new QsText("Unknown Command");
+        }
     }
 }

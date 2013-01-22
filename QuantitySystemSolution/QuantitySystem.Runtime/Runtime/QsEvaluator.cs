@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
-using Microsoft.Scripting;
-using Microsoft.Scripting.Runtime;
 using ParticleLexer;
 using ParticleLexer.QsTokens;
 using ParticleLexer.StandardTokens;
@@ -38,15 +36,15 @@ namespace Qs.Runtime
 
         public const string VariableQuantityExpression = @"^(\w+)\s*=\s*(" + DoubleNumber + @")\s*(\[(.+)\])";
 
-
+#if WINRT
+#else
         public const ConsoleColor BackgroundColor = ConsoleColor.White;
         public const ConsoleColor ForegroundColor = ConsoleColor.Black;
         public const ConsoleColor HelpColor = ConsoleColor.Blue;
 
         public const ConsoleColor ValuesColor = ConsoleColor.Green;
         public const ConsoleColor ExceptionColor = ConsoleColor.Red;
-
-
+#endif
 
         public IEnumerable<string> VariablesKeys
         {
@@ -54,7 +52,7 @@ namespace Qs.Runtime
             {
                 if (Scope != null)
                 {
-                    var varo = from item in ((ScopeStorage)Scope.Storage).GetItems()
+                    var varo = from item in ((QsScopeStorage)Scope.Storage).GetItems()
                                select item.Key;
                     return varo;
                 }
@@ -65,15 +63,24 @@ namespace Qs.Runtime
             }
         }
 
-        public Scope Scope { get; set; }
+        private QsScope _Scope = new QsScope();
+
+        public QsScope Scope
+        {
+            get
+            {
+                return _Scope;
+            }
+        }
 
 
         public object GetVariable(string varName)
         {
+            
             if (Scope != null)
             {
                 object q;
-                ((ScopeStorage)Scope.Storage).TryGetValue(varName, true, out q);
+                ((QsScopeStorage)Scope.Storage).TryGetValue(varName, out q);
                 return q;
             }
             else
@@ -88,7 +95,7 @@ namespace Qs.Runtime
             if (Scope != null)
             {
                 object q;
-                ((ScopeStorage)Scope.Storage).TryGetValue(varName, true, out q);
+                ((QsScopeStorage)Scope.Storage).TryGetValue(varName, out q);
                 return (AnyQuantity<double>)q;
             }
             else
@@ -109,7 +116,7 @@ namespace Qs.Runtime
             {
                 var r = GetVariable(varName) as QsReference;
                 if (r == null)
-                    ((ScopeStorage)Scope.Storage).SetValue(varName, true, varValue);
+                    Scope.Storage.SetValue(varName, varValue);
                 else
                     r.ContentValue = (QsValue)varValue;
             }
@@ -207,6 +214,8 @@ namespace Qs.Runtime
         public object Evaluate(string expr)
         {
 
+#if WINRT
+#else
             if (string.IsNullOrEmpty(expr)) return null;
             Match m = null;
 
@@ -233,6 +242,7 @@ namespace Qs.Runtime
                     {
                         var uof = u1.GetUnitOverflow();
                         Console.WriteLine("    Overflow in first unit {0}: {1}", u1.Symbol, uof);
+
                         ConversionFactor *= uof;
                     }
 
@@ -333,7 +343,7 @@ namespace Qs.Runtime
             }
             #endregion
 
-
+#endif
             //check if the line has '='
             return ExtraEvaluate(expr);
 
@@ -447,7 +457,7 @@ namespace Qs.Runtime
                     Token seq = null;
                     int nsidx = 0;
                     string seqNamespace = string.Empty;
-                    if (varName.Contains('['))
+                    if (varName.Contains("["))
                     {
                         // May be sequence element.
                         seq = Token.ParseText(varName);
@@ -627,7 +637,7 @@ namespace Qs.Runtime
                         // get the after assign expression value
                         QsVar qv = new QsVar(this, line);
 
-                        if (varName.Contains(':'))
+                        if (varName.Contains(":"))
                         {
                             Token vnToken = Token.ParseText(varName);
                             vnToken = vnToken.MergeTokens<MultipleSpaceToken>();
@@ -699,14 +709,14 @@ namespace Qs.Runtime
                                     }
                                     else
                                     {
-                                        //SetVariable(vnToken[0][0].TokenValue, vnToken[1].TokenValue, qvResult);
+                                        
                                         SetVariable(
                                             vnToken.TokenValue.TrimEnd(vnToken[vnToken.Count - 1].TokenValue.ToCharArray()).TrimEnd(':')
                                             , vnToken[vnToken.Count - 1].TokenValue
                                             , qvResult
                                             );
 
-                                        //var q = GetScopeQsValue(this.Scope, vnToken[0][0].TokenValue, vnToken[1].TokenValue);
+                                       
                                         var q = GetScopeQsValue(this.Scope
                                             , vnToken.TokenValue.TrimEnd(vnToken[vnToken.Count - 1].TokenValue.ToCharArray()).TrimEnd(':')
                                             , vnToken[vnToken.Count - 1].TokenValue
@@ -923,10 +933,6 @@ namespace Qs.Runtime
             {
                 throw e;
             }
-            catch (AggregateException ae)
-            {
-                throw (ae);
-            }
             catch (Exception e)
             {
                 if (e is TargetInvocationException)
@@ -949,6 +955,8 @@ namespace Qs.Runtime
         public void PrintUnitInfo(Unit unit)
         {
 
+#if WINRT
+#else
             Console.ForegroundColor = HelpColor;
 
             Console.WriteLine("    Unit:        {0}", unit.ToString());
@@ -962,10 +970,13 @@ namespace Qs.Runtime
             }
 
             Console.ForegroundColor = ForegroundColor;
+#endif
         }
 
         public void PrintQuantity(object qty)
         {
+#if WINRT
+#else
             if (!SilentOutput)
             {
                 Console.ForegroundColor = ValuesColor;
@@ -974,6 +985,7 @@ namespace Qs.Runtime
 
                 Console.ForegroundColor = ForegroundColor;
             }
+#endif
         }
 
         #endregion
@@ -988,19 +1000,19 @@ namespace Qs.Runtime
         /// <param name="nameSpace"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static object GetScopeValueOrNull(Scope scope, string nameSpace, string name)
+        public static object GetScopeValueOrNull(QsScope scope, string nameSpace, string name)
         {
             if (string.IsNullOrEmpty(nameSpace))
             {
                 object q;
-                ((ScopeStorage)scope.Storage).TryGetValue(name, true, out q);
+                scope.Storage.TryGetValue(name, out q);
                 return q;
             }
             else
             {
                 object o;
 
-                ((ScopeStorage)scope.Storage).TryGetValue(nameSpace, true, out o);
+                scope.Storage.TryGetValue(nameSpace, out o);
 
                 QsNamespace ns = o as QsNamespace;
 
@@ -1022,14 +1034,14 @@ namespace Qs.Runtime
         /// <param name="nameSpace"></param>
         /// <param name="name"></param>
         /// <returns></returns>
-        public static QsValue GetScopeQsValue(Scope scope, string qsNamespace, string name)
+        public static QsValue GetScopeQsValue(QsScope scope, string qsNamespace, string name)
         {
 
             if (string.IsNullOrEmpty(qsNamespace))
             {
                 object q;
 
-                ((ScopeStorage)scope.Storage).TryGetValue(name, true, out q);
+                scope.Storage.TryGetValue(name, out q);
 
                 if (q != null)
                 {
@@ -1070,11 +1082,11 @@ namespace Qs.Runtime
 
         public QsValue DeleteQsValue(string qsNamespace, string name)
         {
-            ScopeStorage ss = (ScopeStorage)this.Scope.Storage;
+            QsScopeStorage ss = (QsScopeStorage)this.Scope.Storage;
 
             if (string.IsNullOrEmpty(qsNamespace))
             {
-                if (!ss.DeleteValue(name, true))
+                if (!ss.DeleteValue(name))
                     throw new QsException("Can't delete the variable");
                 else
                 {
@@ -1092,17 +1104,22 @@ namespace Qs.Runtime
         {
         }
 
+        internal static Assembly CallingAssembly; // this will hold the calling assembly that called the current evaluator
+
         private static QsEvaluator _CurrentEvaluator;
         public static QsEvaluator CurrentEvaluator
         {
             get
             {
                 if (_CurrentEvaluator == null)
+                {
                     _CurrentEvaluator = new QsEvaluator();
+                    CallingAssembly = Assembly.GetCallingAssembly();
+                }
                 return _CurrentEvaluator;
             }
         }
-
+         
         #endregion
 
 

@@ -8,7 +8,7 @@ using Qs.Runtime;
 
 namespace Qs.Types
 {
-    public partial class QsVector: QsValue, IEnumerable<QsScalar>, ICloneable
+    public partial class QsVector: QsValue, IEnumerable<QsScalar>
     {
 
         /// <summary>

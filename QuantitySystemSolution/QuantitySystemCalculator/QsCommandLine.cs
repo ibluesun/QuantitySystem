@@ -16,23 +16,18 @@ public class QsCommandLine : CommandLine
         }
     }
 
-    
-
     protected override string ReadLine(int autoIndentSize)
     {
-        
-        Qs.Runtime.QsScriptCode.LastLine = base.ReadLine(autoIndentSize);
+        Qs.Scripting.QsScriptCode.LastLine = base.ReadLine(autoIndentSize);
 
-
-
-        if (!string.IsNullOrEmpty(Qs.Runtime.QsScriptCode.LastLine))
+        if (!string.IsNullOrEmpty(Qs.Scripting.QsScriptCode.LastLine))
         {
             QsCommands.Engine = this.Engine;
 
             QsCommands.ScriptScope = this.ScriptScope;
 
 
-            QsCommands.CheckCommand(Qs.Runtime.QsScriptCode.LastLine, this.Scope);
+            QsCommands.CheckCommand(Qs.Scripting.QsScriptCode.LastLine);
 
             if (QsCommands.CommandProcessed)
             {
@@ -41,7 +36,7 @@ public class QsCommandLine : CommandLine
             }
         }
 
-        return Qs.Runtime.QsScriptCode.LastLine;
+        return Qs.Scripting.QsScriptCode.LastLine;
 
     }
 

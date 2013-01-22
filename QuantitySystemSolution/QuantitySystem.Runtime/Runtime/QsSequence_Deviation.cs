@@ -5,12 +5,10 @@ using System;
 
 namespace Qs.Runtime
 {
-    public partial class QsSequence : SortedList<int, QsSequenceElement>, IEnumerable<QsValue>
+    public partial class QsSequence
     {
         public QsValue StdDeviation(int fromIndex, int toIndex)
         {
-            
-
             var n = toIndex - fromIndex + 1;
             if (this.Parameters.Length > 0)
             {

@@ -8,7 +8,7 @@ internal class QsHost : ConsoleHost
     {
         get
         {
-            return typeof(Qs.Runtime.QsContext);
+            return typeof(Qs.Scripting.QsContext);
         }
     }
 
@@ -18,10 +18,6 @@ internal class QsHost : ConsoleHost
 
     }
     
-    
-
-    
-
     [STAThread]
     public static int Main(string[] args)
     {

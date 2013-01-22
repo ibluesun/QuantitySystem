@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Runtime.Serialization;
 
 namespace QuantitySystem.Units
 {
-    [Serializable()]
     public class MetricPrefixException : UnitException
     {
       public MetricPrefixException()
@@ -23,11 +18,7 @@ namespace QuantitySystem.Units
       {
          // Add any type-specific logic for inner exceptions.
       }
-      protected MetricPrefixException(SerializationInfo info, 
-         StreamingContext context) : base(info, context)
-      {
-         // Implement type-specific serialization constructor logic.
-      }
+
 
       public double WrongExponent { get; set; }
       public MetricPrefix CorrectPrefix { get; set; }

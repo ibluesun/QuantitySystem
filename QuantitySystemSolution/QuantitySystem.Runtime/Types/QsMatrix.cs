@@ -12,7 +12,7 @@ namespace Qs.Types
     /// Matrix that hold quantities
     /// and the basic matrix calculations.
     /// </summary>
-    public partial class QsMatrix : QsValue, IEnumerable<QsVector>, ICloneable
+    public partial class QsMatrix : QsValue, IEnumerable<QsVector>
     {
         public List<QsVector> Rows = new List<QsVector>();
 
@@ -651,7 +651,7 @@ namespace Qs.Types
                     QsVector vec = new QsVector(2);
                     vec.AddComponent(this[0, 0] * this[1, 1]);
                     vec.AddComponent(
-                         QsScalar.MinusOne * (this[0, 1] * this[1, 0])
+                         QsScalar.NegativeOne * (this[0, 1] * this[1, 0])
                         );
 
                     return vec;

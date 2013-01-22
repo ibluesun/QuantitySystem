@@ -1,4 +1,5 @@
-﻿
+﻿%module [system.windows.forms]
+
 s = new ::System:Windows:Forms:Form
 l = new ::System:Windows:Forms:Label
 

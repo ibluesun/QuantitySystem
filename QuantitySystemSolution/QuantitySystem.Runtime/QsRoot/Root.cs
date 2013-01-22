@@ -10,6 +10,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 using System.Runtime.CompilerServices;
 using Qs.Numerics;
 using SymbolicAlgebra;
+using Qs.Runtime;
 
 namespace QsRoot
 {
@@ -18,13 +19,53 @@ namespace QsRoot
     /// </summary>
     public class Root
     {
+
+
+        static bool allrefloaded = false;
         
         public static void LoadLibrary(string library)
         {
-            Assembly a = Assembly.LoadFrom(library);
+#if WINRT
+            
+#else
+            if (library.StartsWith("["))
+            {
+                if (library.EndsWith("]"))
+                {
+                    // load from GAC
+                    var a = Assembly.LoadWithPartialName(library.Trim('[', ']'));
+                }
+            }
+            else
+            {
+                Assembly a = Assembly.LoadFrom(library);
+            }
+#endif
         }
 
-        static bool allrefloaded = false;
+
+        /// <summary>
+        /// the function search for type name under the QsRoot namespace which serves as root for quantity system
+        /// if nothing happened it tries to get it from the calling assembly (that were cached in the first call of the engine) 
+        ///    and rest types beside executing assembly.
+        /// </summary>
+        /// <param name="typeName"></param>
+        /// <returns></returns>
+        public static Type GetInternalType(string typeName)
+        {
+            var executingTypes = Assembly.GetExecutingAssembly().GetTypes();
+            var callingTypes = QsEvaluator.CallingAssembly.GetTypes();
+
+            var a = from t in executingTypes.Union(callingTypes)
+                    where t.FullName.Equals(typeName, StringComparison.OrdinalIgnoreCase)
+                    select t;
+
+
+
+            System.Type ns = a.FirstOrDefault();
+
+            return ns;
+        }
 
         /// <summary>
         /// Get External Library Type.
@@ -33,6 +74,9 @@ namespace QsRoot
         /// <returns></returns>
         public static Type GetExternalType(string type)
         {
+#if WINRT
+            return null;
+#else
             if (!allrefloaded)
             {
                 var ss = Assembly.GetExecutingAssembly().GetReferencedAssemblies();
@@ -53,7 +97,9 @@ namespace QsRoot
             }
             
             return dt;
+#endif
         }
+
 
         /// <summary>
         /// This function try to convert the Qs Parameters into the native corresponding parameters in the target method and return the converted parameters into array.
@@ -84,7 +130,8 @@ namespace QsRoot
                     if(paramInfos[iy].ParameterType.IsSubclassOf(typeof(QsValue)))
                     {
                         // target is QsValue type so we make direct cast  
-                        object nativeValue = System.Convert.ChangeType(scalar, paramInfos[iy].ParameterType);
+
+                        object nativeValue = System.Convert.ChangeType(scalar, paramInfos[iy].ParameterType, null);
                         NativeParameters.Add(nativeValue);
                     }
                     else if(paramInfos[iy].ParameterType.IsGenericType)
@@ -97,7 +144,7 @@ namespace QsRoot
                         }
                         else
                         {
-                            object nativeValue = System.Convert.ChangeType(scalar.NumericalQuantity, paramInfos[iy].ParameterType);
+                            object nativeValue = System.Convert.ChangeType(scalar.NumericalQuantity, paramInfos[iy].ParameterType, null);
                             NativeParameters.Add(nativeValue);
                         }
                     }
@@ -108,7 +155,7 @@ namespace QsRoot
                     }
                     else
                     {
-                        object nativeValue = System.Convert.ChangeType(scalar.NumericalQuantity.Value, paramInfos[iy].ParameterType);
+                        object nativeValue = System.Convert.ChangeType(scalar.NumericalQuantity.Value, paramInfos[iy].ParameterType, null);
                         NativeParameters.Add(nativeValue);
                     }
                 }
@@ -127,7 +174,7 @@ namespace QsRoot
                         System.Array arr = System.Array.CreateInstance(ArrayType, vec.Count);
                         for (int i = 0; i < vec.Count; i++)
                         {
-                            object val = System.Convert.ChangeType(vec[i].NumericalQuantity.Value, ArrayType);
+                            object val = System.Convert.ChangeType(vec[i].NumericalQuantity.Value, ArrayType, null);
                             arr.SetValue(val, i);
                         }
 
@@ -214,7 +261,7 @@ namespace QsRoot
 
             if (vType == typeof(int) || vType == typeof(double) || vType == typeof(Single) || vType == typeof(float) || vType == typeof(Int64) || vType == typeof(uint) || vType == typeof(UInt16) || vType == typeof(UInt64))
             {
-                double vv = (double)System.Convert.ChangeType(value, typeof(double));
+                double vv = (double)System.Convert.ChangeType(value, typeof(double), null);
                 return new QsScalar
                 {
                     NumericalQuantity = vv.ToQuantity()
@@ -234,7 +281,7 @@ namespace QsRoot
                 QsVector v = new QsVector(rr.Length);
                 foreach (var m in rr)
                 {
-                    var r = (double)System.Convert.ChangeType(value, typeof(double));
+                    var r = (double)System.Convert.ChangeType(m, typeof(double), null);
                     v.AddComponent(new QsScalar { NumericalQuantity = r.ToQuantity() });
                 }
                 return v;
@@ -256,6 +303,16 @@ namespace QsRoot
 
             // the last thing is to return object from this type
             if (!vType.IsValueType) return QsObject.CreateNativeObject(value);
+
+            if (vType == typeof(bool))
+            {
+                bool v = (bool)value;
+                if (v) return QsBoolean.True;
+                else return QsBoolean.False;
+            }
+
+
+            if (vType.IsValueType) return QsFlowingTuple.FromStruct((ValueType)value);
 
             throw new QsException(vType + " doesn't have corresponding type in Quantity System");
         }
@@ -314,7 +371,8 @@ namespace QsRoot
             }
 
 
-            if (targetType == typeof(int) || targetType == typeof(double) || targetType == typeof(Single) || targetType == typeof(float) || targetType == typeof(Int64) || targetType == typeof(uint) || targetType == typeof(UInt16) || targetType == typeof(UInt64))
+            if (targetType == typeof(int) || targetType == typeof(double) || targetType == typeof(Single) || targetType == typeof(float) 
+                || targetType == typeof(Int64) || targetType == typeof(uint) || targetType == typeof(UInt16) || targetType == typeof(UInt64))
             {
                 var nq = Expression.Property(Expression.Convert(value, typeof(QsScalar)), "NumericalQuantity");
 
@@ -326,13 +384,26 @@ namespace QsRoot
             {
                 // then the value should be a qsvector or qsmatrix
                 
-                
                 var mi = typeof(Root).GetMethod("ToNumericArray", BindingFlags.Static | BindingFlags.NonPublic).MakeGenericMethod(targetType.GetElementType());
 
                 return Expression.Call(mi, value);
-                
             }
-            
+
+            if (targetType == typeof(bool) && SourceType == typeof(QsBoolean))
+            {
+                return Expression.Property(value, "Value");
+            }
+
+            if (targetType.IsValueType && SourceType == typeof(QsFlowingTuple))
+            {
+                // there is a probablitiy that we want to set the fields of target value type with the values exist in flowing tuple
+                //var tuple = value as QsFlowingTuple;
+                //return tuple.FromTuple(targetType);
+
+                var mi = typeof(QsFlowingTuple).GetMethod("FromTuple");
+                return Expression.Call(value, mi, Expression.Constant(targetType));
+            }
+
             // at last test if the target type may be a an object 
             // and the source may be a QsObject <===>  I can't test the type of the expression because everything is QsValue
             //  so I will make an assumption that the target type
@@ -350,17 +421,39 @@ namespace QsRoot
         /// Warning: Unit information will be missed.
         /// </summary>
         /// <returns></returns>
-        public static Numeric[] ToNumericArray<Numeric>(QsValue value) where Numeric : struct
+        private static Numeric[] ToNumericArray<Numeric>(QsValue value) where Numeric : struct
         {
+
+            //var ParseMethod = typeof(Numeric).GetMethod("Parse", new Type[]{typeof(string)});
+
+            
             if (value is QsVector)
             {
                 var ListStorage = ((QsVector)value).ToArray();
+
+                Type targetType = typeof(Numeric);
 
                 Numeric[] dd = new Numeric[ListStorage.Length];
                 int ix = ListStorage.Length - 1;
                 while (ix >= 0)
                 {
-                    dd[ix] = (Numeric)(object)ListStorage[ix].NumericalQuantity.Value;
+                    if (targetType == typeof(int))
+                        dd[ix] = (Numeric)(object)(int)ListStorage[ix].NumericalQuantity.Value;
+                    if (targetType == typeof(double))
+                        dd[ix] = (Numeric)(object)(double)ListStorage[ix].NumericalQuantity.Value;
+                    if (targetType == typeof(Single))
+                        dd[ix] = (Numeric)(object)(Single)ListStorage[ix].NumericalQuantity.Value;
+                    if (targetType == typeof(float))
+                        dd[ix] = (Numeric)(object)(float)ListStorage[ix].NumericalQuantity.Value;
+                    if (targetType == typeof(Int64))
+                        dd[ix] = (Numeric)(object)(Int64)ListStorage[ix].NumericalQuantity.Value;
+                    if (targetType == typeof(uint))
+                        dd[ix] = (Numeric)(object)(uint)ListStorage[ix].NumericalQuantity.Value;
+                    if (targetType == typeof(UInt16))
+                        dd[ix] = (Numeric)(object)(UInt16)ListStorage[ix].NumericalQuantity.Value;
+                    if (targetType == typeof(UInt64))
+                        dd[ix] = (Numeric)(object)(UInt64)ListStorage[ix].NumericalQuantity.Value;
+
                     ix--;
                 }
                 return dd;
@@ -368,17 +461,38 @@ namespace QsRoot
             throw new QsException("Not Vector");
         }
 
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="targetType"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public static object QsToNativeConvert(Type targetType, object value)
         {
             if (targetType == typeof(QsValue)) return value;   //no need to change because target type is QsValue which is the Qs primary type.
 
-            if (targetType.BaseType == typeof(AnyQuantity<double>))
+            if (targetType == typeof(QsValue) || targetType.BaseType == typeof(QsValue))
+            {
+                var scalarValue = value as QsValue;
+
+                if (scalarValue != null)
+                    return scalarValue;
+                else
+                    throw new QsException("Can't Convert " + value.GetType().Name + " into " + targetType.Name);
+            }
+
+            if (targetType.BaseType == typeof(AnyQuantity<double>) || targetType == typeof(AnyQuantity<double>))
             {
                 //QsScalar.One.NumericalQuantity
                 // convert to the target
 
-                return new QsScalar { NumericalQuantity = (AnyQuantity<double>)value };
+                var scalarValue = value as QsScalar;
 
+                if (scalarValue != null) 
+                    return scalarValue.NumericalQuantity;
+                else
+                    throw new QsException("Can't Convert " + value.GetType().Name + " into " + targetType.Name);
             }
 
             if (targetType == typeof(string))
@@ -387,15 +501,42 @@ namespace QsRoot
 
             }
 
-            if (targetType == typeof(int) || targetType == typeof(double) || targetType == typeof(Single) || targetType == typeof(float))
+            if (targetType == typeof(int) || targetType == typeof(double) || targetType == typeof(Single) || targetType == typeof(float)
+                || targetType == typeof(Int64) || targetType == typeof(uint) || targetType == typeof(UInt16) || targetType == typeof(UInt64))
             {
                 var vs = value as QsScalar;
+                if (vs != null)
+                    return Convert.ChangeType(vs.NumericalQuantity.Value, targetType, null);
+                else
+                    throw new QsException("Can't Convert " + value.GetType().Name + " into " + targetType.Name);
+            }
 
-                return Convert.ChangeType(vs.NumericalQuantity.Value, targetType);
-                //return Convert.ToDouble(value).ToQuantity().ToScalar();
+            if (targetType == typeof(int[]) || targetType == typeof(double[]) || targetType == typeof(Single[]) || targetType == typeof(float[]) || targetType == typeof(Int64[]) || targetType == typeof(uint[]) || targetType == typeof(UInt16[]) || targetType == typeof(UInt64[]))
+            {
+                // then the value should be a qsvector or qsmatrix
+                var vs = value as QsValue;
+                if (vs != null)
+                {
+                    var mi = typeof(Root).GetMethod("ToNumericArray", BindingFlags.Static | BindingFlags.NonPublic).MakeGenericMethod(targetType.GetElementType());
+                    return mi.Invoke(null, new object[] { vs });
+                }
+                else
+                    throw new QsException("Can't Convert " + value.GetType().Name + " into " + targetType.Name);
 
             }
 
+            if (targetType == typeof(bool) && value.GetType() == typeof(QsBoolean))
+            {
+                return ((QsBoolean)value).Value;
+            }
+
+            if (targetType.IsValueType && value.GetType() == typeof(QsFlowingTuple))
+            {
+                // there is a probablitiy that we want to set the fields of target value type with the values exist in flowing tuple
+                var tuple = value as QsFlowingTuple;
+
+                return tuple.FromTuple(targetType);
+            }
 
             throw new QsException("Couldn't convert the value (" + value.GetType().ToString() + ") expression to the target type (" + targetType.ToString() + ")");
         }

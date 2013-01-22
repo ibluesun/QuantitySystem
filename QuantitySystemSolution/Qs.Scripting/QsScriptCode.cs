@@ -4,8 +4,9 @@ using Microsoft.Scripting.Runtime;
 using ParticleLexer;
 using System.Text;
 using System.Linq;
+using Qs.Runtime;
 
-namespace Qs.Runtime
+namespace Qs.Scripting
 {
     public class QsScriptCode : ScriptCode
     {
@@ -35,7 +36,7 @@ namespace Qs.Runtime
 
             QsEvaluator qs = QsEvaluator.CurrentEvaluator;
 
-            qs.Scope = scope;
+            //qs.Scope = scope;
 
             string[] lines = code.Split(Environment.NewLine.ToCharArray());
 

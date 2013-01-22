@@ -141,7 +141,7 @@ namespace Qs.Types
                 return false;
             else 
             {
-                if (text.Text.Equals(this.Text, StringComparison.InvariantCultureIgnoreCase))
+                if (text.Text.Equals(this.Text, StringComparison.OrdinalIgnoreCase))
                     return true;
                 else
                     return false;
@@ -182,7 +182,11 @@ namespace Qs.Types
         public override QsValue GetIndexedItem(QsParameter[] indices)
         {
             int i = (int)((QsScalar)indices[0].QsNativeValue).NumericalQuantity.Value;
+#if WINRT
+            return Char.GetNumericValue(Text, i).ToQuantity().ToScalar();
+#else
             return Char.ConvertToUtf32(Text, i).ToQuantity().ToScalar();
+#endif
         }
 
         public override void SetIndexedItem(QsParameter[] indices, QsValue value)

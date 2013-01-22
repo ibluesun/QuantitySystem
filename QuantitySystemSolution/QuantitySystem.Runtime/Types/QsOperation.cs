@@ -14,7 +14,7 @@ namespace Qs.Types
     ///     consider @|$x  which means Differentiate for x symbol or (operation that says I will differentiate the function later)
     ///     @  contains the operation   | 
     /// </summary>
-    public class QsOperation : QsValue, ICloneable
+    public class QsOperation : QsValue
     {
 
         public override QsValue DifferentiateOperation(QsValue value)

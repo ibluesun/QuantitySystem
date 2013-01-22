@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Runtime.Serialization;
 
 namespace QuantitySystem
 {
-    [Serializable()]
     public class QuantitiesNotDimensionallyEqualException : QuantityException
     {
         public QuantitiesNotDimensionallyEqualException()
@@ -20,12 +18,6 @@ namespace QuantitySystem
             base (message, innerException)
         {
             // Add any type-specific logic for inner exceptions.
-        }
-
-        protected QuantitiesNotDimensionallyEqualException(SerializationInfo info, 
-            StreamingContext context) : base(info, context)
-        {
-            // Implement type-specific serialization constructor logic.
         }
     }
 }

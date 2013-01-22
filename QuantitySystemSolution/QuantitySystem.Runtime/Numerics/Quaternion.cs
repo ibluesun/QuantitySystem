@@ -26,7 +26,7 @@ namespace Qs.Numerics
     /// <summary>
     /// Qs Quaternion storage type
     /// </summary>
-    public struct Quaternion
+    public struct Quaternion : IEquatable<Quaternion>
     {
         private double a;
         private double b;
@@ -321,6 +321,7 @@ namespace Qs.Numerics
         }
 
 
+
         public static bool operator ==(Quaternion lhs, Quaternion rhs)
         {
             if (lhs.a == rhs.a &&
@@ -336,6 +337,16 @@ namespace Qs.Numerics
         public static bool operator !=(Quaternion lhs, Quaternion rhs)
         {
             return !(lhs == rhs);
+        }
+
+        public bool Equals(Quaternion other)
+        {
+            return this == other;
+        }
+
+        public override int GetHashCode()
+        {
+            return a.GetHashCode() ^ b.GetHashCode() ^ c.GetHashCode() ^ d.GetHashCode();
         }
     }
 }
