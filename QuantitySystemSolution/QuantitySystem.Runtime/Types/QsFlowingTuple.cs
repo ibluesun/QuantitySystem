@@ -105,7 +105,8 @@ namespace Qs.Types
                 if (!string.IsNullOrEmpty(s.Name))
                     sb.Append(s.Name + "!");
 
-                sb.Append(((QsValue)s.Value).ToShortString());
+                if (s.Value != null) sb.Append(((QsValue)s.Value).ToShortString());
+                else sb.Append("nil");
                 sb.Append(", ");
             }
             string lll = sb.ToString().TrimEnd(',', ' ') + ")";
