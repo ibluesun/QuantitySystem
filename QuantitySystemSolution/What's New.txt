@@ -1,3 +1,25 @@
+[Qs 1.2.95]
+- if x is a text variable  then  x:10  will get the line at index 10 :) :)
+- fixed the way of accessing deep properties and methods in QsObject while parsing 
+	(made me a headache when I was testing Fantastic Mesh)
+
+- now you can use negative indexing in  like v[-3] 
+	QsVector, QsText, QsMatrix, QsTensor, and QsFlowingTuple
+
+- fixed acceesing deep properties from accessing exlamination and colon operator 
+		p!properties[0]  or p!properties:10
+
+- Fixed an Issue(20)  {issues.txt}
+
+- Fixed an Issue(30)  -6^2 evaluated to 36 which is wrong .. it is -36
+- Fixed an Issue(B10)  
+- Fixed issue (10)  setting property value in deep object chain.  however there is still another small issue in setting indexer of inner property
+
+
+
+
+
+
 [Qs 1.2.9]
 - Transforming {ParticleLexer.dll PassiveFlow.dll and QuantitySystem.dll} into Portable Class Libraries.
 - Removing the DLR hosting from Qs and putting them in new library Qs.Scripting to convert the Qs into portable library later

@@ -40,8 +40,12 @@ namespace QsRoot
 
         public bool Rare { get; set; }
 
+        
+
         public Planet()
         {
+            planets++;
+            Name = "Planet " + planets.ToString();    
         }
 
         public Planet(PlanetElement pe)
@@ -60,5 +64,52 @@ namespace QsRoot
 
         public long[] Rocks { get; set; }
 
+
+
+
+        static int planets = 0;
+
+        public Planet NextPlanet
+        {
+            get
+            {
+                
+                return new Planet();
+            }
+        }
+
+        //public double this[int ix]
+        //{
+        //    get
+        //    {
+        //        var rr = new Random(System.Environment.TickCount);
+        //        return rr.NextDouble() * ix;
+        //    }
+        //}
+
+        public Planet this[string planetName]
+        {
+            get
+            {
+                var p = new Planet() { Name = planetName };
+                return p;
+            }
+        }
+
+
+        public int sum(int a, int b)
+        {
+            return a+b;
+        }
+
+        public Planet GetNextPlanet()
+        {
+            return new Planet();
+        }
+
+        public override string ToString()
+        {
+            return Name;
+        }
     }
 }

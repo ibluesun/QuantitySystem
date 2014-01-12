@@ -161,6 +161,7 @@ namespace Qs.Types
         {
             get
             {
+                if (row < 0) row = Rows.Count + row;
                 return Rows[row];
             }
 
@@ -176,11 +177,20 @@ namespace Qs.Types
         {
             get
             {
-                return Rows[row][column];
+                if (row < 0) row = Rows.Count + row;
+                var required_row = Rows[row];
+                if (column < 0) column = required_row.Count + column;
+
+                return required_row[column];
             }
             set
             {
-                Rows[row][column] = value;
+                if (row < 0) row = Rows.Count + row;
+                var required_row = Rows[row];
+                if (column < 0) column = required_row.Count + column;
+
+
+                required_row[column] = value;
             }
         }
 

@@ -380,14 +380,12 @@ namespace Qs.Runtime
             {
                 // no namespace included then it is from the local scope.
                 var seq = (QsSequence)QsEvaluator.GetScopeValueOrNull(scope, qsNamespace, sequenceName);
-                
                 return seq;
             }
             else
             {
                 QsNamespace ns = QsNamespace.GetNamespace(scope, qsNamespace);
                 return (QsSequence)ns.GetValueOrNull(sequenceName);
-                
             }
         }
 

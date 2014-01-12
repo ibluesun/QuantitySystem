@@ -115,10 +115,12 @@ namespace Qs.Types
         {
             get
             {
+                if (i < 0) i = ListStorage.Count + i;
                 return ListStorage[i];
             }
             set
             {
+                if (i < 0) i = ListStorage.Count + i;
                 ListStorage[i] = value;
             }
         }

@@ -771,7 +771,8 @@ namespace Qs.Types
             int[] indices = new int[allIndices.Length];
             for (int ix = 0; ix < indices.Length; ix++) indices[ix] = (int)((QsScalar)allIndices[ix].QsNativeValue).NumericalQuantity.Value;                
             int index = indices[0];
-            return ListStorage[index];
+            
+            return this[index];
         }
 
         public override void SetIndexedItem(QsParameter[] indices, QsValue value)
