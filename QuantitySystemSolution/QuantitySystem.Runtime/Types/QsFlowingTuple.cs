@@ -20,13 +20,45 @@ namespace Qs.Types
     {
         public int Id;
         public string Name;
+
+
+        /// <summary>
+        /// Holds original source value that wasn't converted into Native Qs Value yet
+        /// </summary>
+        private  Object _LazyValue;
+        public Object LazyValue
+        {
+            get { return _LazyValue; }
+        }
+
         public QsValue Value;
+
+
+
+        /// <summary>
+        /// Set the tuple value to a value that will be evaluated when value accessed first time
+        /// </summary>
+        /// <param name="value"></param>
+        public void SetLazyValue(Object value)
+        {
+            _LazyValue = value;
+        }
+
+        public bool IsLazyValue
+        {
+            get
+            {
+                return _LazyValue != null;
+            }
+        }
 
         public QsTupleValue(QsValue value)
         {
             Id = 0;
             Name = string.Empty;
             Value = value;
+
+            _LazyValue = null;
         }
 
         public QsTupleValue(string name, QsValue value)
@@ -34,6 +66,8 @@ namespace Qs.Types
             Id = 0;
             Name = name;
             Value = value;
+
+            _LazyValue = null;
         }
 
         public QsTupleValue(int id, string name, QsValue value)
@@ -41,6 +75,8 @@ namespace Qs.Types
             Id = id;
             Name = name;
             Value = value;
+
+            _LazyValue = null;
         }
 
         public QsTupleValue(int id, QsValue value)
@@ -48,6 +84,8 @@ namespace Qs.Types
             Id = id;
             Name = string.Empty;
             Value = value;
+
+            _LazyValue = null;
         }
     }
 
@@ -78,14 +116,15 @@ namespace Qs.Types
 
                 var st = ThisFlow.Add(v.Name, v.Id == 0 ? sid : v.Id);
 
-                st.Value = v.Value;
+                if (v.IsLazyValue)
+                    st.Value = v.LazyValue;
+                else
+                    st.Value = v.Value;
             }
 
             InitialValues = values;
 
         }
-
-
 
         public void AddTupleValue(QsValue value)
         {
@@ -96,6 +135,13 @@ namespace Qs.Types
             else v.Value = value;
         }
 
+        private QsValue ValueToQsValue(object value)
+        {
+            if (value is QsValue) return (QsValue)value;
+            else return Root.NativeToQsConvert(value);
+        }
+
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
@@ -105,7 +151,7 @@ namespace Qs.Types
                 if (!string.IsNullOrEmpty(s.Name))
                     sb.Append(s.Name + "!");
 
-                if (s.Value != null) sb.Append(((QsValue)s.Value).ToShortString());
+                if (s.Value != null) sb.Append(ValueToQsValue(s.Value).ToShortString());
                 else sb.Append("nil");
                 sb.Append(", ");
             }
@@ -352,15 +398,21 @@ namespace Qs.Types
         public override QsValue GetIndexedItem(QsParameter[] indices)
         {
             var t = indices[0].QsNativeValue as QsText;
-            if (t!=null)
+
+            // if the passed indexer is text then return the Flow Object itself pointed to this step name .. for all the functionality of Passive Flow engine
+            if (t != null)
             {
                 Flow FlowStateMachine = ThisFlow[t.Text];
                 return QsObject.CreateNativeObject(FlowStateMachine);
             }
             else
             {
+                // or get the integer number from this parameter and get the value associated of this step index
+
                 int ix = (int)((QsScalar)indices[0].QsNativeValue).NumericalQuantity.Value;
-                return (QsValue)ThisFlow.FlowSteps[ix].Value;
+                if (ix < 0) ix = ThisFlow.FlowSteps.Length + ix;
+
+                return ValueToQsValue(ThisFlow.FlowSteps[ix].Value);
             }
         }
 
@@ -392,13 +444,13 @@ namespace Qs.Types
         public override QsValue ExclamationOperator(QsValue value)
         {
             string vt = ((QsText)value).Text;
-            return (QsValue)ThisFlow[vt].Value;
+            return ValueToQsValue(ThisFlow[vt].Value);
         }
 
         public override QsValue ColonOperator(QsValue value)
         {
             int p = (int)((QsScalar)value).NumericalQuantity.Value;
-            return (QsValue)ThisFlow[p].Value;
+            return ValueToQsValue(ThisFlow[p].Value);
         }
         
         /// <summary>
@@ -437,13 +489,19 @@ namespace Qs.Types
 
             QsTupleValue[] fefe = new QsTupleValue[all.Count()];
 
-            int id = 0;
+            int id = 10;   // begin the properties from id == 10  like Basic auto numbering in old days
             for (int ix = 0; ix < all.Count(); ix++)
             {
-                
-                fefe[ix].Name = all.ElementAt(ix).Name;
+
+                var StructProperty = all.ElementAt(ix);
+
+                fefe[ix].Name = StructProperty.Name;
                 fefe[ix].Id = id;
-                fefe[ix].Value = Root.NativeToQsConvert(all.ElementAt(ix).GetValue(value, null));
+
+                if (StructProperty.PropertyType.IsValueType)
+                    fefe[ix].SetLazyValue(StructProperty.GetValue(value, null));
+                else
+                    fefe[ix].Value = Root.NativeToQsConvert(StructProperty.GetValue(value, null));
                 
                 id += 10;
             }

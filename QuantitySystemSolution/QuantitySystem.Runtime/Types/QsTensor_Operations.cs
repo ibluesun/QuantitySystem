@@ -393,7 +393,9 @@ namespace Qs.Types
                     int ic = indices.Count();
                     while (ix < ic - 2)
                     {
-                        t = t.InnerTensors[indices[ix]];
+                        int idx = indices[ix];
+                        if (idx < 0) idx = t.InnerTensors.Count + idx;
+                        t = t.InnerTensors[idx];
                         ix++;
                     }
                     return t[indices[ix]][indices[ix + 1]];  //ix was increased the latest time.
@@ -412,12 +414,17 @@ namespace Qs.Types
                     QsTensor t = this;
                     int ix = 0;
                     int ic = indices.Count();
-
                     while (ix < ic - 1)
                     {
-                        t = t.InnerTensors[indices[ix]];
+                        int idx = indices[ix];
+
+                        if (idx < 0) idx = t.InnerTensors.Count + idx;
+
+                        t = t.InnerTensors[idx];
                         ix++;
                     }
+
+
 
                     // then return the matrix.
                     return t[indices[ix]];  //ix was increased the latest time.
@@ -430,7 +437,9 @@ namespace Qs.Types
                 int ix = 0;
                 while (ix < indices.Count())
                 {
-                    t = t.InnerTensors[indices[ix]];
+                    int idx = indices[ix];
+                    if (idx < 0) idx = t.InnerTensors.Count + idx;
+                    t = t.InnerTensors[idx];
                     ix++;
                 }
                 return t;

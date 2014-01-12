@@ -211,6 +211,7 @@ namespace Qs.Types
         {
             get
             {
+                if (face < 0) face = MatrixLayers.Count + face;
                 return MatrixLayers[face];
             }
         }
@@ -266,14 +267,18 @@ namespace Qs.Types
                 else if (indices.Count() == 4)
                 {
                     // hyper cube
-                    return this.InnerTensors[indices[0]][indices[1]][indices[2]][indices[3]];
+                    int idx = indices[0];
+                    if (idx < 0) idx = this.InnerTensors.Count + idx;
+
+                    return this.InnerTensors[idx][indices[1]][indices[2]][indices[3]];
                 }
                 else
                 {
                     List<int> newIndices = new List<int>(indices.Length - 1);
                     for (int ix = 1; ix < indices.Length; ix++) newIndices.Add(indices[ix]);
-
-                    return this.InnerTensors[indices[0]].GetScalar(newIndices.ToArray());
+                    int idx = indices[0];
+                    if (idx < 0) idx = this.InnerTensors.Count + idx;
+                    return this.InnerTensors[idx].GetScalar(newIndices.ToArray());
                 }
             }
         }

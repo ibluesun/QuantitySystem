@@ -5,6 +5,7 @@ using ParticleLexer;
 using System.Text;
 using System.Linq;
 using Qs.Runtime;
+using System.IO;
 
 namespace Qs.Scripting
 {
@@ -25,14 +26,26 @@ namespace Qs.Scripting
         public override object Run(Scope scope)
         {
             string code = string.Empty;
-            try
+            //try
             {
-                code = SourceUnit.GetReader().ReadToEnd();
+                if (SourceUnit.HasPath)
+                {
+                    if (File.Exists(SourceUnit.Path))
+                    {
+                        code = SourceUnit.GetReader().ReadToEnd();
+                    }
+                    else
+                        throw new QsException("File Not Found");
+                }
+                else
+                {
+                    code = SourceUnit.GetReader().ReadToEnd();
+                }
             }
-            catch
-            {
-                code = LastLine;   //workaround because Host have something weird in SourceTextReader that don't work linux mono
-            } 
+            //catch(Exception xx)
+            //{
+            //    code = LastLine;   //workaround because Host have something weird in SourceTextReader that don't work linux mono
+            //} 
 
             QsEvaluator qs = QsEvaluator.CurrentEvaluator;
 

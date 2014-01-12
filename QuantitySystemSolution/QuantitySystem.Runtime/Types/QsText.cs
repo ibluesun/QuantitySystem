@@ -182,6 +182,8 @@ namespace Qs.Types
         public override QsValue GetIndexedItem(QsParameter[] indices)
         {
             int i = (int)((QsScalar)indices[0].QsNativeValue).NumericalQuantity.Value;
+
+            if (i < 0) i = this.Text.Length + i;
 #if WINRT
             return Char.GetNumericValue(Text, i).ToQuantity().ToScalar();
 #else
@@ -194,5 +196,14 @@ namespace Qs.Types
             throw new NotImplementedException();
         }
         #endregion
+
+
+        public override QsValue ColonOperator(QsValue value)
+        {
+            string[] lines = Text.Split('\n');
+            int l = (int)((QsScalar)value).NumericalQuantity.Value;
+
+            return new QsText(lines[l]);
+        }
     }
 }

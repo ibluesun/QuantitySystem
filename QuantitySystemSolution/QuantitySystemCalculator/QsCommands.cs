@@ -9,6 +9,7 @@ using QuantitySystem.Units;
 using Microsoft.Scripting.Runtime;
 using Microsoft.Scripting;
 using Qs;
+using System.IO;
 
     public static class QsCommands
     {
@@ -116,10 +117,12 @@ using Qs;
                 if (commands.Length > 1)
                 {
                     string file = commands[1];
+                    //if (File.Exists(file))
+                    {
+                        ScriptScope.Engine.ExecuteFile(file, ScriptScope);
 
-                    ScriptScope.Engine.ExecuteFile(file, ScriptScope);
-
-                    CommandProcessed = true;
+                        CommandProcessed = true;
+                    }
                 }
             }
             return true;

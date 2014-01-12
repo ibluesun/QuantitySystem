@@ -1,0 +1,50 @@
+This file is for ongoing errors during using quantity system calculator
+-----------------------------------------------------------------------
+
+Issue (B10: Fixed)[
+    Cirlce[index] = value      #  was not working if the Circle was QsObject and index is a number
+]
+
+Issue (10: Fixed)[
+1: Circle2->AttachedGrid[0]->N=20    ##not working  expression
+
+Fixing Thoughts:
+I am only handling one group and only if there were no indication to sequence
+what is required is to reach the inner variable of this expression 
+then making the evaluation  .. my fault is from the beginning of this project because i didn't treat the equal '=' operator as the rest of operators like -ve and +ve
+
+so I am facing this silly situation ...
+now how can that be fixed ??
+
+i can parse all of this .. but only before the last term // because this is where I will be making the assignment operator
+
+then i add the expression of assignment and execute it.
+
+and this should be special case for the multiple pointer case.
+
+	Issue(10: A)[
+		There is still an open issue in setting indexer in inner property  _c->RedCircle[10]=20     where RedCircle has indexer
+	]
+
+]
+
+
+
+Issue (20:Fixed)[
+
+Struct Conversion into QsFlowingTuple   ((when encounter property to the same type .. the program tries to get another value for this property and we go into infinite recusrsive loop)
+
+// the anatomy of struct is like this
+Struct Angle 
+{
+	public Angle AbsoluteAngle{get;} 
+}
+
+// solution should be to lazy evaluate these structs .. or lazy evaluate all user-defined structs
+
+]
+
+
+Issue (30:Fixed)[
+	-6^2 == 36   which is wrong   result should be equal -1*(6^2)  == -36
+]

@@ -5,6 +5,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "QuantitySystemTests", "Quan
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{27291231-815B-4D24-B9C9-7ABDBEEE948E}"
 	ProjectSection(SolutionItems) = preProject
+		Issues.txt = Issues.txt
 		LocalTestRun.testrunconfig = LocalTestRun.testrunconfig
 		Multiplication Product Notes.txt = Multiplication Product Notes.txt
 		OO Features.txt = OO Features.txt

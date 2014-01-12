@@ -162,13 +162,55 @@ namespace Qs.Types
             pi.SetValue(_NativeObject, vc, null);
         }
 
-        public object GetProperty(string propertyName)
+        public PropertyInfo GetPropertyInfo(string propertyName)
         {
-            var pi = InstanceType.GetProperty(propertyName, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.IgnoreCase);
-
-            return Root.NativeToQsConvert(pi.GetValue(_NativeObject, null));
+            return InstanceType.GetProperty(propertyName, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.IgnoreCase);
         }
 
+
+        /// <summary>
+        /// the function will realize between property that is an array and needs to be accessed as an array
+        /// and a property that is an object with indexer and needs to be treated that way
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <param name="indices"></param>
+        /// <returns></returns>
+        public QsValue GetIndexedProperty(string propertyName, params object[] indices)
+        {
+            var pi = GetPropertyInfo(propertyName);
+
+            if (pi.PropertyType.IsArray)
+            {
+                Array array = (Array)pi.GetValue(_NativeObject, null);
+                return QsRoot.Root.NativeToQsConvert(array.GetValue((int)indices[0]));
+            }
+            else if (pi.GetIndexParameters().Length > 0)
+            {
+                return GetProperty(propertyName, indices);
+            }
+            else
+            {
+                throw new QsException("The property " + propertyName + " is not array nor object to be indexed");
+            }
+        }
+
+        /// <summary>
+        /// Gets the property value from the underlieng object in this QsObject.
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <param name="indices">indices in case of indexed property</param>
+        /// <returns></returns>
+        public QsValue GetProperty(string propertyName, params object[] indices )
+        {
+            var pi = GetPropertyInfo(propertyName);
+
+            return Root.NativeToQsConvert(pi.GetValue(_NativeObject, indices));
+        }
+
+        public QsValue GetProperty(string propertyName)
+        {
+            return GetProperty(propertyName, null);
+        }
 
         public override string ToString()
         {
@@ -463,9 +505,12 @@ namespace Qs.Types
         public override QsValue GetIndexedItem(QsParameter[] indices)
         {   
             
+            
             var pi = InstanceType.GetProperty("Item"
-                , System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public
+                , System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public 
                 );
+
+            
 
             var r = Root.QsParametersToNativeValues(pi.GetGetMethod(), indices);
 
@@ -481,7 +526,9 @@ namespace Qs.Types
 
             var r = Root.QsParametersToNativeValues(gs, indices);
 
-            pi.SetValue(_NativeObject, value, r);
+            var nativeValue = Root.QsToNativeConvert(pi.PropertyType, value);
+
+            pi.SetValue(_NativeObject, nativeValue, r);
         }
         #endregion
 

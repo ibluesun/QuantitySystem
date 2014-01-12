@@ -87,7 +87,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libraries\ParticleLexer.dll</HintPath>
     </Reference>
-    <Reference Include="PassiveFlow, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL" />
+    <Reference Include="PassiveFlow">
+      <HintPath>..\Libraries\PassiveFlow.dll</HintPath>
+    </Reference>
     <Reference Include="SymbolicAlgebra, Version=0.1.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\Libraries\SymbolicAlgebra.dll</HintPath>
@@ -112,10 +114,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Bird.cs" />
+    <Compile Include="Circle.cs" />
     <Compile Include="GammaTest.cs" />
+    <Compile Include="Particle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="QsFunctionTest.cs" />
     <Compile Include="QsTensorTest.cs" />
+    <Compile Include="QsTest.cs" />
     <Compile Include="RootTest.cs" />
   </ItemGroup>
   <ItemGroup>

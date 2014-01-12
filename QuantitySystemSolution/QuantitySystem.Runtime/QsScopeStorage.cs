@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Qs.Runtime;
 
 namespace Qs
 {
@@ -21,7 +22,9 @@ namespace Qs
 
         public  object GetValue(string variable)
         {
-            return Storage[variable];
+            var r = QsEvaluator.CurrentEvaluator.GetExternalValue(variable);
+            if (r == null) return Storage[variable];
+            else return r;
         }
 
         public void SetValue(string variable, object value)
@@ -29,9 +32,21 @@ namespace Qs
             Storage[variable] =  value;
         }
 
+
+        /// <summary>
+        /// Trys to get a variable content by its name .. the function also calls an delegate function for 
+        /// external variables if needed
+        /// </summary>
+        /// <param name="variable"></param>
+        /// <param name="q"></param>
+        /// <returns></returns>
         public bool TryGetValue(string variable, out object q)
         {
-            return Storage.TryGetValue(variable, out q);
+            //
+            q = QsEvaluator.CurrentEvaluator.GetExternalValue(variable);
+
+            if (q == null) return Storage.TryGetValue(variable, out q);
+            else return true;
         }
 
         public bool DeleteValue(string variable)

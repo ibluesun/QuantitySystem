@@ -44,7 +44,23 @@ namespace Qs.Runtime
         {
             public Expression QuantityExpression { get; set; }
             public string Operation { get; set; }
-            public ExprOp Next { get; set; }
+
+            public ExprOp Previous { get; set; }
+
+            private ExprOp _Next;
+
+            public ExprOp Next 
+            {
+                get
+                {
+                    return _Next;
+                }
+                set
+                {
+                    _Next = value;
+                    if (value != null) value.Previous = this;
+                }
+            }
         }
 
 
@@ -140,7 +156,7 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="token"></param>
         /// <returns></returns>
-        internal Token MergeOperators(Token token)
+        internal static Token MergeOperators(Token token)
         {
             Token tok = token.MergeTokens<PowerDotToken>();
 
@@ -157,14 +173,21 @@ namespace Qs.Runtime
             return ParseArithmatic(codeLine, out dummy);
         }
 
-        internal Expression ParseArithmatic(string codeLine, out Token tokenizedExpression)
+
+        /// <summary>
+        /// Takes the expression text and returns it into tokens.
+        /// </summary>
+        /// <param name="codeLine"></param>
+        /// <returns></returns>
+        public static Token TokenzieExpression(string codeLine)
         {
             var tokens = Token.ParseText(codeLine);
 
             tokens = tokens.TokenizeTextStrings();
 
             // assemble all spaces
-            tokens = tokens.MergeTokens<MultipleSpaceToken>();
+            //tokens = tokens.MergeTokens<MultipleSpaceToken>();
+            tokens = tokens.MergeRepitiveTokens<MultipleSpaceToken, SingleSpaceToken>();
 
             // assemble all units <*>    //before tokenization of tensor operator
             tokens = tokens.MergeTokens<UnitToken>();
@@ -233,7 +256,7 @@ namespace Qs.Runtime
             // discover the quaternion numbers 
             tokens = tokens.MergeTokens<QuaternionNumberToken>();
             tokens = tokens.MergeSequenceTokens<QuaternionQuantityToken>(typeof(QuaternionNumberToken), typeof(UnitToken));
-            
+
             // discover the rational numbers
             tokens = tokens.MergeTokens<RationalNumberToken>();
             tokens = tokens.MergeSequenceTokens<RationalQuantityToken>(typeof(RationalNumberToken), typeof(UnitToken));
@@ -270,13 +293,22 @@ namespace Qs.Runtime
                 new AbsoluteGroupToken()                   //  _| _|  |_ |_
                 );
 
-            tokens = tokens.RemoveSpaceTokens();                           //remove all spaces
+            //tokens = tokens.RemoveSpaceTokens();                           //remove all spaces
+            tokens = tokens.RemoveAnySpaceTokens();
 
             tokens = tokens.DiscoverQsCalls(StringComparer.OrdinalIgnoreCase,
-                new string[] { "When", "Otherwise", "And", "Or", "Loop", "On" } 
+                new string[] { "When", "Otherwise", "And", "Or", "Loop", "On" }
                 );
 
             tokens = tokens.DiscoverQsLoopsTokens();
+
+            return tokens;
+        }
+
+        internal Expression ParseArithmatic(string codeLine, out Token tokenizedExpression)
+        {
+
+            var tokens = TokenzieExpression(codeLine);
  
             tokenizedExpression = tokens;
 
@@ -287,12 +319,14 @@ namespace Qs.Runtime
         Stack<string> loopIteratorContainer = new Stack<string>();
         Dictionary<string, ParameterExpression> loopIteratorParameter = new Dictionary<string, ParameterExpression>();
 
+
+
         /// <summary>
         /// Main parsing method.
         /// </summary>
         /// <param name="toks">Tokens</param>
         /// <returns>Microsoft DLR Expression</returns>
-        internal Expression ParseArithmatic(Token toks)
+        public ExprOp ParseOperations (Token toks)
         {
             // I remove the spaces here because the function called here sometimes have extra unneeded spaces
             // one scenario is _|| {3 4 5} >> 1 ||_  
@@ -329,7 +363,14 @@ namespace Qs.Runtime
                         quantityExpression = Expression.Constant(QsScalar.NegativeOne, typeof(QsValue));
                     }
 
-                    OperatorTokenText = "_h*";
+                    if (ix == 0)
+                    {
+                        OperatorTokenText = "*";   // in case of first token that is sign we don't need the higher multiplication order
+                    }
+                    else
+                    {
+                        OperatorTokenText = "_h*";
+                    }
                     ix--;
                     goto ExpressionCompleted;
                     
@@ -373,7 +414,7 @@ namespace Qs.Runtime
 
                         if (afterTok == null)
                             FactorialPostfix = true;
-                        else if (afterTok.TokenClassType == typeof(WordToken) || afterTok.TokenClassType == typeof(TextStringToken))  //either direct word or text i.e. o!word or o!"Word"
+                        else if (afterTok.TokenClassType == typeof(WordToken) || afterTok.TokenClassType == typeof(TextStringToken) || afterTok.TokenClassType == typeof(SequenceCallToken) || afterTok.TokenClassType == typeof(NamespaceToken))  //either direct word or text i.e. o!word or o!"Word"
                             FactorialPostfix = false;
                         else
                             FactorialPostfix = true;
@@ -381,32 +422,86 @@ namespace Qs.Runtime
                     }
                 }
 
+
                 if (tokens[ix].TokenClassType == typeof(SequenceCallToken))
                 {
+                    if (eop != null && eop.Operation == "->")
+                    {
+                        // member call to the object.
+                        // execute property its name in tokens[ix][0]   
+                        quantityExpression =
+                            Expression.Call(eop.QuantityExpression, typeof(QsValue).GetMethod("Execute"), Expression.Constant(tokens[ix][0]));
 
-                    quantityExpression = IndexerExpression(
-                        tokens[ix][0].TokenValue,
-                        tokens[ix][1],
-                        tokens[ix].Count > 2 ? tokens[ix][2] : null                   //if arguments exist we must include them   form  S[n](x,y,z)
-                        );
+                        var sct =  tokens[ix][1];
+                        // because of the behavior of parsing the inner of this token between [ , ]  is ParameterToken
+                        // we need to extract the token inside the parameter token 
 
+                        Token CorrectToken = new Token();
+                        CorrectToken.TokenClassType = typeof(SequenceCallToken);
+                        foreach (var sct_e in sct)
+                        {
+                            if (sct_e.TokenClassType == typeof(ParameterToken))
+                            {
+                                // extract its content
+                                CorrectToken.AppendSubToken(sct_e[0]);
+                            }
+                            else
+                                CorrectToken.AppendSubToken(sct_e);
+                        }
+
+                        // then apply indexing
+                        quantityExpression = ValueIndexExpression(quantityExpression, CorrectToken);
+
+                        // then skip this operation because it has been evaluated
+
+                        eop.Operation = "Skip";
+                        
+                    }
+                    else if (eop != null && eop.Operation == "!")
+                    {
+                        // execute exlamination first  
+                        quantityExpression = Expression.Call(eop.QuantityExpression, typeof(QsValue).GetMethod("ExclamationOperator"), Expression.Constant(new QsText(tokens[ix][0].TokenValue)));
+
+                        // then indexer after
+                        var sct = tokens[ix][1];
+                        Token CorrectToken = new Token();
+                        CorrectToken.TokenClassType = typeof(SequenceCallToken);
+                        foreach (var sct_e in sct)
+                        {
+                            if (sct_e.TokenClassType == typeof(ParameterToken))
+                            {
+                                // extract its content
+                                CorrectToken.AppendSubToken(sct_e[0]);
+                            }
+                            else
+                                CorrectToken.AppendSubToken(sct_e);
+                        }
+
+                        // then apply indexing
+                        quantityExpression = ValueIndexExpression(quantityExpression, CorrectToken);
+
+                        // then skip this operation because it has been evaluated
+
+                        eop.Operation = "Skip";
+                    }
+                    else
+                    {
+                        quantityExpression = IndexerExpression(
+                            tokens[ix][0].TokenValue,
+                            tokens[ix][1],
+                            tokens[ix].Count > 2 ? tokens[ix][2] : null                   //if arguments exist we must include them   form  S[n](x,y,z)
+                            );
+                    }
                 }
                 else if (tokens[ix].TokenClassType == typeof(ParenthesisCallToken))
                 {
-                    if (eop != null)
+                    if (eop != null && eop.Operation == "->")
                     {
-                        if (eop.Operation == "->")
-                        {
-                            // member call to the object.
-                            quantityExpression = Expression.Constant(tokens[ix]);
-                        }
-                        else
-                        {
-                            quantityExpression = FunctionCallExpression(
-                                tokens[ix][0].TokenValue,
-                                tokens[ix][1]
-                                );
-                        }
+                        // member call to the object.
+                        quantityExpression =  
+                            Expression.Call(eop.QuantityExpression, typeof(QsValue).GetMethod("Execute"), Expression.Constant(tokens[ix]));
+
+                        eop.Operation = "Skip"; // skip this operation because we already made an evaluation for it
                     }
                     else
                     {
@@ -532,13 +627,27 @@ namespace Qs.Runtime
                 }
                 else if (tokens[ix].TokenClassType == typeof(NamespaceToken))
                 {
+
                     // ok this is something like  N:N:L:  
                     // so we will extract the last
                     OperatorTokenText = ":";    // make colon an operation
 
                     var mtk = tokens[ix].TrimEnd(typeof(ColonToken)); // removce the latest colon from the tokens.
 
-                    quantityExpression = GetQsVariable(mtk);
+                    if (eop != null && eop.Operation == "->")
+                    {
+                        // Execute first
+                        quantityExpression = Expression.Call(eop.QuantityExpression, typeof(QsValue).GetMethod("Execute"), Expression.Constant(mtk));
+                        eop.Operation = "Skip";
+                    }
+                    else if (eop != null && eop.Operation == "!")
+                    {
+                        // execute exlamination first  
+                        quantityExpression = Expression.Call(eop.QuantityExpression, typeof(QsValue).GetMethod("ExclamationOperator"), Expression.Constant(new QsText(mtk.TokenValue)));
+                        eop.Operation = "Skip";
+                    }
+                    else
+                        quantityExpression = GetQsVariable(mtk);
 
                     --ix;   //decrease ix with one because operator was fused in this token.
 
@@ -685,11 +794,27 @@ namespace Qs.Runtime
                             if (eop.Operation == "->")
                             {
                                 // previous operation were calling for object member
-                                quantityExpression = Expression.Constant(tokens[ix]);   // this is the name of the property 
+                                quantityExpression =
+                                    Expression.Call(eop.QuantityExpression, typeof(QsValue).GetMethod("Execute"), Expression.Constant(tokens[ix]));
+
+                                eop.Operation = "Skip"; // skip this operation because we already made an evaluation for it
                             }
-                            else if (eop.Operation == "!" || eop.Operation == ":")
+                            else if (eop.Operation == "!") 
                             {
-                                quantityExpression = Expression.Constant(new QsText(tokens[ix].TokenValue));
+                                // quantityExpression = Expression.Constant(new QsText(tokens[ix].TokenValue));
+
+                                quantityExpression =
+                                    Expression.Call(eop.QuantityExpression, typeof(QsValue).GetMethod("ExclamationOperator"), Expression.Constant(new QsText(tokens[ix].TokenValue)));
+
+                                eop.Operation = "Skip";
+                            }
+                            else if (eop.Operation == ":")
+                            {
+                                // quantityExpression = Expression.Constant(new QsText(tokens[ix].TokenValue));
+                                quantityExpression =
+                                    Expression.Call(eop.QuantityExpression, typeof(QsValue).GetMethod("ColonOperator"), Expression.Constant(new QsText(tokens[ix].TokenValue)));
+
+                                eop.Operation = "Skip";
                             }
                             else
                             {
@@ -762,12 +887,8 @@ namespace Qs.Runtime
                     if (tokens[ix + 1].TokenClassType == typeof(SquareBracketsGroupToken))
                     {
                         // call indexer here
-                        //int iix = int.Parse(tokens[ix+1][1].TokenValue);
-                        //var iia = Expression.NewArrayInit(typeof(int), Expression.Constant(iix));
-
-                        //quantityExpression = Expression.Call(quantityExpression, typeof(QsValue).GetMethod("GetIndexedItem"), iia);
-
                         quantityExpression = ValueIndexExpression(quantityExpression, tokens[ix + 1]);
+                        
 
                         //get the next operator
                         ix++;
@@ -788,9 +909,12 @@ namespace Qs.Runtime
                 }
                 else
                 {
-                    //use the next object to be eop.
-                    eop.Next = new ExprOp();
-                    eop = eop.Next;
+                    if (eop.Operation != "Skip")
+                    {
+                        //use the next object to be eop.
+                        eop.Next = new ExprOp();
+                        eop = eop.Next;
+                    }
                 }
 
                 eop.Operation = OperatorTokenText;
@@ -809,12 +933,19 @@ namespace Qs.Runtime
                 //  so raise an exception
 
                 throw new QsIncompleteExpression();
-
             }
+
+
+            return FirstEop;
+        }
+
+
+        internal Expression ParseArithmatic(Token toks)
+        {
+            var FirstEop = ParseOperations(toks);
 
             //then form the calculation expression
             return  ConstructExpression(FirstEop);
-
         }
 
         private Expression ConstructTupleExpression(Token x)
