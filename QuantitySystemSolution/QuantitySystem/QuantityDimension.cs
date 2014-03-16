@@ -175,7 +175,25 @@ namespace QuantitySystem
             string dim = "";
 
             dim += "M" + Mass.Exponent.ToString(CultureInfo.InvariantCulture);
-            dim += "L" + Length.Exponent.ToString(CultureInfo.InvariantCulture);
+
+
+            string lll = "";
+
+            if (Length.PolarExponent != 0)
+            {
+                dim +=
+                    string.Format("L{0}(NL{1}PL{2})",
+                    Length.Exponent.ToString(CultureInfo.InvariantCulture),
+                    Length.NormalExponent.ToString(CultureInfo.InvariantCulture),
+                    Length.PolarExponent.ToString(CultureInfo.InvariantCulture)
+                    );
+            }
+            else
+            {
+                dim += string.Format("L{0}",
+                    Length.Exponent.ToString(CultureInfo.InvariantCulture));
+            }
+            
             dim += "T" + Time.Exponent.ToString(CultureInfo.InvariantCulture);
             dim += "I" + ElectricCurrent.Exponent.ToString(CultureInfo.InvariantCulture);
             dim += "O" + Temperature.Exponent.ToString(CultureInfo.InvariantCulture);
@@ -184,6 +202,7 @@ namespace QuantitySystem
 
             return dim;
         }
+
         public override bool Equals(object obj)
         {
             QuantityDimension QD = obj as QuantityDimension;

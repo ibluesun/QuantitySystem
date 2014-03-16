@@ -416,7 +416,7 @@ namespace QuantitySystem.Units
                 //get the corresponding unit in the SI System
                 Type InnerUnitType = Unit.GetDefaultSIUnitTypeOf(this.QuantityType);
 
-                if (InnerUnitType == null && this.QuantityType == typeof(RadiusLength<>))
+                if (InnerUnitType == null && this.QuantityType == typeof(PolarLength<>))
                     InnerUnitType = Unit.GetDefaultSIUnitTypeOf(typeof(Length<>));
 
                 if (InnerUnitType == null)

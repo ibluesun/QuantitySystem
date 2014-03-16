@@ -73,6 +73,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CoMath.cs" />
+    <Compile Include="QsRoot\Quantity.cs" />
     <Compile Include="QsScopeStorage.cs" />
     <Compile Include="SimpleLambdaBuilder.cs" />
     <Compile Include="QsRoot\Environment.cs" />

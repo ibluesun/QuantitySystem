@@ -1,3 +1,20 @@
+[Qs 1.2.96]
+- Quantity:Dim(x)     to print out the quantity dimension of x scalar
+
+[Quantity System Framework 1.3.0] 
+- RadiusLength renamed to PolarLength  quantity   which is the length from pole (center)
+- New Quantities
+	PolarArea  
+	PolarVolume 
+	Curvature     1/PolarLength
+	FlexuralRigidity  Quantity has been added   (back to basics again)   Force * Polar Area
+	AreaMomentOfInertia   Quantity which is integration of vector length^2 to normal length^2   Area * Polar Area
+
+- Enhanced the dimension representation to show Polar Length component if exists
+
+
+
+
 [Qs 1.2.95]
 - if x is a text variable  then  x:10  will get the line at index 10 :) :)
 - fixed the way of accessing deep properties and methods in QsObject while parsing 

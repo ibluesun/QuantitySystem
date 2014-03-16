@@ -35,8 +35,8 @@ namespace QuantitySystem.Quantities
                 if (dimension.Length.NormalExponent != 0)
                     quantities.Add(new Length<T>(dimension.Length.NormalExponent));
 
-                if (dimension.Length.RadiusExponent != 0)
-                    quantities.Add(new RadiusLength<T>(dimension.Length.RadiusExponent));
+                if (dimension.Length.PolarExponent != 0)
+                    quantities.Add(new PolarLength<T>(dimension.Length.PolarExponent));
 
             }
 
