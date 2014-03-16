@@ -10,7 +10,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
     public enum LengthType
     {
         Normal,
-        Radius
+        Polar
     }
 
     public class Length<T> : AnyQuantity<T>
@@ -46,7 +46,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
                     case LengthType.Normal:
                         LengthDimension.Length = new LengthDescriptor(Exponent,  0);
                         break;
-                    case LengthType.Radius:
+                    case LengthType.Polar:
                         LengthDimension.Length = new LengthDescriptor(0,  Exponent);
                         break;
                 }
@@ -69,20 +69,20 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
 
     /// <summary>
-    /// The Length but in Radius mode
+    /// The Length but in Polar mode
     /// very usefull in differentiating of anlges and Angular quantities in general.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class RadiusLength<T> : Length<T>
+    public class PolarLength<T> : Length<T>
     {
-        public RadiusLength() : base(1) 
+        public PolarLength() : base(1) 
         {
-            LengthType = LengthType.Radius;
+            LengthType = LengthType.Polar;
         }
 
-        public RadiusLength(float exponent) : base(exponent) 
+        public PolarLength(float exponent) : base(exponent) 
         {
-            LengthType = LengthType.Radius;
+            LengthType = LengthType.Polar;
         }
 
     }

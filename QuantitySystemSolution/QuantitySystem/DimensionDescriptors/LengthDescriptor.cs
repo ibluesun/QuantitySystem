@@ -11,7 +11,7 @@ namespace QuantitySystem.DimensionDescriptors
         public LengthDescriptor(float normalExponent, float radiusExponent):this()
         {
             this.NormalExponent = normalExponent;
-            this.RadiusExponent = radiusExponent;
+            this.PolarExponent = radiusExponent;
         }
 
         #region Length Properties Types
@@ -22,7 +22,7 @@ namespace QuantitySystem.DimensionDescriptors
             set;
         }
 
-        public float RadiusExponent
+        public float PolarExponent
         {
             get;
             set;
@@ -39,7 +39,7 @@ namespace QuantitySystem.DimensionDescriptors
                 {
                     if (this.NormalExponent != ld.NormalExponent) return false;
 
-                    if (this.RadiusExponent != ld.RadiusExponent) return false;
+                    if (this.PolarExponent != ld.PolarExponent) return false;
 
                     return true;
                 }
@@ -52,7 +52,7 @@ namespace QuantitySystem.DimensionDescriptors
 
         public override int GetHashCode()
         {
-            return NormalExponent.GetHashCode() ^ RadiusExponent.GetHashCode();
+            return NormalExponent.GetHashCode() ^ PolarExponent.GetHashCode();
         }
 
         #region IDimensionDescriptor<LengthDescriptor> Members
@@ -60,7 +60,7 @@ namespace QuantitySystem.DimensionDescriptors
 
         public float Exponent
         {
-            get { return NormalExponent + RadiusExponent; }
+            get { return NormalExponent + PolarExponent; }
             set { }
         }
 
@@ -70,7 +70,7 @@ namespace QuantitySystem.DimensionDescriptors
         {
             LengthDescriptor l = new LengthDescriptor();
             l.NormalExponent = this.NormalExponent + dimensionDescriptor.NormalExponent;
-            l.RadiusExponent = this.RadiusExponent + dimensionDescriptor.RadiusExponent;
+            l.PolarExponent = this.PolarExponent + dimensionDescriptor.PolarExponent;
 
             return l;
         }
@@ -79,7 +79,7 @@ namespace QuantitySystem.DimensionDescriptors
         {
             LengthDescriptor l = new LengthDescriptor();
             l.NormalExponent = this.NormalExponent - dimensionDescriptor.NormalExponent;
-            l.RadiusExponent = this.RadiusExponent - dimensionDescriptor.RadiusExponent;
+            l.PolarExponent = this.PolarExponent - dimensionDescriptor.PolarExponent;
 
             return l;
         }
@@ -88,7 +88,7 @@ namespace QuantitySystem.DimensionDescriptors
         {
             LengthDescriptor l = new LengthDescriptor();
             l.NormalExponent = this.NormalExponent * exponent;
-            l.RadiusExponent = this.RadiusExponent * exponent;
+            l.PolarExponent = this.PolarExponent * exponent;
 
             return l;
         }
@@ -97,7 +97,7 @@ namespace QuantitySystem.DimensionDescriptors
         {
             LengthDescriptor l = new LengthDescriptor();
             l.NormalExponent = 0 - NormalExponent;
-            l.RadiusExponent = 0 - RadiusExponent;
+            l.PolarExponent = 0 - PolarExponent;
             return l;
         }
 

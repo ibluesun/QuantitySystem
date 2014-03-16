@@ -103,10 +103,12 @@
     <Compile Include="Quantities\AngularAcceleration.cs" />
     <Compile Include="Quantities\AngularMomentum.cs" />
     <Compile Include="Quantities\AngularVelocity.cs" />
+    <Compile Include="Quantities\AreaMomentOfInertia.cs" />
     <Compile Include="Quantities\BaseQuantities\AmountOfSubstance.cs" />
     <Compile Include="Quantities\BaseQuantities\AnyQuantity_Operations.cs" />
     <Compile Include="Quantities\Capacitance.cs" />
     <Compile Include="Quantities\CatalyticActivity.cs" />
+    <Compile Include="Quantities\Curvature.cs" />
     <Compile Include="Quantities\DimensionlessQuantities\Angle.cs" />
     <Compile Include="Quantities\BaseQuantities\AnyQuantity.cs" />
     <Compile Include="Quantities\BaseQuantities\BaseQuantity.cs" />
@@ -125,6 +127,7 @@
     <Compile Include="Quantities\ElectricConductance.cs" />
     <Compile Include="Quantities\ElectricResistance.cs" />
     <Compile Include="Quantities\ElectromotiveForce.cs" />
+    <Compile Include="Quantities\FlexuralRigidity.cs" />
     <Compile Include="Quantities\Force.cs" />
     <Compile Include="Quantities\DimensionlessQuantities\DimensionlessQuantity.cs" />
     <Compile Include="Quantities\Frequency.cs" />
@@ -144,6 +147,8 @@
     <Compile Include="Quantities\MolarSpecificHeat.cs" />
     <Compile Include="Quantities\MolarVolume.cs" />
     <Compile Include="Quantities\Momentum.cs" />
+    <Compile Include="Quantities\PolarArea.cs" />
+    <Compile Include="Quantities\PolarVolume.cs" />
     <Compile Include="Quantities\Power.cs" />
     <Compile Include="Quantities\Pressure.cs" />
     <Compile Include="Quantities\RadiantIntensity.cs" />

@@ -310,7 +310,7 @@ namespace QuantitySystem.Units
                             //test if the dimension is length and modify it to be radius length
                             if (u.QuantityType == typeof(Length<>))
                             {
-                                u.QuantityType = typeof(RadiusLength<>);
+                                u.QuantityType = typeof(PolarLength<>);
 
                             }
                         }

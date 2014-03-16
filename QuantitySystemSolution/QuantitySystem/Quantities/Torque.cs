@@ -10,12 +10,12 @@ namespace QuantitySystem.Quantities
     public class Torque<T> : DerivedQuantity<T>
     {
         public Torque()
-            : base(1, new Force<T>(), new Length<T>(1, LengthType.Radius))
+            : base(1, new Force<T>(), new Length<T>(1, LengthType.Polar))
         {
         }
 
         public Torque(float exponent)
-            : base(exponent, new Force<T>(exponent), new Length<T>(exponent, LengthType.Radius))
+            : base(exponent, new Force<T>(exponent), new Length<T>(exponent, LengthType.Polar))
         {
         }
 
