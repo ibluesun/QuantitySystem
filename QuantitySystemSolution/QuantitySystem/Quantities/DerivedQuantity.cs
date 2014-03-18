@@ -32,8 +32,8 @@ namespace QuantitySystem.Quantities
 
             
             {
-                if (dimension.Length.NormalExponent != 0)
-                    quantities.Add(new Length<T>(dimension.Length.NormalExponent));
+                if (dimension.Length.RegularExponent != 0)
+                    quantities.Add(new Length<T>(dimension.Length.RegularExponent));
 
                 if (dimension.Length.PolarExponent != 0)
                     quantities.Add(new PolarLength<T>(dimension.Length.PolarExponent));

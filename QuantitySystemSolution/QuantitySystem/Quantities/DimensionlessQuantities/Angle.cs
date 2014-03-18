@@ -6,12 +6,12 @@ namespace QuantitySystem.Quantities.DimensionlessQuantities
     {
 
         public Angle()
-            : base(1, new Length<T>(1, LengthType.Normal), new Length<T>(-1, LengthType.Polar))
+            : base(1, new Length<T>(1, LengthType.Regular), new Length<T>(-1, LengthType.Polar))
         {
         }
 
         public Angle(float exponent)
-            : base(exponent, new Length<T>(exponent, LengthType.Normal), new Length<T>(-1 * exponent, LengthType.Polar))
+            : base(exponent, new Length<T>(exponent, LengthType.Regular), new Length<T>(-1 * exponent, LengthType.Polar))
         {
         }
 

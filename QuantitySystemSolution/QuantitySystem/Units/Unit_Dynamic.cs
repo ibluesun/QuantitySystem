@@ -263,6 +263,8 @@ namespace QuantitySystem.Units
         {
 
             Type m_QuantityType = quantity.GetType();
+
+
             if (m_QuantityType.GetGenericTypeDefinition() == typeof(PolarLength<>))
             {
                 //because all length units associated with the Length<> Type
