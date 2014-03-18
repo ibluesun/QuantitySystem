@@ -10,12 +10,12 @@ namespace QuantitySystem.Quantities
     {
 
         public AreaMomentOfInertia()
-            : base(1, new Length<T>(2, LengthType.Normal), new Length<T>(2, LengthType.Polar))
+            : base(1, new Length<T>(2, LengthType.Regular), new Length<T>(2, LengthType.Polar))
         {
         }
 
         public AreaMomentOfInertia(float exponent)
-            : base(exponent, new Length<T>(2 * exponent, LengthType.Normal), new Length<T>(2 * exponent, LengthType.Polar))
+            : base(exponent, new Length<T>(2 * exponent, LengthType.Regular), new Length<T>(2 * exponent, LengthType.Polar))
         {
         }
 

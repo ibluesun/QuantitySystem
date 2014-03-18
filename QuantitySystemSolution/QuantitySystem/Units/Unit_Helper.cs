@@ -213,10 +213,30 @@ namespace QuantitySystem.Units
         /// if function returns null then this quantity dosen't have a statically linked unit to it.
         /// this means the quantity should return a unit in runtime.
         /// </summary>
-        /// <param name="quantityType">Type of Quantity</param>
+        /// <param name="qType">Type of Quantity</param>
         /// <returns>SI Unit Type</returns>
-        public static Type GetDefaultSIUnitTypeOf(Type quantityType)
+        public static Type GetDefaultSIUnitTypeOf(Type qType)
         {
+            
+            Type quantityType = qType;
+
+            var d = QuantityDimension.DimensionFrom(qType);
+
+            if (d.Length.PolarExponent != 0 && d.IsDimensionless == false)
+            {
+                // make dimension with the same
+                d.Length = new DimensionDescriptors.LengthDescriptor
+                {
+                    RegularExponent = d.Length.RegularExponent + d.Length.PolarExponent
+                    ,
+                    PolarExponent = 0
+                };
+
+                quantityType = QuantityDimension.QuantityTypeFrom(d);
+            }
+
+
+
             //getting the generic type
             if (!quantityType.IsGenericTypeDefinition)
             {

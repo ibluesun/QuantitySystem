@@ -182,9 +182,9 @@ namespace QuantitySystem
             if (Length.PolarExponent != 0)
             {
                 dim +=
-                    string.Format("L{0}(NL{1}PL{2})",
+                    string.Format("L{0}(RL{1}PL{2})",
                     Length.Exponent.ToString(CultureInfo.InvariantCulture),
-                    Length.NormalExponent.ToString(CultureInfo.InvariantCulture),
+                    Length.RegularExponent.ToString(CultureInfo.InvariantCulture),
                     Length.PolarExponent.ToString(CultureInfo.InvariantCulture)
                     );
             }

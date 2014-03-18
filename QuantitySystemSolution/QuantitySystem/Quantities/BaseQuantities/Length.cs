@@ -9,7 +9,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
     public enum LengthType
     {
-        Normal,
+        Regular,
         Polar
     }
 
@@ -20,13 +20,13 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
         public Length() : base(1) 
         {
-            LengthType = LengthType.Normal;
+            LengthType = LengthType.Regular;
         }
 
         public Length(float exponent)
             : base(exponent) 
         {
-            LengthType = LengthType.Normal;
+            LengthType = LengthType.Regular;
         }
 
         public Length(float exponent, LengthType lengthType)
@@ -43,7 +43,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
                 switch (LengthType)
                 {
-                    case LengthType.Normal:
+                    case LengthType.Regular:
                         LengthDimension.Length = new LengthDescriptor(Exponent,  0);
                         break;
                     case LengthType.Polar:
