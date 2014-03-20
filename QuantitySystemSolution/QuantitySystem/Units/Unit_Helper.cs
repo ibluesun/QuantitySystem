@@ -220,7 +220,7 @@ namespace QuantitySystem.Units
             
             Type quantityType = qType;
 
-            var d = QuantityDimension.DimensionFrom(qType);
+            QuantityDimension d = new QuantityDimension( QuantityDimension.DimensionFrom(qType));
 
             if (d.Length.PolarExponent != 0 && d.IsDimensionless == false)
             {
