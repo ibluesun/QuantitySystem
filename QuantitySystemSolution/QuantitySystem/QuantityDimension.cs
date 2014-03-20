@@ -603,5 +603,17 @@ namespace QuantitySystem
 
         }
 
+        public QuantityDimension(QuantityDimension dimension)
+        {
+            Mass = dimension.Mass;
+            Length = dimension.Length;
+            Time = dimension.Time;
+            ElectricCurrent = dimension.ElectricCurrent;
+            Temperature = dimension.Temperature;
+            AmountOfSubstance = dimension.AmountOfSubstance;
+            LuminousIntensity = dimension.LuminousIntensity;
+
+        }
+
     }
 }
