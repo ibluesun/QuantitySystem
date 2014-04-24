@@ -11,7 +11,7 @@ namespace ParticleLexer.QsTokens
     /// unit token form &lt;unit&gt;
     /// </summary>
     [TokenPattern(
-        RegexPattern = "<(°?\\w+!?(\\^\\d+)?\\.?)+(/(°?\\w+!?(\\^\\d+)?\\.?)+)?>"
+        RegexPattern = "<(°?[\\w\\$]+!?(\\^\\d+)?\\.?)+(/(°?[\\w\\$]+!?(\\^\\d+)?\\.?)+)?>"
         , ShouldBeginWith = "<", ShouldEndWith = ">"
         )
     ]
@@ -25,7 +25,7 @@ namespace ParticleLexer.QsTokens
     /// </summary>
     [TokenPattern(
         RegexPattern = @"\d+(\.|\.\d+)?([eE][-+]?\d+)?"                       //floating number
-        + "(\\s*<(°?\\w+!?(\\^\\d+)?\\.?)+(/(°?\\w+!?(\\^\\d+)?\\.?)+)?>)?"          // unit itself.
+        + "(\\s*<(°?[\\w\\$]+!?(\\^\\d+)?\\.?)+(/(°?[\\w\\$]+!?(\\^\\d+)?\\.?)+)?>)?"          // unit itself.
         )
     ]
     public class UnitizedNumberToken : TokenClass
@@ -417,14 +417,6 @@ namespace ParticleLexer.QsTokens
     }
 
 
-    
-
-    /// <summary>
-    /// This token type is for internal use only.
-    /// </summary>
-    internal class MergedToken : TokenClass
-    {
-    }
 
     public static class TokenExtensions
     {

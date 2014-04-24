@@ -6,7 +6,11 @@ using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities
 {
-    class PolarVolume<T> : DerivedQuantity<T>
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
+    public class PolarVolume<T> : DerivedQuantity<T>
     {
         public PolarVolume()
             : base(1, new PolarLength<T>(3))

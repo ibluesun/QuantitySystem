@@ -37,6 +37,15 @@ namespace QuantitySystem.Units
         {
             List<Unit> SubUnits = new List<Unit>();
 
+            if (dimension.Currency.Exponent != 0)
+            {
+                Unit u = new Currency.Coin();
+                u.UnitExponent = dimension.Currency.Exponent;
+                u.UnitDimension = new QuantityDimension { Currency = new DimensionDescriptors.CurrencyDescriptor( dimension.Currency.Exponent )};
+                SubUnits.Add(u);
+
+            }
+
             if (dimension.Mass.Exponent != 0)
             {
                 Type UnitType = Unit.GetDefaultUnitTypeOf(typeof(Mass<>), unitSystem);
@@ -264,12 +273,17 @@ namespace QuantitySystem.Units
 
             Type m_QuantityType = quantity.GetType();
 
+            var gen_q = m_QuantityType.GetGenericTypeDefinition() ;
 
-            if (m_QuantityType.GetGenericTypeDefinition() == typeof(PolarLength<>))
+            if (gen_q == typeof(Currency<>)) return new QuantitySystem.Units.Currency.Coin();
+
+            if (gen_q == typeof(PolarLength<>))
             {
                 //because all length units associated with the Length<> Type
                 m_QuantityType = typeof(Length<>).MakeGenericType(m_QuantityType.GetGenericArguments()[0]);
             }
+
+            
 
             if (quantity.Dimension.IsDimensionless)
             {
@@ -318,7 +332,7 @@ namespace QuantitySystem.Units
                         // so we should create unit for this quantity
 
                         Unit un = DiscoverUnit(InnerQuantity);
-                        if (un.SubUnits.Count > 0)
+                        if (un.SubUnits != null && un.SubUnits.Count > 0)
                         {
                             SubUnits.AddRange(un.SubUnits);
                         }

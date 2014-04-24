@@ -17,6 +17,8 @@ namespace QuantitySystem.Attributes
         private readonly double numerator;
         private readonly double denominator;
 
+        private readonly string source;
+
         /// <summary>
         /// 
         /// </summary>
@@ -37,11 +39,32 @@ namespace QuantitySystem.Attributes
         {
             this.numerator = numerator;
             this.denominator = denominator;
+        }
+
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="unitType"></param>
+        /// <param name="source">FunctionName.UnitName</param>
+        public ReferenceUnitAttribute(Type unitType, string source)
+        {
+            this.source = source;
+            UnitType = unitType;
+            
+            this.denominator = 1;
+
+            // the numerator will be calculated based on source value
 
             
+            string SourceFunctionName = source.Substring(0, source.IndexOf('.'));
+
+            if (!DynamicQuantitySystem.DynamicSourceFunctions.ContainsKey(SourceFunctionName))
+                DynamicQuantitySystem.DynamicSourceFunctions[SourceFunctionName] = (u) => 1.0;   // always return 1.0;
         }
 
         public Type UnitType { get; set; }
+
 
 
         /// <summary>
@@ -53,9 +76,17 @@ namespace QuantitySystem.Attributes
         {
             get
             {
+                if (!string.IsNullOrEmpty(source))
+                {
+                    string SourceFunctionName = source.Substring(0, source.IndexOf('.'));
+                    string UnitKey = source.Substring(source.IndexOf('.') + 1);
+                    return DynamicQuantitySystem.DynamicSourceFunctions[SourceFunctionName](UnitKey);
+                }
+                
                 return numerator;
             }
         }
+
         public double Denominator
         {
             get
@@ -72,6 +103,8 @@ namespace QuantitySystem.Attributes
                 return (numerator / denominator) + Shift;
             }
         }
+
+
 
     }
 }
