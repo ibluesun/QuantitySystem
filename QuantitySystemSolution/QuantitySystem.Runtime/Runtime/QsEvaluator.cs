@@ -27,7 +27,7 @@ namespace Qs.Runtime
         /// <summary>
         /// Match unit 
         /// </summary>
-        public const string UnitExpression = @"^\s*<([\w\.\^\/!]+)>\s*$";
+        public const string UnitExpression = @"^\s*<([\w\.\^\/!\$]+)>\s*$";
 
         /// <summary>
         /// Match unit to unit 

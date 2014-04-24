@@ -19,7 +19,7 @@ namespace QuantitySystem
     public class QuantityDimension
     {
 
-        #region Dimension properties
+        #region Dimension Physical Properties
         public MassDescriptor Mass { get; set; }
         public LengthDescriptor Length { get; set; }
         public TimeDescriptor Time { get; set; }
@@ -27,6 +27,10 @@ namespace QuantitySystem
         public TemperatureDescriptor Temperature { get; set; }
         public AmountOfSubstanceDescriptor AmountOfSubstance { get; set; }
         public LuminousIntensityDescriptor LuminousIntensity { get; set; }
+        #endregion
+
+        #region Dimension Extra Properties
+        public CurrencyDescriptor Currency { get; set; }
         #endregion
 
         #region Constructors
@@ -200,6 +204,8 @@ namespace QuantitySystem
             dim += "N" + AmountOfSubstance.Exponent.ToString(CultureInfo.InvariantCulture);
             dim += "J" + LuminousIntensity.Exponent.ToString(CultureInfo.InvariantCulture);
 
+            dim += "$" + Currency.Exponent.ToString(CultureInfo.InvariantCulture);
+
             return dim;
         }
 
@@ -231,6 +237,8 @@ namespace QuantitySystem
                 if (!this.Time.Equals(QD.Time))
                     return false;
 
+                if (!this.Currency.Equals(QD.Currency))
+                    return false;
                 return true;
             }
             else
@@ -268,6 +276,9 @@ namespace QuantitySystem
             if (this.Time.Exponent != dimension.Time.Exponent)
                 return false;
 
+            if (this.Currency.Exponent != dimension.Currency.Exponent)
+                return false;
+
             return true;
         }
 
@@ -299,6 +310,8 @@ namespace QuantitySystem
             QD.AmountOfSubstance = firstDimension.AmountOfSubstance.Add( secondDimension.AmountOfSubstance);
             QD.LuminousIntensity = firstDimension.LuminousIntensity.Add(secondDimension.LuminousIntensity);
 
+            QD.Currency = firstDimension.Currency.Add(secondDimension.Currency);
+
             return QD;
         }
 
@@ -318,6 +331,8 @@ namespace QuantitySystem
             QD.ElectricCurrent = firstDimension.ElectricCurrent.Subtract(secondDimension.ElectricCurrent);
             QD.AmountOfSubstance = firstDimension.AmountOfSubstance.Subtract(secondDimension.AmountOfSubstance);
             QD.LuminousIntensity = firstDimension.LuminousIntensity.Subtract(secondDimension.LuminousIntensity);
+
+            QD.Currency = firstDimension.Currency.Subtract(secondDimension.Currency);
 
             return QD;
         }
@@ -339,6 +354,7 @@ namespace QuantitySystem
             QD.ElectricCurrent = dimension.ElectricCurrent.Multiply(exponent);
             QD.AmountOfSubstance = dimension.AmountOfSubstance.Multiply(exponent);
             QD.LuminousIntensity = dimension.LuminousIntensity.Multiply(exponent);
+            QD.Currency = dimension.Currency.Multiply(exponent);
 
             return QD;
 
@@ -578,7 +594,7 @@ namespace QuantitySystem
                 if (
                     Mass.Exponent == 0 && Length.Exponent == 0 && Time.Exponent == 0 &&
                     ElectricCurrent.Exponent == 0 && Temperature.Exponent == 0 && AmountOfSubstance.Exponent == 0 &&
-                    LuminousIntensity.Exponent == 0
+                    LuminousIntensity.Exponent == 0  && Currency.Exponent == 0
                     )
                     return true;
                 else
@@ -599,6 +615,7 @@ namespace QuantitySystem
             qd.Temperature = Temperature.Invert();
             qd.AmountOfSubstance = AmountOfSubstance.Invert();
             qd.LuminousIntensity = LuminousIntensity.Invert();
+            qd.Currency = Currency.Invert();
             return qd;
 
         }
@@ -612,6 +629,8 @@ namespace QuantitySystem
             Temperature = dimension.Temperature;
             AmountOfSubstance = dimension.AmountOfSubstance;
             LuminousIntensity = dimension.LuminousIntensity;
+
+            Currency = dimension.Currency;
 
         }
 

@@ -1,5 +1,7 @@
 ﻿using System;
 using Microsoft.Scripting.Hosting.Shell;
+using ParticleLexer.StandardTokens;
+using System.Collections.Generic;
 
 
 internal class QsHost : ConsoleHost
@@ -38,10 +40,13 @@ internal class QsHost : ConsoleHost
 
         QsCommands.StartConsole();
 
+
+        QuantitySystem.DynamicQuantitySystem.AddDynamicUnitConverterFunction("Currency", QsRoot.Currency.CurrencyConverter);
+
+
         return new QsHost().Run(args);
 
     }
-
 
 
 }

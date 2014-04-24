@@ -1,3 +1,12 @@
+[Quantity System Framework 1.3.1] 
+- Added CylindricalVolume Quantity which is one polar lengths and two regular length.
+- Currency Dimension and Currency Quantity has been added.
+- Coin Unit with symbol $   has been added.  (it is the same as USD for now)
+- ISO 4217 Currency codes has been added. 
+- External conversion function to get the conversion factors based on dollar   (exchange rates are from http://openexchangerates.org)
+-   so try in calculator  0<USD> + 50<EGP>    and it is working :)
+
+
 [Qs 1.2.96]
 - Quantity:Dim(x)     to print out the quantity dimension of x scalar
 - Fixed the creation of quantity from square brackets   d = 3[PolarArea]

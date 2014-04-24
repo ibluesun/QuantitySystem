@@ -220,6 +220,7 @@ namespace QuantitySystem.Units
             
             Type quantityType = qType;
 
+            /*
             QuantityDimension d = new QuantityDimension( QuantityDimension.DimensionFrom(qType));
 
             if (d.Length.PolarExponent != 0 && d.IsDimensionless == false)
@@ -234,7 +235,7 @@ namespace QuantitySystem.Units
 
                 quantityType = QuantityDimension.QuantityTypeFrom(d);
             }
-
+            */
 
 
             //getting the generic type
@@ -295,8 +296,8 @@ namespace QuantitySystem.Units
         /// <param name="unit"></param>
         /// <returns></returns>
         private static Unit FindUnit (string un)
-        {            
-            string unit = un;
+        {
+            string unit = un.Replace("$", "\\$");
 
             bool UnitModifier = false;
 
@@ -314,6 +315,7 @@ namespace QuantitySystem.Units
                 {
 
                     //units are case sensitive
+
                     if (Regex.Match(ua.Symbol, "^" + unit + "$", RegexOptions.Singleline).Success)
                     {
                         Unit u = (Unit)Activator.CreateInstance(unitType);
@@ -604,7 +606,7 @@ namespace QuantitySystem.Units
 
         private const string DoubleNumber = @"[-+]?\d+(\.\d+)*([eE][-+]?\d+)*";
 
-        private const string UnitizedNumber = "^(?<num>" + DoubleNumber + @")\s*<(?<unit>([\w\.\^/!]+)?)>$";
+        private const string UnitizedNumber = "^(?<num>" + DoubleNumber + @")\s*<(?<unit>([\w\$\.\^/!]+)?)>$";
         private static Regex UnitizedNumberRegex = new Regex(UnitizedNumber);
 
         public static bool TryParseQuantity(string quantity, out AnyQuantity<double> qty)

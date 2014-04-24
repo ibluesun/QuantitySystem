@@ -65,6 +65,11 @@ namespace QuantitySystem.Quantities
                 quantities.Add(new ElectricalCurrent<T>(dimension.ElectricCurrent.Exponent));
             }
 
+            if (dimension.Currency.Exponent != 0)
+            {
+                quantities.Add(new Currency<T>(dimension.Currency.Exponent));
+            }
+
             InternalQuantities = quantities.ToArray();
         }
 

@@ -91,6 +91,7 @@
   <ItemGroup>
     <Compile Include="DimensionDescriptors\LuminousIntensityDescriptor.cs" />
     <Compile Include="DimensionDescriptors\AmountOfSubstanceDescriptor.cs" />
+    <Compile Include="DimensionDescriptors\CurrencyDescriptor.cs" />
     <Compile Include="DimensionDescriptors\TemperatureDescriptor.cs" />
     <Compile Include="DimensionDescriptors\ElectricCurrentDescriptor.cs" />
     <Compile Include="DimensionDescriptors\TimeDescriptor.cs" />
@@ -98,6 +99,7 @@
     <Compile Include="DimensionDescriptors\LengthDescriptor.cs" />
     <Compile Include="DimensionNotFoundException.cs" />
     <Compile Include="DimensionDescriptors\IDimensionDescriptor.cs" />
+    <Compile Include="DynamicQuantitySystem.cs" />
     <Compile Include="GlobalSuppressions.cs" />
     <Compile Include="QuantitiesNotDimensionallyEqualException.cs" />
     <Compile Include="Quantities\AngularAcceleration.cs" />
@@ -106,9 +108,11 @@
     <Compile Include="Quantities\AreaMomentOfInertia.cs" />
     <Compile Include="Quantities\BaseQuantities\AmountOfSubstance.cs" />
     <Compile Include="Quantities\BaseQuantities\AnyQuantity_Operations.cs" />
+    <Compile Include="Quantities\BaseQuantities\Currency.cs" />
     <Compile Include="Quantities\Capacitance.cs" />
     <Compile Include="Quantities\CatalyticActivity.cs" />
     <Compile Include="Quantities\Curvature.cs" />
+    <Compile Include="Quantities\CylindricalVolume.cs" />
     <Compile Include="Quantities\DimensionlessQuantities\Angle.cs" />
     <Compile Include="Quantities\BaseQuantities\AnyQuantity.cs" />
     <Compile Include="Quantities\BaseQuantities\BaseQuantity.cs" />
@@ -174,6 +178,11 @@
     <Compile Include="Units\Astronomical\LengthUnits.cs" />
     <Compile Include="Units\Astronomical\MassUnits.cs" />
     <Compile Include="Units\Astronomical\TimeUnits.cs" />
+    <Compile Include="Units\Currency\Currencies.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Currencies.tt</DependentUpon>
+    </Compile>
     <Compile Include="Units\English\AreaUnits.cs" />
     <Compile Include="Units\English\VolumeFlowRateUnits.cs" />
     <Compile Include="Units\English\PoundMole.cs" />
@@ -272,6 +281,7 @@
     <Compile Include="Units\Natural\EnergyUnits.cs" />
     <Compile Include="Units\Natural\MassUnits.cs" />
     <Compile Include="Units\Natural\VelocityUnits.cs" />
+    <Compile Include="Units\Currency\Coin.cs" />
     <Compile Include="Units\Shared\Second.cs" />
     <Compile Include="Units\Unit.cs" />
     <Compile Include="Units\UnitException.cs" />
@@ -299,6 +309,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="QuantitySystem.snk" />
+    <None Include="Units\Currency\Currencies.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Currencies.cs</LastGenOutput>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include="Microsoft.Net.Client.3.5">
@@ -316,6 +330,9 @@
       <ProductName>Windows Installer 3.1</ProductName>
       <Install>true</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

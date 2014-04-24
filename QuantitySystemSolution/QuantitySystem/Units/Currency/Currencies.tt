@@ -1,0 +1,196 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ output extension=".cs" #>
+using QuantitySystem.Attributes;
+using QuantitySystem.Quantities.BaseQuantities;
+
+namespace QuantitySystem.Units.Currency
+{
+
+
+<#
+var codes = new System.Collections.Generic.List<string>();
+
+codes.Add("AED: United Arab Emirates Dirham");
+codes.Add("AFN: Afghan Afghani");
+codes.Add("ALL: Albanian Lek");
+codes.Add("AMD: Armenian Dram");
+codes.Add("ANG: Netherlands Antillean Guilder");
+codes.Add("AOA: Angolan Kwanza");
+codes.Add("ARS: Argentine Peso");
+codes.Add("AUD: Australian Dollar");
+codes.Add("AWG: Aruban Florin");
+codes.Add("AZN: Azerbaijani Manat");
+codes.Add("BAM: Bosnia-Herzegovina Convertible Mark");
+codes.Add("BBD: Barbadian Dollar");
+codes.Add("BDT: Bangladeshi Taka");
+codes.Add("BGN: Bulgarian Lev");
+codes.Add("BHD: Bahraini Dinar");
+codes.Add("BIF: Burundian Franc");
+codes.Add("BMD: Bermudan Dollar");
+codes.Add("BND: Brunei Dollar");
+codes.Add("BOB: Bolivian Boliviano");
+codes.Add("BRL: Brazilian Real");
+codes.Add("BSD: Bahamian Dollar");
+codes.Add("BTC: Bitcoin");
+codes.Add("BTN: Bhutanese Ngultrum");
+codes.Add("BWP: Botswanan Pula");
+codes.Add("BYR: Belarusian Ruble");
+codes.Add("BZD: Belize Dollar");
+codes.Add("CAD: Canadian Dollar");
+codes.Add("CDF: Congolese Franc");
+codes.Add("CHF: Swiss Franc");
+codes.Add("CLF: Chilean Unit of Account (UF)");
+codes.Add("CLP: Chilean Peso");
+codes.Add("CNY: Chinese Yuan");
+codes.Add("COP: Colombian Peso");
+codes.Add("CRC: Costa Rican Colón");
+codes.Add("CUP: Cuban Peso");
+codes.Add("CVE: Cape Verdean Escudo");
+codes.Add("CZK: Czech Republic Koruna");
+codes.Add("DJF: Djiboutian Franc");
+codes.Add("DKK: Danish Krone");
+codes.Add("DOP: Dominican Peso");
+codes.Add("DZD: Algerian Dinar");
+codes.Add("EEK: Estonian Kroon");
+codes.Add("EGP: Egyptian Pound");
+codes.Add("ERN: Eritrean Nakfa");
+codes.Add("ETB: Ethiopian Birr");
+codes.Add("EUR: Euro");
+codes.Add("FJD: Fijian Dollar");
+codes.Add("FKP: Falkland Islands Pound");
+codes.Add("GBP: British Pound Sterling");
+codes.Add("GEL: Georgian Lari");
+codes.Add("GHS: Ghanaian Cedi");
+codes.Add("GIP: Gibraltar Pound");
+codes.Add("GMD: Gambian Dalasi");
+codes.Add("GNF: Guinean Franc");
+codes.Add("GTQ: Guatemalan Quetzal");
+codes.Add("GYD: Guyanaese Dollar");
+codes.Add("HKD: Hong Kong Dollar");
+codes.Add("HNL: Honduran Lempira");
+codes.Add("HRK: Croatian Kuna");
+codes.Add("HTG: Haitian Gourde");
+codes.Add("HUF: Hungarian Forint");
+codes.Add("IDR: Indonesian Rupiah");
+codes.Add("ILS: Israeli New Sheqel");
+codes.Add("INR: Indian Rupee");
+codes.Add("IQD: Iraqi Dinar");
+codes.Add("IRR: Iranian Rial");
+codes.Add("ISK: Icelandic Króna");
+codes.Add("JEP: Jersey Pound");
+codes.Add("JMD: Jamaican Dollar");
+codes.Add("JOD: Jordanian Dinar");
+codes.Add("JPY: Japanese Yen");
+codes.Add("KES: Kenyan Shilling");
+codes.Add("KGS: Kyrgystani Som");
+codes.Add("KHR: Cambodian Riel");
+codes.Add("KMF: Comorian Franc");
+codes.Add("KPW: North Korean Won");
+codes.Add("KRW: South Korean Won");
+codes.Add("KWD: Kuwaiti Dinar");
+codes.Add("KYD: Cayman Islands Dollar");
+codes.Add("KZT: Kazakhstani Tenge");
+codes.Add("LAK: Laotian Kip");
+codes.Add("LBP: Lebanese Pound");
+codes.Add("LKR: Sri Lankan Rupee");
+codes.Add("LRD: Liberian Dollar");
+codes.Add("LSL: Lesotho Loti");
+codes.Add("LTL: Lithuanian Litas");
+codes.Add("LVL: Latvian Lats");
+codes.Add("LYD: Libyan Dinar");
+codes.Add("MAD: Moroccan Dirham");
+codes.Add("MDL: Moldovan Leu");
+codes.Add("MGA: Malagasy Ariary");
+codes.Add("MKD: Macedonian Denar");
+codes.Add("MMK: Myanma Kyat");
+codes.Add("MNT: Mongolian Tugrik");
+codes.Add("MOP: Macanese Pataca");
+codes.Add("MRO: Mauritanian Ouguiya");
+codes.Add("MTL: Maltese Lira");
+codes.Add("MUR: Mauritian Rupee");
+codes.Add("MVR: Maldivian Rufiyaa");
+codes.Add("MWK: Malawian Kwacha");
+codes.Add("MXN: Mexican Peso");
+codes.Add("MYR: Malaysian Ringgit");
+codes.Add("MZN: Mozambican Metical");
+codes.Add("NAD: Namibian Dollar");
+codes.Add("NGN: Nigerian Naira");
+codes.Add("NIO: Nicaraguan Córdoba");
+codes.Add("NOK: Norwegian Krone");
+codes.Add("NPR: Nepalese Rupee");
+codes.Add("NZD: New Zealand Dollar");
+codes.Add("OMR: Omani Rial");
+codes.Add("PAB: Panamanian Balboa");
+codes.Add("PEN: Peruvian Nuevo Sol");
+codes.Add("PGK: Papua New Guinean Kina");
+codes.Add("PHP: Philippine Peso");
+codes.Add("PKR: Pakistani Rupee");
+codes.Add("PLN: Polish Zloty");
+codes.Add("PYG: Paraguayan Guarani");
+codes.Add("QAR: Qatari Rial");
+codes.Add("RON: Romanian Leu");
+codes.Add("RSD: Serbian Dinar");
+codes.Add("RUB: Russian Ruble");
+codes.Add("RWF: Rwandan Franc");
+codes.Add("SAR: Saudi Riyal");
+codes.Add("SBD: Solomon Islands Dollar");
+codes.Add("SCR: Seychellois Rupee");
+codes.Add("SDG: Sudanese Pound");
+codes.Add("SEK: Swedish Krona");
+codes.Add("SGD: Singapore Dollar");
+codes.Add("SHP: Saint Helena Pound");
+codes.Add("SLL: Sierra Leonean Leone");
+codes.Add("SOS: Somali Shilling");
+codes.Add("SRD: Surinamese Dollar");
+codes.Add("STD: São Tomé and Príncipe Dobra");
+codes.Add("SVC: Salvadoran Colón");
+codes.Add("SYP: Syrian Pound");
+codes.Add("SZL: Swazi Lilangeni");
+codes.Add("THB: Thai Baht");
+codes.Add("TJS: Tajikistani Somoni");
+codes.Add("TMT: Turkmenistani Manat");
+codes.Add("TND: Tunisian Dinar");
+codes.Add("TOP: Tongan Paʻanga");
+codes.Add("TRY: Turkish Lira");
+codes.Add("TTD: Trinidad and Tobago Dollar");
+codes.Add("TWD: New Taiwan Dollar");
+codes.Add("TZS: Tanzanian Shilling");
+codes.Add("UAH: Ukrainian Hryvnia");
+codes.Add("UGX: Ugandan Shilling");
+codes.Add("UYU: Uruguayan Peso");
+codes.Add("UZS: Uzbekistan Som");
+codes.Add("VEF: Venezuelan Bolívar Fuerte");
+codes.Add("VND: Vietnamese Dong");
+codes.Add("VUV: Vanuatu Vatu");
+codes.Add("WST: Samoan Tala");
+codes.Add("XAF: CFA Franc BEAC");
+codes.Add("XAG: Silver (troy ounce)");
+codes.Add("XAU: Gold (troy ounce)");
+codes.Add("XCD: East Caribbean Dollar");
+codes.Add("XDR: Special Drawing Rights");
+codes.Add("XOF: CFA Franc BCEAO");
+codes.Add("XPF: CFP Franc");
+codes.Add("YER: Yemeni Rial");
+codes.Add("ZAR: South African Rand");
+codes.Add("ZMK: Zambian Kwacha (pre-2013)");
+codes.Add("ZMW: Zambian Kwacha");
+codes.Add("ZWL: Zimbabwean Dollar");
+
+
+foreach(var code in codes)
+{
+	var cc = code.Substring(0,3);
+	var cn = code.Substring(4).Trim().Replace(" ","_").Replace("-","_").Replace("(","").Replace(")","");
+#>
+    [Unit("<#=cc#>", typeof(Currency<>))]
+	[ReferenceUnit(typeof(United_States_Dollar), "Currency.<#=cc#>")]
+    public sealed class <#=cn#> : Unit  
+    {
+
+    }
+
+<#
+}
+#>
+
+}
