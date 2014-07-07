@@ -1,3 +1,7 @@
+[Qs 1.2.97]
+- added RotationMatrix to Quaternion Scalar to get the 3x3 rotation matrix of the quaternion
+- updated the SymbolicAlgebra library with the latest version
+
 [Quantity System Framework 1.3.1] 
 - Added CylindricalVolume Quantity which is one polar lengths and two regular length.
 - Currency Dimension and Currency Quantity has been added.
