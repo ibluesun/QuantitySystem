@@ -1957,5 +1957,15 @@ namespace Qs.Types
             return (ulong)NumericalQuantity.Value;
         }
         #endregion
+
+        public override QsValue Execute(ParticleLexer.Token expression)
+        {
+            if (this._ScalarType== ScalarTypes.QuaternionNumberQuantity && expression.TokenValue.Equals("RotationMatrix", StringComparison.OrdinalIgnoreCase))
+            {
+                return this.QuaternionQuantity.Value.To_3x3_RotationMatrix();
+            }
+            else 
+            return base.Execute(expression);
+        }
     }
 }

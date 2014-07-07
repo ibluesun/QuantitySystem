@@ -20,6 +20,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Globalization;
+using Qs.Types;
 
 namespace Qs.Numerics
 {
@@ -347,6 +348,40 @@ namespace Qs.Numerics
         public override int GetHashCode()
         {
             return a.GetHashCode() ^ b.GetHashCode() ^ c.GetHashCode() ^ d.GetHashCode();
+        }
+
+
+        /// <summary>
+        /// 3x3 Rotation Matrix From normalized quaternion
+        /// </summary>
+        /// <returns></returns>
+        public QsMatrix To_3x3_RotationMatrix()
+        {
+            
+            var w = a;
+            var x = i;
+            var y = j;
+            var z = k;
+
+            var v0 = new QsVector();
+            var v1 = new QsVector();
+            var v2 = new QsVector();
+
+            v0.AddComponent(1 - 2 * y * y - 2 * z * z);
+            v0.AddComponent(2 * x * y - 2 * w * z);
+            v0.AddComponent(2 * x * z + 2 * w * y);
+
+            v1.AddComponent(2 * x * y + 2 * w * z);
+            v1.AddComponent(1 - 2 * x * x - 2 * z * z);
+            v1.AddComponent(2 * y * z - 2 * w * x);
+
+            v2.AddComponent(2 * x * z - 2 * w * y);
+            v2.AddComponent(2 * y * z + 2 * w * x);
+            v2.AddComponent(1 - 2 * x * x - 2 * y * y);
+
+            var rm = new QsMatrix(v0, v1, v2);
+            return rm;
+
         }
     }
 }
