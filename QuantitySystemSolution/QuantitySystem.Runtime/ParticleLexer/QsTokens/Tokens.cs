@@ -382,6 +382,14 @@ namespace ParticleLexer.QsTokens
     {
     }
 
+
+    /// <summary>
+    /// %pi  for example
+    /// </summary>
+    public class ConstantToken : TokenClass
+    {
+    }
+
     [TokenPattern(RegexPattern = @"True", ExactWord=true)]
     public class TrueToken : TokenClass { }
 

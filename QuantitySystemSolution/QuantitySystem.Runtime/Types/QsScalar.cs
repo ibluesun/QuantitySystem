@@ -1967,5 +1967,39 @@ namespace Qs.Types
             else 
             return base.Execute(expression);
         }
+
+
+        /// <summary>
+        /// returns constant value
+        /// </summary>
+        /// <param name="name"></param>
+        /// <returns></returns>
+        public static QsValue Constant(string name)
+        {
+            if(name.Equals("i", StringComparison.OrdinalIgnoreCase)) 
+            {
+                return new QsScalar(ScalarTypes.ComplexNumberQuantity)
+                {
+                    ComplexQuantity = Unit.Parse("1").GetThisUnitQuantity<Complex>( Complex.ImaginaryOne)
+                };
+            }
+
+            if (name.Equals("pi", StringComparison.OrdinalIgnoreCase))
+            {
+                return Math.PI.ToQuantity().ToScalarValue();
+            }
+
+            if (name.Equals("phi", StringComparison.OrdinalIgnoreCase))
+            {
+                return ((1 + Math.Sqrt(5)) / 2).ToQuantity().ToScalarValue();
+            }
+
+            if (name.Equals("e", StringComparison.OrdinalIgnoreCase))
+            {
+                return Math.E.ToQuantity().ToScalarValue();
+            }
+
+            return zero;
+        }
     }
 }
