@@ -228,6 +228,7 @@ namespace Qs.Runtime
                 );
 
             tokens = tokens.MergeTokens<WordToken>();                 //Discover words
+            tokens = tokens.MergeSequenceTokens<ConstantToken>(typeof(PercentToken), typeof(WordToken));
 
             tokens = tokens.MergeMultipleWordTokens(
                 typeof(WhenStatementToken),
@@ -600,6 +601,10 @@ namespace Qs.Runtime
                 {
                     quantityExpression = SymbolicScalar(tokens[ix]);
                 }
+                else if (tokens[ix].TokenClassType == typeof(ConstantToken))
+                {
+                    quantityExpression = Expression.Constant(QsScalar.Constant(tokens[ix].TokenValue.TrimStart('%')), typeof(QsValue));
+                }
                 else if (tokens[ix].TokenClassType == typeof(ComplexNumberToken) || tokens[ix].TokenClassType == typeof(ComplexQuantityToken))
                 {
                     quantityExpression = ComplexScalar(tokens[ix]);
@@ -799,7 +804,7 @@ namespace Qs.Runtime
 
                                 eop.Operation = "Skip"; // skip this operation because we already made an evaluation for it
                             }
-                            else if (eop.Operation == "!") 
+                            else if (eop.Operation == "!")
                             {
                                 // quantityExpression = Expression.Constant(new QsText(tokens[ix].TokenValue));
 

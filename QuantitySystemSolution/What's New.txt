@@ -1,3 +1,8 @@
+[Qs 1.2.98]
+- changed the directive character from % to #   so it is used for constants 
+- support for constants  that begins with %  %pi %phi %e %i  etc.
+
+
 [Qs 1.2.97]
 - added RotationMatrix to Quaternion Scalar to get the 3x3 rotation matrix of the quaternion
 - updated the SymbolicAlgebra library with the latest version

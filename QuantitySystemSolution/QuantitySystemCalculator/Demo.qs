@@ -1,5 +1,5 @@
-﻿%module modules/qsgraphics.dll
-%module modules/qsstudio.dll
+﻿#module modules/qsgraphics.dll
+#module modules/qsstudio.dll
 
 music:reset()
 music:playmidi("raisingfight.mid")

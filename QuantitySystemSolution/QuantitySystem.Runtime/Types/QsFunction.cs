@@ -538,6 +538,7 @@ namespace Qs.Types
             Token functionToken = Token.ParseText(functionCode);
             functionToken = functionToken.MergeTokens<MultipleSpaceToken>();
             functionToken = functionToken.MergeTokens<WordToken>();
+            functionToken = functionToken.MergeSequenceTokens<ConstantToken>(typeof(PercentToken), typeof(WordToken));
             functionToken = functionToken.MergeTokens<NumberToken>();
             functionToken = functionToken.MergeTokens<UnitizedNumberToken>();
 
