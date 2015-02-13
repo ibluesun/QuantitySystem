@@ -665,7 +665,7 @@ namespace QuantitySystem.Units
             //  note: unit that depend on sub units is completly unaware of its exponent
             //    or I should say it is always equal = 1
 
-            u._QuantityType = QuantityDimension.QuantityTypeFrom(u._UnitDimension);
+            u._QuantityType = QuantityDimension.GetQuantityTypeFrom(u._UnitDimension);
             
 
 
