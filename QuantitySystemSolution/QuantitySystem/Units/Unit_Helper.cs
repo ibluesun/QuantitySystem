@@ -402,14 +402,9 @@ namespace QuantitySystem.Units
 
 
             Type uQType = null;
-            try
-            {
-                uQType = QuantityDimension.QuantityTypeFrom(ud);
-            }
-            catch (QuantityNotFoundException)
-            {
-                uQType = typeof(DerivedQuantity<>);
-            }
+            
+            uQType = QuantityDimension.GetQuantityTypeFrom(ud);
+            
 
             Unit FinalUnit = new Unit(uQType, dunits.ToArray());
 
@@ -496,14 +491,9 @@ namespace QuantitySystem.Units
 
 
                 Type uQType = null;
-                try
-                {
-                    uQType = QuantityDimension.QuantityTypeFrom(ud);
-                }
-                catch (QuantityNotFoundException)
-                {
-                    uQType = typeof(DerivedQuantity<>);
-                }
+                
+                uQType = QuantityDimension.GetQuantityTypeFrom(ud);
+                
 
                 FinalUnit = new Unit(uQType, chobits);
 
@@ -675,14 +665,8 @@ namespace QuantitySystem.Units
             //  note: unit that depend on sub units is completly unaware of its exponent
             //    or I should say it is always equal = 1
 
-            try
-            {
-                u._QuantityType = QuantityDimension.QuantityTypeFrom(u._UnitDimension);
-            }
-            catch (QuantityNotFoundException)
-            {
-                u._QuantityType = typeof(DerivedQuantity<>);
-            }
+            u._QuantityType = QuantityDimension.QuantityTypeFrom(u._UnitDimension);
+            
 
 
             if (u.SubUnits == null && u.unitExponent == 1)

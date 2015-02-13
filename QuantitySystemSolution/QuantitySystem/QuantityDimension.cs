@@ -9,11 +9,12 @@ using QuantitySystem.Quantities;
 
 using QuantitySystem.DimensionDescriptors;
 using QuantitySystem.Quantities.DimensionlessQuantities;
+using System.Text.RegularExpressions;
 
 namespace QuantitySystem
 {
     /// <summary>
-    /// Quantity Dimension based on SI.
+    /// Quantity Dimension.
     /// dim Q = Lα Mβ Tγ Iδ Θε Nζ Jη
     /// </summary>
     public class QuantityDimension
@@ -71,7 +72,7 @@ namespace QuantitySystem
             Time = new TimeDescriptor(time);
             Temperature = new TemperatureDescriptor(temperature);
 
-            ElectricCurrent=new ElectricCurrentDescriptor( electricalCurrent);
+            ElectricCurrent = new ElectricCurrentDescriptor( electricalCurrent);
             AmountOfSubstance = new AmountOfSubstanceDescriptor(amountOfSubstance);
             LuminousIntensity = new LuminousIntensityDescriptor(luminousIntensity);
         }
@@ -428,6 +429,26 @@ namespace QuantitySystem
 
         #region Quantity utilities
 
+        /// <summary>
+        /// Returns the quantity type or typeof(DerivedQuantity&lt;&gt;) without throwing exception
+        /// </summary>
+        /// <param name="dimension"></param>
+        /// <returns></returns>
+        public static Type GetQuantityTypeFrom(QuantityDimension dimension)
+        {
+            Type qType;
+            if (CurrentQuantitiesDictionary.TryGetValue(dimension, out qType))
+                return qType;
+            else
+                return typeof(DerivedQuantity<>);
+        }
+
+        /// <summary>
+        /// Get the corresponding typed quantity in the framework of this dimension
+        /// Throws QuantityNotFounException when there is corresponding one.
+        /// </summary>
+        /// <param name="dimension"></param>
+        /// <returns></returns>
         public static Type QuantityTypeFrom(QuantityDimension dimension)
         {
             try
@@ -573,6 +594,78 @@ namespace QuantitySystem
             int t = ExponentOfTime(mlt);
 
             return new QuantityDimension(m, l, t);
+        }
+
+        public static QuantityDimension Parse(string dimension)
+        {
+
+            dimension = dimension.Trim();
+
+            // M L T I O N J   C
+            List<float> exps = new List<float>();
+            if (char.IsNumber(dimension[0]))
+            {
+                // parsing started with numbers which will be most probably 
+                //   on the format of numbers with spaces
+                string[] dims = dimension.Split(' ');
+                foreach (var dim in dims)
+                {
+                    var dimtrimmed = dim.Trim();
+
+                    if (!string.IsNullOrEmpty(dimtrimmed))
+                    {
+                        exps.Add(float.Parse(dimtrimmed));
+                    }
+                }
+
+                float M = exps.Count > 0 ? exps[0] : 0;
+                float L = exps.Count > 1 ? exps[1] : 0;
+                float T = exps.Count > 2 ? exps[2] : 0;
+                float I = exps.Count > 3 ? exps[3] : 0;
+                float O = exps.Count > 4 ? exps[4] : 0;
+                float N = exps.Count > 5 ? exps[5] : 0;
+                float J = exps.Count > 6 ? exps[6] : 0;
+                float C = exps.Count > 7 ? exps[7] : 0;
+
+                var qd = new QuantityDimension(M, L, T, I, O, N, J);
+                qd.Currency = new CurrencyDescriptor(C);
+
+                return qd;
+
+            }
+            else
+            {
+                // the format is based on letter and number
+
+                var dumber  = dimension.ToUpperInvariant();
+
+                var mts = Regex.Matches(dumber, @"(([MmLlTtIiOoNnJjCc])(\-*[0-9]+))+?");
+
+                Dictionary<char,float> edps = new Dictionary<char,float>();
+
+                foreach(Match m in mts)
+                {
+                    edps.Add(m.Groups[2].Value[0], float.Parse(m.Groups[3].Value));
+                }
+
+                if (!edps.ContainsKey('M')) edps['M'] = 0;
+                if (!edps.ContainsKey('L')) edps['L'] = 0;
+                if (!edps.ContainsKey('T')) edps['T'] = 0;
+                if (!edps.ContainsKey('I')) edps['I'] = 0;
+                if (!edps.ContainsKey('O')) edps['O'] = 0;
+                if (!edps.ContainsKey('N')) edps['N'] = 0;
+                if (!edps.ContainsKey('J')) edps['J'] = 0;
+                if (!edps.ContainsKey('C')) edps['C'] = 0;
+
+                var qd = new QuantityDimension(edps['M']
+                    , edps['L'], edps['T'], edps['I'], edps['O']
+                    , edps['N'], edps['J']);
+
+                qd.Currency = new CurrencyDescriptor(edps['C']);
+
+                return qd;
+            }
+
         }
 
 

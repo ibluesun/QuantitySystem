@@ -223,7 +223,7 @@ namespace UnitsTestingProject
             Assert.AreEqual("<N>", unit.Symbol);
 
 
-            unit = new Unit(typeof(Stress<>));
+            unit = new Unit(typeof(Pressure<>));
 
             Assert.AreEqual("<Pa>", unit.Symbol);
 
@@ -288,7 +288,7 @@ namespace UnitsTestingProject
 
             Assert.AreEqual("<kg/m^3>", unit.Symbol);
 
-            unit = Unit.DiscoverUnit(new Stress<double>());
+            unit = Unit.DiscoverUnit(new Pressure<double>());
 
             Assert.AreEqual("Pa", unit.Symbol);
 
