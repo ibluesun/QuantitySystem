@@ -14,12 +14,12 @@ namespace QuantitySystem.Quantities
     public class Viscosity<T> : DerivedQuantity<T>
     {
         public Viscosity()
-            : base(1, new Stress<T>(), new Time<T>())
+            : base(1, new Pressure<T>(), new Time<T>())
         {
         }
 
         public Viscosity(float exponent)
-            : base (exponent, new Stress<T>(exponent), new Time<T>(exponent))
+            : base (exponent, new Pressure<T>(exponent), new Time<T>(exponent))
         {
         }
 

@@ -135,7 +135,7 @@ namespace QuantitySystemTestingProject
 
             var q = f / a;
 
-            var expected = new Stress<double> { Value = 2 };
+            var expected = new Pressure<double> { Value = 2 };
 
             //compare the quantities
             Assert.AreEqual(expected, q);

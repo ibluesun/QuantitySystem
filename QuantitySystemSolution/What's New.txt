@@ -1,3 +1,21 @@
+[Qs 1.2.982]
+- Changed quantity name from Stress to Pressure
+- Changed function of Quantity:Dim  to Quantity:Dimension(value) to know the dimension of the value
+- Added other functions to the built-in Quantity namespace
+	Quantity:Type(value)   to know the Quantity Type of the value
+	Quantity:FromDimension(text)    to get the Quantity Type from parsing text with two formats
+						* using numbers:  Quantity:FromDimension("0 0 1")  
+						* using letters:  Quantity:FromDimension(L1T-1)
+		Letters are    
+			M: Mass
+			L: Length
+			T: Time
+			I: Temperature
+			O: Electrical Current
+			N: Amount of substance
+			J: Luminous Intensity
+			C: Currency
+
 [Qs 1.2.98]
 - changed the directive character from % to #   so it is used for constants 
 - support for constants  that begins with %  %pi %phi %e %i  etc.

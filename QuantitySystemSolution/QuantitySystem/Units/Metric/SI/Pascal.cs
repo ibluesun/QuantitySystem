@@ -8,7 +8,7 @@ using QuantitySystem.Attributes;
 
 namespace QuantitySystem.Units.Metric.SI
 {
-    [MetricUnit("Pa", typeof(Stress<>))]
+    [MetricUnit("Pa", typeof(Pressure<>))]
     public sealed class Pascal : MetricUnit
     {
 
