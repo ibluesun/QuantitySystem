@@ -347,7 +347,7 @@ using System.IO;
 
             Console.WriteLine();
             List<string> quats = new List<string>();
-            foreach (Type QType in QuantitySystem.QuantityDimension.CurrentQuantitiesDictionary.Values)
+            foreach (Type QType in QuantitySystem.QuantityDimension.AllQuantitiesTypes)
             {
                 quats.Add ("    " + QType.Name.Substring(0, QType.Name.Length - 2).PadRight(30) + "    " + QuantitySystem.QuantityDimension.DimensionFrom(QType).ToString());
             }

@@ -4,13 +4,15 @@ using System.Linq;
 using System.Text;
 using Qs.Types;
 using QuantitySystem;
+using QuantitySystem.Quantities.BaseQuantities;
+using QuantitySystem.Units;
 
 namespace QsRoot
 {
     public static class Quantity
     {
         /// <summary>
-        /// Dimension of scalar quantities
+        /// Returns the dimension of value quantity.
         /// </summary>
         /// <param name="value"></param>
         /// <returns></returns>
@@ -27,7 +29,12 @@ namespace QsRoot
             return new QsText("Works on scalar quantities");
         }
 
-        public static QsValue Type(QsParameter value)
+        /// <summary>
+        /// Returns the name of the quantity associated with this value
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static QsValue FromValue(QsParameter value)
         {
             QsScalar s = value.QsNativeValue as QsScalar;
             if (s != null)
@@ -40,7 +47,11 @@ namespace QsRoot
             return new QsText("Works on scalar quantities");
         }
 
-
+        /// <summary>
+        /// Resturns the name of the quantity associated with this dimension
+        /// </summary>
+        /// <param name="dimension"></param>
+        /// <returns></returns>
         public static QsValue FromDimension(QsParameter dimension)
         {
             string ss = dimension.ParameterRawText;
@@ -49,6 +60,41 @@ namespace QsRoot
             
             string qt = QuantityDimension.GetQuantityTypeFrom(q).Name;
             return new QsText(qt.Substring(0, qt.Length - 2));
+        }
+
+        /// <summary>
+        /// Returns a value from the dimension of this quantity.
+        /// </summary>
+        /// <param name="dimension"></param>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static QsValue FromDimension(QsParameter dimension, QsParameter value)
+        {
+            string ss = dimension.ParameterRawText;
+            if (dimension.QsNativeValue is QsText) ss = ((QsText)dimension.QsNativeValue).Text;
+            var q = QuantityDimension.Parse(ss);
+
+            var unit = QuantitySystem.Units.Unit.DiscoverUnit(q);
+            var qval = unit.GetThisUnitQuantity<double>(double.Parse(value.ParameterRawText));
+
+            var qs = new QsScalar(ScalarTypes.NumericalQuantity) { NumericalQuantity = qval };
+
+            return qs;
+        }
+
+
+        public static QsValue FromName(QsParameter name, QsParameter value)
+        {
+            string ss = name.ParameterRawText;
+            if (name.QsNativeValue is QsText) ss = ((QsText)name.QsNativeValue).Text;
+
+            var qval = AnyQuantity<double>.Parse(ss);
+            qval.Unit = Unit.DiscoverUnit(qval);
+            qval.Value = double.Parse(value.ParameterRawText);
+
+            var qs = new QsScalar(ScalarTypes.NumericalQuantity) { NumericalQuantity = qval };
+
+            return qs;
         }
     }
 }

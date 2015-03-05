@@ -1,3 +1,9 @@
+[Qs 1.2.983]
+- modified the expression of  r = 30[Mass]  to accept non sensitive name of quantities
+- changed signature of method in Quantity namespace from Quantity:Type(value) to Quantity:FromValue(value)
+- Added new method to the Quantity namespace Quantity:FromDimension(dimension, value)
+- new mehod in the same namespace  Quantity:FromName(name,value)
+
 [Qs 1.2.982]
 - Changed quantity name from Stress to Pressure
 - Changed function of Quantity:Dim  to Quantity:Dimension(value) to know the dimension of the value
