@@ -371,13 +371,35 @@ namespace QuantitySystem
         /// <summary>
         /// holding Dimension -> Quantity instance  to be clonned.
         /// </summary>
-        public static Dictionary<QuantityDimension, Type> CurrentQuantitiesDictionary = new Dictionary<QuantityDimension, Type>();
+        static Dictionary<QuantityDimension, Type> CurrentQuantitiesDictionary = new Dictionary<QuantityDimension, Type>();
 
         /// <summary>
-        /// 
+        /// Quantity Name -> Quantity Type  as all quantity names are unique
         /// </summary>
-        private static Dictionary<Type, QuantityDimension> CurrentDimensionsDictionary = new Dictionary<Type,QuantityDimension>();
+        static Dictionary<string, Type> CurrentQuantitiesNamesDictionary = new Dictionary<string, Type>(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>
+        /// holding Quantity -> Dimension
+        /// </summary>
+        static Dictionary<Type, QuantityDimension> CurrentDimensionsDictionary = new Dictionary<Type, QuantityDimension>();
+
+        public static Type[] AllQuantitiesTypes
+        {
+            get
+            {
+                return CurrentQuantitiesNamesDictionary.Values.ToArray();
+            }
+        }
+
+        public static string[] AllQuantitiesNames
+        {
+            get
+            {
+                return CurrentQuantitiesNamesDictionary.Keys.ToArray();
+            }
+        }
+
+       
 
         /// <summary>
         /// Cache all quantities with their Dimensions.
@@ -416,6 +438,9 @@ namespace QuantitySystem
 
                         //store quantity type as key and corresponding dimension as value.
                         CurrentDimensionsDictionary.Add(QuantityType, Quantity.Dimension);
+
+                        //store the quantity name and type with insensitive names
+                        CurrentQuantitiesNamesDictionary.Add(QuantityType.Name.Substring(0, QuantityType.Name.Length - 2), QuantityType);
                     
                     }
                 }
@@ -467,6 +492,30 @@ namespace QuantitySystem
             }
         }
 
+
+        /// <summary>
+        /// Gets the quantity type from the name and throws QuantityNotFounException if not found.
+        /// </summary>
+        /// <param name="quantityName"></param>
+        /// <returns></returns>
+        public static Type QuantityTypeFrom(string quantityName)
+        {
+            try
+            {
+                Type QuantityType = CurrentQuantitiesNamesDictionary[quantityName];
+
+
+                return QuantityType;
+
+            }
+            catch (KeyNotFoundException ex)
+            {
+                QuantityNotFoundException qnfe = new QuantityNotFoundException("Couldn't Find the quantity dimension in the dimensions Hash Key", ex);
+
+                throw qnfe;
+            }
+
+        }
 
 
         static Dictionary<Type, object> QuantitiesCached = new Dictionary<Type, object>();

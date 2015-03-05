@@ -273,14 +273,7 @@ namespace QuantitySystem.Quantities.BaseQuantities
         /// <returns></returns>
         public static AnyQuantity<T> Parse(string quantityName)
         {
-            //search in follwing name spaces :)
-            string QuantitiesNameSpace = "QuantitySystem.Quantities";
-            string BaseQuantitiesNameSpace = QuantitiesNameSpace + ".BaseQuantities";
-            string DimensionlessQuantitiesNameSpace = QuantitiesNameSpace + ".DimensionlessQuantities";
-
-            Type QuantityType = Type.GetType(QuantitiesNameSpace + "." + quantityName + "`1");
-            if (QuantityType == null) QuantityType = Type.GetType(BaseQuantitiesNameSpace + "." + quantityName + "`1");
-            if (QuantityType == null) QuantityType = Type.GetType(DimensionlessQuantitiesNameSpace + "." + quantityName + "`1");
+            Type QuantityType = QuantityDimension.QuantityTypeFrom(quantityName);
 
             if (QuantityType == null)
             {
@@ -288,8 +281,11 @@ namespace QuantitySystem.Quantities.BaseQuantities
             }
             else
             {
-                QuantityType = QuantityType.MakeGenericType(typeof(T));
-                AnyQuantity<T> qty = (AnyQuantity<T>)Activator.CreateInstance(QuantityType);
+                
+                //QuantityType = QuantityType.MakeGenericType(typeof(T));
+                //AnyQuantity<T> qty = (AnyQuantity<T>)Activator.CreateInstance(QuantityType);
+
+                AnyQuantity<T> qty = QuantityDimension.QuantityFrom<T>(QuantityDimension.DimensionFrom(QuantityType));
                 return qty;
             }
 
