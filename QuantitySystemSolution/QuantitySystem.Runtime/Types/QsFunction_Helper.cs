@@ -27,8 +27,6 @@ namespace Qs.Types
             params string[] parametersNames)
         {
 
-            QsScopeStorage storage = (QsScopeStorage)scope.Storage;
-
             IEnumerable<KeyValuePair<string, object>> Items = null;
 
             if (!string.IsNullOrEmpty(qsNamespace))
@@ -38,7 +36,7 @@ namespace Qs.Types
             }
             else
             {
-                Items = storage.GetItems();
+                Items = scope.GetItems();
             }
 
             var func_Pass1 = from item in Items
@@ -133,8 +131,6 @@ namespace Qs.Types
             string functionName)
         {
 
-            QsScopeStorage storage = (QsScopeStorage)scope.Storage;
-
             IEnumerable<KeyValuePair<string, object>> Items = null;
 
             if (!string.IsNullOrEmpty(nameSpace))
@@ -144,7 +140,7 @@ namespace Qs.Types
             }
             else
             {
-                Items = storage.GetItems();
+                Items = scope.GetItems();
             }
 
             var func_Pass1 = from item in Items

@@ -54,7 +54,7 @@ namespace Qs.Runtime
             {
                 if (Scope != null)
                 {
-                    var varo = from item in ((QsScopeStorage)Scope.Storage).GetItems()
+                    var varo = from item in Scope.GetItems()
                                select item.Key;
                     return varo;
                 }
@@ -65,30 +65,16 @@ namespace Qs.Runtime
             }
         }
 
-        private QsScope _Scope = new QsScope();
+        private QsScope _InternalScope = new QsScope();
 
         public QsScope Scope
         {
             get
             {
-                return _Scope;
+                return _InternalScope;
             }
         }
 
-
-        public Func<string, object> ExternalValueDelegate;
-
-
-        /// <summary>
-        /// The function call ExternalValueDelegate (which is a way to let Qs gets external variables from external resources)
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public object GetExternalValue(string name)
-        {
-            if(ExternalValueDelegate!=null) return ExternalValueDelegate(name);
-            else return null;
-        }
 
 
         public object GetVariable(string varName)
@@ -97,7 +83,7 @@ namespace Qs.Runtime
             if (Scope != null)
             {
                 object q;
-                ((QsScopeStorage)Scope.Storage).TryGetValue(varName, out q);
+                Scope.TryGetValue(varName, out q);
                 return q;
             }
             else
@@ -112,7 +98,7 @@ namespace Qs.Runtime
             if (Scope != null)
             {
                 object q;
-                ((QsScopeStorage)Scope.Storage).TryGetValue(varName, out q);
+                Scope.TryGetValue(varName, out q);
                 return (AnyQuantity<double>)q;
             }
             else
@@ -133,7 +119,7 @@ namespace Qs.Runtime
             {
                 var r = GetVariable(varName) as QsReference;
                 if (r == null)
-                    Scope.Storage.SetValue(varName, varValue);
+                    Scope.SetValue(varName, varValue);
                 else
                     r.ContentValue = (QsValue)varValue;
             }
@@ -946,6 +932,8 @@ namespace Qs.Runtime
                                     QsValue parent_object = null;
                                     PropertyInfo ParentPropertyInfo = null;
                                     int? ParentPropertyInfoIndexer = null;
+                                    Dictionary<PropertyInfo, bool> PropertyInfoIndexed = new Dictionary<PropertyInfo, bool>();
+
                                     while (v_index < varNameTokens.Count && varNameTokens.Count > 1)
                                     {
                                         if (varNameTokens[v_index].TokenClassType == typeof(WordToken))
@@ -1010,6 +998,7 @@ namespace Qs.Runtime
                                                     if (ParentPropertyInfo == null)
                                                     {
                                                         ParentPropertyInfo = parent.GetPropertyInfo(varNameTokens[v_index][0].TokenValue);
+                                                        PropertyInfoIndexed[ParentPropertyInfo] = true;
                                                     }
                                                     else
                                                     {
@@ -1051,6 +1040,27 @@ namespace Qs.Runtime
                                             QsObject parent = (QsObject)parent_object;
                                             ParentPropertyInfo.SetValue(parent.ThisObject, qvResult, new object[] { ParentPropertyInfoIndexer.Value });
                                             var q = parent.GetProperty(ParentPropertyInfo.Name, ParentPropertyInfoIndexer.Value);
+                                            PrintQuantity(q);
+                                            return q;
+                                        }
+                                        else if (PropertyInfoIndexed.ContainsKey(ParentPropertyInfo) && PropertyInfoIndexed[ParentPropertyInfo]) // indexer in object
+                                        {
+                                            // we are dealing with indexer
+                                            // indexer should be called by the index
+                                            
+                                            QsObject parent = (QsObject)parent_object;
+
+                                            var InsidePropertyAsObject = ParentPropertyInfo.GetValue(parent.ThisObject, null);
+                                            Type InsidePropertyObjectType = InsidePropertyAsObject.GetType();
+                                            PropertyInfo IndexerProperty = InsidePropertyObjectType.GetProperty("Item");
+
+                                            var nativeValue = Root.QsToNativeConvert(IndexerProperty.PropertyType, qvResult);
+                                            IndexerProperty.SetValue(InsidePropertyAsObject
+                                                , nativeValue
+                                                , new object[] { ParentPropertyInfoIndexer.Value }
+                                                );
+
+                                            var q = IndexerProperty.GetValue(InsidePropertyAsObject, new object[] { ParentPropertyInfoIndexer.Value });
                                             PrintQuantity(q);
                                             return q;
                                         }
@@ -1190,14 +1200,14 @@ namespace Qs.Runtime
             if (string.IsNullOrEmpty(nameSpace))
             {
                 object q;
-                scope.Storage.TryGetValue(name, out q);
+                scope.TryGetValue(name, out q);
                 return q;
             }
             else
             {
                 object o;
 
-                scope.Storage.TryGetValue(nameSpace, out o);
+                scope.TryGetValue(nameSpace, out o);
 
                 QsNamespace ns = o as QsNamespace;
 
@@ -1226,7 +1236,7 @@ namespace Qs.Runtime
             {
                 object q;
 
-                scope.Storage.TryGetValue(name, out q);
+                scope.TryGetValue(name, out q);
 
                 if (q != null)
                 {
@@ -1267,11 +1277,10 @@ namespace Qs.Runtime
 
         public QsValue DeleteQsValue(string qsNamespace, string name)
         {
-            QsScopeStorage ss = (QsScopeStorage)this.Scope.Storage;
 
             if (string.IsNullOrEmpty(qsNamespace))
             {
-                if (!ss.DeleteValue(name))
+                if (!this.Scope.DeleteValue(name))
                     throw new QsException("Can't delete the variable");
                 else
                 {
@@ -1289,7 +1298,14 @@ namespace Qs.Runtime
         {
         }
 
-        internal static Assembly CallingAssembly; // this will hold the calling assembly that called the current evaluator
+        private static Assembly _CallingAssembly; // this will hold the calling assembly that called the current evaluator
+        public static Assembly CallingAssembly
+        {
+            get
+            {
+                return _CallingAssembly;
+            }
+        }
 
         private static QsEvaluator _CurrentEvaluator;
         public static QsEvaluator CurrentEvaluator
@@ -1299,7 +1315,7 @@ namespace Qs.Runtime
                 if (_CurrentEvaluator == null)
                 {
                     _CurrentEvaluator = new QsEvaluator();
-                    CallingAssembly = Assembly.GetCallingAssembly();
+                    _CallingAssembly = Assembly.GetCallingAssembly();
                 }
                 return _CurrentEvaluator;
             }

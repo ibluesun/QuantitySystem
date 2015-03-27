@@ -67,25 +67,6 @@ namespace QsTestProject
         
 
 
-        static Dictionary<string,object> values = new Dictionary<string,object>();
-        static object GetObject(string name)
-        {
-            if(name.StartsWith("_"))
-            {
-                if(values.ContainsKey(name)) return values[name];
-                else 
-                {
-                    var r = QsObject.CreateNativeObject(new Circle(name));
-                    values.Add(name, r);
-
-                    return values[name];
-                }
-            }
-
-            return null;
-
-            
-        }
 
 
         [TestMethod()]
@@ -94,26 +75,28 @@ namespace QsTestProject
             var qs = qsrt.GetEngine("Qs");
             // tell qs evaluator that we have external place for variables
 
-            Qs.Runtime.QsEvaluator.CurrentEvaluator.ExternalValueDelegate = GetObject;
+            Qs.Runtime.QsEvaluator.CurrentEvaluator.Scope.RegisterScopeStorage("CircleStorage", new CircleStorage());
 
             var ev = Qs.Runtime.QsEvaluator.CurrentEvaluator;
 
             DimensionlessQuantity<double> g = 34.2;
             DimensionlessQuantity<string> h = "hello there";
 
-            //dynamic r = qs.Execute("_circle->Particles[10]->M");
-            //int m = (int)ev.Evaluate("_circle->Particles[10]->M");
+            dynamic r = qs.Execute("_circle->Particles[10]->M");
 
             //qs.Execute("_c[55]=20");
-            //qs.Execute("_c->Tag =\"hello\"");
+            qs.Execute("_c->Tag =\"hello\"");
 
-            //qs.Execute("_c->RedCircle->Tag=\"hello\"");
+            qs.Execute("_c->RedCircle->Tag=\"hello\"");
 
-            //qs.Execute("_c->RedCircle->Particles[20]->M=30");
+            qs.Execute("_c->RedCircle->Particles[20]->M=30");
 
-            //var m = (QsScalar)ev.Evaluate("_c->RedCircle->Particles[20]->M");
+            var ms = (QsScalar)ev.Evaluate("_c->RedCircle->Particles[20]->M");
 
-            //Assert.AreEqual(m.NumericalQuantity.Value, 30);
+            Assert.AreEqual(ms.NumericalQuantity.Value, 30);
+
+
+
 
             qs.Execute("_c->RedCircle[10]=20");
             var s = (QsScalar)ev.Evaluate("_c->RedCircle[10]");

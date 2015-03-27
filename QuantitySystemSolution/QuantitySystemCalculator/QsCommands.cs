@@ -89,7 +89,7 @@ using System.IO;
 
             if (commands[0] == "new")
             {
-                QsEvaluator.CurrentEvaluator.Scope.Storage.Clear();
+                QsEvaluator.CurrentEvaluator.Scope.Clear();
 
 
                 GC.Collect();
@@ -298,7 +298,7 @@ using System.IO;
 
         public static IEnumerable<string> GetVariablesKeys()
         {
-            var varo = from item in QsEvaluator.CurrentEvaluator.Scope.Storage.GetItems()
+            var varo = from item in QsEvaluator.CurrentEvaluator.Scope.GetItems()
                         select item.Key;
             return varo;       
         }
@@ -307,7 +307,7 @@ using System.IO;
         public static object GetVariable(string varName)
         {
             object q;
-            QsEvaluator.CurrentEvaluator.Scope.Storage.TryGetValue(varName, out q);
+            QsEvaluator.CurrentEvaluator.Scope.TryGetValue(varName, out q);
             return q;   
         }
 

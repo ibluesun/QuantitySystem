@@ -87,12 +87,26 @@ namespace QsRoot
         //    }
         //}
 
+        Dictionary<string, Planet> _SubPlanets = new Dictionary<string, Planet>();
         public Planet this[string planetName]
         {
             get
             {
-                var p = new Planet() { Name = planetName };
-                return p;
+
+                return _SubPlanets[planetName];
+            }
+            set
+            {
+                _SubPlanets[planetName] = value;
+            }
+        }
+
+
+        public Planet[] SubPlanets
+        {
+            get
+            {
+                return _SubPlanets.Values.ToArray();
             }
         }
 

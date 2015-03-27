@@ -7,6 +7,7 @@ using Qs.Types;
 using System.IO;
 using Qs;
 using System.Net;
+using System.Reflection;
 
 namespace QsRoot
 {
@@ -62,6 +63,14 @@ namespace QsRoot
             }
 
             return result;
+        }
+
+        public static string[] Files()
+        {
+
+            var di = new DirectoryInfo(Directory.GetCurrentDirectory());
+
+            return di.GetFiles().Select(x => x.Name).ToArray();
         }
     }
 }
