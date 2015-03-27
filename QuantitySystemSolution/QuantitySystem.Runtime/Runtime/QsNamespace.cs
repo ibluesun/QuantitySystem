@@ -470,9 +470,9 @@ namespace Qs.Runtime
             if (scope != null)
             {
 
-                if (((QsScopeStorage)scope.Storage).HasValue(moduleNamespace))
+                if (scope.HasValue(moduleNamespace))
                 {
-                    NameSpace = (QsNamespace)((QsScopeStorage)scope.Storage).GetValue(moduleNamespace);
+                    NameSpace = (QsNamespace)scope.GetValue(moduleNamespace);
                 }
 
                 if (NameSpace == null)
@@ -486,7 +486,7 @@ namespace Qs.Runtime
 
                     if (forceCreation | (nst != null))
                     {
-                        ((QsScopeStorage)scope.Storage).SetValue(moduleNamespace, NameSpace);
+                        scope.SetValue(moduleNamespace, NameSpace);
                     }
                 }
             }

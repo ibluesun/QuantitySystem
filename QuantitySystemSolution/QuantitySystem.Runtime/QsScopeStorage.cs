@@ -6,30 +6,56 @@ using Qs.Runtime;
 
 namespace Qs
 {
-    public class QsScopeStorage
+    public interface IQsStorageProvider : IDisposable
     {
-        Dictionary<string, object> Storage = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
+        IEnumerable<KeyValuePair<string, object>> GetItems();
+        IEnumerable<string> GetKeys();
+        IEnumerable<object> GetValues();
+
+        bool HasValue(string variable);
+        object GetValue(string variable);
+        void SetValue(string variable, object value);
+        bool TryGetValue(string variable, out object q);
+        bool DeleteValue(string variable);
+        void Clear();
+    }
+
+    /// <summary>
+    /// Serves the storage for the scope.
+    /// </summary>
+    public class QsScopeStorage : IQsStorageProvider
+    {
+
+        Dictionary<string, object> _Storage = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
         public IEnumerable<KeyValuePair<string, object>> GetItems()
         {
-            return Storage.AsEnumerable();
+            return _Storage.AsEnumerable();
+        }
+
+        public IEnumerable<string> GetKeys()
+        {
+            return _Storage.Keys.AsEnumerable();
+        }
+
+        public IEnumerable<object> GetValues()
+        {
+            return _Storage.Values.AsEnumerable();
         }
 
         public bool HasValue(string variable)
         {
-            return Storage.ContainsKey(variable);
+            return _Storage.ContainsKey(variable);
         }
 
-        public  object GetValue(string variable)
+        public object GetValue(string variable)
         {
-            var r = QsEvaluator.CurrentEvaluator.GetExternalValue(variable);
-            if (r == null) return Storage[variable];
-            else return r;
+            return _Storage[variable];
         }
 
         public void SetValue(string variable, object value)
         {
-            Storage[variable] =  value;
+            _Storage[variable] =  value;
         }
 
 
@@ -42,21 +68,22 @@ namespace Qs
         /// <returns></returns>
         public bool TryGetValue(string variable, out object q)
         {
-            //
-            q = QsEvaluator.CurrentEvaluator.GetExternalValue(variable);
-
-            if (q == null) return Storage.TryGetValue(variable, out q);
-            else return true;
+            return _Storage.TryGetValue(variable, out q);
         }
 
         public bool DeleteValue(string variable)
         {
-            return Storage.Remove(variable);
+            return _Storage.Remove(variable);
         }
 
         public void Clear()
         {
-            Storage.Clear();
+            _Storage.Clear();
+        }
+
+        public void Dispose()
+        {
+            // do nothing
         }
     }
 }

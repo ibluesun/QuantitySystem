@@ -115,6 +115,7 @@
   <ItemGroup>
     <Compile Include="Bird.cs" />
     <Compile Include="Circle.cs" />
+    <Compile Include="CircleStorage.cs" />
     <Compile Include="GammaTest.cs" />
     <Compile Include="Particle.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

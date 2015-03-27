@@ -1822,8 +1822,16 @@ namespace Qs.Runtime
                     // no there is a value there
                     if (value is QsScalar)
                     {
-                        // oops Scalar difinitely don't have elements inside it.
-                        return SequenceCallExpression(valueName, indexes, args);
+                        QsScalar sc = (QsScalar)value;
+                        if(sc.ScalarType == ScalarTypes.FunctionQuantity)
+                        {
+                            return ValueIndexExpression(sc, indexes);
+                        }
+                        else
+                        {
+                            // oops Scalar difinitely don't have elements inside it.
+                            return SequenceCallExpression(valueName, indexes, args);
+                        }
                     }
                     else
                     {

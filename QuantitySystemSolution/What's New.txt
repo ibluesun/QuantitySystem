@@ -1,3 +1,20 @@
+[Qs 1.2.984]
+- Fixed an issue when setting value on property that accept indexer as an object
+	for example _C->RedCircle[10] = 20    // the RedCirlce is an object of circle not an array.
+
+- Changed how variables are stored in memory by re-architecting the ScopeStorage
+    so that you can Implement your storage provider .. this is useful for example in asp.net you may
+	reuse HttpContext.Session  or introducing persistent provider
+	also you can register more than one storage provider to mimic replication if you want.
+
+- so the External variable mechanism has been replaced with IQsStorageProvider interface and changed the variable 
+  management into QsScope .. so you can add many storage providers.
+
+- Fixed calling the Scalar of Function by indexers when called
+	my_f = @{(x,y)=x^2+y^3}
+	my_f[3,4]   # wasn't working and now fixed.
+
+
 [Qs 1.2.983]
 - modified the expression of  r = 30[Mass]  to accept non sensitive name of quantities
 - changed signature of method in Quantity namespace from Quantity:Type(value) to Quantity:FromValue(value)
