@@ -220,23 +220,6 @@ namespace QuantitySystem.Units
             
             Type quantityType = qType;
 
-            /*
-            QuantityDimension d = new QuantityDimension( QuantityDimension.DimensionFrom(qType));
-
-            if (d.Length.PolarExponent != 0 && d.IsDimensionless == false)
-            {
-                // make dimension with the same
-                d.Length = new DimensionDescriptors.LengthDescriptor
-                {
-                    RegularExponent = d.Length.RegularExponent + d.Length.PolarExponent
-                    ,
-                    PolarExponent = 0
-                };
-
-                quantityType = QuantityDimension.QuantityTypeFrom(d);
-            }
-            */
-
 
             //getting the generic type
             if (!quantityType.IsGenericTypeDefinition)
@@ -290,6 +273,7 @@ namespace QuantitySystem.Units
         #endregion
 
 
+
         /// <summary>
         /// Find Strongly typed unit.
         /// </summary>
@@ -299,6 +283,7 @@ namespace QuantitySystem.Units
         {
             string unit = un.Replace("$", "\\$");
 
+            
             bool UnitModifier = false;
 
             if (unit.EndsWith("!", StringComparison.Ordinal)) 
@@ -336,6 +321,7 @@ namespace QuantitySystem.Units
 
                             }
                         }
+
 
                         return u;
 

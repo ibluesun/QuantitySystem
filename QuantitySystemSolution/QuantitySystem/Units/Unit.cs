@@ -39,6 +39,27 @@ namespace QuantitySystem.Units
 
         #endregion
 
+        struct UnitValues
+        {
+            public string _Symbol;
+
+            public bool _IsDefaultUnit;
+            public bool _IsBaseUnit;
+
+
+            public Type _QuantityType;
+            public QuantityDimension _UnitDimension;
+
+
+            public Unit _ReferenceUnit;
+
+            public double _ReferenceUnitNumerator;
+            public double _ReferenceUnitDenominator;
+
+        }
+
+        static Dictionary<Type, UnitValues> CachedUnitsValues = new Dictionary<Type, UnitValues>();
+
 
         /// <summary>
         /// Fill the instance of the unit with the attributes
@@ -47,78 +68,104 @@ namespace QuantitySystem.Units
         protected Unit()
         {
             //only called on the strongly typed units
-
-            _IsStronglyTyped = true;
+            _IsStronglyTyped = true;            
             
-            //read the current attributes
+            UnitValues uv;
 
-            MemberInfo info = this.GetType();
-
-            object[] attributes = (object[])info.GetCustomAttributes(true);            
-
-            //get the UnitAttribute
-            UnitAttribute ua = (UnitAttribute)attributes.SingleOrDefault<object>(ut=>ut is UnitAttribute);
-
-            if (ua != null)
+            if (CachedUnitsValues.TryGetValue(this.GetType(), out uv))
             {
-                _Symbol = ua.Symbol;
-                _QuantityType = ua.QuantityType;
-                _UnitDimension = QuantityDimension.DimensionFrom(_QuantityType);
-
-
-                if (ua is DefaultUnitAttribute)
-                {
-                    _IsDefaultUnit = true;  //indicates that this unit is the default when creating the quantity in this system
-                    //also default unit is the unit that relate its self to the SI Unit.
-                }
-                else
-                {
-                    _IsDefaultUnit = false;
-                }
+                _Symbol = uv._Symbol;
+                _QuantityType = uv._QuantityType;
+                _UnitDimension = uv._UnitDimension;
+                _IsDefaultUnit = uv._IsDefaultUnit;
+                _IsBaseUnit = uv._IsBaseUnit;
+                _ReferenceUnit = uv._ReferenceUnit;
+                _ReferenceUnitNumerator = uv._ReferenceUnitNumerator;
+                _ReferenceUnitDenominator = uv._ReferenceUnitDenominator;
             }
             else
             {
-                throw new UnitException("Unit Attribute not found");
-            }
+                //read the current attributes
 
-            if (_QuantityType.Namespace == "QuantitySystem.Quantities.BaseQuantities")
-            {
-                _IsBaseUnit = true;
-            }
-            else
-            {
-                _IsBaseUnit = false;
-            }
+                MemberInfo info = this.GetType();
 
-            //Get the reference attribute
-            ReferenceUnitAttribute dua = (ReferenceUnitAttribute)attributes.SingleOrDefault<object>(ut => ut is ReferenceUnitAttribute);
+                object[] attributes = (object[])info.GetCustomAttributes(true);
 
-            if (dua != null)
-            {
-                if (dua.UnitType != null)
+                //get the UnitAttribute
+                UnitAttribute ua = (UnitAttribute)attributes.SingleOrDefault<object>(ut => ut is UnitAttribute);
+
+                if (ua != null)
                 {
-                    _ReferenceUnit = (Unit)Activator.CreateInstance(dua.UnitType);
-                }
-                else
-                {
-                    //get the SI Unit Type for this quantity
-                    //first search for direct mapping
-                    Type SIUnitType = GetDefaultSIUnitTypeOf(_QuantityType);
-                    if (SIUnitType != null)
+                    _Symbol = ua.Symbol;
+                    _QuantityType = ua.QuantityType;
+                    _UnitDimension = QuantityDimension.DimensionFrom(_QuantityType);
+
+
+                    if (ua is DefaultUnitAttribute)
                     {
-                        _ReferenceUnit = (Unit)Activator.CreateInstance(SIUnitType);
+                        _IsDefaultUnit = true;  //indicates that this unit is the default when creating the quantity in this system
+                        //also default unit is the unit that relate its self to the SI Unit.
                     }
                     else
                     {
-                        //try dynamic creation of the unit.
-                        _ReferenceUnit = new Unit(_QuantityType);
-
+                        _IsDefaultUnit = false;
                     }
-                    
+                }
+                else
+                {
+                    throw new UnitException("Unit Attribute not found");
                 }
 
-                _ReferenceUnitNumerator = dua.Numerator;
-                _ReferenceUnitDenominator = dua.Denominator;
+                if (_QuantityType.Namespace == "QuantitySystem.Quantities.BaseQuantities")
+                {
+                    _IsBaseUnit = true;
+                }
+                else
+                {
+                    _IsBaseUnit = false;
+                }
+
+                //Get the reference attribute
+                ReferenceUnitAttribute dua = (ReferenceUnitAttribute)attributes.SingleOrDefault<object>(ut => ut is ReferenceUnitAttribute);
+
+                if (dua != null)
+                {
+                    if (dua.UnitType != null)
+                    {
+                        _ReferenceUnit = (Unit)Activator.CreateInstance(dua.UnitType);
+                    }
+                    else
+                    {
+                        //get the SI Unit Type for this quantity
+                        //first search for direct mapping
+                        Type SIUnitType = GetDefaultSIUnitTypeOf(_QuantityType);
+                        if (SIUnitType != null)
+                        {
+                            _ReferenceUnit = (Unit)Activator.CreateInstance(SIUnitType);
+                        }
+                        else
+                        {
+                            //try dynamic creation of the unit.
+                            _ReferenceUnit = new Unit(_QuantityType);
+                        }
+                    }
+
+                    _ReferenceUnitNumerator = dua.Numerator;
+                    _ReferenceUnitDenominator = dua.Denominator;
+
+                }
+
+
+                uv._Symbol = _Symbol;
+                uv._QuantityType = _QuantityType;
+                uv._UnitDimension = _UnitDimension;
+                uv._IsDefaultUnit = _IsDefaultUnit;
+                uv._IsBaseUnit = _IsBaseUnit;
+                uv._ReferenceUnit = _ReferenceUnit;
+                uv._ReferenceUnitNumerator = _ReferenceUnitNumerator;
+                uv._ReferenceUnitDenominator = _ReferenceUnitDenominator;
+
+                CachedUnitsValues.Add(this.GetType(), uv);
 
             }
 

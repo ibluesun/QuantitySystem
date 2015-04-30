@@ -14,8 +14,6 @@ c = w(1,2,3)
 
 # Testing the deep properties in nested objects through properties and methods
 p = new Planet;
-p->getnextplanet()["red"]["blue"]->getnextplanet()["Move"]
-p["red"]->getnextplanet()["blue"]->getnextplanet()["Move"]
 
 p!properties[0]
 

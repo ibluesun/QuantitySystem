@@ -96,5 +96,55 @@ namespace QsRoot
 
             return qs;
         }
+
+        public static QsValue Parse(string value)
+        {
+            return QsScalar.ParseScalar(value);
+        }
+
+        public static QsValue InvertedDimension(QsParameter value)
+        {
+
+            QsScalar s = value.QsNativeValue as QsScalar;
+            if (s != null)
+            {
+                var InvertedDimension = s.Unit.UnitDimension.Invert();
+
+                return new QsText(InvertedDimension.ToString());
+            }
+
+
+            return new QsText("Works on scalar quantities");
+
+        }
+
+        public static QsValue Name(QsParameter value)
+        {
+
+            QsScalar s = value.QsNativeValue as QsScalar;
+            if (s != null)
+            {
+                return new QsText(s.Unit.QuantityType.Name.TrimEnd('`','1').ToString());
+            }
+
+            return new QsText("Works on scalar quantities");
+        }
+
+
+        public static QsValue InvertedQuantityName(QsParameter value)
+        {
+            QsScalar s = value.QsNativeValue as QsScalar;
+            if (s != null)
+            {
+                var InvertedDimension = s.Unit.UnitDimension.Invert();
+
+                var qp = QsParameter.MakeParameter(null, InvertedDimension.ToString());
+                return Quantity.FromDimension(qp);
+            }
+
+
+            return new QsText("Works on scalar quantities");
+
+        }
     }
 }

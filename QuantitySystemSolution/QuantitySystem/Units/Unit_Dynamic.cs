@@ -132,6 +132,26 @@ namespace QuantitySystem.Units
             }
 
 
+            if (dimension.Currency.Exponent != 0)
+            {
+                Unit u = new Currency.Coin();
+                u.UnitExponent = dimension.Currency.Exponent;
+                u.UnitDimension = u.UnitDimension * dimension.Currency.Exponent;
+
+                SubUnits.Add(u);
+            }
+
+            if (dimension.Digital.Exponent != 0)
+            {
+                Unit u = new Digital.Bit();
+                u.UnitExponent = dimension.Digital.Exponent;
+                u.UnitDimension = u.UnitDimension * dimension.Digital.Exponent;
+
+                SubUnits.Add(u);
+            }
+
+
+
             Unit un = null;
 
             try
@@ -232,6 +252,24 @@ namespace QuantitySystem.Units
                     SubUnits.Add(u);
                 }
 
+
+                if (dimension.Currency.Exponent != 0)
+                {
+                    Unit u = new Currency.Coin();
+                    u.UnitExponent = dimension.Currency.Exponent;
+                    u.UnitDimension = u.UnitDimension * dimension.Currency.Exponent;
+
+                    SubUnits.Add(u);
+                }
+
+                if (dimension.Digital.Exponent != 0)
+                {
+                    Unit u = new Digital.Bit();
+                    u.UnitExponent = dimension.Digital.Exponent;
+                    u.UnitDimension = u.UnitDimension * dimension.Digital.Exponent;
+
+                    SubUnits.Add(u);
+                }
             }
 
             else
@@ -276,6 +314,7 @@ namespace QuantitySystem.Units
             var gen_q = m_QuantityType.GetGenericTypeDefinition() ;
 
             if (gen_q == typeof(Currency<>)) return new QuantitySystem.Units.Currency.Coin();
+            if (gen_q == typeof(Digital<>)) return new QuantitySystem.Units.Digital.Bit();
 
             if (gen_q == typeof(PolarLength<>))
             {
