@@ -89,6 +89,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DimensionDescriptors\DigitalDescriptor.cs" />
     <Compile Include="DimensionDescriptors\LuminousIntensityDescriptor.cs" />
     <Compile Include="DimensionDescriptors\AmountOfSubstanceDescriptor.cs" />
     <Compile Include="DimensionDescriptors\CurrencyDescriptor.cs" />
@@ -109,6 +110,8 @@
     <Compile Include="Quantities\BaseQuantities\AmountOfSubstance.cs" />
     <Compile Include="Quantities\BaseQuantities\AnyQuantity_Operations.cs" />
     <Compile Include="Quantities\BaseQuantities\Currency.cs" />
+    <Compile Include="Quantities\BaseQuantities\Digital.cs" />
+    <Compile Include="Quantities\BitRate.cs" />
     <Compile Include="Quantities\Capacitance.cs" />
     <Compile Include="Quantities\CatalyticActivity.cs" />
     <Compile Include="Quantities\Curvature.cs" />
@@ -127,7 +130,10 @@
     <Compile Include="Quantities\Acceleration.cs" />
     <Compile Include="Quantities\Area.cs" />
     <Compile Include="Quantities\DimensionlessQuantities\SolidAngle.cs" />
+    <Compile Include="Quantities\ElectricalConductivity.cs" />
+    <Compile Include="Quantities\ElectricalResistivity.cs" />
     <Compile Include="Quantities\ElectricCharge.cs" />
+    <Compile Include="Quantities\ElectricChargeDensity.cs" />
     <Compile Include="Quantities\ElectricConductance.cs" />
     <Compile Include="Quantities\ElectricResistance.cs" />
     <Compile Include="Quantities\ElectromotiveForce.cs" />
@@ -142,6 +148,8 @@
     <Compile Include="Quantities\LuminousFlux.cs" />
     <Compile Include="Quantities\MagneticFlux.cs" />
     <Compile Include="Quantities\MagneticFluxDensity.cs" />
+    <Compile Include="Quantities\MagneticPermeability.cs" />
+    <Compile Include="Quantities\MagneticReluctance.cs" />
     <Compile Include="Quantities\MassFlowRate.cs" />
     <Compile Include="Quantities\MassMomentOfInertia.cs">
       <SubType>Code</SubType>
@@ -183,6 +191,9 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Currencies.tt</DependentUpon>
     </Compile>
+    <Compile Include="Units\Digital\Bit.cs" />
+    <Compile Include="Units\Digital\Byte.cs" />
+    <Compile Include="Units\Digital\Nibble.cs" />
     <Compile Include="Units\English\AreaUnits.cs" />
     <Compile Include="Units\English\VolumeFlowRateUnits.cs" />
     <Compile Include="Units\English\PoundMole.cs" />
@@ -334,6 +345,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

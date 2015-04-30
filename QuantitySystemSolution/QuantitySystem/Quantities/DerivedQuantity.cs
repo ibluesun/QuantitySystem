@@ -1,21 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-
-using System.Globalization;
-
-using System.Collections.ObjectModel;
-
-
 using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities
 {
     public class DerivedQuantity<T> : AnyQuantity<T>
     {
-
-
         #region class instantiation
         private AnyQuantity<T>[] InternalQuantities;
 
@@ -27,9 +18,7 @@ namespace QuantitySystem.Quantities
             if (dimension.Mass.Exponent != 0)
             {
                 quantities.Add(new Mass<T>(dimension.Mass.Exponent));
-
             }
-
             
             {
                 if (dimension.Length.RegularExponent != 0)
@@ -70,6 +59,11 @@ namespace QuantitySystem.Quantities
                 quantities.Add(new Currency<T>(dimension.Currency.Exponent));
             }
 
+            if (dimension.Digital.Exponent != 0)
+            {
+                quantities.Add(new Digital<T>(dimension.Digital.Exponent));
+            }
+
             InternalQuantities = quantities.ToArray();
         }
 
@@ -77,7 +71,10 @@ namespace QuantitySystem.Quantities
             : base(exponent)
         {
             InternalQuantities = internalQuantities;
+            var qtypes = from qt in internalQuantities
+                         select new Tuple<Type, float>(qt.GetType().GetGenericTypeDefinition(), qt.Exponent);
 
+            BaseQuantity.SetInternalQuantities(this.GetType().GetGenericTypeDefinition(), qtypes.ToArray());
         }
 
         public AnyQuantity<T>[] GetInternalQuantities()

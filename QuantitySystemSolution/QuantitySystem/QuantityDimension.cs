@@ -32,6 +32,7 @@ namespace QuantitySystem
 
         #region Dimension Extra Properties
         public CurrencyDescriptor Currency { get; set; }
+        public DigitalDescriptor Digital { get; set; }
         #endregion
 
         #region Constructors
@@ -206,6 +207,8 @@ namespace QuantitySystem
             dim += "J" + LuminousIntensity.Exponent.ToString(CultureInfo.InvariantCulture);
 
             dim += "$" + Currency.Exponent.ToString(CultureInfo.InvariantCulture);
+            
+            dim += "D" + Digital.Exponent.ToString(CultureInfo.InvariantCulture);
 
             return dim;
         }
@@ -240,6 +243,10 @@ namespace QuantitySystem
 
                 if (!this.Currency.Equals(QD.Currency))
                     return false;
+
+                if (!this.Digital.Equals(QD.Digital))
+                    return false;
+
                 return true;
             }
             else
@@ -312,6 +319,7 @@ namespace QuantitySystem
             QD.LuminousIntensity = firstDimension.LuminousIntensity.Add(secondDimension.LuminousIntensity);
 
             QD.Currency = firstDimension.Currency.Add(secondDimension.Currency);
+            QD.Digital = firstDimension.Digital.Add(secondDimension.Digital);
 
             return QD;
         }
@@ -334,6 +342,7 @@ namespace QuantitySystem
             QD.LuminousIntensity = firstDimension.LuminousIntensity.Subtract(secondDimension.LuminousIntensity);
 
             QD.Currency = firstDimension.Currency.Subtract(secondDimension.Currency);
+            QD.Digital = firstDimension.Digital.Subtract(secondDimension.Digital);
 
             return QD;
         }
@@ -356,6 +365,7 @@ namespace QuantitySystem
             QD.AmountOfSubstance = dimension.AmountOfSubstance.Multiply(exponent);
             QD.LuminousIntensity = dimension.LuminousIntensity.Multiply(exponent);
             QD.Currency = dimension.Currency.Multiply(exponent);
+            QD.Digital = dimension.Digital.Multiply(exponent);
 
             return QD;
 
@@ -675,9 +685,11 @@ namespace QuantitySystem
                 float N = exps.Count > 5 ? exps[5] : 0;
                 float J = exps.Count > 6 ? exps[6] : 0;
                 float C = exps.Count > 7 ? exps[7] : 0;
+                float D = exps.Count > 8 ? exps[8] : 0;
 
                 var qd = new QuantityDimension(M, L, T, I, O, N, J);
                 qd.Currency = new CurrencyDescriptor(C);
+                qd.Digital = new DigitalDescriptor(D);
 
                 return qd;
 
@@ -688,7 +700,7 @@ namespace QuantitySystem
 
                 var dumber  = dimension.ToUpperInvariant();
 
-                var mts = Regex.Matches(dumber, @"(([MmLlTtIiOoNnJjCc])(\-*[0-9]+))+?");
+                var mts = Regex.Matches(dumber, @"(([MmLlTtIiOoNnJjCcDd])(\-*[0-9]+))+?");
 
                 Dictionary<char,float> edps = new Dictionary<char,float>();
 
@@ -705,12 +717,14 @@ namespace QuantitySystem
                 if (!edps.ContainsKey('N')) edps['N'] = 0;
                 if (!edps.ContainsKey('J')) edps['J'] = 0;
                 if (!edps.ContainsKey('C')) edps['C'] = 0;
+                if (!edps.ContainsKey('D')) edps['D'] = 0;
 
                 var qd = new QuantityDimension(edps['M']
                     , edps['L'], edps['T'], edps['I'], edps['O']
                     , edps['N'], edps['J']);
 
                 qd.Currency = new CurrencyDescriptor(edps['C']);
+                qd.Digital = new DigitalDescriptor(edps['D']);
 
                 return qd;
             }
@@ -736,7 +750,7 @@ namespace QuantitySystem
                 if (
                     Mass.Exponent == 0 && Length.Exponent == 0 && Time.Exponent == 0 &&
                     ElectricCurrent.Exponent == 0 && Temperature.Exponent == 0 && AmountOfSubstance.Exponent == 0 &&
-                    LuminousIntensity.Exponent == 0  && Currency.Exponent == 0
+                    LuminousIntensity.Exponent == 0  && Currency.Exponent == 0 && Digital.Exponent == 0
                     )
                     return true;
                 else
@@ -758,6 +772,7 @@ namespace QuantitySystem
             qd.AmountOfSubstance = AmountOfSubstance.Invert();
             qd.LuminousIntensity = LuminousIntensity.Invert();
             qd.Currency = Currency.Invert();
+            qd.Digital = Digital.Invert();
             return qd;
 
         }
@@ -773,6 +788,7 @@ namespace QuantitySystem
             LuminousIntensity = dimension.LuminousIntensity;
 
             Currency = dimension.Currency;
+            Digital = dimension.Digital;
 
         }
 

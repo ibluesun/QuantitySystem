@@ -1,3 +1,20 @@
+[Qs 1.2.985] | [QuantitySystem 1.3.4]
+- Cached some reflections in Unit constructor .. which led into 250<ms> performance increase in testing speed.qs
+  speed.qs  was  1750<ms>  now it is 1500<ms>
+- Digital Dimension so Digital Quantity for Byte and Bit units added
+- Quantity:InvertedDimension(value) added in the Quantity namespace to support more dimensional analysis.
+- New Quantities:
+	BitRate
+	ElectricalConductivity  added  S/m  conductance per meter
+	ElectricalResistivity   added  ohm.m
+	MagneticPermeability    <H/m>
+	MagneticReluctance      <m/H>
+	ElectricChargeDensity   <C/m^3>
+- Fixing some related unit discovery code that wasn't updated after Currency and Digital quantities addition.
+
+
+
+
 [Qs 1.2.984]
 - Fixed an issue when setting value on property that accept indexer as an object
 	for example _C->RedCircle[10] = 20    // the RedCirlce is an object of circle not an array.

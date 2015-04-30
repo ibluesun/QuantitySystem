@@ -106,6 +106,31 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
 
 
+        /// <summary>
+        /// Holds the internal quantity types of specific strongly typed quantity type.
+        /// </summary>
+        static Dictionary<Type, Tuple<Type, float>[]> QuantityTypeInternalQuantityTypes = new Dictionary<Type, Tuple<Type, float>[]>();
+
+        public static Tuple<Type, float>[] GetInternalQuantities(Type quantity)
+        {
+            Tuple<Type, float>[] result;
+            if (!QuantityTypeInternalQuantityTypes.TryGetValue(quantity, out result))
+            {
+                // not instantiated yet .. so we can instantiate it here
+                Activator.CreateInstance(quantity.MakeGenericType(typeof(double)));
+
+                return QuantityTypeInternalQuantityTypes[quantity];
+            }
+
+            return result;
+        }
+
+        public static void SetInternalQuantities(Type quantity, Tuple<Type, float>[] internalQuantities)
+        {
+            if (!QuantityTypeInternalQuantityTypes.ContainsKey(quantity))
+                QuantityTypeInternalQuantityTypes[quantity] = internalQuantities;
+        }
+
     }
 
 
