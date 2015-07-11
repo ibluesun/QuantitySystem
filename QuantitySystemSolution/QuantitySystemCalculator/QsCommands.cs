@@ -43,7 +43,8 @@ using System.IO;
 
             if (commands[0] == "exit")
             {
-                Console.WriteLine("Press CTRL+Z to exit");
+                System.Environment.Exit(0);
+                //Console.WriteLine("Press CTRL+Z to exit");
                 CommandProcessed = true;
             }
 
