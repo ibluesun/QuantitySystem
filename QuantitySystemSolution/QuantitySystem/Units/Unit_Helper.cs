@@ -601,7 +601,7 @@ namespace QuantitySystem.Units
 
                 return true;
             }
-            else if (double.TryParse(quantity, out val))
+            else if (double.TryParse(quantity, NumberStyles.Any, CultureInfo.InvariantCulture, out val))
             {
                 qty = Unit.DiscoverUnit(QuantityDimension.Dimensionless).GetThisUnitQuantity<double>(val);
 

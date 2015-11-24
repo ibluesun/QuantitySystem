@@ -13,6 +13,7 @@ using QuantitySystem.Units;
 using System.Text;
 using System.Linq.Expressions;
 using QsRoot;
+using System.Globalization;
 
 
 namespace Qs.Runtime
@@ -258,7 +259,7 @@ namespace Qs.Runtime
                         ConversionFactor /= uof;
                     }
 
-                    string cf = "    Conversion Factor => " + ConversionFactor.ToString();
+                    string cf = "    Conversion Factor => " + ConversionFactor.ToString(CultureInfo.InvariantCulture);
 
                     foreach (UnitPathItem upi in up) Console.WriteLine("    -> {0}", upi);
 
@@ -313,7 +314,7 @@ namespace Qs.Runtime
             {
                 //get the variable name
                 varName = m.Groups[1].Value;
-                double varVal = double.Parse(m.Groups[2].Value);
+                double varVal = double.Parse(m.Groups[2].Value, CultureInfo.InvariantCulture);
 
                 QsScalar qty = null;
 

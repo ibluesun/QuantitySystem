@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Globalization;
 
 namespace Qs.Types
 {
@@ -41,12 +42,20 @@ namespace Qs.Types
 
         public override string ToShortString()
         {
-            return Value.ToString();
+            #if WINRT
+                return Value.ToString();
+            #else
+                return Value.ToString(CultureInfo.InvariantCulture);
+            #endif
         }
 
         public override string ToString()
         {
-            return Value.ToString();
+            #if WINRT
+                            return Value.ToString();
+            #else
+                        return Value.ToString(CultureInfo.InvariantCulture);
+            #endif
         }
 
         public override QsValue Identity

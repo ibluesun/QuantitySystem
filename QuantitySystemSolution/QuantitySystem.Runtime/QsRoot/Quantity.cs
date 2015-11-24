@@ -6,6 +6,7 @@ using Qs.Types;
 using QuantitySystem;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
+using System.Globalization;
 
 namespace QsRoot
 {
@@ -75,7 +76,7 @@ namespace QsRoot
             var q = QuantityDimension.Parse(ss);
 
             var unit = QuantitySystem.Units.Unit.DiscoverUnit(q);
-            var qval = unit.GetThisUnitQuantity<double>(double.Parse(value.ParameterRawText));
+            var qval = unit.GetThisUnitQuantity<double>(double.Parse(value.ParameterRawText,  CultureInfo.InvariantCulture));
 
             var qs = new QsScalar(ScalarTypes.NumericalQuantity) { NumericalQuantity = qval };
 
@@ -90,7 +91,7 @@ namespace QsRoot
 
             var qval = AnyQuantity<double>.Parse(ss);
             qval.Unit = Unit.DiscoverUnit(qval);
-            qval.Value = double.Parse(value.ParameterRawText);
+            qval.Value = double.Parse(value.ParameterRawText, CultureInfo.InvariantCulture);
 
             var qs = new QsScalar(ScalarTypes.NumericalQuantity) { NumericalQuantity = qval };
 

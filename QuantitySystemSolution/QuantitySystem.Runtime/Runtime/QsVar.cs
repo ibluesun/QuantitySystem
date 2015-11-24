@@ -1205,7 +1205,7 @@ namespace Qs.Runtime
             {
                 if (token[i].TokenClassType == typeof(MergedToken))
                 {
-                    nums.Add(double.Parse(token[i].TokenValue));
+                    nums.Add(double.Parse(token[i].TokenValue, CultureInfo.InvariantCulture));
                 }
             }
 
@@ -1246,7 +1246,7 @@ namespace Qs.Runtime
             {
                 if (token[i].TokenClassType == typeof(MergedToken))
                 {
-                    nums.Add(double.Parse(token[i].TokenValue));
+                    nums.Add(double.Parse(token[i].TokenValue, CultureInfo.InvariantCulture));
                 }
             }
 
