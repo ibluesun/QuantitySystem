@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Lost Particles Network")]
 [assembly: AssemblyProduct("Quantity System Runtim for Windows RT")]
-[assembly: AssemblyCopyright("Copyright ©  2008-2015 at Lost Particles Network")]
+[assembly: AssemblyCopyright("Copyright ©  2008-2016 at Lost Particles by Ahmed Sadek")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 [assembly: NeutralResourcesLanguage("en")]

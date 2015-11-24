@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using ParticleLexer.StandardTokens;
 using System.IO;
+using System.Globalization;
 
 namespace QsRoot
 {
@@ -79,7 +80,7 @@ namespace QsRoot
             {
                 if (tok.TokenClassType == typeof(MergedToken))
                 {
-                    Currs.Add(tok[0].TrimTokens(1, 1).TokenValue, double.Parse(tok[2].TokenValue));
+                    Currs.Add(tok[0].TrimTokens(1, 1).TokenValue, double.Parse(tok[2].TokenValue, CultureInfo.InvariantCulture));
                 }
             }
         }
