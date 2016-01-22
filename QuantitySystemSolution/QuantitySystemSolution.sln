@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "QuantitySystemTests", "QuantitySystemTests", "{11635727-736E-4C7D-93FE-CD36FE61917E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{27291231-815B-4D24-B9C9-7ABDBEEE948E}"
@@ -50,46 +52,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qs.RT", "Qs.RT\Qs.RT.csproj", "{EFF13160-FB38-439E-A824-14838DF636A5}"
 EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 10
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = UnitsTestingProject\\UnitsTestingProject.csproj
-		SccProjectTopLevelParentUniqueName1 = QuantitySystemSolution.sln
-		SccProjectName1 = UnitsTestingProject
-		SccLocalPath1 = UnitsTestingProject
-		SccProjectUniqueName2 = QuantitySystemCalculator\\QuantitySystemCalculator.csproj
-		SccProjectName2 = QuantitySystemCalculator
-		SccLocalPath2 = QuantitySystemCalculator
-		SccProjectUniqueName3 = QuantitySystem.Runtime\\Qs.csproj
-		SccProjectName3 = QuantitySystem.Runtime
-		SccLocalPath3 = QuantitySystem.Runtime
-		SccProjectUniqueName4 = QsTestProject\\QsTestProject.csproj
-		SccProjectTopLevelParentUniqueName4 = QuantitySystemSolution.sln
-		SccProjectName4 = QsTestProject
-		SccLocalPath4 = QsTestProject
-		SccProjectUniqueName5 = QuantitySystemTestingProject\\QuantitySystemTestingProject.csproj
-		SccProjectTopLevelParentUniqueName5 = QuantitySystemSolution.sln
-		SccProjectName5 = QuantitySystemTestingProject
-		SccLocalPath5 = QuantitySystemTestingProject
-		SccProjectUniqueName6 = QuantitySystem\\QuantitySystem.csproj
-		SccProjectName6 = QuantitySystem
-		SccLocalPath6 = QuantitySystem
-		SccProjectUniqueName7 = QsGraphics\\QsGraphics.csproj
-		SccProjectTopLevelParentUniqueName7 = QuantitySystemSolution.sln
-		SccProjectName7 = QsGraphics
-		SccLocalPath7 = QsGraphics
-		SccProjectUniqueName8 = Qs.Scripting\\Qs.Scripting.csproj
-		SccProjectName8 = Qs.Scripting
-		SccLocalPath8 = Qs.Scripting
-		SccProjectUniqueName9 = Qs.RT\\Qs.RT.csproj
-		SccProjectName9 = Qs.RT
-		SccLocalPath9 = Qs.RT
-	EndGlobalSection
-	GlobalSection(TestCaseManagementSettings) = postSolution
-		CategoryFile = QuantitySystemSolution.vsmdi
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
@@ -140,5 +102,45 @@ Global
 		{2E1B9096-614C-405F-8587-1897F451F139} = {11635727-736E-4C7D-93FE-CD36FE61917E}
 		{70D4A4DF-115F-440E-B97F-E76974A8AC14} = {11635727-736E-4C7D-93FE-CD36FE61917E}
 		{8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B} = {FDBE8316-6E9E-4864-BEE0-97641E286A28}
+	EndGlobalSection
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 10
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = UnitsTestingProject\\UnitsTestingProject.csproj
+		SccProjectTopLevelParentUniqueName1 = QuantitySystemSolution.sln
+		SccProjectName1 = UnitsTestingProject
+		SccLocalPath1 = UnitsTestingProject
+		SccProjectUniqueName2 = QuantitySystemCalculator\\QuantitySystemCalculator.csproj
+		SccProjectName2 = QuantitySystemCalculator
+		SccLocalPath2 = QuantitySystemCalculator
+		SccProjectUniqueName3 = QuantitySystem.Runtime\\Qs.csproj
+		SccProjectName3 = QuantitySystem.Runtime
+		SccLocalPath3 = QuantitySystem.Runtime
+		SccProjectUniqueName4 = QsTestProject\\QsTestProject.csproj
+		SccProjectTopLevelParentUniqueName4 = QuantitySystemSolution.sln
+		SccProjectName4 = QsTestProject
+		SccLocalPath4 = QsTestProject
+		SccProjectUniqueName5 = QuantitySystemTestingProject\\QuantitySystemTestingProject.csproj
+		SccProjectTopLevelParentUniqueName5 = QuantitySystemSolution.sln
+		SccProjectName5 = QuantitySystemTestingProject
+		SccLocalPath5 = QuantitySystemTestingProject
+		SccProjectUniqueName6 = QuantitySystem\\QuantitySystem.csproj
+		SccProjectName6 = QuantitySystem
+		SccLocalPath6 = QuantitySystem
+		SccProjectUniqueName7 = QsGraphics\\QsGraphics.csproj
+		SccProjectTopLevelParentUniqueName7 = QuantitySystemSolution.sln
+		SccProjectName7 = QsGraphics
+		SccLocalPath7 = QsGraphics
+		SccProjectUniqueName8 = Qs.Scripting\\Qs.Scripting.csproj
+		SccProjectName8 = Qs.Scripting
+		SccLocalPath8 = Qs.Scripting
+		SccProjectUniqueName9 = Qs.RT\\Qs.RT.csproj
+		SccProjectName9 = Qs.RT
+		SccLocalPath9 = Qs.RT
+	EndGlobalSection
+	GlobalSection(TestCaseManagementSettings) = postSolution
+		CategoryFile = QuantitySystemSolution.vsmdi
 	EndGlobalSection
 EndGlobal
