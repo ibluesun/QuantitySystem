@@ -366,7 +366,8 @@ namespace Qs.Runtime
 
                     if (ix == 0)
                     {
-                        OperatorTokenText = "*";   // in case of first token that is sign we don't need the higher multiplication order
+                        //OperatorTokenText = "*";   // in case of first token that is sign we don't need the higher multiplication order
+                        OperatorTokenText = "_h*";
                     }
                     else
                     {
