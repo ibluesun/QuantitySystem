@@ -32,6 +32,8 @@ public class QsCommandLine : CommandLine
             if (QsCommands.CommandProcessed)
             {
                 QsCommands.CommandProcessed = false;
+
+
                 return string.Empty;
             }
         }
@@ -53,7 +55,7 @@ public class QsCommandLine : CommandLine
     {
 
         
-        ConsoleColor cc = System.Console.ForegroundColor;
+        
 
         System.Console.ForegroundColor = QsCommands.ExceptionColor;
 

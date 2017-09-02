@@ -179,9 +179,13 @@ using System.IO;
 
 
             var qsc_cwr = (AssemblyCopyrightAttribute)Assembly.GetEntryAssembly().GetCustomAttributes(typeof(AssemblyCopyrightAttribute), false)[0];
+            Console.WriteLine();
             Console.WriteLine(qsc_cwr.Copyright);
             Console.WriteLine();
-            Console.WriteLine("Project Source: http://QuantitySystem.CodePlex.com");
+            Console.WriteLine("Project Original Repository: http://QuantitySystem.CodePlex.com");
+            Console.WriteLine();
+            Console.WriteLine("Project Current Repository: https://GitHub.com/LostParticles/QuantitySystem");
+            Console.WriteLine();
             Console.WriteLine("Project Blog:   http://QuantitySystem.WordPress.com");
             Console.WriteLine();
             Console.WriteLine("-------------------------------------------------------------------");
