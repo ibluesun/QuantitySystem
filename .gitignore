@@ -18,3 +18,8 @@
 /QuantitySystemSolution/QsGraphics/bin/Debug
 /QuantitySystemSolution/Qs.Scripting/bin/Debug
 /QuantitySystemSolution/.vs/QuantitySystemSolution/v15
+/QuantitySystemSolution/Qs.RT/bin/Debug
+/QuantitySystemSolution/QsTestProject/bin/Debug
+/QuantitySystemSolution/QuantitySystemTestingProject/bin/Debug
+/QuantitySystemSolution/UnitsTestingProject/bin/Debug
+*.user

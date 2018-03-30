@@ -187,7 +187,7 @@ namespace Qs.Runtime
 
             // assemble all spaces
             //tokens = tokens.MergeTokens<MultipleSpaceToken>();
-            tokens = tokens.MergeRepitiveTokens<MultipleSpaceToken, SingleSpaceToken>();
+            tokens = tokens.MergeRepetitiveTokens<MultipleSpaceToken, SingleSpaceToken>();
 
             // assemble all units <*>    //before tokenization of tensor operator
             tokens = tokens.MergeTokens<UnitToken>();
@@ -248,7 +248,8 @@ namespace Qs.Runtime
 
             tokens = tokens.MergeTokens<NumberToken>();               //discover the numbers
             tokens = tokens.MergeTokens<UnitizedNumberToken>();
-            //tokens = tokens.MergeSequenceTokens<UnitizedNumberToken>(typeof(NumberToken), typeof(UnitToken));
+            tokens = tokens.MergeSequenceTokens<UnitizedNumberToken>(typeof(PeriodToken), typeof(UnitizedNumberToken));
+            tokens = tokens.MergeSequenceTokens<NumberToken>(typeof(PeriodToken), typeof(NumberToken));
 
             // discover the complex numbers 
             tokens = tokens.MergeTokens<ComplexNumberToken>();
@@ -377,6 +378,7 @@ namespace Qs.Runtime
                     goto ExpressionCompleted;
                     
                 }
+                
 
                 if (q.Equals("new", StringComparison.OrdinalIgnoreCase))
                 {
