@@ -184,7 +184,7 @@ using System.IO;
             Console.WriteLine();
             Console.WriteLine("Project Original Repository: http://QuantitySystem.CodePlex.com");
             Console.WriteLine();
-            Console.WriteLine("Project Current Repository: https://GitHub.com/LostParticles/QuantitySystem");
+            Console.WriteLine("Project Current Repository: https://github.com/ibluesun/QuantitySystem");
             Console.WriteLine();
             Console.WriteLine("Project Blog:   http://QuantitySystem.WordPress.com");
             Console.WriteLine();

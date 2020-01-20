@@ -1,0 +1,114 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="Qs.Types.QsValue" Collapsed="true">
+    <Position X="3.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACASQAAQsDAAINxIYAeBCmEQAJiQCIIAAkQoAUBOByA=</HashCode>
+      <FileName>Types\QsValue.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Qs.Types.QsScalar" Collapsed="true">
+    <Position X="2" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACACgSIQsSBCAH0kYAcBSMAEAYgQCpogAt3ooxbaBLI=</HashCode>
+      <FileName>Types\QsScalar.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Qs.Types.QsVector" Collapsed="true">
+    <Position X="2" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACACAAAQsCBIgFwGCAJACEQUAAgACoIAKsSoARHKADQ=</HashCode>
+      <FileName>Types\QsVector.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Qs.Types.QsMatrix" Collapsed="true">
+    <Position X="2" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gCCSDBAS+CICAFwGaBNQC0UAgAgICrIAms6oARjaADA=</HashCode>
+      <FileName>Types\QsMatrix.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Qs.Types.QsTensor" Collapsed="true">
+    <Position X="2" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACECAEAQsAAAAhgECAIACEAAAAiACIIAAkQoARhKACA=</HashCode>
+      <FileName>Types\QsTensor.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="Qs.Types.QsText" Collapsed="true">
+    <Position X="4.75" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACACAAAQsAAAIAgEAAIACEAAAAgACIIAAkQoCQBCACA=</HashCode>
+      <FileName>Types\QsText.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Qs.Types.QsFunction" Collapsed="true">
+    <Position X="4.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACEGAEwUsIALBCifCC4KCOBAAkgEGIcEAsQ4BQzaAHA=</HashCode>
+      <FileName>Types\QsFunction.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Qs.Types.QsObject" Collapsed="true">
+    <Position X="4.75" Y="4.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>GCASAAAQsAAAAAwEAQIACEIAAAkACIIAAkQoAQBCAKA=</HashCode>
+      <FileName>Types\QsObject.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Qs.Types.QsOperation" Collapsed="true">
+    <Position X="4.75" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACACAAAQsAAAAAgAAAIACEAAAAgACIIAAkQoAQBKADA=</HashCode>
+      <FileName>Types\QsOperation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Qs.Types.QsDifferentialOperation" Collapsed="true">
+    <Position X="7" Y="5.75" Width="2" />
+    <NestedTypes>
+      <Struct Name="Qs.Types.QsDifferentialOperation.InnerOperation" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>Types\QsDifferentialOperation.cs</NewMemberFileName>
+        </TypeIdentifier>
+      </Struct>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAgAEAAIAAAAAAAAAAAAAAAAIAAAIABA=</HashCode>
+      <FileName>Types\QsDifferentialOperation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Qs.Types.QsBoolean" Collapsed="true">
+    <Position X="4.75" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACACAAAQsACAAIgEYgMACEAAAAgASIIAAkwoAQBCACA=</HashCode>
+      <FileName>Types\QsBoolean.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Qs.Types.QsFlowingTuple" Collapsed="true">
+    <Position X="2" Y="6.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACIWIAAQsAAAIAwECAIQCEQAAAgACIIAgkSoAQBCASA=</HashCode>
+      <FileName>Types\QsFlowingTuple.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Qs.Types.QsReference" Collapsed="true">
+    <Position X="7" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACACAAAQsAAAAAwEAAMACEAAAAgACIIEAkQoAQhCACA=</HashCode>
+      <FileName>Types\QsReference.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Qs.Types.Operators.QsNablaOperation" Collapsed="true">
+    <Position X="7" Y="6.75" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAYAAAAAAAEAAIAAAAAIAgAAAIBAAAIAAAAAAA=</HashCode>
+      <FileName>Types\QsNablaOperation.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>

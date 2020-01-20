@@ -193,12 +193,6 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\QuantitySystem\QuantitySystem.csproj">
-      <Project>{78909C0B-AA53-48F9-8AC9-F3937383629C}</Project>
-      <Name>QuantitySystem</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

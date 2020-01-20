@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "QuantitySystemTests", "QuantitySystemTests", "{11635727-736E-4C7D-93FE-CD36FE61917E}"
 EndProject
@@ -30,8 +30,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{
 		Libraries\SymbolicAlgebra.dll = Libraries\SymbolicAlgebra.dll
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantitySystem", "QuantitySystem\QuantitySystem.csproj", "{78909C0B-AA53-48F9-8AC9-F3937383629C}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantitySystemTestingProject", "QuantitySystemTestingProject\QuantitySystemTestingProject.csproj", "{6B22C63C-7927-4CB2-87A8-2BA3428570DC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitsTestingProject", "UnitsTestingProject\UnitsTestingProject.csproj", "{2E1B9096-614C-405F-8587-1897F451F139}"
@@ -41,8 +39,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantitySystemCalculator", 
 		{8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B} = {8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qs", "QuantitySystem.Runtime\Qs.csproj", "{615A100B-4890-434E-8869-2A9B3200D664}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QsTestProject", "QsTestProject\QsTestProject.csproj", "{70D4A4DF-115F-440E-B97F-E76974A8AC14}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QsGraphics", "QsGraphics\QsGraphics.csproj", "{8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B}"
@@ -51,7 +47,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{FDBE
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qs.Scripting", "Qs.Scripting\Qs.Scripting.csproj", "{9D9327DD-4B4C-4FB5-A671-1287D1C15341}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qs.RT", "Qs.RT\Qs.RT.csproj", "{EFF13160-FB38-439E-A824-14838DF636A5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantitySystem", "QuantitySystem\QuantitySystem.csproj", "{A58A9859-6948-4B16-85A9-56750E07B992}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qs", "Qs\Qs.csproj", "{3204857E-B04A-4304-A37E-A8AC6811DB36}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -59,10 +57,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{78909C0B-AA53-48F9-8AC9-F3937383629C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{78909C0B-AA53-48F9-8AC9-F3937383629C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{78909C0B-AA53-48F9-8AC9-F3937383629C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{78909C0B-AA53-48F9-8AC9-F3937383629C}.Release|Any CPU.Build.0 = Release|Any CPU
 		{6B22C63C-7927-4CB2-87A8-2BA3428570DC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{6B22C63C-7927-4CB2-87A8-2BA3428570DC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6B22C63C-7927-4CB2-87A8-2BA3428570DC}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -75,10 +69,6 @@ Global
 		{140E6C82-4B64-45AA-8FE1-91159322A29E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{140E6C82-4B64-45AA-8FE1-91159322A29E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{140E6C82-4B64-45AA-8FE1-91159322A29E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{615A100B-4890-434E-8869-2A9B3200D664}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{615A100B-4890-434E-8869-2A9B3200D664}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{615A100B-4890-434E-8869-2A9B3200D664}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{615A100B-4890-434E-8869-2A9B3200D664}.Release|Any CPU.Build.0 = Release|Any CPU
 		{70D4A4DF-115F-440E-B97F-E76974A8AC14}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{70D4A4DF-115F-440E-B97F-E76974A8AC14}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70D4A4DF-115F-440E-B97F-E76974A8AC14}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -91,10 +81,14 @@ Global
 		{9D9327DD-4B4C-4FB5-A671-1287D1C15341}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9D9327DD-4B4C-4FB5-A671-1287D1C15341}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9D9327DD-4B4C-4FB5-A671-1287D1C15341}.Release|Any CPU.Build.0 = Release|Any CPU
-		{EFF13160-FB38-439E-A824-14838DF636A5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{EFF13160-FB38-439E-A824-14838DF636A5}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{EFF13160-FB38-439E-A824-14838DF636A5}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{EFF13160-FB38-439E-A824-14838DF636A5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A58A9859-6948-4B16-85A9-56750E07B992}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A58A9859-6948-4B16-85A9-56750E07B992}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A58A9859-6948-4B16-85A9-56750E07B992}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A58A9859-6948-4B16-85A9-56750E07B992}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3204857E-B04A-4304-A37E-A8AC6811DB36}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3204857E-B04A-4304-A37E-A8AC6811DB36}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3204857E-B04A-4304-A37E-A8AC6811DB36}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3204857E-B04A-4304-A37E-A8AC6811DB36}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -105,42 +99,8 @@ Global
 		{70D4A4DF-115F-440E-B97F-E76974A8AC14} = {11635727-736E-4C7D-93FE-CD36FE61917E}
 		{8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B} = {FDBE8316-6E9E-4864-BEE0-97641E286A28}
 	EndGlobalSection
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 10
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = https://tfs.codeplex.com/tfs/tfs06
-		SccLocalPath0 = .
-		SccProjectUniqueName1 = UnitsTestingProject\\UnitsTestingProject.csproj
-		SccProjectTopLevelParentUniqueName1 = QuantitySystemSolution.sln
-		SccProjectName1 = UnitsTestingProject
-		SccLocalPath1 = UnitsTestingProject
-		SccProjectUniqueName2 = QuantitySystemCalculator\\QuantitySystemCalculator.csproj
-		SccProjectName2 = QuantitySystemCalculator
-		SccLocalPath2 = QuantitySystemCalculator
-		SccProjectUniqueName3 = QuantitySystem.Runtime\\Qs.csproj
-		SccProjectName3 = QuantitySystem.Runtime
-		SccLocalPath3 = QuantitySystem.Runtime
-		SccProjectUniqueName4 = QsTestProject\\QsTestProject.csproj
-		SccProjectTopLevelParentUniqueName4 = QuantitySystemSolution.sln
-		SccProjectName4 = QsTestProject
-		SccLocalPath4 = QsTestProject
-		SccProjectUniqueName5 = QuantitySystemTestingProject\\QuantitySystemTestingProject.csproj
-		SccProjectTopLevelParentUniqueName5 = QuantitySystemSolution.sln
-		SccProjectName5 = QuantitySystemTestingProject
-		SccLocalPath5 = QuantitySystemTestingProject
-		SccProjectUniqueName6 = QuantitySystem\\QuantitySystem.csproj
-		SccProjectName6 = QuantitySystem
-		SccLocalPath6 = QuantitySystem
-		SccProjectUniqueName7 = QsGraphics\\QsGraphics.csproj
-		SccProjectTopLevelParentUniqueName7 = QuantitySystemSolution.sln
-		SccProjectName7 = QsGraphics
-		SccLocalPath7 = QsGraphics
-		SccProjectUniqueName8 = Qs.Scripting\\Qs.Scripting.csproj
-		SccProjectName8 = Qs.Scripting
-		SccLocalPath8 = Qs.Scripting
-		SccProjectUniqueName9 = Qs.RT\\Qs.RT.csproj
-		SccProjectName9 = Qs.RT
-		SccLocalPath9 = Qs.RT
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {B4ECEE40-52C2-44ED-BD35-00454F3EF285}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = QuantitySystemSolution.vsmdi

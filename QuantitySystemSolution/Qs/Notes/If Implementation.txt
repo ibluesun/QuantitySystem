@@ -1,0 +1,104 @@
+﻿the if statement will be simple simple simple
+
+
+
+consider this expression
+
+x = 20 if y>40 else 30 if y>60 else 40 if y+t>50 - 300
+
+
+
+
+another syntax 
+
+40 when f>40 otherwise 60 when s<300
+
+so the syntax will be one line also and it result into an expression.
+
+when otherwise expression.
+
+
+
+40-50^x when t<2 or t> 1 and f-2 < 4 otherwise 60 when G<= 3 and f=3 otherwise 10
+
+[expression] when [condition-expression] otherwise [expression]
+
+
+f(x) = 1 when x>=0 and x<=100 otherwise 2 + 3
+
+if the there were no conditions has been trued then an exception occur :)
+
+implementation 
+to do this we need to tokenize the folowing keywords
+
+'when'
+'otherwise'
+conditions groups 
+
+string[] RelationalGroup = { "<", ">", "<=", ">=" };
+string[] EqualityGroup = { "==", "!=" };
+string[] AndGroup = { "and"};
+string[] OrGroup = { "or"};
+
+
+then algorithm will be
+
+encounter 'when' statement then the following tokens are conditional statements expressions
+that contain 'and', 'or' state untill encounter the 'otherwise' token which indicates that 
+'when' block is closed 
+
+
+
+----------------------------------------
+
+Qs> sgn(x) = -1 when x<0 otherwise 0 when x==0 otherwise 1
+
+this is the expression debug {after removing the unwanted decoration}
+
+.If ($x.Quantity == (DimensionlessQuantity: 0 <1>)) {
+    .If ($x.Quantity < (DimensionlessQuantity: 0 <1>)) {
+        .Constant(DimensionlessQuantity: -1 <1>)
+    } .Else {
+        .Constant(DimensionlessQuantity: 0 <1>)
+    }
+} .Else {
+    .Constant(DimensionlessQuantity: 1 <1>)
+}
+
+this is equal to 
+(-1 when x<0 otherwise 0) when x==0 otherwise 1
+
+
+The desired output form:
+
+but if we put braces like this
+-1 when x<0 otherwise (0 when x==0 otherwise 1)
+
+.If ($x.Quantity < (DimensionlessQuantity: 0 <1>)) {
+    .Constant(DimensionlessQuantity: -1 <1>)
+} .Else {
+    .If ($x.Quantity == (DimensionlessQuantity: 0 <1>)) {
+        .Constant(DimensionlessQuantity: 0 <1>)
+    } .Else {
+        .Constant(DimensionlessQuantity: 1 <1>)
+    }
+}
+
+so this is a bug how can I solve it ??
+I should know if the last otherwise have another when expression or not
+   and go through it.
+
+
+
+I did a recursive call to the ArithExpression (so that all last whens evaluated first)
+and the resulted expression
+
+.If ($x.Quantity < (DimensionlessQuantity: 0 <1>)) {
+    (DimensionlessQuantity: -1 <1>)
+} .Else {
+    .If (        $x.Quantity == (DimensionlessQuantity: 0 <1>)) {
+        (DimensionlessQuantity: 0 <1>)
+    } .Else {
+        (DimensionlessQuantity: 1 <1>)
+    }
+}

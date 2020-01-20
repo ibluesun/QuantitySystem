@@ -23,3 +23,9 @@
 /QuantitySystemSolution/QuantitySystemTestingProject/bin/Debug
 /QuantitySystemSolution/UnitsTestingProject/bin/Debug
 *.user
+/QuantitySystemSolution/.vs/QuantitySystemSolution/v16/Server/sqlite3
+/QuantitySystemSolution/.vs/QuantitySystemSolution/v16/.suo
+/QuantitySystemSolution/.vs/QuantitySystemSolution/DesignTimeBuild
+/QuantitySystemSolution/Qs/bin/Debug
+/QuantitySystemSolution/Qs/obj
+/QuantitySystemSolution/QuantitySystem/obj

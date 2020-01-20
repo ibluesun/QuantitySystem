@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Qs.Scripting</RootNamespace>
     <AssemblyName>Qs.Scripting</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>SAK</SccProjectName>
     <SccLocalPath>SAK</SccLocalPath>
@@ -59,12 +59,12 @@
     <Compile Include="QsScriptCode.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QuantitySystem.Runtime\Qs.csproj">
-      <Project>{615A100B-4890-434E-8869-2A9B3200D664}</Project>
+    <ProjectReference Include="..\Qs\Qs.csproj">
+      <Project>{3204857e-b04a-4304-a37e-a8ac6811db36}</Project>
       <Name>Qs</Name>
     </ProjectReference>
     <ProjectReference Include="..\QuantitySystem\QuantitySystem.csproj">
-      <Project>{78909C0B-AA53-48F9-8AC9-F3937383629C}</Project>
+      <Project>{a58a9859-6948-4b16-85a9-56750e07b992}</Project>
       <Name>QuantitySystem</Name>
     </ProjectReference>
   </ItemGroup>

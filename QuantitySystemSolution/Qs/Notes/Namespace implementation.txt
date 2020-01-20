@@ -1,0 +1,41 @@
+﻿The namespace implementation in the quantity system is to make logical domains for other functions and external functions
+
+The operator of the namespace is the colon 
+
+F:X = 60
+F:f(x,y) = x^2 + y^2
+
+
+all naming is case insensitive 
+
+when you make external functionality based on C# code (or any other .net )
+you have to make a static class with a static functions and properties.
+
+
+the namespace is a provider pattern for the hardcoded functions and the user defined functions and variables
+
+the static class name is the qs namespace name.
+
+the QsNamespace class will hold all the functionality of the two scenarios 
+some notes:
+
+- Priority of the externa and hardcoded functions and properties of the namesapce override the userdefined functions.
+- when you clear every thing from the qs memory the hardcoded namespace disappear temporarly until you call 
+     something from it again.
+     
+
+Fast Tutorial:
+	There is a built in namespace Math  and have Sin function and Cos function.
+	
+however Tan function does not exist in the namespace.
+
+so you can define it in the namespace like this
+
+Math:Tan(x) = Math:Sin(x) / Math:Cos(x)
+
+
+
+
+
+
+     
