@@ -204,8 +204,8 @@ using System.IO;
         {
             Console.ForegroundColor = HelpColor;
 
-            Console.WriteLine("    Type \"<unit>\" for information about unit");
-            Console.WriteLine("           Example: <kn> for knot");
+            Console.WriteLine("    #Type \"<unit>\" for information about unit");
+            Console.WriteLine("           #Example: <kn> for knot");
             Console.WriteLine();
             Console.WriteLine("       - var = number[<unit>] for making scalar value");
             Console.WriteLine("           Omit <unit> for dimensionless quantity");
@@ -230,28 +230,37 @@ using System.IO;
 
             Console.WriteLine("       - Matrix");
             Console.WriteLine("           \" m = [3 4 5; 3 4 2; 9 3 2]");
-            Console.WriteLine("           \" |m| \"             for determinant of square matrix");
-            Console.WriteLine("           \" m1 * m2 \"         for ordinary matrix multiplication");
-            Console.WriteLine("           \" m1 . m2 \"         for matrix element wise multiplication");
-            Console.WriteLine("           \" m ^ 2 \"           for power with ordinary matrix multiplication");
-            Console.WriteLine("           \" m ^. 2 \"          for power with element matrix multiplication");
+            Console.WriteLine("           \" _|m|_ \"             #for determinant of square matrix");
+            Console.WriteLine("           \" m1 * m2 \"         #for ordinary matrix multiplication");
+            Console.WriteLine("           \" m1 . m2 \"         #for matrix element wise multiplication");
+            Console.WriteLine("           \" m ^ 2 \"           #for power with ordinary matrix multiplication");
+            Console.WriteLine("           \" m ^. 2 \"          #for power with element matrix multiplication");
 
 
-            Console.WriteLine();
-            Console.WriteLine("       - Tensor");
-            Console.WriteLine("         <| Matrix | Matrix |> #3d Order");
-            Console.WriteLine("         <| <| 5 3;2 1|> | <|3 2;1 9|> |> #4th Order");
+        Console.WriteLine();
+        Console.WriteLine("       - Tensor");
+        Console.WriteLine("         <| Matrix | Matrix |> #3d Order");
+        Console.WriteLine("         <| <| 5 3;2 1|> | <|3 2;1 9|> |> #4th Order");
 
+        Console.WriteLine();
+        Console.WriteLine("       - Tuples");
+        Console.WriteLine("         ($x, $y, 20, 50, {4 3}, ...)  declare tuple between parenthesis");
+        Console.WriteLine(@"         (Name!""Sadek"", Age!40)   to declare a tuple with naming identifiers"  );
+        Console.WriteLine(@"         (10: $x, 20:4<m>, 30:""Tawfik"")  Tuple with numerical ids");
+        Console.WriteLine(@"         GearBox = (0:Neutral!""N"", 10:FirstShift!""Maximum Power"", 100:R!""Reverse"") #Tuple with numerical and names identifiers ");
+        Console.WriteLine("         GearBox!FirstShift;   #Access by name id");
+        Console.WriteLine("         GearBox:100;   #Access by number id");
+        Console.WriteLine("         GearBox[2];  #Access by index from zero");
 
-            Console.WriteLine();
+        Console.WriteLine();
+            Console.WriteLine("       - Functions");
             Console.WriteLine("       - \"f(x,y,z) = x+y+z\"    to make a function.");
             Console.WriteLine("         \"f(u,v,w) = u/v*w\"    to make a function with the same name and different parameters.");
             Console.WriteLine("         \"r=f(v=10, w=3, u=3)\" to call specific function.");
             Console.WriteLine("         \"@f\"                  return the function body as a value.");
 
             Console.WriteLine();
-            Console.WriteLine("       - Sequence:");
-            Console.WriteLine("           Declaration");
+            Console.WriteLine("       - Sequences");
             Console.WriteLine("           \"S[]     ..> 10; 20\"");
             Console.WriteLine("           \"S[n]    ..> 10; 20; n\"            sequence with index.");
             Console.WriteLine("           \"S[n](x) ..> 10; 20; n; x^n\"    sequence with index and parameter.");
