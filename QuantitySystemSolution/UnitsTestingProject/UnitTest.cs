@@ -567,5 +567,22 @@ namespace UnitsTestingProject
 
             
         }
+    
+    
+        [TestMethod]
+        public void PolarToRegularLengthUnitsTest()
+        {
+            var u = Unit.Parse("m/m!");
+            var lpq = new QuantityDimension();
+            lpq.Length = new QuantitySystem.DimensionDescriptors.LengthDescriptor(1, -1);
+            Assert.AreEqual(u.UnitDimension, lpq);
+
+            var u2 = Unit.Parse("m!/m");
+            var ll2 = new QuantityDimension();
+            ll2.Length = new QuantitySystem.DimensionDescriptors.LengthDescriptor(-1, 1);
+            Assert.AreEqual(u2.UnitDimension, ll2);
+
+        }
+    
     }
 }

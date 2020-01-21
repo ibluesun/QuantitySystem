@@ -495,7 +495,7 @@ namespace QuantitySystem.Units
         
 
         /// <summary>
-        /// Group all similar units so it remove units that reached exponent zero
+        /// Group all similar units to remove units that reached exponent zero
         /// also keep track of prefixes of metric units.
         /// </summary>
         /// <param name="bulk_units"></param>
@@ -506,24 +506,23 @@ namespace QuantitySystem.Units
 
             if (units.Count == 1) return units;
 
-            
-
             List<Unit> GroupedUnits = new List<Unit>();
 
+            Dictionary<Tuple<Type, Type>, Unit> us = new Dictionary<Tuple<Type, Type>, Unit>();
 
-            Dictionary<Type, Unit> us = new Dictionary<Type, Unit>();
             foreach (Unit un in units)
             {
                 
-                if (us.ContainsKey(un.GetType()))
+                if (us.ContainsKey(un.UniqueKey))
                 {
+                    
                     //check for prefixes before accumulating units
                     //   otherwise I'll lose the UnitExponent value.
                     if (un is MetricUnit)
                     {
                         //check prefixes to consider milli+Mega for example for overflow
 
-                        MetricPrefix accumPrefix = ((MetricUnit)us[un.GetType()]).UnitPrefix;
+                        MetricPrefix accumPrefix = ((MetricUnit)us[un.UniqueKey]).UnitPrefix;
                         MetricPrefix sourcePrefix = ((MetricUnit)un).UnitPrefix;
 
                         try
@@ -545,14 +544,14 @@ namespace QuantitySystem.Units
                             // k/c = ?   or in exponent k-c=?
 
 
-                            double targetExponent = us[un.GetType()].unitExponent + un.unitExponent;
+                            double targetExponent = us[un.UniqueKey].unitExponent + un.unitExponent;
 
-                            double accumExponent = accumPrefix.Exponent * us[un.GetType()].unitExponent;
+                            double accumExponent = accumPrefix.Exponent * us[un.UniqueKey].unitExponent;
                             double sourceExponent = sourcePrefix.Exponent * un.unitExponent;
 
                             double resultExponent = (accumExponent + sourceExponent);
 
-                            if (!(us[un.GetType()].IsInverted ^ un.IsInverted))
+                            if (!(us[un.UniqueKey].IsInverted ^ un.IsInverted))
                             {
                                 //multiplication
 
@@ -562,7 +561,7 @@ namespace QuantitySystem.Units
                                     //we can get the symbol of the sqrt of this
                                     double unknown = resultExponent / targetExponent;
 
-                                    ((MetricUnit)us[un.GetType()]).UnitPrefix = MetricPrefix.FromExponent(unknown);
+                                    ((MetricUnit)us[un.UniqueKey]).UnitPrefix = MetricPrefix.FromExponent(unknown);
                                 }
                                 else
                                 {
@@ -570,7 +569,7 @@ namespace QuantitySystem.Units
                                     // like  kilo * centi = 3-2=1    1/2=0.5   or 1%2=1 
                                     // so we will take the whole fraction and make an overflow
 
-                                    ((MetricUnit)us[un.GetType()]).UnitPrefix = MetricPrefix.None;
+                                    ((MetricUnit)us[un.UniqueKey]).UnitPrefix = MetricPrefix.None;
                                     if (resultExponent != 0)
                                     {
                                         unitOverflow += Math.Pow(10, resultExponent);
@@ -584,7 +583,7 @@ namespace QuantitySystem.Units
                                 //division
                                 //resultExponent = (accumExponent - sourceExponent);
 
-                                ((MetricUnit)us[un.GetType()]).UnitPrefix = MetricPrefix.None;
+                                ((MetricUnit)us[un.UniqueKey]).UnitPrefix = MetricPrefix.None;
 
                                 if (resultExponent != 0)   //don't overflow in case of zero exponent target because there is not prefix in this case
                                 {
@@ -596,18 +595,19 @@ namespace QuantitySystem.Units
                         }
                         catch(MetricPrefixException mpe)
                         {
-                            ((MetricUnit)us[un.GetType()]).UnitPrefix = mpe.CorrectPrefix;
+                            ((MetricUnit)us[un.UniqueKey]).UnitPrefix = mpe.CorrectPrefix;
                             unitOverflow += Math.Pow(10, mpe.OverflowExponent);
                             _IsOverflowed = true;
                         }
 
                     }
-                    us[un.GetType()].UnitExponent += un.UnitExponent;
-                    us[un.GetType()].UnitDimension += un.UnitDimension;
+                    us[un.UniqueKey].UnitExponent += un.UnitExponent;
+                    us[un.UniqueKey].UnitDimension += un.UnitDimension;
                 }
                 else
                 {
-                    us[un.GetType()] = (Unit)un.MemberwiseClone();
+                    
+                    us[un.UniqueKey] = (Unit)un.MemberwiseClone();
                 }
             }
             foreach (Unit un in us.Values)

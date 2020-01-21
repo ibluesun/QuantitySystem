@@ -215,7 +215,14 @@ namespace QuantitySystem.Units
         {
             get { return _UnitDimension; }
             internal set { _UnitDimension = value; }
-        } 
+        }
+
+
+        /// <summary>
+        /// Returns a unique key for the unit based on the unit type and the representative quantity type
+        /// Also m! and m  while they are the same unit but they represents Polar and Regular Lenghts respectively.
+        /// </summary>
+        public Tuple<Type, Type> UniqueKey => new Tuple<Type, Type>(this.GetType(), QuantityType);
 
 
         /// <summary>

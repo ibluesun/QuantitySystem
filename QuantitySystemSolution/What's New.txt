@@ -1,3 +1,9 @@
+[QuantitySystem 1.7.2]
+- Fixed a bug when evaluating <m!/m>   .. it was giving dimensionless unit  while it should give M0L0(RL-1PL1)T0I0O0N0J0$0D0
+    ....  yes dimensionless but with underlying RL=-1  and PL=1    .. damn  fixing something after all of those years
+	     hope I can understand this damn length equation in polar coordinates.
+
+
 [Qs 1.5] | [QuantitySystem 1.7]
 - The two libraries have been converted into  .netstandard 2.0  
 - Removed the WINRT library  because Qs runtime as standard library should be sufficient.

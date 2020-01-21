@@ -8,10 +8,10 @@ namespace QuantitySystem.DimensionDescriptors
     public struct LengthDescriptor : IDimensionDescriptor<LengthDescriptor>
     {
 
-        public LengthDescriptor(float normalExponent, float radiusExponent):this()
+        public LengthDescriptor(float normalExponent, float polarExponent):this()
         {
             this.RegularExponent = normalExponent;
-            this.PolarExponent = radiusExponent;
+            this.PolarExponent = polarExponent;
         }
 
         #region Length Properties Types
