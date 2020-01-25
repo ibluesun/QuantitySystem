@@ -10,12 +10,12 @@ namespace QuantitySystem.Quantities
     public class FlexuralRigidity<T> : DerivedQuantity<T>
     {
         public FlexuralRigidity()
-            : base(1, new Force<T>(), new PolarArea<T>())
+            : base(1, new Force<T>(), new AreaVector<T>())
         {
         }
 
         public FlexuralRigidity(float exponent)
-            : base(exponent, new Force<T>(exponent), new PolarArea<T>(exponent))
+            : base(exponent, new Force<T>(exponent), new AreaVector<T>(exponent))
         {
         }
 

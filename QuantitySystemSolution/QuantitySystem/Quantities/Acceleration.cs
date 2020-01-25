@@ -1,21 +1,19 @@
-﻿using System;
+﻿using QuantitySystem.Quantities.BaseQuantities;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-
-using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities
 {
     public class Acceleration<T> : DerivedQuantity<T>
     {
         public Acceleration()
-            : base(1, new Velocity<T>(), new Time<T>(-1))
+            : base(1, new Speed<T>(), new Time<T>(-1))
         {
         }
 
         public Acceleration(float exponent)
-            : base(exponent, new Velocity<T>(exponent), new Time<T>(-1 * exponent))
+            : base(exponent, new Speed<T>(exponent), new Time<T>(-1 * exponent))
         {
         }
 
@@ -31,4 +29,6 @@ namespace QuantitySystem.Quantities
 
 
     }
+    
+    
 }

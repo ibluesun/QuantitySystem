@@ -183,15 +183,13 @@ namespace QuantitySystem
             dim += "M" + Mass.Exponent.ToString(CultureInfo.InvariantCulture);
 
 
-            string lll = "";
-
-            if (Length.PolarExponent != 0)
+            if (Length.VectorExponent != 0)
             {
                 dim +=
-                    string.Format("L{0}(RL{1}PL{2})",
+                    string.Format("L{0}(S{1}V{2})",
                     Length.Exponent.ToString(CultureInfo.InvariantCulture),
-                    Length.RegularExponent.ToString(CultureInfo.InvariantCulture),
-                    Length.PolarExponent.ToString(CultureInfo.InvariantCulture)
+                    Length.ScalarExponent.ToString(CultureInfo.InvariantCulture),
+                    Length.VectorExponent.ToString(CultureInfo.InvariantCulture)
                     );
             }
             else

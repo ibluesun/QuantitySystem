@@ -13,4 +13,8 @@
     <AssemblyOriginatorKeyFile>QuantitySystem.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="Quantities\Speed.cs~RF2d696ddd.TMP" />
+  </ItemGroup>
+
 </Project>

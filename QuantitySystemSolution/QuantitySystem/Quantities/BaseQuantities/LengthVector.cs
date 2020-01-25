@@ -7,20 +7,20 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
 
     /// <summary>
-    /// The Length but in Polar mode
+    /// The Length but in vector mode
     /// very usefull in differentiating of anlges and Angular quantities in general.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class PolarLength<T> : Length<T>
+    public class LengthVector<T> : Length<T>
     {
-        public PolarLength() : base(1)
+        public LengthVector() : base(1)
         {
-            LengthType = LengthType.Polar;
+            QuantityType = QuantityType.Vector;
         }
 
-        public PolarLength(float exponent) : base(exponent)
+        public LengthVector(float exponent) : base(exponent)
         {
-            LengthType = LengthType.Polar;
+            QuantityType = QuantityType.Vector;
         }
 
     }

@@ -74,7 +74,7 @@ namespace QuantitySystemTestingProject
 
             var q = l / t;
 
-            var expected = new Velocity<double> { Value = 2 };
+            var expected = new Speed<double> { Value = 2 };
 
             //compare the quantities
             Assert.AreEqual(expected, q);
@@ -94,7 +94,7 @@ namespace QuantitySystemTestingProject
 
             var q = l / t;
 
-            var expected = new Acceleration<double> { Value = 2 };
+            var expected = new AccelerationVector<double> { Value = 2 };
 
             //compare the quantities
             Assert.AreEqual(expected, q);

@@ -1,9 +1,7 @@
-﻿using System;
+﻿using QuantitySystem.Quantities.BaseQuantities;
+using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using QuantitySystem.Quantities.BaseQuantities;
-
 
 namespace QuantitySystem.Quantities
 {

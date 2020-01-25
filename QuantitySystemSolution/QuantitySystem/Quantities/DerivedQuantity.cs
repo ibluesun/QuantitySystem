@@ -21,11 +21,11 @@ namespace QuantitySystem.Quantities
             }
             
             {
-                if (dimension.Length.RegularExponent != 0)
-                    quantities.Add(new Length<T>(dimension.Length.RegularExponent));
+                if (dimension.Length.ScalarExponent != 0)
+                    quantities.Add(new Length<T>(dimension.Length.ScalarExponent));
 
-                if (dimension.Length.PolarExponent != 0)
-                    quantities.Add(new PolarLength<T>(dimension.Length.PolarExponent));
+                if (dimension.Length.VectorExponent != 0)
+                    quantities.Add(new LengthVector<T>(dimension.Length.VectorExponent));
 
             }
 

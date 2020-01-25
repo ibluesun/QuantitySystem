@@ -1,6 +1,7 @@
 ﻿using System;
 using QuantitySystem.Units;
 using System.Linq.Expressions;
+using QuantitySystem.DimensionDescriptors;
 
 namespace QuantitySystem.Quantities.BaseQuantities
 {
@@ -9,6 +10,31 @@ namespace QuantitySystem.Quantities.BaseQuantities
     /// </summary>
     public abstract partial class AnyQuantity<T> : BaseQuantity
     {
+
+        public QuantityType QuantityType { get; set; } = QuantityType.Scalar;
+
+
+        public override QuantityDimension Dimension
+        {
+            get
+            {
+                QuantityDimension LengthDimension = new QuantityDimension();
+
+                switch (QuantityType)
+                {
+                    case QuantityType.Scalar:
+                        LengthDimension.Length = new LengthDescriptor(Exponent, 0);
+                        break;
+                    case QuantityType.Vector:
+                        LengthDimension.Length = new LengthDescriptor(0, Exponent);
+                        break;
+                }
+
+                return LengthDimension;
+            }
+        }
+
+
 
         #region constructors
 

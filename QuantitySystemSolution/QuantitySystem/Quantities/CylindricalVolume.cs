@@ -15,12 +15,12 @@ namespace QuantitySystem.Quantities
     public class CylindricalVolume<T> : DerivedQuantity<T>
     {
         public CylindricalVolume()
-            : base(1, new PolarLength<T>(), new Length<T>(2))
+            : base(1, new LengthVector<T>(), new Length<T>(2))
         {
         }
 
         public CylindricalVolume(float exponent)
-            : base(exponent, new PolarLength<T>(), new Length<T>(2 * exponent))
+            : base(exponent, new LengthVector<T>(), new Length<T>(2 * exponent))
         {
         }
 
