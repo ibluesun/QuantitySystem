@@ -154,10 +154,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Qs.Scripting\Qs.Scripting.csproj">
-      <Project>{9D9327DD-4B4C-4FB5-A671-1287D1C15341}</Project>
-      <Name>Qs.Scripting</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Qs\Qs.csproj">
       <Project>{3204857e-b04a-4304-a37e-a8ac6811db36}</Project>
       <Name>Qs</Name>

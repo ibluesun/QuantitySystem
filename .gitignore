@@ -30,3 +30,6 @@
 /QuantitySystemSolution/Qs/obj
 /QuantitySystemSolution/QuantitySystem/obj
 /QuantitySystemSolution/.vs/QuantitySystemSolution/v16/TestStore/0
+/QuantitySystemSolution/Qs.StandardScripting/obj
+/QuantitySystemSolution/Qs.StandardScripting/bin/Debug
+/QuantitySystemSolution/packages/DynamicLanguageRuntime.1.3.0

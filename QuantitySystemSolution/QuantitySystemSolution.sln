@@ -17,12 +17,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		What's New.txt = What's New.txt
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "DLR", "DLR", "{BD2784D3-94C2-4F74-AF57-050ED12B6E5D}"
-	ProjectSection(SolutionItems) = preProject
-		DLR\Microsoft.Dynamic.dll = DLR\Microsoft.Dynamic.dll
-		DLR\Microsoft.Scripting.dll = DLR\Microsoft.Scripting.dll
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Libraries", "Libraries", "{B97E2DDA-3B38-465E-93A4-F48A3FD5D633}"
 	ProjectSection(SolutionItems) = preProject
 		Libraries\ParticleLexer.dll = Libraries\ParticleLexer.dll
@@ -45,11 +39,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QsGraphics", "QsGraphics\Qs
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Modules", "Modules", "{FDBE8316-6E9E-4864-BEE0-97641E286A28}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qs.Scripting", "Qs.Scripting\Qs.Scripting.csproj", "{9D9327DD-4B4C-4FB5-A671-1287D1C15341}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantitySystem", "QuantitySystem\QuantitySystem.csproj", "{A58A9859-6948-4B16-85A9-56750E07B992}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuantitySystem", "QuantitySystem\QuantitySystem.csproj", "{A58A9859-6948-4B16-85A9-56750E07B992}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Qs", "Qs\Qs.csproj", "{3204857E-B04A-4304-A37E-A8AC6811DB36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qs", "Qs\Qs.csproj", "{3204857E-B04A-4304-A37E-A8AC6811DB36}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qs.StandardScripting", "Qs.StandardScripting\Qs.StandardScripting.csproj", "{B4C8EB97-7AB2-4F23-80B6-D06434CDEDAE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -77,10 +71,6 @@ Global
 		{8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8ECF0F6E-AFCB-4295-BFA5-28F7E193CB7B}.Release|Any CPU.Build.0 = Release|Any CPU
-		{9D9327DD-4B4C-4FB5-A671-1287D1C15341}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{9D9327DD-4B4C-4FB5-A671-1287D1C15341}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{9D9327DD-4B4C-4FB5-A671-1287D1C15341}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{9D9327DD-4B4C-4FB5-A671-1287D1C15341}.Release|Any CPU.Build.0 = Release|Any CPU
 		{A58A9859-6948-4B16-85A9-56750E07B992}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{A58A9859-6948-4B16-85A9-56750E07B992}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{A58A9859-6948-4B16-85A9-56750E07B992}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -89,6 +79,10 @@ Global
 		{3204857E-B04A-4304-A37E-A8AC6811DB36}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3204857E-B04A-4304-A37E-A8AC6811DB36}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3204857E-B04A-4304-A37E-A8AC6811DB36}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B4C8EB97-7AB2-4F23-80B6-D06434CDEDAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B4C8EB97-7AB2-4F23-80B6-D06434CDEDAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B4C8EB97-7AB2-4F23-80B6-D06434CDEDAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B4C8EB97-7AB2-4F23-80B6-D06434CDEDAE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
