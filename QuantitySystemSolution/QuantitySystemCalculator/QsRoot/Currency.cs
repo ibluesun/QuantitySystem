@@ -26,7 +26,7 @@ namespace QsRoot
         {
             get
             {
-                string file = string.Format("XChangeRates-{0}-{1}-{2}.json", DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day);
+                string file = string.Format("XChangeRates-{0}-{1}-{2}.json", DateTime.Today.Year, DateTime.Today.Month.ToString(CultureInfo.InvariantCulture).PadLeft(2, '0'), DateTime.Today.Day.ToString(CultureInfo.InvariantCulture).PadLeft(2,'0'));
                 return file;
             }
         }
@@ -34,7 +34,11 @@ namespace QsRoot
 
         static void DownloadExchangeFile()
         {
-            string web = "http://openexchangerates.org/api/latest.json?app_id=25e93e39fd2b43939b2b62939479609d";
+            // string key = System.Configuration.ConfigurationManager.AppSettings["openexchangeapikey"];  // the key in the app.config is not active .. use your key instead  .. or be satisfied with the one that updated daily in the quantitysystem.org\\
+            // string web = "http://openexchangerates.org/api/latest.json?app_id=" + key;
+
+            string web = "http://quantitysystem.org/api/ExchangeRates";
+
             System.Net.WebClient wc = new System.Net.WebClient();
             byte[] xch = wc.DownloadData(web);
             File.WriteAllBytes(TodayChangeRatesFile, xch);

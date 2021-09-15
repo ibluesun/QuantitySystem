@@ -13,6 +13,10 @@
     <AssemblyOriginatorKeyFile>QuantitySystemRuntime.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <WarningLevel>5</WarningLevel>
+  </PropertyGroup>
+
   <ItemGroup>
     <ProjectReference Include="..\QuantitySystem\QuantitySystem.csproj" />
   </ItemGroup>
