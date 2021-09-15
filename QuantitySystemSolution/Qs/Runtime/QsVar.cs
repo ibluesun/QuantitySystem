@@ -2676,6 +2676,57 @@ namespace Qs.Runtime
             throw new NotSupportedException("Not Supported Operator '" + op + "'");
         }
 
+
+        #region Operators and Priority Groups
+        //Treat operators as groups
+        //  means * and /  are in the same pass
+        //  + and - are in the same pass
+
+        // passes depends on priorities of operators.
+
+        // Internal Higher Priority Group
+        readonly static string[] HigherGroup = { "_h*" /* Higher Multiplication priority used internally in 
+                                              the case of -4  or 5^-3
+                                              To be treated like -1_h*4   or 5^-1_h*4
+                                           */};
+
+        readonly static string[] Group = { "^"    /* Power for normal product '*' */,
+                               "^."   /* Power for dot product */,
+                               "^x"   /* Power for cross product */,
+                               ".."   /* Vector Range operator {from..to} */,
+                               "->"   /* object member calling */,
+                               "!"    /* Exclamation operation */,
+                               ":"    /* colon operation*/
+                             };
+
+        readonly static string[] SymGroup = { "|" /* Derivation operator */};
+
+        readonly static string[] Group0 = { "x"   /* cross product */};
+
+        readonly static string[] Group1 = { "*"   /* normal multiplication */,
+                                "."   /* dot product */,
+                                "(*)" /* Tensor product */,
+                                "/"   /* normal division */,
+                                "%"   /* modulus */ };
+
+        readonly static string[] Group2 = { "+", "-" };
+
+        readonly static string[] Shift = { "<<", ">>" };
+
+        readonly static string[] RelationalGroup = { "<", ">", "<=", ">=" };
+        readonly static string[] EqualityGroup = { "==", "!=" };
+        readonly static string[] AndGroup = { "and" };
+        readonly static string[] OrGroup = { "or" };
+
+        readonly static string[] WhenOtherwiseGroup = { "when", "otherwise" };
+
+
+        /// Operator Groups Ordered by Priorities.
+        readonly static string[][] OperatorGroups = { HigherGroup, Group, SymGroup, Group0, Group1, Group2, Shift, RelationalGroup, EqualityGroup, AndGroup, OrGroup, WhenOtherwiseGroup };
+
+        #endregion 
+
+
         /// <summary>
         /// Takes the linked list of formed expressions and construct the arithmatic expressions based
         /// on the priority of calculation operators.
@@ -2688,51 +2739,6 @@ namespace Qs.Runtime
         /// <returns></returns>
         private Expression ConstructExpression(ExprOp FirstEop)
         {
-            //Treat operators as groups
-            //  means * and /  are in the same pass
-            //  + and - are in the same pass
-
-            // passes depends on priorities of operators.
-
-            // Internal Higher Priority Group
-            string[] HigherGroup = { "_h*" /* Higher Multiplication priority used internally in 
-                                              the case of -4  or 5^-3
-                                              To be treated like -1_h*4   or 5^-1_h*4
-                                           */};
-
-            string[] Group = { "^"    /* Power for normal product '*' */, 
-                               "^."   /* Power for dot product */,
-                               "^x"   /* Power for cross product */,
-                               ".."   /* Vector Range operator {from..to} */,
-                               "->"   /* object member calling */,
-                               "!"    /* Exclamation operation */,
-                               ":"    /* colon operation*/
-                             };
-
-            string[] SymGroup = { "|" /* Derivation operator */};
-
-            string[] Group0 = { "x"   /* cross product */};
-
-            string[] Group1 = { "*"   /* normal multiplication */, 
-                                "."   /* dot product */,                     
-                                "(*)" /* Tensor product */,
-                                "/"   /* normal division */, 
-                                "%"   /* modulus */ };
-
-            string[] Group2 = { "+", "-" };
-
-            string[] Shift = { "<<", ">>" };
-
-            string[] RelationalGroup = { "<", ">", "<=", ">=" };
-            string[] EqualityGroup = { "==", "!=" };
-            string[] AndGroup = { "and" };
-            string[] OrGroup = { "or" };
-
-            string[] WhenOtherwiseGroup = { "when", "otherwise"};
-
-
-            /// Operator Groups Ordered by Priorities.
-            string[][] OperatorGroups = { HigherGroup, Group, SymGroup, Group0, Group1, Group2, Shift, RelationalGroup, EqualityGroup, AndGroup, OrGroup, WhenOtherwiseGroup };
 
             foreach (var opg in OperatorGroups)
             {

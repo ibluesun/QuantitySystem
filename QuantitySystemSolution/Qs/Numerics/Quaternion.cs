@@ -42,29 +42,14 @@ namespace Qs.Numerics
             }
         }
 
-        public double i
-        {
-            get
-            {
-                return b;
-            }
-        }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+        public double i => b;
 
-        public double j
-        {
-            get
-            {
-                return c;
-            }
-        }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+        public double j => c;
 
-        public double k
-        {
-            get
-            {
-                return d;
-            }
-        }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE1006:Naming Styles", Justification = "<Pending>")]
+        public double k => d;
 
         /// <summary>
         /// Quaternion constructor
@@ -342,7 +327,20 @@ namespace Qs.Numerics
 
         public bool Equals(Quaternion other)
         {
-            return this == other;
+            if (this.a == other.a &&
+                this.b == other.b &&
+                this.c == other.c &&
+                this.d == other.d
+                )
+                return true;
+            else
+                return false;
+        }
+        public override bool Equals(object obj)
+        {
+            if (obj is Quaternion rhs)
+                return Equals(rhs);
+            return false;
         }
 
         public override int GetHashCode()

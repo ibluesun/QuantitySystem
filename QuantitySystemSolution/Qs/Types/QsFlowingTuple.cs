@@ -130,7 +130,7 @@ namespace Qs.Types
         {
             int sid = this.Count > 0 ? ThisFlow.FlowSteps.Max(s => s.Id) : 0;
             sid += 10;
-            var v = ThisFlow.Add("Step " + sid, sid);
+            var v = ThisFlow.Add("", sid);
             if (value == null) v.Value = new QsText("n/a");
             else v.Value = value;
         }

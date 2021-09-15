@@ -277,7 +277,7 @@ namespace Qs.Types
             }
 
             // If one is null, but not both, return false.
-            if (((object)a == null) || ((object)b == null))
+            if ((a is null) || (b is null))
             {
                 return false;
             }
@@ -287,7 +287,14 @@ namespace Qs.Types
         public static bool operator !=(QsValue a, QsValue b)
         {
             return !(a == b);
+        }
 
+        public override bool Equals(object obj)
+        {
+            if (obj is QsValue v)
+                return this.Equality(v);
+
+            return false;
         }
 
         #endregion

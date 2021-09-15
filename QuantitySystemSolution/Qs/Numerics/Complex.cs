@@ -9,7 +9,7 @@ namespace Qs.Numerics
     /// <summary>
     /// Qs Complex storage type.
     /// </summary>
-    public struct Complex
+    public struct Complex : IEquatable<Complex>
     {
         private double _real, _imaginary;
 
@@ -61,6 +61,15 @@ namespace Qs.Numerics
             return new Complex(d, 0);
         }
 
+        public bool Equals(Complex other)
+        {
+            if ((this._real == other._real) && (this._imaginary == other._imaginary))
+                return true;
+            else
+                return false;
+        }
+
+
         public static bool operator ==(Complex lhs, Complex rhs)
         {
             if ((lhs._real == rhs._real) && (lhs._imaginary == rhs._imaginary))
@@ -77,7 +86,15 @@ namespace Qs.Numerics
                 return false;
         }
 
-       
+        public override bool Equals(object obj)
+        {
+            if (obj is Complex lhs)
+                return Equals(lhs);
+
+            return false;
+        }
+
+
         public override int GetHashCode()
         {
             return _real.GetHashCode() ^ _imaginary.GetHashCode();
@@ -212,7 +229,7 @@ namespace Qs.Numerics
             var result = a.Power(new Complex(power, 0));
             return (result);
         }
-        
+
 
 
 

@@ -405,7 +405,8 @@ namespace QuantitySystem.Quantities.BaseQuantities
         {
             if (!exponent.Dimension.IsDimensionless)
             {
-                throw new QuantityException("Raising Quantity to a non dimensionless quantity is not implemented", new NotImplementedException());
+                string expectedResult = quantity.ToShortString() + "^" + exponent.ToShortString();
+                throw new QuantityException("Raising Quantity to a non dimensionless quantity is not implemented\nExpected Result is " + expectedResult, new NotImplementedException());
             }
 
             
