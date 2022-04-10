@@ -124,22 +124,18 @@ namespace QuantitySystem.Units
             return Backward;
         }
 
-
         /// <summary>
-        /// Create units path from unit to unit.
+        /// String key to be used as hash between two units conversions
         /// </summary>
-        /// <param name="unit"></param>
+        /// <param name="x"></param>
+        /// <param name="y"></param>
         /// <returns></returns>
-        public UnitPathStack PathFromUnit(Unit unit)
+        public string UnitToUnitSymbol(Unit x, Unit y)
         {
-
-            return unit.PathToUnit(this);
-
+            return "[" + x.Symbol + ":" + x.UnitDimension.ToString() + "]" + "__" + "[" + y.Symbol + ":" + y.UnitDimension.ToString() + "]";
         }
 
-        public Func<Unit, Unit, string> UnitToUnitSymbol = (Unit x, Unit y) => "[" + x.Symbol + ":" + x.UnitDimension.ToString() + "]" + "__" + "[" + y.Symbol + ":" + y.UnitDimension.ToString() + "]";
-
-        private static Dictionary<string, UnitPathStack> CachedPaths = new Dictionary<string, UnitPathStack>();
+        private static readonly Dictionary<string, UnitPathStack> CachedPaths = new Dictionary<string, UnitPathStack>();
 
         private static bool enableUnitsCaching = true;
         public static bool EnableUnitsCaching
@@ -182,7 +178,9 @@ namespace QuantitySystem.Units
                 }
                 #endregion
 
-                #region validity of conversion
+
+                #region Validity of Conversion
+
                 if (this.UnitDimension.IsDimensionless == true && unit.UnitDimension.IsDimensionless == true)
                 {
 
@@ -198,7 +196,12 @@ namespace QuantitySystem.Units
                         throw new UnitsNotDimensionallyEqualException();
                     }
                 }
+
                 #endregion
+
+                // Extra note after all this years  .. if the coming unit is inverted which mean exponent = -1  
+                //   the units path  elements are also inverted like the source unit.
+
 
                 //test if one of the units are not strongly typed
                 //  because this needs special treatment. ;)
@@ -231,10 +234,8 @@ namespace QuantitySystem.Units
 
                     //first location in cache look below for the second location.
 
-                    if (EnableUnitsCaching)
-                    {
-                        CachedPaths.Add(UnitToUnitSymbol(this, unit), (UnitPathStack)Tito.Clone());
-                    }
+                    CachedPaths[UnitToUnitSymbol(this, unit)] = (UnitPathStack)Tito.Clone();
+                    
 
                     return Tito;
 
@@ -265,19 +266,15 @@ namespace QuantitySystem.Units
                     //test for that units parents are the same
 
                     string ThisParent = this.UnitSystem.IndexOf('.') > -1 ?
-                        this.UnitSystem.Substring(0, this.UnitSystem.IndexOf('.')) :
-                        this.UnitSystem;
+                                        this.UnitSystem.Substring(0, this.UnitSystem.IndexOf('.')) :
+                                        this.UnitSystem;
 
                     string TargetParent = unit.UnitSystem.IndexOf('.') > -1 ?
                                         unit.UnitSystem.Substring(0, unit.UnitSystem.IndexOf('.')) :
                                         unit.UnitSystem;
 
-
                     if (ThisParent == TargetParent) NoBoundaryCross = true;
-
                 }
-
-
 
 
                 if (NoBoundaryCross)
@@ -396,14 +393,15 @@ namespace QuantitySystem.Units
                 if (this.IsInverted && unit.IsInverted)
                 {
                     foreach (UnitPathItem upi in Total)
-                        upi.Invert();
+                    {
+                        // only invert the item if it is already not inverted
+                        if(!upi.IsInverted) upi.Invert();
+                    }
                 }
 
                 //Second location in cache  look above for the first one in the same function here :D
-                if (EnableUnitsCaching)
-                {
-                    CachedPaths.Add(UnitToUnitSymbol(this, unit), (UnitPathStack)Total.Clone());
-                }
+                CachedPaths[UnitToUnitSymbol(this, unit)] = (UnitPathStack)Total.Clone();
+                
 
                 return Total;
             }
@@ -505,10 +503,16 @@ namespace QuantitySystem.Units
                 {
                     UnitPathItem upi = up.Pop();
 
-                    if (un.IsInverted) upi.Invert();
+                    if (un.IsInverted)
+                    {
+                        // only invert the item if it is already not inverted.
+                        if (!upi.IsInverted) upi.Invert();
+                    }
 
                     Pathes.Push(upi);
                 }
+
+                
             }
             return Pathes;
         }

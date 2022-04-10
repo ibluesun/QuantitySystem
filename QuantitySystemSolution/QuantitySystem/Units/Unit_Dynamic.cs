@@ -16,7 +16,7 @@ namespace QuantitySystem.Units
     {
         #region Dynamically created unit
 
-        private List<Unit> SubUnits { get; set; } //the list shouldn't been modified by sub classes
+        public List<Unit> SubUnits { get; private set; } //the list shouldn't been modified by sub classes
 
         /// <summary>
         /// Create the unit directly from the specfied dimension in its SI base units.

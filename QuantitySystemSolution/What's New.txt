@@ -1,3 +1,16 @@
+[QuantitySystem 1.7.5]
+- Discovered an error when converting between torque from <HP/rpm> to <N.m!>  
+	...  it is strange error  .. the <1/rpm> has been addressed negative  and it is converted into <1/s> angular velocity
+	...  now I found the error  it was inverting an existed inverted units in the UnitsPath .. so after incorporating the IsInverted property
+	     in the UnitPathItems in the ladder  .. I only  invert if the original unit was inverted and the ladder step wasn't inverted.
+
+- Silly error .. I discovere that Angle quantity constructor isn't formed correctly  .. the regular length exponent wasn't correct
+	how shame is that .. now I should revise my deduction of the whole magnitude of the polar coordinates I guess
+
+- Added new unit  Spat <sp> = 4*Pi <sr>  
+
+- The whole testing applications updated to dotnet 4.8 
+
 [QuantitySystem 1.7.2]
 - Fixed a bug when evaluating <m!/m>   .. it was giving dimensionless unit  while it should give M0L0(RL-1PL1)T0I0O0N0J0$0D0
     ....  yes dimensionless but with underlying RL=-1  and PL=1    .. damn  fixing something after all of those years
@@ -347,7 +360,7 @@
 
 - vectors, and matrices can be treated as objects  (simple actually)
   {3  5 6 2} -> length
-  [4 5; 4 5] -> Identity    or  []->Tranapose()         
+  [4 5; 4 5] -> Identity    or  []->Tranpose()         
   Other functions will be added as needed.
 
 

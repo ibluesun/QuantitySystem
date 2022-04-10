@@ -23,16 +23,18 @@ namespace QuantitySystem.Units
 
         public double Denominator { get; set; }
 
-
+        public bool IsInverted => Unit.IsInverted;
 
         /// <summary>
-        /// Invert the item 
+        /// Invert the item with its underlying unit.
         /// </summary>
         public void Invert()
         {
             double num = Numerator;
             Numerator = Denominator;
             Denominator = num;
+
+            Unit = Unit.Invert();
         }
 
 

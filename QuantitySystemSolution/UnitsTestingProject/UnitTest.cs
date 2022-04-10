@@ -420,25 +420,6 @@ namespace UnitsTestingProject
 
 
 
-        /// <summary>
-        ///A test for PathFromUnit
-        ///</summary>
-        [TestMethod()]
-        public void PathFromUnitTest()
-        {
-
-            double expected = 63360;
-
-            Mile mil = new Mile();
-            Inch i = new Inch();
-
-
-            UnitPathStack actual = i.PathFromUnit(mil);
-
-
-            Assert.AreEqual(expected, actual.ConversionFactor);
-
-        }
 
 
         /// <summary>
@@ -583,6 +564,9 @@ namespace UnitsTestingProject
             Assert.AreEqual(u2.UnitDimension, ll2);
 
         }
+
+
+
     
     }
 }

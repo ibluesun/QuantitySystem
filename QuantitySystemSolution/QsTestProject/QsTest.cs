@@ -4,9 +4,10 @@ using System.Linq;
 using System.Text;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Microsoft.Scripting.Hosting;
-using Qs.Scripting;
+using Qs;
 using Qs.Types;
 using QuantitySystem.Quantities.DimensionlessQuantities;
+using Qs.Scripting;
 
 namespace QsTestProject
 {
