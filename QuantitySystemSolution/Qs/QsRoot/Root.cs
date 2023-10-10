@@ -33,7 +33,7 @@ namespace QsRoot
                 if (library.EndsWith("]"))
                 {
                     // load from GAC
-                    var a = Assembly.LoadWithPartialName(library.Trim('[', ']'));
+                    var a = Assembly.Load(library.Trim('[', ']'));
                 }
             }
             else

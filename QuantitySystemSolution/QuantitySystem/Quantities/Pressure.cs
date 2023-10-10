@@ -1,21 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-
-using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities
 {
     public class Pressure<T> : DerivedQuantity<T>
     {
         public Pressure()
-            : base(1, new Force<T>(), new Area<T>(-1))
+            : base(1, new Intensity<T>(), new Area<T>(-1))
         {
         }
 
         public Pressure(float exponent)
-            : base(exponent, new Force<T>(exponent), new Area<T>(-1 * exponent))
+            : base(exponent, new Intensity<T>(exponent), new Area<T>(-1 * exponent))
         {
         }
 

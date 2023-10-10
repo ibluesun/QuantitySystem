@@ -9,7 +9,7 @@
     <Company>Lost Particles Network (http://www.lostparticles.net)</Company>
     <Description>Qs Dynamic Language that encompasses the Quantity System Framework</Description>
     <Authors>Ahmed Sadek Mohamed Tawfik</Authors>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>QuantitySystemRuntime.pfx</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 

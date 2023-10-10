@@ -37,7 +37,7 @@ namespace QsRoot
             // string key = System.Configuration.ConfigurationManager.AppSettings["openexchangeapikey"];  // the key in the app.config is not active .. use your key instead  .. or be satisfied with the one that updated daily in the quantitysystem.org\\
             // string web = "http://openexchangerates.org/api/latest.json?app_id=" + key;
 
-            string web = "http://quantitysystem.org/api/ExchangeRates";
+            string web = "https://quantitysystem.azurewebsites.net/api/ExchangeRates";
 
             System.Net.WebClient wc = new System.Net.WebClient();
             byte[] xch = wc.DownloadData(web);

@@ -10,12 +10,12 @@ namespace QuantitySystem.Quantities
     public class Energy<T> : DerivedQuantity<T>
     {
         public Energy()
-            : base(1, new Force<T>(), new Length<T>())
+            : base(1, new Intensity<T>(), new Length<T>())
         {
         }
 
         public Energy(float exponent)
-            : base(exponent, new Force<T>(exponent), new Length<T>(exponent))
+            : base(exponent, new Intensity<T>(exponent), new Length<T>(exponent))
         {
         }
 
