@@ -3,7 +3,6 @@
 ################################################################################
 
 /QuantitySystemSolution/UnitsTestingProject/obj/Debug
-/QuantitySystemSolution/.vs/QuantitySystemSolution/v15/sqlite3
 /QuantitySystemSolution/QuantitySystem/obj/Debug
 /QuantitySystemSolution/QuantitySystemTestingProject/obj/Debug
 /QuantitySystemSolution/QuantitySystemCalculator/obj/Debug
@@ -22,15 +21,10 @@
 /QuantitySystemSolution/QuantitySystemTestingProject/bin/Debug
 /QuantitySystemSolution/UnitsTestingProject/bin/Debug
 *.user
-/QuantitySystemSolution/.vs/QuantitySystemSolution/DesignTimeBuild
 /QuantitySystemSolution/Qs/bin/Debug
 /QuantitySystemSolution/Qs/obj
 /QuantitySystemSolution/QuantitySystem/obj
 /QuantitySystemSolution/Qs.StandardScripting/obj
 /QuantitySystemSolution/Qs.StandardScripting/bin/Debug
 /QuantitySystemSolution/packages/DynamicLanguageRuntime.1.3.0
-/QuantitySystemSolution/.vs/QuantitySystemSolution/v15
-/QuantitySystemSolution/.vs/QuantitySystemSolution/v16
-/QuantitySystemSolution/.vs/QuantitySystemSolution/v17
-/QuantitySystemSolution/.vs/QuantitySystemSolution/FileContentIndex
-/QuantitySystemSolution/.vs/ProjectEvaluation
+/QuantitySystemSolution/.vs
