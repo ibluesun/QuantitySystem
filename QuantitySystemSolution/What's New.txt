@@ -1,4 +1,10 @@
 [QuantitySystem 1.7.5]
+- Added Luminous Quantity  <cd/m^2> 
+- Nit unit added  <nt> = <cd/m^2>
+- Stlib unit added  which is cgs and defined as  <st> =  1e4<cd/m^2>
+
+
+[QuantitySystem 1.7.5]
 - Discovered an error when converting between torque from <HP/rpm> to <N.m!>  
 	...  it is strange error  .. the <1/rpm> has been addressed negative  and it is converted into <1/s> angular velocity
 	...  now I found the error  it was inverting an existed inverted units in the UnitsPath .. so after incorporating the IsInverted property
