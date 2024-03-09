@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29613.14
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34616.47
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "QuantitySystemTests", "QuantitySystemTests", "{11635727-736E-4C7D-93FE-CD36FE61917E}"
 EndProject
@@ -43,7 +43,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuantitySystem", "QuantityS
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Qs", "Qs\Qs.csproj", "{3204857E-B04A-4304-A37E-A8AC6811DB36}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Qs.StandardScripting", "Qs.StandardScripting\Qs.StandardScripting.csproj", "{B4C8EB97-7AB2-4F23-80B6-D06434CDEDAE}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Qs.StandardScripting", "Qs.StandardScripting\Qs.StandardScripting.csproj", "{B4C8EB97-7AB2-4F23-80B6-D06434CDEDAE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
