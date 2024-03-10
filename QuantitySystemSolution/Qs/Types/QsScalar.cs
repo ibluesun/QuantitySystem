@@ -1337,6 +1337,21 @@ namespace Qs.Types
             {
                 return this.Operation.DotProductOperation(value);
             }
+            else if (this._ScalarType == ScalarTypes.SymbolicQuantity && value is QsScalar sc && sc.ScalarType == ScalarTypes.SymbolicQuantity)
+            {
+
+                
+                string fbody = "(" + this.SymbolicQuantity.Value.ToString() + ")" + "." + "(" + sc.SymbolicQuantity.Value.ToString() + ")";
+
+                QsScalar fb = SymbolicVariable.Parse(fbody).ToQuantity().ToScalar();
+
+
+                return fb;
+            }
+            else if (this._ScalarType == ScalarTypes.FunctionQuantity && value is QsScalar scalar && scalar.ScalarType == ScalarTypes.SymbolicQuantity)
+            {
+                return ((QsFunction)FunctionQuantity.Value.DotProductOperation(scalar)).ToQuantity().ToScalar();
+            }
             else
             {
                 return this.MultiplyOperation(value);
