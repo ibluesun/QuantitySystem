@@ -11,14 +11,14 @@ namespace QuantitySystem.Quantities.BaseQuantities
     /// very usefull in differentiating of anlges and Angular quantities in general.
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    public class PolarLength<T> : Length<T>
+    public class Displacement<T> : Length<T>
     {
-        public PolarLength() : base(1)
+        public Displacement() : base(1)
         {
             LengthType = LengthType.Polar;
         }
 
-        public PolarLength(float exponent) : base(exponent)
+        public Displacement(float exponent) : base(exponent)
         {
             LengthType = LengthType.Polar;
         }

@@ -316,7 +316,7 @@ namespace QuantitySystem.Units
             if (gen_q == typeof(Currency<>)) return new QuantitySystem.Units.Currency.Coin();
             if (gen_q == typeof(Digital<>)) return new QuantitySystem.Units.Digital.Bit();
 
-            if (gen_q == typeof(PolarLength<>))
+            if (gen_q == typeof(Displacement<>))
             {
                 //because all length units associated with the Length<> Type
                 m_QuantityType = typeof(Length<>).MakeGenericType(m_QuantityType.GetGenericArguments()[0]);

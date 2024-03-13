@@ -9,12 +9,12 @@ namespace QuantitySystem.Quantities
     public class PolarArea<T> : DerivedQuantity<T>
     {
         public PolarArea()
-            : base(1, new PolarLength<T>(2))
+            : base(1, new Displacement<T>(2))
         {
         }
 
         public PolarArea(float exponent)
-            : base(exponent, new PolarLength<T>(2 * exponent))
+            : base(exponent, new Displacement<T>(2 * exponent))
         {
         }
 

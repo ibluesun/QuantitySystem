@@ -1,3 +1,13 @@
+[QuantitySystem 1.7.7]
+- Replacing PolarLength name with Displacement name  
+- Velocity now means  the used length is a displacement 
+- Got back the Speed name for the magnitude representaion of velocity
+- Acceleration  is the magnitude while  AccelerationVector is (( from its name .. the vector quantity itself))
+- Force and ForceVector in the same sense 
+- however  ..  this new concept of expressing quantity as a scalar or vector is not still consistent  ..
+    needless to say it is not passing my criterias .. which indicates a lack of understanding from my side
+	.. so let us keep it like this until further investigations.
+
 
 [Qs 1.7]
 - Infused the new symbolic algerba integration  inside the symbolic quantity and function quantity

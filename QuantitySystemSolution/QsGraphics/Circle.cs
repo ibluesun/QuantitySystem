@@ -76,7 +76,7 @@ namespace QsGraphics
             {
                 ActualRadius = (Length<double>)(zm + radfunc.Invoke(TQ));
             }
-            else if (_radius.GetType().Equals(typeof(Velocity<double>)))
+            else if (_radius.GetType().Equals(typeof(Speed<double>)))
             {
                 ActualRadius = (Length<double>)(zm + (_radius * TQ));
             }
@@ -91,7 +91,7 @@ namespace QsGraphics
             {
                 ActualX = (Length<double>)(zm + xfunc.Invoke(TQ));
             }
-            else if (_x.GetType().Equals(typeof(Velocity<double>)))
+            else if (_x.GetType().Equals(typeof(Speed<double>)))
             {
                 ActualX = (Length<double>)(zm + (_x * TQ));
             }
@@ -106,7 +106,7 @@ namespace QsGraphics
             {
                 ActualY = (Length<double>)(zm + yfunc.Invoke(TQ));
             }
-            else if (_y.GetType().Equals(typeof(Velocity<double>)))
+            else if (_y.GetType().Equals(typeof(Speed<double>)))
             {
                 ActualY = (Length<double>)(zm + (_y * TQ));
             }

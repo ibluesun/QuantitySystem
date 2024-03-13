@@ -25,7 +25,7 @@ namespace QuantitySystem.Quantities
                     quantities.Add(new Length<T>(dimension.Length.RegularExponent));
 
                 if (dimension.Length.PolarExponent != 0)
-                    quantities.Add(new PolarLength<T>(dimension.Length.PolarExponent));
+                    quantities.Add(new Displacement<T>(dimension.Length.PolarExponent));
 
             }
 

@@ -7,11 +7,11 @@ using QuantitySystem.Quantities.BaseQuantities;
 namespace QuantitySystem.Quantities
 {
 
-    /*
+    
     public class Speed<T> : DerivedQuantity<T>
     {
         public Speed()
-    : base(1, new Length<T>(), new Time<T>(-1))
+            : base(1, new Length<T>(), new Time<T>(-1))
         {
         }
 
@@ -31,5 +31,4 @@ namespace QuantitySystem.Quantities
         }
         
     }
-    */
 }

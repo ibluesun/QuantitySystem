@@ -284,13 +284,13 @@ namespace QuantitySystem.Units
             string unit = un.Replace("$", "\\$");
 
             
-            bool UnitModifier = false;
+            bool UnitVectorModifier = false;
 
             if (unit.EndsWith("!", StringComparison.Ordinal)) 
             {
                 //it is intended of Radius length
                 unit = unit.TrimEnd('!');
-                UnitModifier = true; //unit modifier have one use for now is to convert the Length Quantity into Length Quantity into RadiusLength quantity
+                UnitVectorModifier = true; //unit modifier have one use for now is to convert the Length Quantity into Length Quantity into RadiusLength quantity
             }
 
             foreach (Type unitType in UnitTypes)
@@ -312,13 +312,18 @@ namespace QuantitySystem.Units
                         }
 
 
-                        if (UnitModifier)
+                        if (UnitVectorModifier)
                         {
                             //test if the dimension is length and modify it to be radius length
                             if (u.QuantityType == typeof(Length<>))
                             {
-                                u.QuantityType = typeof(PolarLength<>);
+                                u.QuantityType = typeof(Displacement<>);
 
+                            }
+
+                            if(u.QuantityType == typeof(Force<>))
+                            {
+                                u.QuantityType = typeof(ForceVector<>);
                             }
                         }
 

@@ -13,12 +13,12 @@ namespace QuantitySystem.Quantities
     public class PolarVolume<T> : DerivedQuantity<T>
     {
         public PolarVolume()
-            : base(1, new PolarLength<T>(3))
+            : base(1, new Displacement<T>(3))
         {
         }
 
         public PolarVolume(float exponent)
-            : base(exponent, new PolarLength<T>(3 * exponent))
+            : base(exponent, new Displacement<T>(3 * exponent))
         {
         }
 
