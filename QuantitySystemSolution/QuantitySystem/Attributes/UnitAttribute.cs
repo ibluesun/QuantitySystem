@@ -36,21 +36,15 @@ namespace QuantitySystem.Attributes
             this.quantityType = quantityType;
         }
 
-        public string Symbol 
-        {
-            get
-            {
-                return symbol;
-            }
-        }
+        public string Symbol => symbol;
+        
 
-        public Type QuantityType 
-        {
-            get
-            {
-                return quantityType;
-            }
-        }
+        public Type QuantityType => quantityType;
+
+
+        public string QuantityTypeName => QuantityType.ToString().Substring(QuantityType.Namespace.Length + 1).TrimEnd("`1[T]".ToCharArray());
+
+
     }
 
 }

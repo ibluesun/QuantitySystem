@@ -103,13 +103,8 @@ namespace Qs.Types
         }
 
         #region Vector behaviour
-        public int Count
-        {
-            get
-            {
-                return ListStorage.Count;
-            }
-        }
+        public int Count => ListStorage.Count;
+        
 
         public QsScalar this[int i]
         {

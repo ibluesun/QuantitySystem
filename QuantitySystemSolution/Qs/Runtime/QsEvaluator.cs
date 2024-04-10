@@ -1156,7 +1156,7 @@ namespace Qs.Runtime
             Console.ForegroundColor = HelpColor;
 
             Console.WriteLine("    Unit:        {0}", unit.ToString());
-            Console.WriteLine("    Quantity:    {0}", unit.QuantityType.Name);
+            Console.WriteLine("    Quantity:    {0}", unit.QuantityTypeName);
             Console.WriteLine("    Dimension:   {0}", unit.UnitDimension);
             Console.WriteLine("    Unit System: {0}", unit.UnitSystem);
 

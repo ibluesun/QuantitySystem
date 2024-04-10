@@ -7,7 +7,7 @@ using System.Globalization;
 
 namespace QuantitySystem.Units
 {
-    public class UnitPathStack:Stack<UnitPathItem>
+    public class UnitPathStack : Stack<UnitPathItem>
     {
 
         public override bool Equals(object obj)
@@ -21,10 +21,8 @@ namespace QuantitySystem.Units
                 {
                     for (int ix = 0; ix < Count; ix++)
                     {
-                        if (this.ElementAt(ix).Equals(up.ElementAt(ix)) == false)
-                        {
+                        if (!this.ElementAt(ix).Equals(up.ElementAt(ix)))
                             return false;
-                        }
                     }
                     return true;
                 }

@@ -1127,57 +1127,39 @@ namespace Qs.Types
 
 
         #region Special Values
-        private static QsScalar one = "1".ToScalar();
-        private static QsScalar zero = "0".ToScalar();
-        private static QsScalar minusOne = "-1".ToScalar();
+        private static QsScalar _one = "1".ToScalar();
+        private static QsScalar _zero = "0".ToScalar();
+        private static QsScalar _minusOne = "-1".ToScalar();
 
-        
+
         /// <summary>
         /// Returns -1 as dimensionless quantity scalar.
         /// </summary>
-        public static QsScalar NegativeOne
-        {
-            get 
-            { 
-                return QsScalar.minusOne; 
-            }
-        }
+        public static QsScalar NegativeOne => QsScalar._minusOne;
+           
 
         /// <summary>
         /// return 1 as dimensionless quantity scalar.
         /// </summary>
-        public static QsScalar One
-        {
-            get
-            {
-                return one;
-            }
-        }
+        public static QsScalar One => _one;
 
 
         /// <summary>
         /// Returns zero as dimensionless quantity.
         /// </summary>
-        public static QsScalar Zero
-        {
-            get
-            {
-                return zero;
-            }
-        }
+        public static QsScalar Zero => _zero;
+
+
+        public static QsScalar RandomNumber => new QsScalar(ScalarTypes.NumericalQuantity) { NumericalQuantity = (new Random().NextDouble()).ToQuantity() };
+
         #endregion
 
 
         #region QsValue Operations
 
 
-        public override QsValue Identity
-        {
-            get
-            {
-                return One;
-            }
-        }
+        public override QsValue Identity => One;
+        
 
         public override QsValue AddOperation(QsValue vl)
         {
@@ -1658,6 +1640,10 @@ namespace Qs.Types
                             return this.QuaternionQuantity == scalar.QuaternionQuantity;
                         case ScalarTypes.SymbolicQuantity:
                             return this.SymbolicQuantity == scalar.SymbolicQuantity;
+                        case ScalarTypes.FunctionQuantity:
+                            return this.FunctionQuantity == scalar.FunctionQuantity;
+                        case ScalarTypes.QsOperation:
+                            return this.Operation.Equality(scalar.Operation);
                         default:
                             throw new QsException("N/A");
                     }
@@ -2014,7 +2000,7 @@ namespace Qs.Types
                 return Math.E.ToQuantity().ToScalarValue();
             }
 
-            return zero;
+            return _zero;
         }
     }
 }

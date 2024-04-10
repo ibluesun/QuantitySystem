@@ -261,7 +261,40 @@ namespace Qs.Types
 
         public override bool Equality(QsValue value)
         {
-            throw new NotImplementedException();
+            if (value is QsTensor ts)
+            {
+                if (this.Order != ts.Order) return false;
+                if (!object.ReferenceEquals(ts, this))
+                {
+
+                    // we need to test equality to 
+
+                    if (this.InnerTensors != null)
+                    {
+                        for (int i = 0; i < InnerTensors.Count; i++)
+                        {
+                            if (!InnerTensors[i].Equality(ts.InnerTensors[i])) return false;
+                        }
+                    }
+                    else
+                    {
+
+                        for (int mn = 0; mn < MatrixLayers.Count; mn++)
+                        {
+                            if (!MatrixLayers[mn].Equality(ts.MatrixLayers[mn])) return false;
+                        }
+
+                    }
+
+
+
+
+                }
+
+                return true;
+
+            }
+            return false;
         }
 
         public override bool Inequality(QsValue value)

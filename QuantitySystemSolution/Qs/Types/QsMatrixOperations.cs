@@ -637,7 +637,31 @@ namespace Qs.Types
         public override bool Equality(QsValue value)
         {
             //if ((object)value == null) return false;
-            throw new NotImplementedException();
+            if(value is QsMatrix m)
+            {
+                if (this.RowsCount != m.RowsCount) return false;
+                if (this.ColumnsCount != m.ColumnsCount) return false;
+                
+                if (!object.ReferenceEquals(m, this))
+                {
+
+                    // if not then we need to compare it element by element
+
+                    for (int i = 0; i < RowsCount; i++)
+                    {
+                        for (int j = 0; j < ColumnsCount; j++)
+                        {
+
+                            if (!this[i, j].Equality(m[i, j])) return false;
+                        }
+                    }
+
+                }
+
+                return true;
+            }
+
+            return false;
         }
 
         public override bool Inequality(QsValue value)

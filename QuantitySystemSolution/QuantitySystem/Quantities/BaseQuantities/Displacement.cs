@@ -15,12 +15,12 @@ namespace QuantitySystem.Quantities.BaseQuantities
     {
         public Displacement() : base(1)
         {
-            LengthType = LengthType.Polar;
+            LengthRank = TensorRank.Vector;
         }
 
         public Displacement(float exponent) : base(exponent)
         {
-            LengthType = LengthType.Polar;
+            LengthRank = TensorRank.Vector;
         }
 
     }

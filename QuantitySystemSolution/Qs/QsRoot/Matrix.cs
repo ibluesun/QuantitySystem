@@ -11,10 +11,21 @@ namespace QsRoot
     public static class Matrix
     {
 
-        public static QsMatrix Identity(int diagonal)
+        public static QsMatrix Identity(int size)
         {
 
-            return QsMatrix.MakeIdentity(diagonal);
+            return QsMatrix.MakeIdentity(size);
+        }
+        public static QsMatrix Random(int size)
+        {
+
+            return QsMatrix.Random(size);
+        }
+
+        public static QsMatrix Random(int n, int m)
+        {
+
+            return QsMatrix.Random(n, m);
         }
 
         public static QsValue Transpose(QsParameter matrix)

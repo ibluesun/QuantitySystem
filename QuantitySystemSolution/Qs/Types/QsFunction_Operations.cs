@@ -10,6 +10,8 @@ using SymbolicAlgebra;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
 using System.Text;
+using System.Linq.Expressions;
+using System.Reflection;
 
 namespace Qs.Types
 {
@@ -351,10 +353,44 @@ namespace Qs.Types
         {
             throw new NotImplementedException();
         }
+        public static bool operator ==(QsFunction a, QsFunction b)
+        {
+            // If both are null, or both are same instance, return true.
+            if (System.Object.ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            // If one is null, but not both, return false.
+            if ((a is null) || (b is null))
+            {
+                return false;
+            }
+
+            return a.Equality(b);
+        }
+
+        public static bool operator !=(QsFunction a, QsFunction b)
+        {
+            return !(a == b);
+        }
+
+
+        static PropertyInfo ExpressionDebugView = typeof(Expression).GetProperty("DebugView", BindingFlags.Instance | BindingFlags.NonPublic);
 
         public override bool Equality(QsValue value)
         {
-            throw new NotImplementedException();
+            if(value is QsFunction func)
+            {
+                if (object.ReferenceEquals(func, this)) return true;
+
+                var thisDebugView = ExpressionDebugView.GetValue(this._FunctionExpression.Body) as string;
+                var funcDebugView = ExpressionDebugView.GetValue(func._FunctionExpression.Body) as string;
+
+                return thisDebugView.Equals(funcDebugView);
+
+            }
+            return false;
         }
 
         public override bool Inequality(QsValue value)

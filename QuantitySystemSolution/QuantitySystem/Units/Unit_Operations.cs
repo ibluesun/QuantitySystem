@@ -8,6 +8,8 @@ using System.Reflection;
 using QuantitySystem.Attributes;
 using QuantitySystem.Quantities.DimensionlessQuantities;
 using System.Threading;
+using System.Diagnostics;
+using System.IO;
 
 namespace QuantitySystem.Units
 {
@@ -132,22 +134,67 @@ namespace QuantitySystem.Units
         /// <returns></returns>
         public string UnitToUnitSymbol(Unit x, Unit y)
         {
-            return "[" + x.Symbol + ":" + x.UnitDimension.ToString() + "]" + "__" + "[" + y.Symbol + ":" + y.UnitDimension.ToString() + "]";
+            string key =  "[" + x.Symbol + ":" + x.UnitDimension.ToString() + "]" + "__" + "[" + y.Symbol + ":" + y.UnitDimension.ToString() + "]";
+
+            if(x is DynamicUnit && y is DynamicUnit)
+            {
+                key = "DYNAMIC__" + key;
+            }
+
+            return key;
         }
 
         private static readonly Dictionary<string, UnitPathStack> CachedPaths = new Dictionary<string, UnitPathStack>();
 
-        private static bool enableUnitsCaching = true;
+        public static event EventHandler CacheCleared;
+
+        public static void ClearDynamicUnitsCaching()
+        {
+            var dynamicKeys = CachedPaths.Keys.Where(k => k.StartsWith("DYNAMIC__")).ToArray();
+
+            lock (CachedPaths)
+            {
+                foreach (var dynamicKey in dynamicKeys)
+                {
+                    CachedPaths.Remove(dynamicKey);
+                }
+
+            }
+
+            var dynamicTypes = CachedUnitsValues.Keys.Where(k=> k.BaseType == typeof(DynamicUnit)).ToArray();
+            lock (CachedUnitsValues)
+            {
+                foreach(var  dynamicType in dynamicTypes)
+                {
+                    CachedUnitsValues.Remove(dynamicType);
+                }
+
+            }
+            if (CacheCleared != null)
+                CacheCleared(null, null);
+        }
+
+
+        public static void ClearUnitsCaching()
+        {
+            lock (CachedPaths) CachedPaths.Clear();
+            lock (CachedUnitsValues) CachedUnitsValues.Clear();
+            if (CacheCleared != null)
+                CacheCleared(null, null);
+        }
+
+        private static bool _EnableUnitsCaching = true;
+
         public static bool EnableUnitsCaching
         {
             get
             {
-                return enableUnitsCaching;
+                return _EnableUnitsCaching;
             }
             set
             {
-                enableUnitsCaching = value;
-                if (enableUnitsCaching) CachedPaths.Clear();
+                _EnableUnitsCaching = value;
+                ClearUnitsCaching();
             }
         }
 
@@ -400,7 +447,7 @@ namespace QuantitySystem.Units
                 }
 
                 //Second location in cache  look above for the first one in the same function here :D
-                CachedPaths[UnitToUnitSymbol(this, unit)] = (UnitPathStack)Total.Clone();
+                CachedPaths[UnitToUnitSymbol(this, unit)] = Total.Clone();
                 
 
                 return Total;

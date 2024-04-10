@@ -12,7 +12,7 @@ namespace QsRoot
     {
 
         static ParticleLexer.Token CurrenciesJson;
-        static Dictionary<string, double> Currs ;
+        static Dictionary<string, double> CurrentCurrencies;
 
         static Currency()
         {
@@ -74,21 +74,25 @@ namespace QsRoot
                 );
 
 
-            Currs = new Dictionary<string, double>();
+            CurrentCurrencies = new Dictionary<string, double>();
 
             // find rates key
             foreach (var tok in CurrenciesJson)
             {
                 if (tok.TokenClassType == typeof(MergedToken))
                 {
-                    Currs.Add(tok[0].TrimTokens(1, 1).TokenValue, double.Parse(tok[2].TokenValue, CultureInfo.InvariantCulture));
+                    CurrentCurrencies.Add(tok[0].TrimTokens(1, 1).TokenValue, double.Parse(tok[2].TokenValue, CultureInfo.InvariantCulture));
                 }
             }
         }
 
         public static double CurrencyConverter(string currency)
         {
-            return 1.0 / Currs[currency];
+            if (CurrentCurrencies.TryGetValue(currency, out double result))
+                return 1.0 / result;
+            else
+                return double.NaN;
+
         }
 
         /// <summary>

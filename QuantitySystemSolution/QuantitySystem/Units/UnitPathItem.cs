@@ -40,9 +40,7 @@ namespace QuantitySystem.Units
 
         public override bool Equals(object obj)
         {
-            UnitPathItem upi = obj as UnitPathItem;
-
-            if (upi != null)
+            if (obj is UnitPathItem upi)
             {
                 if ((this.Unit.GetType() == upi.Unit.GetType())
                     && (this.Numerator == upi.Numerator)

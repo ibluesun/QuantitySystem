@@ -10,19 +10,25 @@ namespace QuantitySystem.DimensionDescriptors
 
         public LengthDescriptor(float normalExponent, float polarExponent):this()
         {
-            this.RegularExponent = normalExponent;
-            this.PolarExponent = polarExponent;
+            this.ScalarExponent = normalExponent;
+            this.VectorExponent = polarExponent;
         }
 
         #region Length Properties Types
 
-        public float RegularExponent
+        public float ScalarExponent
         {
             get;
             set;
         }
 
-        public float PolarExponent
+        public float VectorExponent
+        {
+            get;
+            set;
+        }
+
+        public float MatrixExponent
         {
             get;
             set;
@@ -37,9 +43,9 @@ namespace QuantitySystem.DimensionDescriptors
             {
                 LengthDescriptor ld = (LengthDescriptor)obj;
                 {
-                    if (this.RegularExponent != ld.RegularExponent) return false;
+                    if (this.ScalarExponent != ld.ScalarExponent) return false;
 
-                    if (this.PolarExponent != ld.PolarExponent) return false;
+                    if (this.VectorExponent != ld.VectorExponent) return false;
 
                     return true;
                 }
@@ -52,7 +58,7 @@ namespace QuantitySystem.DimensionDescriptors
 
         public override int GetHashCode()
         {
-            return RegularExponent.GetHashCode() ^ PolarExponent.GetHashCode();
+            return ScalarExponent.GetHashCode() ^ VectorExponent.GetHashCode();
         }
 
         #region IDimensionDescriptor<LengthDescriptor> Members
@@ -60,7 +66,7 @@ namespace QuantitySystem.DimensionDescriptors
 
         public float Exponent
         {
-            get { return RegularExponent + PolarExponent; }
+            get { return ScalarExponent + VectorExponent; }
             set { }
         }
 
@@ -69,8 +75,8 @@ namespace QuantitySystem.DimensionDescriptors
         public LengthDescriptor Add(LengthDescriptor dimensionDescriptor)
         {
             LengthDescriptor l = new LengthDescriptor();
-            l.RegularExponent = this.RegularExponent + dimensionDescriptor.RegularExponent;
-            l.PolarExponent = this.PolarExponent + dimensionDescriptor.PolarExponent;
+            l.ScalarExponent = this.ScalarExponent + dimensionDescriptor.ScalarExponent;
+            l.VectorExponent = this.VectorExponent + dimensionDescriptor.VectorExponent;
 
             return l;
         }
@@ -78,8 +84,8 @@ namespace QuantitySystem.DimensionDescriptors
         public LengthDescriptor Subtract(LengthDescriptor dimensionDescriptor)
         {
             LengthDescriptor l = new LengthDescriptor();
-            l.RegularExponent = this.RegularExponent - dimensionDescriptor.RegularExponent;
-            l.PolarExponent = this.PolarExponent - dimensionDescriptor.PolarExponent;
+            l.ScalarExponent = this.ScalarExponent - dimensionDescriptor.ScalarExponent;
+            l.VectorExponent = this.VectorExponent - dimensionDescriptor.VectorExponent;
 
             return l;
         }
@@ -87,8 +93,8 @@ namespace QuantitySystem.DimensionDescriptors
         public LengthDescriptor Multiply(float exponent)
         {
             LengthDescriptor l = new LengthDescriptor();
-            l.RegularExponent = this.RegularExponent * exponent;
-            l.PolarExponent = this.PolarExponent * exponent;
+            l.ScalarExponent = this.ScalarExponent * exponent;
+            l.VectorExponent = this.VectorExponent * exponent;
 
             return l;
         }
@@ -96,8 +102,8 @@ namespace QuantitySystem.DimensionDescriptors
         public LengthDescriptor Invert()
         {
             LengthDescriptor l = new LengthDescriptor();
-            l.RegularExponent = 0 - RegularExponent;
-            l.PolarExponent = 0 - PolarExponent;
+            l.ScalarExponent = 0 - ScalarExponent;
+            l.VectorExponent = 0 - VectorExponent;
             return l;
         }
 

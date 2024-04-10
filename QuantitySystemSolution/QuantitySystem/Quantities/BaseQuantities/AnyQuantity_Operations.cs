@@ -849,7 +849,8 @@ namespace QuantitySystem.Quantities.BaseQuantities
             }
             else
             {
-                throw new QuantitiesNotDimensionallyEqualException();
+                //throw new QuantitiesNotDimensionallyEqualException();
+                return false;
             }
         }
 
@@ -926,7 +927,8 @@ namespace QuantitySystem.Quantities.BaseQuantities
             }
             else
             {
-                throw new QuantitiesNotDimensionallyEqualException();
+                //throw new QuantitiesNotDimensionallyEqualException();
+                return true;
             }
         }
 

@@ -43,20 +43,8 @@ namespace Qs.Types
 
         private LambdaExpression _FunctionExpression;
 
-        public LambdaExpression FunctionExpression
-        {
-            get
-            {
-                
-                return _FunctionExpression;
-            }
-            private set
-            {
-                _FunctionExpression = value;
-
-
-            }
-        }
+        public LambdaExpression FunctionExpression =>_FunctionExpression;
+        
 
         /// <summary>
         /// Tells if the function has an evaluated body that can be invoked.
@@ -675,7 +663,7 @@ namespace Qs.Types
 
                 LambdaExpression lbe = lb.MakeLambda();
 
-                qf.FunctionExpression = lbe;
+                qf._FunctionExpression = lbe;
 
                 qf.FunctionBodyToken = functionBodyTokens;
 

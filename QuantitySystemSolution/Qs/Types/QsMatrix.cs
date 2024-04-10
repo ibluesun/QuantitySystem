@@ -115,24 +115,14 @@ namespace Qs.Types
         /// <summary>
         /// Count of the matrix rows {m}
         /// </summary>
-        public int RowsCount
-        {
-            get
-            {
-                return Rows.Count;
-            }
-        }
+        public int RowsCount => Rows.Count;
+        
 
         /// <summary>
         /// Count of the matrix columns {n}
         /// </summary>
-        public int ColumnsCount
-        {
-            get
-            {
-               return Rows[0].Count;
-            }
-        }
+        public int ColumnsCount => Rows[0].Count;
+        
 
 
         /// <summary>
@@ -546,16 +536,31 @@ namespace Qs.Types
         {
             get
             {
-                StringBuilder sb = new StringBuilder();
+
+                int maxCharachtersCount = 0;
+                string[,] cells = new string[RowsCount, ColumnsCount];
+
                 for (int IY = 0; IY < this.RowsCount; IY++)
                 {
-                    //sb.Append("\t");   
                     for (int IX = 0; IX < this.ColumnsCount; IX++)
                     {
                         string cell = this[IY, IX].ToShortString();
 
-                        sb.Append(cell.PadLeft(13));
-                        sb.Append(" ");
+                        cells[IY, IX] = cell;
+
+                        maxCharachtersCount = Math.Max(maxCharachtersCount, cell.Length);
+
+                    }
+                }
+
+                StringBuilder sb = new StringBuilder();
+                for (int IY = 0; IY < this.RowsCount; IY++)
+                {  
+                    for (int IX = 0; IX < this.ColumnsCount; IX++)
+                    {
+                        string cell = cells[IY, IX];
+
+                        sb.Append(cell.PadLeft(maxCharachtersCount + 2));
                     }
 
                     sb.AppendLine();
@@ -747,6 +752,35 @@ namespace Qs.Types
 
             return m;
         }
+
+
+        public static QsMatrix Random(int rows, int columns)
+        {
+            QsMatrix m = new QsMatrix();
+
+            Random rr = new Random(Environment.TickCount);
+
+            for (int i = 0; i < rows; i++)
+            {
+                QsVector v = new QsVector(columns);
+                for (int j = 0; j < columns; j++)
+                {
+                    var sr = new QsScalar(ScalarTypes.NumericalQuantity) { NumericalQuantity = (rr.NextDouble()).ToQuantity() };
+                    v.AddComponent(sr);
+
+                }
+                m.AddVector(v);
+            }
+
+            return m;
+        }
+
+        public static QsMatrix Random(int n)
+        {
+            return Random(n, n);
+        }
+
+
 
         #region IEnumerable<QsVector> Members
 

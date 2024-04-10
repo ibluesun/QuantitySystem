@@ -1,3 +1,16 @@
+[QuantitySystem 1.7.8]
+- Changed currency units to inherit from Dynamic Unit
+-  Added a function to clear the dynamic units caching 
+- I have changed the inner length descriptors to be  S V M  to express the length tensor rank .. which is a new concept for the quantities.
+
+[Qs 1.7.1]
+- added Matrix:Random(m, n)  to generate random matrix components
++ added equality test  for QsMatrix, QsTensor, and QsFunction
+	- The equality of function depends on the built expression of the function body .. currently even the parameters names should be the same	\
+- also equality of flowing tuple
+
+
+
 [QuantitySystem 1.7.7]
 - Replacing PolarLength name with Displacement name  
 - Velocity now means  the used length is a displacement 

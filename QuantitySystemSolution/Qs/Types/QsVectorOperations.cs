@@ -726,12 +726,15 @@ namespace Qs.Types
                 return this.Magnitude().NumericalQuantity == s.NumericalQuantity;
 
             }
-            else if (value is QsVector)
+            else if (value is QsVector v)
             {
-                //the comparison will be based on the vector magnitudes.
-                var v = (QsVector)value;
-                return (this.Magnitude().NumericalQuantity == v.Magnitude().NumericalQuantity);
+                if (this.Count != v.Count) return false;
+                for(int i = 0; i < ListStorage.Count; i++) 
+                {
+                    if (!this.ListStorage[i].Equality(v.ListStorage[i])) return false;
+                }
 
+                return true;
             }
             else
             {

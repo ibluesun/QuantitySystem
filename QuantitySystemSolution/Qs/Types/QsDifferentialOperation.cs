@@ -20,10 +20,19 @@ namespace Qs.Types
          * 
          */
 
-        private struct InnerOperation
+        private struct InnerOperation :IEquatable<InnerOperation>
         {
             public string Operation;
             public QsValue value;
+
+            public bool Equals(InnerOperation other)
+            {
+                if(Operation != other.Operation) return false;
+
+                if(!value.Equality(other.value)) return false;
+
+                return true;
+            }
         }
 
         private List<InnerOperation> operations = new List<InnerOperation>();
@@ -125,6 +134,23 @@ namespace Qs.Types
             throw new NotImplementedException();
         }
 
+
+        public override bool Equality(QsValue value)
+        {
+            if (value is QsDifferentialOperation op)
+            {
+                if (this.operations.Count != op.operations.Count) return false;
+
+                for (int i = 0; i < op.operations.Count; i++)
+                {
+                    if (!op.operations[i].Equals(op.operations[i]))
+                        return false;
+                }
+
+                return true;
+            }
+            return false;
+        }
 
         public override string ToString()
         {

@@ -287,7 +287,7 @@ namespace Qs.Runtime
                     seqo = new QsSequence(indexes.Count > 0 ? indexes[0] : string.Empty, parameters)
                     {
                         SequenceSymbolicName = sequenceName,
-                        SequenceDeclaration = t[nsidx + 0].TokenValue + t[nsidx + 1].TokenValue + t[nsidx + shift + 1].TokenValue, //(shift == nsidx + 1 ? t[nsidx + 2].TokenValue : ""),
+                        SequenceDeclaration = t[nsidx + 0].TokenValue + t[nsidx + 1].TokenValue + (parameters.Length > 0 ? t[nsidx + shift + 1].TokenValue : ""), //(shift == nsidx + 1 ? t[nsidx + 2].TokenValue : ""),
                         SequenceNamespace = declaredNamespace,
                         SequenceRangeStartName = rangeStartNames[0],
                         SequenceRangeEndName = rangeEndNames[0]

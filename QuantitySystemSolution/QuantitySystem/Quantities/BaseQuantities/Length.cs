@@ -7,32 +7,54 @@ using QuantitySystem.DimensionDescriptors;
 namespace QuantitySystem.Quantities.BaseQuantities
 {
 
-    public enum LengthType
+    public enum TensorRank
     {
-        Regular,
-        Polar
+        /// <summary>
+        /// Rank 0
+        /// </summary>
+        Scalar,
+
+        /// <summary>
+        /// Rank 1
+        /// </summary>
+        Vector,
+
+        /// <summary>
+        /// Rank 2
+        /// </summary>
+        Matrix,
+
+        /// <summary>
+        /// Rank 3
+        /// </summary>
+        MV,
+
+        /// <summary>
+        /// Rank 4
+        /// </summary>
+        MM
     }
 
     public class Length<T> : AnyQuantity<T>
     {
 
-        public LengthType LengthType { get; set; }
+        public TensorRank LengthRank { get; set; }
 
         public Length() : base(1) 
         {
-            LengthType = LengthType.Regular;
+            LengthRank = TensorRank.Scalar;
         }
 
         public Length(float exponent)
             : base(exponent) 
         {
-            LengthType = LengthType.Regular;
+            LengthRank = TensorRank.Scalar;
         }
 
-        public Length(float exponent, LengthType lengthType)
+        public Length(float exponent, TensorRank lengthType)
             : base(exponent)
         {
-            LengthType = lengthType;
+            LengthRank = lengthType;
         }
 
         public override QuantityDimension Dimension
@@ -41,12 +63,12 @@ namespace QuantitySystem.Quantities.BaseQuantities
             {
                 QuantityDimension LengthDimension = new QuantityDimension();
 
-                switch (LengthType)
+                switch (LengthRank)
                 {
-                    case LengthType.Regular:
+                    case TensorRank.Scalar:
                         LengthDimension.Length = new LengthDescriptor(Exponent,  0);
                         break;
-                    case LengthType.Polar:
+                    case TensorRank.Vector:
                         LengthDimension.Length = new LengthDescriptor(0,  Exponent);
                         break;
                 }
