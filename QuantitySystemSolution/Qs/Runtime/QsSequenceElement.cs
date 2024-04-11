@@ -103,7 +103,7 @@ namespace Qs.Runtime
                 return (QsValue)ElementValue;
         }
 
-        public QsValue Execute(int executionIndex, params QsValue[] args)
+        public QsValue Execute(int executionIndex, params QsParameter[] args)
         {
             if (ElementValue is QsValue)
                 return (QsValue)ElementValue;
@@ -113,19 +113,19 @@ namespace Qs.Runtime
                 case 0:
                     return Execute(executionIndex);
                 case 1:
-                    return ((Func<int, QsValue, QsValue>)ElementValue)(executionIndex, args[0]);
+                    return ((Func<int, QsParameter, QsValue>)ElementValue)(executionIndex, args[0]);
                 case 2:
-                    return ((Func<int, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1]);
+                    return ((Func<int, QsParameter, QsParameter, QsValue>)ElementValue)(executionIndex, args[0], args[1]);
                 case 3:
-                    return ((Func<int, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2]);
+                    return ((Func<int, QsParameter, QsParameter, QsParameter, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2]);
                 case 4:
-                    return ((Func<int, QsValue, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3]);
+                    return ((Func<int, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3]);
                 case 5:
-                    return ((Func<int, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4]);
+                    return ((Func<int, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4]);
                 case 6:
-                    return ((Func<int, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4], args[5]);
+                    return ((Func<int, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4], args[5]);
                 case 7:
-                    return ((Func<int, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
+                    return ((Func<int, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsParameter, QsValue>)ElementValue)(executionIndex, args[0], args[1], args[2], args[3], args[4], args[5], args[6]);
 
             }
             throw new QsException("Parameters Exeeded the limits");
@@ -266,7 +266,8 @@ namespace Qs.Runtime
                 //make the sequence parameters.
                 foreach (var seqParam in sequence.Parameters)
                 {
-                    lb.Parameter(typeof(QsValue), seqParam.Name);
+                    //lb.Parameter(typeof(QsValue), seqParam.Name);
+                    lb.Parameter(typeof(QsParameter), seqParam.Name);
                     if (element.IndexOf(seqParam.Name) > -1)
                         se.ParameterEvaluation = true;
                 }

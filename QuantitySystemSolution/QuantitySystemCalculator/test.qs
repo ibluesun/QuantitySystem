@@ -85,6 +85,12 @@ tor = 10<N> * 5<m!>
 torWork = 0<J> + tor*20<rad>
 torPower = 0<W> + tor * 10<rpm>
 
+
+# testing indexing inside sequence calling
+
+ss[n](v) ..> v[n]
+"correct" when ss[2]({3 4 5 6}) == 5 otherwise "wrong"
+
 #Please Accept my deepest regards 
 #	Ahmed Sadek
 

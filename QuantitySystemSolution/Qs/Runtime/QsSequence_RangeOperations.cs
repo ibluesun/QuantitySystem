@@ -165,7 +165,7 @@ namespace Qs.Runtime
         }
 
         #region SumElements Functions
-        public QsValue SumElements(int fromIndex, int toIndex, QsValue arg0)
+        public QsValue SumElements(int fromIndex, int toIndex, QsParameter arg0)
         {
             
 
@@ -179,7 +179,9 @@ namespace Qs.Runtime
             
             return Total;
         }
-        public QsValue SumElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1)
+
+        
+        public QsValue SumElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1)
         {
             
 
@@ -193,7 +195,7 @@ namespace Qs.Runtime
             
             return Total;
         }
-        public QsValue SumElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2)
+        public QsValue SumElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2)
         {
             
 
@@ -207,7 +209,7 @@ namespace Qs.Runtime
             
             return Total;
         }
-        public QsValue SumElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3)
+        public QsValue SumElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3)
         {
             
 
@@ -221,7 +223,7 @@ namespace Qs.Runtime
             
             return Total;
         }
-        public QsValue SumElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4)
+        public QsValue SumElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4)
         {
             
 
@@ -235,7 +237,7 @@ namespace Qs.Runtime
             
             return Total;
         }
-        public QsValue SumElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5)
+        public QsValue SumElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4, QsParameter arg5)
         {
             
 
@@ -249,7 +251,7 @@ namespace Qs.Runtime
             
             return Total;
         }
-        public QsValue SumElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5, QsValue arg6)
+        public QsValue SumElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4, QsParameter arg5, QsParameter arg6)
         {
             
 
@@ -263,6 +265,7 @@ namespace Qs.Runtime
             
             return Total;
         }
+        
         #endregion
 
 
@@ -317,7 +320,7 @@ namespace Qs.Runtime
         }
 
         #region MulElements Functions
-        public QsValue MulElements(int fromIndex, int toIndex, QsValue arg0)
+        public QsValue MulElements(int fromIndex, int toIndex, QsParameter arg0)
         {
             
 
@@ -331,7 +334,8 @@ namespace Qs.Runtime
             
             return Total;
         }
-        public QsValue MulElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1)
+        
+        public QsValue MulElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1)
         {
             
 
@@ -345,7 +349,7 @@ namespace Qs.Runtime
             
             return Total;
         }
-        public QsValue MulElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2)
+        public QsValue MulElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2)
         {
             
 
@@ -359,7 +363,7 @@ namespace Qs.Runtime
             
             return Total;
         }
-        public QsValue MulElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3)
+        public QsValue MulElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3)
         {
             
 
@@ -373,7 +377,7 @@ namespace Qs.Runtime
             
             return Total;
         }
-        public QsValue MulElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4)
+        public QsValue MulElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4)
         {
             
 
@@ -387,7 +391,7 @@ namespace Qs.Runtime
             
             return Total;
         }
-        public QsValue MulElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5)
+        public QsValue MulElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4, QsParameter arg5)
         {
             
 
@@ -401,7 +405,7 @@ namespace Qs.Runtime
             
             return Total;
         }
-        public QsValue MulElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5, QsValue arg6)
+        public QsValue MulElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4, QsParameter arg5, QsParameter arg6)
         {
             
 
@@ -415,6 +419,7 @@ namespace Qs.Runtime
             
             return Total;
         }
+        
         #endregion
 
 
@@ -620,7 +625,7 @@ namespace Qs.Runtime
         }
 
         #region QsValueElements Functions
-        public QsValue QsValueElements(int fromIndex, int toIndex, QsValue arg0)
+        public QsValue QsValueElements(int fromIndex, int toIndex, QsParameter arg0)
         {
             
 
@@ -685,7 +690,8 @@ namespace Qs.Runtime
                 throw new NotSupportedException();
             }
         }
-        public QsValue QsValueElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1)
+  
+        public QsValue QsValueElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1)
         {
             
 
@@ -749,7 +755,7 @@ namespace Qs.Runtime
             }
         }
 
-        public QsValue QsValueElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2)
+        public QsValue QsValueElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2)
         {
             
 
@@ -812,7 +818,7 @@ namespace Qs.Runtime
                 throw new NotSupportedException();
             }
         }
-        public QsValue QsValueElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3)
+        public QsValue QsValueElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3)
         {
             
 
@@ -877,7 +883,7 @@ namespace Qs.Runtime
             }
         }
 
-        public QsValue QsValueElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4)
+        public QsValue QsValueElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4)
         {
             
 
@@ -941,7 +947,7 @@ namespace Qs.Runtime
             }
         }
 
-        public QsValue QsValueElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5)
+        public QsValue QsValueElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4, QsParameter arg5)
         {
             
 
@@ -1004,7 +1010,7 @@ namespace Qs.Runtime
                 throw new NotSupportedException();
             }
         }
-        public QsValue QsValueElements(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5, QsValue arg6)
+        public QsValue QsValueElements(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4, QsParameter arg5, QsParameter arg6)
         {
             
 

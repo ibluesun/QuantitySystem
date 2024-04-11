@@ -240,48 +240,48 @@ namespace Qs.Runtime
         }
 
         #region Get Element Quantity Functions
-        public QsValue GetElementValue(int index, QsValue arg0)
+        public QsValue GetElementValue(int index, QsParameter arg0)
         {
-            QsValue val = (QsValue)GetElement(index).Execute(index, arg0);
+            QsValue val = GetElement(index).Execute(index, arg0);
+            return val;
+        }
+        
+        public QsValue GetElementValue(int index, QsParameter arg0, QsParameter arg1)
+        {
+            QsValue val = GetElement(index).Execute(index, arg0, arg1);
             return val;
         }
 
-        public QsValue GetElementValue(int index, QsValue arg0, QsValue arg1)
+        public QsValue GetElementValue(int index, QsParameter arg0, QsParameter arg1, QsParameter arg2)
         {
-            QsValue val = (QsValue)GetElement(index).Execute(index, arg0, arg1);
+            QsValue val = GetElement(index).Execute(index, arg0, arg1, arg2);
             return val;
         }
 
-        public QsValue GetElementValue(int index, QsValue arg0, QsValue arg1, QsValue arg2)
+        public QsValue GetElementValue(int index, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3)
         {
-            QsValue val = (QsValue)GetElement(index).Execute(index, arg0, arg1, arg2);
+            QsValue val = GetElement(index).Execute(index, arg0, arg1, arg2, arg3);
             return val;
         }
 
-        public QsValue GetElementValue(int index, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3)
+        public QsValue GetElementValue(int index, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4)
         {
-            QsValue val = (QsValue)GetElement(index).Execute(index, arg0, arg1, arg2, arg3);
+            QsValue val = GetElement(index).Execute(index, arg0, arg1, arg2, arg3, arg4);
             return val;
         }
 
-        public QsValue GetElementValue(int index, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4)
+        public QsValue GetElementValue(int index, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4, QsParameter arg5)
         {
-            QsValue val = (QsValue)GetElement(index).Execute(index, arg0, arg1, arg2, arg3, arg4);
+            QsValue val = GetElement(index).Execute(index, arg0, arg1, arg2, arg3, arg4, arg5);
             return val;
         }
 
-        public QsValue GetElementValue(int index, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5)
+        public QsValue GetElementValue(int index, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4, QsParameter arg5, QsParameter arg6)
         {
-            QsValue val = (QsValue)GetElement(index).Execute(index, arg0, arg1, arg2, arg3, arg4, arg5);
+            QsValue val = GetElement(index).Execute(index, arg1, arg1, arg2, arg3, arg4, arg5, arg6);
             return val;
         }
-
-        public QsValue GetElementValue(int index, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5, QsValue arg6)
-        {
-            QsValue val = (QsValue)GetElement(index).Execute(index, arg1, arg1, arg2, arg3, arg4, arg5, arg6);
-            return val;
-        }
-
+        
         #endregion
 
 
@@ -319,7 +319,7 @@ namespace Qs.Runtime
             }
         }
 
-        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsValue arg0)
+        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsParameter arg0)
         {
             BeginRangeOperation(fromIndex, toIndex);
             QsValue result = default(QsValue);
@@ -352,7 +352,8 @@ namespace Qs.Runtime
 
         }
 
-        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsValue arg0, QsValue arg1)
+        
+        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1)
         {
             BeginRangeOperation(fromIndex, toIndex);
             QsValue result = default(QsValue);
@@ -384,7 +385,7 @@ namespace Qs.Runtime
             }
 
         }
-        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2)
+        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2)
         {
             BeginRangeOperation(fromIndex, toIndex);
             QsValue result = default(QsValue);
@@ -416,7 +417,7 @@ namespace Qs.Runtime
             }
 
         }
-        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3)
+        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3)
         {
             BeginRangeOperation(fromIndex, toIndex);
             QsValue result = default(QsValue);
@@ -448,7 +449,7 @@ namespace Qs.Runtime
             }
 
         }
-        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4)
+        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4)
         {
             BeginRangeOperation(fromIndex, toIndex);
             QsValue result = default(QsValue);
@@ -480,7 +481,7 @@ namespace Qs.Runtime
             }
 
         }
-        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5)
+        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4, QsParameter arg5)
         {
             BeginRangeOperation(fromIndex, toIndex);
             QsValue result = default(QsValue);
@@ -513,7 +514,7 @@ namespace Qs.Runtime
 
         }
 
-        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5, QsValue arg6)
+        public QsValue RangeOperation(string operation, int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4, QsParameter arg5, QsParameter arg6)
         {
             BeginRangeOperation(fromIndex, toIndex);
             QsValue result = default(QsValue);
@@ -545,6 +546,7 @@ namespace Qs.Runtime
             }
 
         }
+        
         #endregion
 
 

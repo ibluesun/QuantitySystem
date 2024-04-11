@@ -34,7 +34,7 @@ namespace Qs.Runtime
 
 
         #region Average Functions
-        public QsValue StdDeviation(int fromIndex, int toIndex, QsValue arg0)
+        public QsValue StdDeviation(int fromIndex, int toIndex, QsParameter arg0)
         {
             
 
@@ -53,7 +53,9 @@ namespace Qs.Runtime
             
             return Total / count;
         }
-        public QsValue StdDeviation(int fromIndex, int toIndex, QsValue arg0, QsValue arg1)
+
+        
+        public QsValue StdDeviation(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1)
         {
             
 
@@ -72,7 +74,7 @@ namespace Qs.Runtime
             
             return Total / count;
         }
-        public QsValue StdDeviation(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2)
+        public QsValue StdDeviation(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2)
         {
             
 
@@ -91,7 +93,7 @@ namespace Qs.Runtime
             
             return Total / count;
         }
-        public QsValue StdDeviation(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3)
+        public QsValue StdDeviation(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3)
         {
             
 
@@ -110,7 +112,7 @@ namespace Qs.Runtime
             
             return Total / count;
         }
-        public QsValue StdDeviation(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4)
+        public QsValue StdDeviation(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4)
         {
             
 
@@ -129,7 +131,7 @@ namespace Qs.Runtime
             
             return Total / count;
         }
-        public QsValue StdDeviation(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5)
+        public QsValue StdDeviation(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4, QsParameter arg5)
         {
             
 
@@ -149,7 +151,7 @@ namespace Qs.Runtime
             return Total / count;
         }
 
-        public QsValue StdDeviation(int fromIndex, int toIndex, QsValue arg0, QsValue arg1, QsValue arg2, QsValue arg3, QsValue arg4, QsValue arg5, QsValue arg6)
+        public QsValue StdDeviation(int fromIndex, int toIndex, QsParameter arg0, QsParameter arg1, QsParameter arg2, QsParameter arg3, QsParameter arg4, QsParameter arg5, QsParameter arg6)
         {
             
 
@@ -168,6 +170,7 @@ namespace Qs.Runtime
             
             return Total / count;
         }
+        
         #endregion
 
     }

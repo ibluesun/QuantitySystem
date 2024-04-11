@@ -1,3 +1,9 @@
+[Qs 1.7.2]
++ calling an indexer for a QsValue inside Sequence wasn't handled correctly 
+	- s[n](x) ..> x[n]    #expression has been corrected
+	- s[2]({2 3 4 5})     # would produce 4  the third element in the vector.
+
+
 [QuantitySystem 1.7.8]
 - Changed currency units to inherit from Dynamic Unit
 -  Added a function to clear the dynamic units caching 
