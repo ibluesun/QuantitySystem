@@ -228,7 +228,6 @@ namespace Qs.Runtime
                 );
 
             tokens = tokens.MergeTokens<WordToken>();                 //Discover words
-            tokens = tokens.MergeSequenceTokens<ConstantToken>(typeof(PercentToken), typeof(WordToken));
 
             tokens = tokens.MergeMultipleWordTokens(
                 typeof(WhenStatementToken),
@@ -250,6 +249,9 @@ namespace Qs.Runtime
             tokens = tokens.MergeTokens<UnitizedNumberToken>();
             tokens = tokens.MergeSequenceTokens<UnitizedNumberToken>(typeof(PeriodToken), typeof(UnitizedNumberToken));
             tokens = tokens.MergeSequenceTokens<NumberToken>(typeof(PeriodToken), typeof(NumberToken));
+
+
+            tokens = tokens.MergeSequenceTokens<ConstantToken>(typeof(PercentToken), typeof(WordToken));
 
             // discover the complex numbers 
             tokens = tokens.MergeTokens<ComplexNumberToken>();
@@ -361,9 +363,13 @@ namespace Qs.Runtime
                         //q = tokens[ix].TokenValue;
                         quantityExpression = Expression.Constant(QsScalar.One, typeof(QsValue));
                     }
-                    else
+                    else if(q == "-")
                     {
                         quantityExpression = Expression.Constant(QsScalar.NegativeOne, typeof(QsValue));
+                    }
+                    else
+                    {
+                        throw new QsException($"Unknown unary operator {q}");
                     }
 
                     if (ix == 0)
@@ -409,6 +415,8 @@ namespace Qs.Runtime
 
                 
                 bool FactorialPostfix = false;
+                bool PercentagePostfix = false;
+
                 if (!string.IsNullOrEmpty(OperatorTokenText))
                 {
                     if (OperatorTokenText == "!")
@@ -424,6 +432,22 @@ namespace Qs.Runtime
                         else
                             FactorialPostfix = true;
                         
+                    }
+
+                    if (OperatorTokenText == "%")
+                    {
+                        // if the % followed by Word then we want the  "operator !"  otherwise it is a normal factorial.
+
+                        var afterTok = ix + 2 < tokens.Count ? tokens[ix + 2] : null;
+
+                        if (afterTok == null)
+                            PercentagePostfix = true;
+                        else if (afterTok.TokenClassType == typeof(NumberToken) || afterTok.TokenClassType == typeof(UnitizedNumberToken) || afterTok.TokenClassType == typeof(WordToken) || afterTok.TokenClassType == typeof(TextStringToken) || afterTok.TokenClassType == typeof(SequenceCallToken) || afterTok.TokenClassType == typeof(NamespaceToken))  //either direct word or text i.e. o!word or o!"Word"
+                            PercentagePostfix = false;
+                        else
+                            PercentagePostfix = true;
+
+
                     }
                 }
 
@@ -884,7 +908,8 @@ namespace Qs.Runtime
 
                 }
 
-                // Apply the postfix here
+                #region Apply the postfix here
+
                 if (FactorialPostfix)
                 {
                     quantityExpression = Expression.Call(typeof(QsGamma).GetMethod("Factorial"), quantityExpression);
@@ -896,6 +921,18 @@ namespace Qs.Runtime
                     FactorialPostfix = false;
                 }
 
+                if (PercentagePostfix)
+                {
+                    quantityExpression = Expression.Divide(quantityExpression, Expression.Constant(QsValue.ParseScalar("100"), typeof(QsValue)));
+
+                    //get the next operator.
+                    ix++;
+                    OperatorTokenText = ix + 1 < tokens.Count ? tokens[ix + 1].TokenValue : string.Empty;
+
+                    PercentagePostfix = false;
+                }
+
+            #endregion
             ConsumeOtherBrackets:
                 if (ix + 1 < tokens.Count)
                 {

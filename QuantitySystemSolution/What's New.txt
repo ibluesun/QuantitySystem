@@ -1,3 +1,6 @@
+[Qs 1.7.3]
+- added percentage postfix operator 
+
 [Qs 1.7.2]
 + calling an indexer for a QsValue inside Sequence wasn't handled correctly 
 	- s[n](x) ..> x[n]    #expression has been corrected
