@@ -347,7 +347,7 @@ namespace Qs.Types
         public override QsValue RightShiftOperation(QsValue vl)
         {
             QsValue times;
-            if (vl is QsReference) times = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) times = vlr.ContentValue;
             else times = vl;
 
             int itimes = Qs.IntegerFromQsValue((QsScalar)times);
@@ -380,7 +380,7 @@ namespace Qs.Types
         public override QsValue LeftShiftOperation(QsValue vl)
         {
             QsValue times;
-            if (vl is QsReference) times = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) times = vlr.ContentValue;
             else times = vl;
 
             int itimes = Qs.IntegerFromQsValue((QsScalar)times);

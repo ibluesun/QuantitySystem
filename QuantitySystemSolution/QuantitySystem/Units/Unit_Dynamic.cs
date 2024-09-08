@@ -463,7 +463,7 @@ namespace QuantitySystem.Units
                 //get the unit dimension from the passed units.
                 this._UnitDimension = QuantityDimension.Dimensionless;
                 foreach (Unit uu in SubUnits)
-                    this._UnitDimension += uu.UnitDimension;
+                    this._UnitDimension = QuantityDimension.Add(this._UnitDimension, uu.UnitDimension);
             }
 
 
@@ -602,7 +602,7 @@ namespace QuantitySystem.Units
 
                     }
                     us[un.UniqueKey].UnitExponent += un.UnitExponent;
-                    us[un.UniqueKey].UnitDimension += un.UnitDimension;
+                    us[un.UniqueKey].UnitDimension = QuantityDimension.Add(us[un.UniqueKey].UnitDimension, un.UnitDimension);
                 }
                 else
                 {

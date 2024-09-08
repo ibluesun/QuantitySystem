@@ -32,24 +32,14 @@ namespace Qs.Types
             _NativeObject = nativeObject;
         }
 
-        public Object ThisObject
-        {
-            get
-            {
-                return _NativeObject;
-            }
-        }
+        public Object ThisObject => _NativeObject;
+        
 
         /// <summary>
         /// Native Type.
         /// </summary>
-        public Type InstanceType
-        {
-            get
-            {
-                return _NativeObject.GetType();
-            }
-        }
+        public Type InstanceType => _NativeObject.GetType();
+        
         
         public override  QsValue Execute(Token expression)
         {
@@ -78,7 +68,7 @@ namespace Qs.Types
                 int ix = 0;
                 foreach (var tk in argsToken)
                 {
-                    if (tk.TokenClassType == typeof(ParticleLexer.StandardTokens.ParameterToken))
+                    if (tk.TokenClassType == typeof(ParameterToken))
                     {
                         var qv = new global::Qs.Runtime.QsVar(
                             global::Qs.Runtime.QsEvaluator.CurrentEvaluator

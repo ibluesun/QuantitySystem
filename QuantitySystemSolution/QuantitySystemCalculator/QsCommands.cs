@@ -247,10 +247,11 @@ public static class QsCommands
         Console.WriteLine();
 
         Console.WriteLine("       - Scalar Quantity");
-        Console.WriteLine("         Ordinary Real Number: 3, 3e4 or 2.3<L>");
-        Console.WriteLine("         Symbolic Real Number: $x, $y<m>, or ${x^2-y^32}");
-        Console.WriteLine("         Complex Number      : C{3 2} or C{2 1}<K>");
-        Console.WriteLine("         Quaternion Number   : H{3 2 1 9} or H{8 4 2 1}<J>");
+        Console.WriteLine("           Ordinary Real Number: 3, 3e4 or 2.3<L>");
+        Console.WriteLine("           Symbolic Real Number: $x, $y<m>, or ${x^2-y^32}");
+        Console.WriteLine("           Complex Number      : C{3 2} or C{2 1}<K>");
+        Console.WriteLine("           Quaternion Number   : H{3 2 1 9} or H{8 4 2 1}<J>");
+        Console.WriteLine("           Rational Number     : Q{1 2} or Q{1 2}<m>");
         Console.WriteLine();
 
         Console.WriteLine("       - Vector");

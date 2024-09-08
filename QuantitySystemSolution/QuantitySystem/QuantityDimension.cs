@@ -50,7 +50,7 @@ namespace QuantitySystem
         public QuantityDimension(float mass, float length, float time)
         {
             Mass = new MassDescriptor(mass);
-            Length = new LengthDescriptor(length, 0);
+            Length = new LengthDescriptor(length, 0, 0, 0, 0);
             Time = new TimeDescriptor(time);
 
         }
@@ -59,7 +59,7 @@ namespace QuantitySystem
         public QuantityDimension(float mass, float length, float time, float temperature)
         {
             Mass = new MassDescriptor(mass);
-            Length = new LengthDescriptor(length, 0);
+            Length = new LengthDescriptor(length, 0, 0, 0, 0);
             Time = new TimeDescriptor(time);
             Temperature = new TemperatureDescriptor(temperature);
 
@@ -69,7 +69,7 @@ namespace QuantitySystem
         public QuantityDimension(float mass, float length, float time, float temperature, float electricalCurrent, float amountOfSubstance, float luminousIntensity)
         {
             Mass = new MassDescriptor(mass);
-            Length = new LengthDescriptor(length, 0);
+            Length = new LengthDescriptor(length, 0, 0, 0, 0);
             Time = new TimeDescriptor(time);
             Temperature = new TemperatureDescriptor(temperature);
 
@@ -183,16 +183,17 @@ namespace QuantitySystem
             dim += "M" + Mass.Exponent.ToString(CultureInfo.InvariantCulture);
 
 
-            string lll = "";
-
-            if (Length.VectorExponent != 0)
+            
+            if (Length.IsHigherRank)
             {
                 dim +=
-                    string.Format("L{0}(S{1}V{2}M{3})",
+                    string.Format("L{0}[S{1}|V{2}|M{3}|VM{4}|MM{5}]",
                     Length.Exponent.ToString(CultureInfo.InvariantCulture),
                     Length.ScalarExponent.ToString(CultureInfo.InvariantCulture),
                     Length.VectorExponent.ToString(CultureInfo.InvariantCulture),
-                    Length.MatrixExponent.ToString(CultureInfo.InvariantCulture)
+                    Length.MatrixExponent.ToString(CultureInfo.InvariantCulture),
+                    Length.VectorMatrixExponent.ToString(CultureInfo.InvariantCulture),
+                    Length.MatrixMatrixExponent.ToString(CultureInfo.InvariantCulture)
                     );
             }
             else
@@ -301,10 +302,6 @@ namespace QuantitySystem
 
         #region Dimension Calculations
 
-        public static QuantityDimension operator +(QuantityDimension firstDimension, QuantityDimension secondDimension)
-        {
-            return Add(firstDimension, secondDimension);
-        }
 
         public static QuantityDimension Add(QuantityDimension firstDimension, QuantityDimension secondDimension)
         {
@@ -325,10 +322,6 @@ namespace QuantitySystem
             return QD;
         }
 
-        public static QuantityDimension operator -(QuantityDimension firstDimension, QuantityDimension secondDimension)
-        {
-            return Subtract(firstDimension, secondDimension);
-        }
 
         public static QuantityDimension Subtract(QuantityDimension firstDimension, QuantityDimension secondDimension)
         {

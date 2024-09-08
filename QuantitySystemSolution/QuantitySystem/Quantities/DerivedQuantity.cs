@@ -114,7 +114,7 @@ namespace QuantitySystem.Quantities
 
                     foreach (AnyQuantity<T> aq in InternalQuantities)
                     {
-                        QDTotal += aq.Dimension;
+                        QDTotal = QuantityDimension.Add(QDTotal, aq.Dimension);
                     }
                     _Dimension = QDTotal;
                 }

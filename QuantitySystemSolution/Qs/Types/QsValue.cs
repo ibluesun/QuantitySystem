@@ -605,5 +605,14 @@ namespace Qs.Types
         }
 
 
+        protected virtual void OnClearCache()
+        {
+
+        }
+
+        public void ClearCache()
+        {
+            OnClearCache();
+        }
     }
 }

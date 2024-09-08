@@ -17,7 +17,7 @@ namespace Qs.Types
         public override QsValue AddOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -88,7 +88,7 @@ namespace Qs.Types
         public override QsValue SubtractOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -159,7 +159,7 @@ namespace Qs.Types
         public override QsValue MultiplyOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -305,7 +305,7 @@ namespace Qs.Types
         public override QsValue DotProductOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -492,7 +492,7 @@ namespace Qs.Types
         public override QsValue DifferentiateOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 

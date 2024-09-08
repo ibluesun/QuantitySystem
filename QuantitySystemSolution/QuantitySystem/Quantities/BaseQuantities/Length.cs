@@ -7,51 +7,25 @@ using QuantitySystem.DimensionDescriptors;
 namespace QuantitySystem.Quantities.BaseQuantities
 {
 
-    public enum TensorRank
-    {
-        /// <summary>
-        /// Rank 0
-        /// </summary>
-        Scalar,
 
-        /// <summary>
-        /// Rank 1
-        /// </summary>
-        Vector,
-
-        /// <summary>
-        /// Rank 2
-        /// </summary>
-        Matrix,
-
-        /// <summary>
-        /// Rank 3
-        /// </summary>
-        MV,
-
-        /// <summary>
-        /// Rank 4
-        /// </summary>
-        MM
-    }
 
     public class Length<T> : AnyQuantity<T>
     {
 
-        public TensorRank LengthRank { get; set; }
+        public DimensionTensorRank LengthRank { get; set; }
 
         public Length() : base(1) 
         {
-            LengthRank = TensorRank.Scalar;
+            LengthRank = DimensionTensorRank.Scalar;
         }
 
         public Length(float exponent)
             : base(exponent) 
         {
-            LengthRank = TensorRank.Scalar;
+            LengthRank = DimensionTensorRank.Scalar;
         }
 
-        public Length(float exponent, TensorRank lengthType)
+        public Length(float exponent, DimensionTensorRank lengthType)
             : base(exponent)
         {
             LengthRank = lengthType;
@@ -65,14 +39,25 @@ namespace QuantitySystem.Quantities.BaseQuantities
 
                 switch (LengthRank)
                 {
-                    case TensorRank.Scalar:
-                        LengthDimension.Length = new LengthDescriptor(Exponent,  0);
+                    case DimensionTensorRank.Scalar:
+                        LengthDimension.Length = new LengthDescriptor(Exponent,  0, 0, 0, 0);
                         break;
-                    case TensorRank.Vector:
-                        LengthDimension.Length = new LengthDescriptor(0,  Exponent);
+                    case DimensionTensorRank.Vector:
+                        LengthDimension.Length = new LengthDescriptor(0, Exponent, 0, 0, 0);
                         break;
+                    case DimensionTensorRank.Matrix:
+                        LengthDimension.Length = new LengthDescriptor(0, 0, Exponent, 0, 0);
+                        break;
+                    case DimensionTensorRank.VectorMatrix:
+                        LengthDimension.Length = new LengthDescriptor(0, 0, 0, Exponent, 0);
+                        break;
+                    case DimensionTensorRank.MatrixMatrix:
+                        LengthDimension.Length = new LengthDescriptor(0, 0, 0, 0, Exponent);
+                        break;
+                    default:
+                        throw new NotSupportedException("Not Supported Length Descritpor");
                 }
-                
+
                 return LengthDimension;
             }
         }

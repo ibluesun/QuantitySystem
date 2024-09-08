@@ -1164,7 +1164,7 @@ namespace Qs.Types
         public override QsValue AddOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
             if (value is QsScalar)
@@ -1206,7 +1206,7 @@ namespace Qs.Types
         public override QsValue SubtractOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -1254,7 +1254,7 @@ namespace Qs.Types
         public override QsValue MultiplyOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -1311,7 +1311,7 @@ namespace Qs.Types
         public override QsValue DotProductOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -1343,7 +1343,7 @@ namespace Qs.Types
         public override QsValue CrossProductOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
             if (this._ScalarType == ScalarTypes.QsOperation)
@@ -1359,7 +1359,7 @@ namespace Qs.Types
         public override QsValue DivideOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -1394,7 +1394,7 @@ namespace Qs.Types
         public override QsValue PowerOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -1447,7 +1447,7 @@ namespace Qs.Types
         public override QsValue ModuloOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -1467,7 +1467,7 @@ namespace Qs.Types
         public override QsValue TensorProductOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -1491,14 +1491,13 @@ namespace Qs.Types
         public override bool LessThan(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
-            if (value is QsScalar)
+            if (value is QsScalar sc)
             {
-                QsScalar scalar = (QsScalar)value;
-                return this.NumericalQuantity < scalar.NumericalQuantity;
+                return this.NumericalQuantity < sc.NumericalQuantity;
             }
             else if (value is QsVector)
             {
@@ -1525,14 +1524,13 @@ namespace Qs.Types
         public override bool GreaterThan(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
-            if (value is QsScalar)
+            if (value is QsScalar sc)
             {
-                QsScalar scalar = (QsScalar)value;
-                return this.NumericalQuantity > scalar.NumericalQuantity;
+                return this.NumericalQuantity > sc.NumericalQuantity;
             }
             else if (value is QsVector)
             {
@@ -1557,14 +1555,13 @@ namespace Qs.Types
         public override bool LessThanOrEqual(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
-            if (value is QsScalar)
-            {
-                QsScalar scalar = (QsScalar)value;
-                return this.NumericalQuantity <= scalar.NumericalQuantity;
+            if (value is QsScalar sc)
+            { 
+                return this.NumericalQuantity <= sc.NumericalQuantity;
             }
             else if (value is QsVector)
             {
@@ -1588,14 +1585,14 @@ namespace Qs.Types
         public override bool GreaterThanOrEqual(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
-            if (value is QsScalar)
+            if (value is QsScalar sc)
             {
-                QsScalar scalar = (QsScalar)value;
-                return this.NumericalQuantity >= scalar.NumericalQuantity;
+                
+                return this.NumericalQuantity >= sc.NumericalQuantity;
             }
             else if (value is QsVector)
             {
@@ -1619,15 +1616,15 @@ namespace Qs.Types
         public override bool Equality(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
             if ((object)value == null) return false;
 
-            if (value is QsScalar)
+            if (value is QsScalar scalar)
             {
-                QsScalar scalar = (QsScalar)value;
+                
                 if (this.ScalarType == scalar.ScalarType)
                 {
                     switch(this.ScalarType)
@@ -1675,13 +1672,13 @@ namespace Qs.Types
         public override bool Inequality(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
-            if (value is QsScalar)
+            if (value is QsScalar scalar)
             {
-                QsScalar scalar = (QsScalar)value;
+                
                 return this.NumericalQuantity != scalar.NumericalQuantity;
             }
             else if (value is QsVector)
@@ -1796,7 +1793,7 @@ namespace Qs.Types
         public override QsValue DifferentiateOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -1814,7 +1811,7 @@ namespace Qs.Types
         public override QsValue RangeOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -1987,7 +1984,14 @@ namespace Qs.Types
 
             if (name.Equals("pi", StringComparison.OrdinalIgnoreCase))
             {
-                return Math.PI.ToQuantity().ToScalarValue();
+                return Math.PI.ToQuantity("rad").ToScalarValue();
+            }
+
+            if (name.Equals("c", StringComparison.OrdinalIgnoreCase))
+            {
+                double c0 = 299792458;
+
+                return c0.ToQuantity("m/s").ToScalarValue();
             }
 
             if (name.Equals("phi", StringComparison.OrdinalIgnoreCase))
@@ -1999,6 +2003,8 @@ namespace Qs.Types
             {
                 return Math.E.ToQuantity().ToScalarValue();
             }
+
+            
 
             return _zero;
         }

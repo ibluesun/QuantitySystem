@@ -10,12 +10,12 @@ namespace QuantitySystem.Quantities
     {
 
         public AreaMomentOfInertia()
-            : base(1, new Length<T>(2, TensorRank.Scalar), new Length<T>(2, TensorRank.Vector))
+            : base(1, new Length<T>(2, DimensionTensorRank.Scalar), new Length<T>(2, DimensionTensorRank.Vector))
         {
         }
 
         public AreaMomentOfInertia(float exponent)
-            : base(exponent, new Length<T>(2 * exponent, TensorRank.Scalar), new Length<T>(2 * exponent, TensorRank.Vector))
+            : base(exponent, new Length<T>(2 * exponent, DimensionTensorRank.Scalar), new Length<T>(2 * exponent, DimensionTensorRank.Vector))
         {
         }
 

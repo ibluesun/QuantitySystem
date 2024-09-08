@@ -6,6 +6,7 @@ using QuantitySystem.Quantities.BaseQuantities;
 using Qs.Runtime;
 using ParticleLexer;
 using ParticleLexer.StandardTokens;
+using QuantitySystem.Quantities;
 
 namespace Qs.Types
 {
@@ -294,7 +295,7 @@ namespace Qs.Types
         public override QsValue AddOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -319,7 +320,7 @@ namespace Qs.Types
         public override QsValue SubtractOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -344,7 +345,7 @@ namespace Qs.Types
         public override QsValue MultiplyOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
             if (value is QsScalar)
@@ -372,7 +373,7 @@ namespace Qs.Types
         public override QsValue DotProductOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -404,7 +405,7 @@ namespace Qs.Types
         public override QsValue DivideOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -429,7 +430,7 @@ namespace Qs.Types
         public override QsValue ModuloOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -455,7 +456,7 @@ namespace Qs.Types
         public override QsValue PowerOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -497,7 +498,7 @@ namespace Qs.Types
         public override QsValue PowerDotOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -528,7 +529,7 @@ namespace Qs.Types
         public override QsValue TensorProductOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -577,7 +578,7 @@ namespace Qs.Types
         public override QsValue LeftShiftOperation(QsValue vl)
         {
             QsValue times;
-            if (vl is QsReference) times = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) times = vlr.ContentValue;
             else times = vl;
 
 
@@ -598,7 +599,7 @@ namespace Qs.Types
         public override QsValue RightShiftOperation(QsValue vl)
         {
             QsValue times;
-            if (vl is QsReference) times = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) times = vlr.ContentValue;
             else times = vl;
 
 
@@ -713,7 +714,7 @@ namespace Qs.Types
         public override QsValue DifferentiateOperation(QsValue vl)
         {
             QsValue value;
-            if (vl is QsReference) value = ((QsReference)vl).ContentValue;
+            if (vl is QsReference vlr) value = vlr.ContentValue;
             else value = vl;
 
 
@@ -797,21 +798,11 @@ namespace Qs.Types
         /// <summary>
         /// Transpose of Cofactors matrix
         /// </summary>
-        public QsMatrix Adjoint
-        {
-            get
-            {
-                return Cofactors.Transpose();
-            }
-        }
+        public QsMatrix Adjoint => Cofactors.Transpose();
+        
 
-        public QsMatrix Inverse
-        {
-            get
-            {
-                return Adjoint.DivideScalar( Determinant(this));
-            }
-        }
+        public QsMatrix Inverse => Adjoint.DivideScalar( Determinant(this));
+        
 
 
         public override QsValue Execute(Token expression)

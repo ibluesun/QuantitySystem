@@ -520,7 +520,7 @@ namespace QuantitySystem.Units
 
         public string Name => this.GetType().Name;
 
-        public string QuantityTypeName => QuantityType.Name;
+        public string QuantityTypeName => QuantityType.Name.Trim('`','1');
 
 
         public override string ToString()

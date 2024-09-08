@@ -15,12 +15,12 @@ namespace QuantitySystem.Quantities.BaseQuantities
     {
         public Displacement() : base(1)
         {
-            LengthRank = TensorRank.Vector;
+            LengthRank = DimensionTensorRank.Vector;
         }
 
         public Displacement(float exponent) : base(exponent)
         {
-            LengthRank = TensorRank.Vector;
+            LengthRank = DimensionTensorRank.Vector;
         }
 
     }

@@ -5,6 +5,7 @@ using System.Text;
 using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
 using Qs.Runtime;
+using ParticleLexer;
 
 namespace Qs.Types
 {
@@ -784,15 +785,51 @@ namespace Qs.Types
         }
 
 
+         
+
         /// <summary>
         /// Some operations on the vector.
         /// </summary>
         /// <param name="expression"></param>
         /// <returns></returns>
-        public override QsValue Execute(ParticleLexer.Token expression)
+        public override QsValue Execute(Token expression)
         {
             if (expression.TokenValue.Equals("length", StringComparison.OrdinalIgnoreCase))
                 return this.Count.ToScalarValue();
+
+            if (expression.TokenValue.Equals("count", StringComparison.OrdinalIgnoreCase))
+                return this.Count.ToScalarValue();
+
+            if (expression.TokenValue.Equals("sum", StringComparison.OrdinalIgnoreCase))
+                return this.Sum();
+
+            if (expression.TokenValue.Equals("mean", StringComparison.OrdinalIgnoreCase))
+                return this.Mean();
+
+            if (expression.TokenValue.Equals("AscendedOrder", StringComparison.OrdinalIgnoreCase))
+                return this.AscendedVecor;
+
+            if (expression.TokenValue.Equals("Ordered", StringComparison.OrdinalIgnoreCase))
+                return this.AscendedVecor;
+
+            if (expression.TokenValue.Equals("DescendedOrder", StringComparison.OrdinalIgnoreCase))
+                return this.DescendedVector;
+
+            if (expression.TokenValue.Equals("median", StringComparison.OrdinalIgnoreCase))
+                return this.Median();
+
+            if (expression.TokenValue.Equals("range", StringComparison.OrdinalIgnoreCase))
+                return this.Range();
+
+            if (expression.TokenValue.Equals("frequency", StringComparison.OrdinalIgnoreCase))
+                return this.Frequency();
+
+            if (expression.TokenValue.Equals("mode", StringComparison.OrdinalIgnoreCase))
+                return this.Mode();
+
+
+
+
 
             return base.Execute(expression);
 

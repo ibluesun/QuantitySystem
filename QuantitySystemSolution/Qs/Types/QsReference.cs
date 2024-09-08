@@ -37,7 +37,9 @@ namespace Qs.Types
                     return (QsValue)cns.GetValue(nm);
                 }
                 else
+                {
                     return (QsValue)QsEvaluator.CurrentEvaluator.GetVariable(_varname);
+                }
             }
             set
             {

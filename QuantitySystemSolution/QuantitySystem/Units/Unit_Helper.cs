@@ -285,10 +285,27 @@ namespace QuantitySystem.Units
 
             
             bool UnitVectorModifier = false;
+            bool UnitRank2Modifier = false;
+            bool UnitRank3Modifier = false;
+            bool UnitRank4Modifier = false;
 
-            if (unit.EndsWith("!", StringComparison.Ordinal)) 
+            if (unit.EndsWith("!!!!", StringComparison.Ordinal))
             {
-                //it is intended of Radius length
+                unit = unit.TrimEnd('!', '!', '!', '!');
+                UnitRank4Modifier = true;
+            }
+            else  if (unit.EndsWith("!!!", StringComparison.Ordinal))
+            {
+                unit = unit.TrimEnd('!', '!', '!');
+                UnitRank3Modifier = true;
+            }
+            else if (unit.EndsWith("!!", StringComparison.Ordinal))
+            {
+                unit = unit.TrimEnd('!', '!');
+                UnitRank2Modifier= true;
+            }
+            else if (unit.EndsWith("!", StringComparison.Ordinal)) 
+            {
                 unit = unit.TrimEnd('!');
                 UnitVectorModifier = true; //unit modifier have one use for now is to convert the Length Quantity into Length Quantity into RadiusLength quantity
             }
@@ -324,6 +341,45 @@ namespace QuantitySystem.Units
                             if(u.QuantityType == typeof(Force<>))
                             {
                                 u.QuantityType = typeof(ForceVector<>);
+                            }
+                        }
+
+                        if (UnitRank2Modifier)
+                        {
+                            if (u.QuantityType == typeof(Length<>))
+                            {
+                                u.QuantityType = typeof(DisplacementRank2Tensor<>);
+                            }
+
+                            if(u.QuantityType == typeof(Force<>))
+                            {
+                                u.QuantityType = typeof(ForceRank2Tensor<>);
+                            }
+                        }
+
+                        if (UnitRank3Modifier)
+                        {
+                            if (u.QuantityType == typeof(Length<>))
+                            {
+                                u.QuantityType = typeof(DisplacementRank3Tensor<>);
+                            }
+
+                            if(u.QuantityType == typeof(Force<>))
+                            {
+                                u.QuantityType = typeof(ForceRank3Tensor<>);
+                            }
+                        }
+
+                        if (UnitRank4Modifier)
+                        {
+                            if (u.QuantityType == typeof(Length<>))
+                            {
+                                u.QuantityType = typeof(DisplacementRank4Tensor<>);
+                            }
+
+                            if(u.QuantityType == typeof(Force<>))
+                            {
+                                u.QuantityType = typeof(ForceRank4Tensor<>);
                             }
                         }
 
@@ -388,7 +444,7 @@ namespace QuantitySystem.Units
 
             foreach (Unit un in dunits)
             {
-                ud += un.UnitDimension;
+                ud = QuantityDimension.Add(ud, un.UnitDimension);
             }
 
 
