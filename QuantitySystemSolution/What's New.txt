@@ -1,3 +1,28 @@
+[Qs 1.7.4]
+- QsReference  now is storing the expression of the calculation for a deferred calculation
+	this is essential because I wanted to make it evaluate itself each time it is being called 
+	this way it will get the values of any changed variable inside it
+	breaking behaviour now is that setting its value directly will result in removing the expression and converting it into normal variable
+	so the only way of making the reference is to add '&' before the variable name
+
+	a quick description for the functionality is like having an excel field
+	Qs> a0=30
+	Qs> a1 = 14
+	Qs> &b0 = a0/a1    # this line will store the compiled expression in the b0  and b0 would be a QsReference  object
+
+
+
+[QuantitySystem 1.7.9]
++ Changed the length descriptor again to contain up to the rank4tensor of displacement
+	- S				Tensor Rank 0
+	- V				Tensor Rank 1
+	- M				Tensor Rank 2
+	- VM			Tensor Rank 3
+	- MM			Tensor Rank 4
++ Consider the Scalar quantity as a single component inside 
+	- for example  if  s = 10<m!>  this is a velocity quantity  which means it has a base direction represented by its unit
++ StressTensor and StressVector new Quantities
+
 [Qs 1.7.3]
 - added percentage postfix operator 
 

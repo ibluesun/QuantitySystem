@@ -122,5 +122,32 @@ namespace QsRoot
             return v;
         }
 
+        /// <summary>
+        /// Returns <see cref="QsVector"/> with constant value
+        /// </summary>
+        /// <param name="count"></param>
+        /// <returns></returns>
+        public static QsValue Random(QsParameter count)
+        {
+            Contract.Requires(count.QsNativeValue is QsScalar);
+
+            double countd = ((QsScalar)count.QsNativeValue).NumericalQuantity.Value;
+
+            int icount = (int)countd;
+
+            Random rr = new Random(System.Environment.TickCount);
+
+
+            QsVector v = new QsVector(icount);
+
+            for (int i = 0; i < icount; i++)
+            {
+                var sr = new QsScalar(ScalarTypes.NumericalQuantity) { NumericalQuantity = (rr.NextDouble()).ToQuantity() };
+                v.AddComponent(sr);
+            }
+
+            return v;
+        }
+
     }
 }

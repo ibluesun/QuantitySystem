@@ -114,15 +114,11 @@ namespace Qs.Runtime
         /// </summary>
         /// <param name="varName"></param>
         /// <param name="varValue"></param>
-        public void SetVariable(string varName, object varValue)
+        public void StoreHeapVariable(string varName, object varValue)
         {
             if (Scope != null)
             {
-                var r = GetVariable(varName) as QsReference;
-                if (r == null)
-                    Scope.SetValue(varName, varValue);
-                else
-                    r.ContentValue = (QsValue)varValue;
+                Scope.SetValue(varName, varValue);   
             }
             else
             {
@@ -130,12 +126,12 @@ namespace Qs.Runtime
             }
         }
 
-        public QsReference AddReference(string nameSpace, string varName, string referencedVariableName)
+        public QsReference AddReference(string nameSpace, string varName, string referencedVariableName, Expression expression)
         {
             if (string.IsNullOrEmpty(nameSpace))
             {
-                QsReference qsr = new QsReference(referencedVariableName);
-                SetVariable(varName, qsr);
+                QsReference qsr = new QsReference(referencedVariableName, expression);
+                StoreHeapVariable(varName, qsr);
                 return qsr;
             }
             else
@@ -144,7 +140,7 @@ namespace Qs.Runtime
 
                 QsNamespace ns = QsNamespace.GetNamespace(Scope, nameSpace, true);
 
-                return ns.AddReference(varName, referencedVariableName);
+                return ns.AddReference(varName, referencedVariableName, expression);
 
             }            
 
@@ -160,7 +156,7 @@ namespace Qs.Runtime
         {
             if (string.IsNullOrEmpty(nameSpace))
             {
-                SetVariable(varName, varValue);
+                StoreHeapVariable(varName, varValue);
             }
             else
             {
@@ -168,7 +164,7 @@ namespace Qs.Runtime
 
                 QsNamespace ns = QsNamespace.GetNamespace(Scope, nameSpace, true);
 
-                ns.SetValue(varName, varValue);
+                ns.StoreHeapValue(varName, varValue);
                 
             }            
         }
@@ -342,7 +338,7 @@ namespace Qs.Runtime
 
                 qty.NumericalQuantity.Value = varVal;
 
-                SetVariable(varName, qty);
+                StoreHeapVariable(varName, qty);
                 
                 PrintQuantity(qty);
                 return qty;
@@ -758,7 +754,7 @@ namespace Qs.Runtime
                                         var existValue = GetVariable(line.Trim());
                                         var ns = vnToken.TrimTokens(0,2).TokenValue.TrimEnd(':');
                                         var nm = vnToken[vnToken.Count - 1].TokenValue.TrimStart('&');
-                                        var q = AddReference(ns, nm, line.Trim());
+                                        var q = AddReference(ns, nm, line.Trim(), qv.ResultExpression);
                                         PrintQuantity(q);
                                         return q;
                                     }
@@ -922,7 +918,7 @@ namespace Qs.Runtime
                                 else if (varName.StartsWith("&") && qvResult is QsValue)
                                 {
                                     var existValue = GetVariable(line.Trim());
-                                    var q = AddReference(string.Empty, varName.Substring(1), line.Trim());
+                                    var q = AddReference(string.Empty, varName.Substring(1), line.Trim(), qv.ResultExpression);
                                     PrintQuantity(q);
                                     return q;
                                 }
@@ -1077,7 +1073,7 @@ namespace Qs.Runtime
                                     else
                                     {
                                         // bare variable name without enclosed properties
-                                        SetVariable(varName, qvResult);
+                                        StoreHeapVariable(varName, qvResult);
                                         var q = GetScopeQsValue(this.Scope, "", varName);
                                         PrintQuantity(q);
                                         return q;

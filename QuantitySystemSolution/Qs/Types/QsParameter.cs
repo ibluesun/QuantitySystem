@@ -59,7 +59,10 @@ namespace Qs.Types
         {
             QsParameter qp = new QsParameter();
 
-            qp.ParameterValue = value;
+            if (value is QsReference valref)
+                qp.ParameterValue = valref.ContentValue;
+            else
+                qp.ParameterValue = value;
 
             qp.ParameterRawText = rawValue;
 

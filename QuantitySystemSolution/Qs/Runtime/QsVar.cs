@@ -797,7 +797,7 @@ namespace Qs.Runtime
                                 //quantity variable  //get it from evaluator  global heap
                                 quantityExpression = GetQsVariable(tokens[ix]);
                                 Sequence.CachingEnabled = false;  //because when evaluating external variable the external variable may change without knowing
-                                throw new QsParameterNotFoundException("Global variable (" + q + ") are not permitted");
+                                throw new QsParameterNotFoundException("Global variable (" + q + ") is not permitted");
                             }
 
 

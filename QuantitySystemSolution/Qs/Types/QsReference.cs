@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using Qs.Runtime;
 
@@ -8,66 +9,89 @@ namespace Qs.Types
 {
     public class QsReference : QsValue
     {
-        readonly string  _varname;
-        public QsReference(string varname)
+        readonly string  _ReferencedExpressionText;
+
+        readonly Expression _ReferencedExpression;
+
+        public QsReference(string expression, Expression referencedExpression)
         {
-            _varname= varname;
+            _ReferencedExpressionText= expression;
+            _ReferencedExpression = referencedExpression;
         }
 
-        public string VariableName
+        public string ReferencedExpressionText => _ReferencedExpressionText;
+
+
+        internal object Execute()
         {
-            get
-            {
-                return _varname;
-            }
+
+            // Construct Lambda function which return one object.
+            Expression<Func<object>> cq = Expression.Lambda<Func<object>>(this._ReferencedExpression);
+
+            // compile the function
+            Func<object> aqf = cq.Compile();
+
+            // execute the function
+            object result = aqf();
+
+            // return the result
+            return result;
         }
+
 
         public QsValue ContentValue
         {
             get
             {
-                if (_varname.Contains(":"))
-                {
-                    int lc = _varname.LastIndexOf(':');
+                return (QsValue)Execute();
+            }
 
-                    var ns = _varname.Substring(0, lc);
-                    var nm = _varname.Substring(lc + 1);
+            /*
+            get
+            {
+                if (_ReferencedExpressionText.Contains(":"))
+                {
+                    int lc = _ReferencedExpressionText.LastIndexOf(':');
+
+                    var ns = _ReferencedExpressionText.Substring(0, lc);
+                    var nm = _ReferencedExpressionText.Substring(lc + 1);
 
                     var cns = QsNamespace.GetNamespace(QsEvaluator.CurrentEvaluator.Scope, ns);
                     return (QsValue)cns.GetValue(nm);
                 }
                 else
                 {
-                    return (QsValue)QsEvaluator.CurrentEvaluator.GetVariable(_varname);
+                    return (QsValue)QsEvaluator.CurrentEvaluator.GetVariable(_ReferencedExpressionText);
                 }
             }
             set
             {
-                if (_varname.Contains(":"))
+                if (_ReferencedExpressionText.Contains(":"))
                 {
-                    int lc = _varname.LastIndexOf(':');
+                    int lc = _ReferencedExpressionText.LastIndexOf(':');
 
-                    var ns = _varname.Substring(0, lc);
-                    var nm = _varname.Substring(lc + 1);
+                    var ns = _ReferencedExpressionText.Substring(0, lc);
+                    var nm = _ReferencedExpressionText.Substring(lc + 1);
 
                     var cns = QsNamespace.GetNamespace(QsEvaluator.CurrentEvaluator.Scope, ns);
                     cns.SetValue(nm, value);
                 }
                 else
                 {
-                    QsEvaluator.CurrentEvaluator.SetVariable(_varname, value);
+                    QsEvaluator.CurrentEvaluator.StoreHeapVariable(_ReferencedExpressionText, value);
                 }
             }
+            */
         }
 
         public override string ToShortString()
         {
-            return VariableName + ": " + ContentValue.ToShortString();
+            return $"*({ReferencedExpressionText}): {ContentValue.ToShortString()}";
         }
 
         public override string ToString()
         {
-            return VariableName + ": " + ContentValue.ToString();
+            return $"*({ReferencedExpressionText}): {ContentValue}";
         }
 
 
@@ -188,7 +212,13 @@ namespace Qs.Types
         /// <returns></returns>
         public override QsValue Execute(ParticleLexer.Token expression)
         {
-            return ContentValue.Execute(expression);
+            string operation = expression.TokenValue;
+
+            if (operation.Equals("Expression", StringComparison.OrdinalIgnoreCase))
+                return new QsText(_ReferencedExpression.ToString());
+
+            throw new QsException("Not implemented or Unknow method for the QsReference type");
+
         }
 
     }

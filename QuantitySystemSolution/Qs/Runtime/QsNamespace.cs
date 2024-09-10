@@ -51,9 +51,9 @@ namespace Qs.Runtime
 
         private Dictionary<string, object> Values = new Dictionary<string, object>(System.StringComparer.OrdinalIgnoreCase);
 
-        public QsReference AddReference(string newVariable, string targetVariable)
+        public QsReference AddReference(string newVariable, string targetVariable, Expression expression)
         {
-            QsReference qsr = new QsReference(targetVariable);
+            QsReference qsr = new QsReference(targetVariable, expression);
 
             Values.Add(newVariable, qsr);
 
@@ -61,7 +61,7 @@ namespace Qs.Runtime
 
         }
 
-        public void SetValue(string name, object value)
+        public void StoreHeapValue(string name, object value)
         {
             if (char.IsLetter(name[0]))
             {
@@ -79,13 +79,8 @@ namespace Qs.Runtime
                 }
                 else
                 {
-                    object o;
-                    Values.TryGetValue(name, out o);
-                    var r = o as QsReference;
-                    if (r == null)
-                        Values[name] = value;
-                    else
-                        r.ContentValue = (QsValue)value;
+                    
+                    Values[name] = value;
 
                 }
             }

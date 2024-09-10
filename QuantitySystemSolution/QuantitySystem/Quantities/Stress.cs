@@ -7,22 +7,46 @@ using QuantitySystem.Quantities.BaseQuantities;
 
 namespace QuantitySystem.Quantities
 {
-    public class Stress<T> : DerivedQuantity<T>
+    public class StressVector<T> : DerivedQuantity<T>
     {
-        public Stress()
+        public StressVector()
+            : base(1, new Force<T>(), new PolarArea<T>(-1))
+        {
+        }
+
+        public StressVector(float exponent)
+            : base(exponent, new Force<T>(exponent), new PolarArea<T>(-1 * exponent))
+        {
+        }
+
+
+        public static implicit operator StressVector<T>(T value)
+        {
+            StressVector<T> Q = new StressVector<T>();
+
+            Q.Value = value;
+
+            return Q;
+        }
+
+
+    }
+    public class StressTensor<T> : DerivedQuantity<T>
+    {
+        public StressTensor()
             : base(1, new Force<T>(), new AreaRank2Tensor<T>(-1))
         {
         }
 
-        public Stress(float exponent)
+        public StressTensor(float exponent)
             : base(exponent, new Force<T>(exponent), new AreaRank2Tensor<T>(-1 * exponent))
         {
         }
 
 
-        public static implicit operator Stress<T>(T value)
+        public static implicit operator StressTensor<T>(T value)
         {
-            Stress<T> Q = new Stress<T>();
+            StressTensor<T> Q = new StressTensor<T>();
 
             Q.Value = value;
 
