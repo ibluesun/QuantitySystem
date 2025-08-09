@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Text;
 using Qs.Types;
 using Qs.Types.Attributes;
-using QsRoot;
 
 namespace Qs.Runtime
 {
@@ -114,7 +113,7 @@ namespace Qs.Runtime
                     var prop = _NamespaceType.GetProperty(name, BindingFlags.IgnoreCase | BindingFlags.Static | BindingFlags.Public);
                     if (prop != null)
                     {
-                        return Root.NativeToQsConvert(prop.GetValue(null, null));
+                        return QsMarshal.NativeToQsConvert(prop.GetValue(null, null));
                     }
 
                 }
@@ -148,7 +147,7 @@ namespace Qs.Runtime
                     var prop = _NamespaceType.GetProperty(name, BindingFlags.IgnoreCase | BindingFlags.Static | BindingFlags.Public);
                     if (prop != null)
                     {
-                        return Root.NativeToQsConvert(prop.GetValue(null, null));
+                        return QsMarshal.NativeToQsConvert(prop.GetValue(null, null));
                     }
                 }
             }
@@ -428,7 +427,7 @@ namespace Qs.Runtime
                 }
                  * */
 
-                ns = Root.GetExternalType(cls);
+                ns = QsMarshal.GetExternalType(cls);
             }
 
             return ns;
@@ -614,7 +613,7 @@ namespace Qs.Runtime
             List<Expression> statements = new List<Expression>();
 
             var qns = typeof(QsNamespace);
-            var qsys = typeof(Root);
+            var qsys = typeof(QsMarshal);
 
             var convparMethod = qsys.GetMethod("QsParametersToNativeValues", BindingFlags.Static | BindingFlags.Public);
             var NTOQ = qsys.GetMethod("NativeToQsConvert", BindingFlags.Static | BindingFlags.Public);

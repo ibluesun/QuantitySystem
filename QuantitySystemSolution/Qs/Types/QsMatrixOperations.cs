@@ -829,6 +829,23 @@ namespace Qs.Types
                 return this.Inverse;
 
 
+
+            if (operation.Equals("CoVariance", StringComparison.OrdinalIgnoreCase))
+                return this.CoVariance();
+
+
+            if (operation.Equals("SampleCoVariance", StringComparison.OrdinalIgnoreCase))
+                return this.SampleCoVariance();
+
+
+            if (operation.Equals("Correlation", StringComparison.OrdinalIgnoreCase))
+                return this.Correlation();
+
+
+            if (operation.Equals("SampleCorrelation", StringComparison.OrdinalIgnoreCase))
+                return this.SampleCorrelation();
+
+
             throw new QsException("Not implemented or Unknow method for the matrix type");
         }
     }

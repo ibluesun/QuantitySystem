@@ -139,7 +139,7 @@ codes.Add("SDG: Sudanese Pound");
 codes.Add("SEK: Swedish Krona");
 codes.Add("SGD: Singapore Dollar");
 codes.Add("SHP: Saint Helena Pound");
-codes.Add("SLL: Sierra Leonean Leone");
+
 codes.Add("SOS: Somali Shilling");
 codes.Add("SRD: Surinamese Dollar");
 codes.Add("STD: São Tomé and Príncipe Dobra");
@@ -175,6 +175,13 @@ codes.Add("ZAR: South African Rand");
 codes.Add("ZMK: Zambian Kwacha (pre-2013)");
 codes.Add("ZMW: Zambian Kwacha");
 codes.Add("ZWL: Zimbabwean Dollar");
+
+codes.Add("SLE: Sierra Leonean Leone");
+codes.Add("XCG: Caribbean Guilder");
+codes.Add("ZWG: Zimbabwean ZiG");
+
+
+
 
 
 foreach(var code in codes)

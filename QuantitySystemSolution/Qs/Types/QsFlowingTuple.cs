@@ -5,7 +5,6 @@ using System.Text;
 using PassiveFlow;
 using System.Diagnostics.Contracts;
 using ParticleLexer;
-using QsRoot;
 using System.Linq.Expressions;
 using ParticleLexer.StandardTokens;
 using Qs.Runtime;
@@ -138,7 +137,7 @@ namespace Qs.Types
         private QsValue ValueToQsValue(object value)
         {
             if (value is QsValue) return (QsValue)value;
-            else return Root.NativeToQsConvert(value);
+            else return QsMarshal.NativeToQsConvert(value);
         }
 
 
@@ -467,7 +466,36 @@ namespace Qs.Types
             int p = (int)((QsScalar)value).NumericalQuantity.Value;
             return ValueToQsValue(ThisFlow[p].Value);
         }
-        
+
+        public ValueType FromTuple(Type structType)
+        {
+            var q = Expression.New(structType);
+
+            var props = structType.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+
+            var all = from o in props
+                      where o.IsSpecialName == false && o.CanWrite == true && o.GetIndexParameters().Length == 0
+                      select o;
+
+            var svt = Activator.CreateInstance(structType);
+            // fill the available names from this tuple and 
+            foreach (var step in ThisFlow.FlowSteps)
+            {
+                var prop = all.FirstOrDefault(p => p.Name.Equals(step.Name, StringComparison.OrdinalIgnoreCase));
+
+                if (prop != null)
+                {
+                    // property exist
+
+                    prop.SetValue(svt, QsMarshal.QsToNativeConvert(prop.PropertyType, step.Value), null);
+
+                }
+            }
+
+            return (ValueType)svt;
+        }
+
+
         /// <summary>
         /// Return Tuple from C# enum.
         /// </summary>
@@ -516,7 +544,7 @@ namespace Qs.Types
                 if (StructProperty.PropertyType.IsValueType)
                     fefe[ix].SetLazyValue(StructProperty.GetValue(value, null));
                 else
-                    fefe[ix].Value = Root.NativeToQsConvert(StructProperty.GetValue(value, null));
+                    fefe[ix].Value = QsMarshal.NativeToQsConvert(StructProperty.GetValue(value, null));
                 
                 id += 10;
             }
@@ -524,32 +552,21 @@ namespace Qs.Types
             return new QsFlowingTuple(fefe);
         }
 
-        public ValueType FromTuple(Type structType)
+        public static QsFlowingTuple FromDictionary(Dictionary<string, QsValue> dictionary)
         {
-            var q = Expression.New(structType);
 
-            var props = structType.GetProperties(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Instance);
+            QsTupleValue[] fefe = new QsTupleValue[dictionary.Count];
+            string[] keys = dictionary.Keys.ToArray();
 
-            var all = from o in props
-                      where o.IsSpecialName == false && o.CanWrite == true && o.GetIndexParameters().Length == 0
-                      select o;
-
-            var svt = Activator.CreateInstance(structType);
-            // fill the available names from this tuple and 
-            foreach (var step in ThisFlow.FlowSteps)
+            for (int i = 0; i < dictionary.Count; i++)
             {
-                var prop = all.FirstOrDefault(p => p.Name.Equals(step.Name, StringComparison.OrdinalIgnoreCase));
+                fefe[i].Name = keys[i];
+                fefe[i].Value = dictionary[keys[i]];
 
-                if (prop != null)
-                {
-                    // property exist
-
-                    prop.SetValue(svt, Root.QsToNativeConvert(prop.PropertyType, step.Value), null);
-
-                }
             }
 
-            return (ValueType)svt;
+            return new QsFlowingTuple(fefe);
         }
+
     }
 }

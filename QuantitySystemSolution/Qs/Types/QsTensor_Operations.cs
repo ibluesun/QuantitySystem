@@ -26,7 +26,7 @@ namespace Qs.Types
                 var scalar = value as QsScalar;
 
                 QsTensor NewTensor = new QsTensor();
-                if (this.Order > 3)
+                if (this.Rank > 3)
                 {
                     foreach (var iTensor in this.InnerTensors)
                     {
@@ -47,9 +47,9 @@ namespace Qs.Types
             if (value is QsTensor)
             {
                 var tensor = value as QsTensor;
-                if (this.Order != (tensor.Order)) throw new QsException("Adding two different ranked tensors are not supported");
+                if (this.Rank != (tensor.Rank)) throw new QsException("Adding two different ranked tensors are not supported");
 
-                if (this.Order > 3)
+                if (this.Rank > 3)
                 {
                     QsTensor NewTensor = new QsTensor();
                     for (int i=0; i< this.InnerTensors.Count(); i++)
@@ -97,7 +97,7 @@ namespace Qs.Types
                 var scalar = value as QsScalar;
 
                 QsTensor NewTensor = new QsTensor();
-                if (this.Order > 3)
+                if (this.Rank > 3)
                 {
                     foreach (var iTensor in this.InnerTensors)
                     {
@@ -118,9 +118,9 @@ namespace Qs.Types
             if (value is QsTensor)
             {
                 var tensor = value as QsTensor;
-                if (this.Order != (tensor.Order)) throw new QsException("Adding two different ranked tensors are not supported");
+                if (this.Rank != (tensor.Rank)) throw new QsException("Adding two different ranked tensors are not supported");
 
-                if (this.Order > 3)
+                if (this.Rank > 3)
                 {
                     QsTensor NewTensor = new QsTensor();
                     for (int i = 0; i < this.InnerTensors.Count(); i++)
@@ -168,7 +168,7 @@ namespace Qs.Types
                 var scalar = (QsScalar)value;
 
                 QsTensor NewTensor = new QsTensor();
-                if (this.Order > 3)
+                if (this.Rank > 3)
                 {
                     foreach (var iTensor in this.InnerTensors)
                     {
@@ -190,14 +190,14 @@ namespace Qs.Types
             if (value is QsTensor)
             {
                 var tensor = (QsTensor) value;
-                if (this.Order == 1 && tensor.Order == 1)
+                if (this.Rank == 1 && tensor.Rank == 1)
                 {
                     var thisVec = this[0][0];
                     var thatVec = tensor[0][0];
                     var result = (QsMatrix)thisVec.TensorProductOperation(thatVec);
                     return new QsTensor(result);
                 }
-                if (this.Order == 2 && tensor.Order <= 2)
+                if (this.Rank == 2 && tensor.Rank <= 2)
                 {
                     //tenosrial product of two matrices will result in another matrix also.
                     QsMatrix result = (QsMatrix)this.MatrixLayers[0].TensorProductOperation(tensor.MatrixLayers[0]);
@@ -263,7 +263,7 @@ namespace Qs.Types
         {
             if (value is QsTensor ts)
             {
-                if (this.Order != ts.Order) return false;
+                if (this.Rank != ts.Rank) return false;
                 if (!object.ReferenceEquals(ts, this))
                 {
 
@@ -320,13 +320,13 @@ namespace Qs.Types
             
             if (tensor == null) throw new QsException("Must be a tensor for scalar product");
 
-            if (this.Order > 3)
+            if (this.Rank > 3)
             {
                 throw new NotImplementedException();
             }
-            else if (this.Order == 1)
+            else if (this.Rank == 1)
             {
-                if (tensor.Order == 1)
+                if (tensor.Rank == 1)
                 {
                     var thisVec = this[0][0];
                     var thatVec = tensor[0][0];
@@ -334,7 +334,7 @@ namespace Qs.Types
                     return new QsTensor(new QsMatrix(new QsVector(result)));
                 }
             }
-            else if (this.Order == 2)
+            else if (this.Rank == 2)
             {
                 // only for tensors that looks like matrix.
 
@@ -399,7 +399,7 @@ namespace Qs.Types
 
             for (int ix = 0; ix < indices.Length; ix++) indices[ix] = (int)((QsScalar)allIndices[ix].QsNativeValue).NumericalQuantity.Value;                
 
-            int dr = this.Order - indices.Count();
+            int dr = this.Rank - indices.Count();
             if (dr < 0)
             {
                 throw new QsException("Indices count exceed the tensor rank, only specify indices to the same rank to get scalar, or less to get vectors to tensors");
@@ -411,11 +411,11 @@ namespace Qs.Types
             else if (dr == 1)
             {
                 // return vector
-                if (this.Order == 2)
+                if (this.Rank == 2)
                 {
                     return this[0][indices[0]];
                 }
-                else if (this.Order == 3)
+                else if (this.Rank == 3)
                 {
                     return this[indices[0]][indices[1]];
                 }
@@ -437,7 +437,7 @@ namespace Qs.Types
             else if (dr == 2)
             {
                 // return matrix;
-                if (this.Order == 2)
+                if (this.Rank == 2)
                 {
                     return this[indices[0]];
                 }

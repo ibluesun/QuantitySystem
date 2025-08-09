@@ -818,6 +818,12 @@ namespace Qs.Types
             if (expression.TokenValue.Equals("median", StringComparison.OrdinalIgnoreCase))
                 return this.Median();
 
+            if (expression.TokenValue.Equals("min", StringComparison.OrdinalIgnoreCase) || expression.TokenValue.Equals("Minimum", StringComparison.OrdinalIgnoreCase))
+                return this.Minimum();
+
+            if (expression.TokenValue.Equals("max", StringComparison.OrdinalIgnoreCase) || expression.TokenValue.Equals("Maximum", StringComparison.OrdinalIgnoreCase))
+                return this.Maximum();
+
             if (expression.TokenValue.Equals("range", StringComparison.OrdinalIgnoreCase))
                 return this.Range();
 
@@ -827,6 +833,46 @@ namespace Qs.Types
             if (expression.TokenValue.Equals("mode", StringComparison.OrdinalIgnoreCase))
                 return this.Mode();
 
+            if (expression.TokenValue.Equals("LH", StringComparison.OrdinalIgnoreCase) || expression.TokenValue.Equals("LowerHalf", StringComparison.OrdinalIgnoreCase))
+                return this.LowerHalf();
+
+            if (expression.TokenValue.Equals("UH", StringComparison.OrdinalIgnoreCase) || expression.TokenValue.Equals("UpperHalf", StringComparison.OrdinalIgnoreCase))
+                return this.UpperHalf();
+
+            if (expression.TokenValue.Equals("Q0", StringComparison.OrdinalIgnoreCase))
+                return this.Minimum();
+
+            if (expression.TokenValue.Equals("Q1", StringComparison.OrdinalIgnoreCase))
+                return this.Q1();
+
+            if (expression.TokenValue.Equals("Q3", StringComparison.OrdinalIgnoreCase))
+                return this.Q3();
+
+            if (expression.TokenValue.Equals("Q4", StringComparison.OrdinalIgnoreCase))
+                return this.Maximum();
+
+            if (expression.TokenValue.Equals("IQR", StringComparison.OrdinalIgnoreCase))
+                return this.InterquartileRange();
+
+
+            if (expression.TokenValue.Equals("VarianceVector", StringComparison.OrdinalIgnoreCase) || expression.TokenValue.Equals("vv", StringComparison.OrdinalIgnoreCase))
+                return this.VarianceVector() ;
+
+            if (expression.TokenValue.Equals("Variance", StringComparison.OrdinalIgnoreCase))
+                return this.Variance();
+
+            if (expression.TokenValue.Equals("SampleVariance", StringComparison.OrdinalIgnoreCase))
+                return this.SampleVariance();
+
+
+            if (expression.TokenValue.Equals("SampleStandardDeviation", StringComparison.OrdinalIgnoreCase) || expression.TokenValue.Equals("StDev", StringComparison.OrdinalIgnoreCase))
+                return this.SampleStandardDeviation();
+
+            if (expression.TokenValue.Equals("StandardDeviation", StringComparison.OrdinalIgnoreCase) || expression.TokenValue.Equals("StD", StringComparison.OrdinalIgnoreCase))
+                return this.StandardDeviation();
+
+            if (expression.TokenValue.Equals("Statistics", StringComparison.OrdinalIgnoreCase) || expression.TokenValue.Equals("Stats", StringComparison.OrdinalIgnoreCase))
+                return this.CurrentStatistics();
 
 
 

@@ -29,6 +29,8 @@ namespace Qs.Types
             List<QsVector> copiedVectors = new List<QsVector>();
             foreach (var v in vectors) copiedVectors.Add(QsVector.CopyVector(v));
             Rows.AddRange(copiedVectors);
+
+            ClearCache();
         }
 
         /// <summary>
@@ -38,6 +40,8 @@ namespace Qs.Types
         public void AddVector(QsVector vector)
         {
             Rows.Add(QsVector.CopyVector(vector));
+
+            ClearCache();
         }
 
         /// <summary>
@@ -56,6 +60,8 @@ namespace Qs.Types
         public void AddVectors(params QsVector[] vectors)
         {
             Rows.AddRange(vectors);
+
+            ClearCache();
         }
 
         /// <summary>
@@ -77,6 +83,8 @@ namespace Qs.Types
             vec.AddComponents(row);
 
             Rows.Add(vec);
+
+            ClearCache();
         }
 
         /// <summary>
@@ -110,6 +118,8 @@ namespace Qs.Types
                     AddRow(q);
                 }
             }
+
+            ClearCache();
         }
 
         /// <summary>
@@ -208,6 +218,7 @@ namespace Qs.Types
 
                     Total.AddRow(row.ToArray());
                 }
+
                 return Total;
             }
             else
@@ -569,11 +580,22 @@ namespace Qs.Types
             }
         }
 
+        public override string SizeText {
+            get
+            {
+                if(RowsCount == 1)
+                    return ColumnsCount.ToString();
+                else 
+                    return $"{RowsCount}x{ColumnsCount}";
+            }
+        } 
+
+
         public override string ToString()
         {
 
             StringBuilder sb = new StringBuilder();
-            sb.Append("QsMatrix:");
+            sb.Append($"QsMatrix[{SizeText}]:");
             sb.AppendLine();
 
             sb.Append(MatrixText);

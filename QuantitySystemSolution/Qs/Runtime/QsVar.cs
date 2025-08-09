@@ -12,7 +12,6 @@ using Qs.Runtime.Operators;
 using Qs.Types;
 using SymbolicAlgebra;
 using Qs.Types.Operators;
-using QsRoot;
 using ParticleLexer.CommonTokens;
 
 
@@ -1143,7 +1142,7 @@ namespace Qs.Runtime
             discoveredType = Root.GetInternalType(cls);
 #else
             discoveredType = Type.GetType(cls, false);
-            if (discoveredType == null) discoveredType = Root.GetExternalType(cls);
+            if (discoveredType == null) discoveredType = QsMarshal.GetExternalType(cls);
 #endif
 
             if (discoveredType == null) throw new QsException(string.Format("[{0}] type doesn't exist.", cls));
@@ -1173,7 +1172,7 @@ namespace Qs.Runtime
                         // we have to check the corresponding parameter type to make convertion if needed.
                         Type targetType = d_ctor_params[ctorArgIndex].ParameterType;
 
-                        var exprArg = Expression.Convert(Root.QsToNativeConvert(targetType, expr)
+                        var exprArg = Expression.Convert(QsMarshal.QsToNativeConvert(targetType, expr)
                             , targetType);
                         Arguments.Add(exprArg);
                         ctorArgIndex++;

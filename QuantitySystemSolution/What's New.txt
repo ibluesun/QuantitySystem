@@ -1,3 +1,11 @@
+[Qs 1.7.6]
+- Continued the statistics properties of the QsMatrix with 2 columns 
+	CoVariance, and Correlation
+
+[Qs 1.7.5]
+- Continued the statistics properties of the QsVector 
+	Variance, and Standard Deviation
+
 [Qs 1.7.4]
 - QsReference  now is storing the expression of the calculation for a deferred calculation
 	this is essential because I wanted to make it evaluate itself each time it is being called 

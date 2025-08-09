@@ -68,7 +68,7 @@ namespace Qs.Scripting
                     {
                         // this is a directive
                         var dir = line.TrimStart();                       
-                        QsRoot.Root.LoadLibrary(dir.Substring(8).Trim());
+                        QsMarshal.LoadLibrary(dir.Substring(8).Trim());
                     }
                     else if (!line.StartsWith("#"))
                     {

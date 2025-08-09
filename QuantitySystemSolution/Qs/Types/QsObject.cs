@@ -5,8 +5,7 @@ using System.Linq.Expressions;
 using System.Reflection;
 using ParticleLexer;
 using ParticleLexer.StandardTokens;
-using QsRoot;
-
+using Qs.Runtime;
 
 namespace Qs.Types
 {
@@ -80,7 +79,7 @@ namespace Qs.Types
                         // we have to check the corresponding parameter type to make convertion if needed.
                         Type targetType = d_method_params[ix].ParameterType;
 
-                        Arguments.Add(Root.QsToNativeConvert(targetType, expr));
+                        Arguments.Add(QsMarshal.QsToNativeConvert(targetType, expr));
                         ix++;
                     }
                 }
@@ -105,7 +104,7 @@ namespace Qs.Types
                 else
                 {
                     // determine the return type to conver it into suitable QsValue
-                    var mi = typeof(Root).GetMethod("NativeToQsConvert", System.Reflection.BindingFlags.IgnoreCase| System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+                    var mi = typeof(QsMarshal).GetMethod("NativeToQsConvert", System.Reflection.BindingFlags.IgnoreCase| System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
                     ResultExpression = Expression.Call(mi, Expression.Convert(ResultExpression, typeof(object)));
 
                     Expression<Func<QsValue>> cq = Expression.Lambda<Func<QsValue>>(ResultExpression);
@@ -123,7 +122,7 @@ namespace Qs.Types
                 // property access.
                ResultExpression =  Expression.Property(Expression.Constant(_NativeObject), expression.TokenValue);
 
-               var mi = typeof(Root).GetMethod("NativeToQsConvert", System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
+               var mi = typeof(QsMarshal).GetMethod("NativeToQsConvert", System.Reflection.BindingFlags.IgnoreCase | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static);
                ResultExpression = Expression.Call(mi, Expression.Convert(ResultExpression, typeof(object)));
 
 
@@ -147,7 +146,7 @@ namespace Qs.Types
         {
             var pi = InstanceType.GetProperty(propertyName, System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.IgnoreCase);
 
-            var vc = Root.QsToNativeConvert(pi.PropertyType, value);
+            var vc = QsMarshal.QsToNativeConvert(pi.PropertyType, value);
 
             pi.SetValue(_NativeObject, vc, null);
         }
@@ -172,7 +171,7 @@ namespace Qs.Types
             if (pi.PropertyType.IsArray)
             {
                 Array array = (Array)pi.GetValue(_NativeObject, null);
-                return QsRoot.Root.NativeToQsConvert(array.GetValue((int)indices[0]));
+                return QsMarshal.NativeToQsConvert(array.GetValue((int)indices[0]));
             }
             else if (pi.GetIndexParameters().Length > 0)
             {
@@ -194,7 +193,7 @@ namespace Qs.Types
         {
             var pi = GetPropertyInfo(propertyName);
 
-            return Root.NativeToQsConvert(pi.GetValue(_NativeObject, indices));
+            return QsMarshal.NativeToQsConvert(pi.GetValue(_NativeObject, indices));
         }
 
         public QsValue GetProperty(string propertyName)
@@ -502,9 +501,9 @@ namespace Qs.Types
 
             
 
-            var r = Root.QsParametersToNativeValues(pi.GetGetMethod(), indices);
+            var r = QsMarshal.QsParametersToNativeValues(pi.GetGetMethod(), indices);
 
-            return Root.NativeToQsConvert(pi.GetValue(_NativeObject, r));   
+            return QsMarshal.NativeToQsConvert(pi.GetValue(_NativeObject, r));   
         }
 
         public override void SetIndexedItem(QsParameter[] indices, QsValue value)
@@ -514,9 +513,9 @@ namespace Qs.Types
                 );
             var gs = pi.GetSetMethod();
 
-            var r = Root.QsParametersToNativeValues(gs, indices);
+            var r = QsMarshal.QsParametersToNativeValues(gs, indices);
 
-            var nativeValue = Root.QsToNativeConvert(pi.PropertyType, value);
+            var nativeValue = QsMarshal.QsToNativeConvert(pi.PropertyType, value);
 
             pi.SetValue(_NativeObject, nativeValue, r);
         }

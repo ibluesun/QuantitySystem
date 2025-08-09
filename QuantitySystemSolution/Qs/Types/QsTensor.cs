@@ -31,7 +31,7 @@ namespace Qs.Types
         /// Returns the current Rank (Order) of this Tensor.
         /// Rank (Order) of Tensor is different than Rank of matrix :S
         /// </summary>
-        public int Order
+        public int Rank
         {
             get
             {
@@ -62,7 +62,7 @@ namespace Qs.Types
                     // inner tensors do exist
                     // make recursive call to obtain the tensor rank
 
-                    int rank = this.InnerTensors[0].Order;
+                    int rank = this.InnerTensors[0].Rank;
 
                     return rank + 1;
                 }
@@ -114,7 +114,7 @@ namespace Qs.Types
         /// <param name="qsTensor"></param>
         public void AddInnerTensor(QsTensor qsTensor)
         {
-            if (qsTensor.Order == 0)
+            if (qsTensor.Rank == 0)
             {
                 if (MatrixLayers.Count == 0)
                 {
@@ -128,7 +128,7 @@ namespace Qs.Types
                     MatrixLayers[0].Rows[0].AddComponent(qsTensor.MatrixLayers[0][0, 0]);
                 }
             }
-            else if (qsTensor.Order == 1)
+            else if (qsTensor.Rank == 1)
             {
                 if (MatrixLayers.Count == 0)
                 {
@@ -150,7 +150,7 @@ namespace Qs.Types
                     MatrixLayers[0].AddVector(v);
                 }
             }
-            else if (qsTensor.Order == 2)
+            else if (qsTensor.Rank == 2)
             {
                 var matrix = QsMatrix.CopyMatrix(qsTensor.MatrixLayers[0]);
 
@@ -241,9 +241,9 @@ namespace Qs.Types
         /// <returns></returns>
         public QsScalar GetScalar(params int[] indices)
         {
-            if (indices.Count() != this.Order)
+            if (indices.Count() != this.Rank)
             {
-                throw new QsException("Indices number (" + indices.Length.ToString() + ") doesn't equal the tensor rank (" + this.Order.ToString() + ") (remember that you are getting a scalar)");
+                throw new QsException("Indices number (" + indices.Length.ToString() + ") doesn't equal the tensor rank (" + this.Rank.ToString() + ") (remember that you are getting a scalar)");
             }
             else
             {
@@ -283,17 +283,33 @@ namespace Qs.Types
             }
         }
 
+        public override string SizeText
+        {
+            get
+            {
+                if (InnerTensors == null)
+                {
+                    if (MatrixLayers.Count == 1)
+                        return $"{MatrixLayers[0].SizeText}";
+                    else
+                        return $"{MatrixLayers.Count}x{MatrixLayers[0].SizeText}";
+                }
+                else
+                    return $"{InnerTensors.Count}x{InnerTensors[0].SizeText}";
+            }
+        }
+
         public override string ToString()
         {
             StringBuilder sb = new StringBuilder();
-            string rankText = Order.ToString();
-            if (Order == 0) rankText += "th";
-            if (Order == 1) rankText += "st";
-            if (Order == 2) rankText += "nd";
-            if (Order == 3) rankText += "rd";
-            if (Order > 3) rankText += "th";
+            string rankText = Rank.ToString();
+            if (Rank == 0) rankText += "th";
+            if (Rank == 1) rankText += "st";
+            if (Rank == 2) rankText += "nd";
+            if (Rank == 3) rankText += "rd";
+            if (Rank > 3) rankText += "th";
 
-            sb.Append("QsTensor: " + rankText + " Order");
+            sb.Append($"QsTensor[{SizeText}]: " + rankText + " Rank");
             sb.AppendLine();
 
             foreach (var mat in MatrixLayers)
@@ -307,14 +323,14 @@ namespace Qs.Types
         public override string ToShortString()
         {
             StringBuilder sb = new StringBuilder();
-            string rankText = Order.ToString();
-            if (Order == 0) rankText += "th";
-            if (Order == 1) rankText += "st";
-            if (Order == 2) rankText += "nd";
-            if (Order == 3) rankText += "rd";
-            if (Order > 3) rankText += "th";
+            string rankText = Rank.ToString();
+            if (Rank == 0) rankText += "th";
+            if (Rank == 1) rankText += "st";
+            if (Rank == 2) rankText += "nd";
+            if (Rank == 3) rankText += "rd";
+            if (Rank > 3) rankText += "th";
 
-            sb.Append("QsTensor: " + rankText + " Order");
+            sb.Append("QsTensor: " + rankText + " Rank");
 
             return sb.ToString();
         }

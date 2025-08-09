@@ -6,16 +6,19 @@ using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
 using Qs.Runtime;
 using System.Xml.Schema;
+using System.Globalization;
 
 namespace Qs.Types
 {
-    public partial class QsVector: QsValue, IEnumerable<QsScalar>
+    public partial class QsVector : QsValue, IEnumerable<QsScalar>
     {
 
         /// <summary>
         /// for storing the quantities.
         /// </summary>
         private List<QsScalar> ListStorage;
+
+
 
 
         #region constructors
@@ -25,10 +28,10 @@ namespace Qs.Types
             ListStorage = new List<QsScalar>();
         }
 
-        public QsVector(int count)            
+        public QsVector(int count)
         {
             ListStorage = new List<QsScalar>(count);
-            
+
         }
 
         public QsVector(params QsScalar[] scalars)
@@ -98,169 +101,18 @@ namespace Qs.Types
         /// <returns></returns>
         public QsScalar Sum()
         {
-            QsScalar total = this[0];
-            for (int i = 1; i < ListStorage.Count; i++) total = total + this[i];
-            return total;
-        }
-
-        public QsScalar Mean()
-        {   
-            var total  = this.Sum().DivideScalar(Count.ToQuantity().ToScalar());
-            return total;
-        }
-
-        QsVector _AscendedVector = null;
-
-        public QsVector AscendedVecor
-        {
-            get
+            if (!Statistics.ContainsKey("sum"))
             {
-                if (_AscendedVector == null)
-                {
-                    var ordered = ListStorage.OrderBy(v => v, new QsValueComparer());
-
-                    _AscendedVector = new QsVector(ordered.ToArray());
-
-                }
-                return _AscendedVector;
+                QsScalar total = this[0];
+                for (int i = 1; i < ListStorage.Count; i++) total = total + this[i];
+                Statistics["sum"] = total;
             }
 
-        }
-
-        QsVector _DescendedVector = null;
-        public QsVector DescendedVector
-        {
-            get
-            {
-                if (_DescendedVector == null)
-                {
-                    var ordered = ListStorage.OrderByDescending(v => v, new QsValueComparer());
-
-                    _DescendedVector = new QsVector(ordered.ToArray());
-
-                }
-                return _DescendedVector;
-            }
-        }
-
-        /// <summary>
-        /// arranged data in ascending order .. it gives the middle value of odd elements count or the average of the two middle values of even elements count
-        /// </summary>
-        /// <returns></returns>
-        public QsScalar Median()
-        {
-            var ao = AscendedVecor;
-            Math.DivRem(ao.Count, 2, out var rm);
-            if (rm == 0)
-            {
-                // even number  so we take the average of the inner ones  
-                var aoc = ao.Count / 2;
-
-                var twos = ao[aoc - 1].AddScalar(ao[aoc]);
-
-                var result = twos.DivideScalar(((double)2).ToQuantity().ToScalar());
-                return result;
-            }
-            else
-            {
-                var aoc = (int)Math.Floor(ao.Count / 2.0);
-
-                var result = ao[aoc];
-
-                return result;
-
-            }
+            return (QsScalar)Statistics["sum"];
         }
 
 
-        /// <summary>
-        /// Minimum and maximum values of the vector
-        /// </summary>
-        /// <returns></returns>
-        public QsFlowingTuple Range()
-        {
-            QsFlowingTuple q = new QsFlowingTuple();
-            q.AddTupleValue(AscendedVecor[0]);
-            q.AddTupleValue(AscendedVecor[AscendedVecor.Count - 1]);
-            return q;
-        }
-
-
-        QsValue _Mode = null;
-
-        public QsFlowingTuple Frequency()
-        {
-
-            List<(QsValue, int)> values = new List<(QsValue, int)>();
-
-            
-            for (int ix = 0; ix < AscendedVecor.Count; ix++)
-            {
-                int ix_freq = 1;
-
-                bool last = true;
-                for (int iy = ix + 1; iy < AscendedVecor.Count; iy++)
-                {
-                    if (AscendedVecor[ix].Equality(AscendedVecor[iy]))
-                        ix_freq++;
-                    else
-                    {
-                        
-                        values.Add((AscendedVecor[ix], ix_freq));
-                        
-
-                        ix = iy - 1;
-                        
-                        last = false;
-                        break;
-                    }
-                }
-
-                if (last)
-                {
-                    values.Add((AscendedVecor[ix], ix_freq));
-                    break;
-                }
-            }
-
-            var vvdodesc = values.OrderByDescending(v => v.Item2).ToArray();
-
-            if (vvdodesc.Length == 0) _Mode = new QsText("No Mode");
-            if (vvdodesc.Length == 1) _Mode = vvdodesc[0].Item1;
-
-            if (vvdodesc.Length == 2 && vvdodesc[0].Item2 > vvdodesc[1].Item2)
-                _Mode = vvdodesc[0].Item1;
-            else
-                _Mode = new QsText("No Mode");
-
-            if (vvdodesc.Length > 2)
-            {
-                if (vvdodesc[0].Item2 == vvdodesc[1].Item2 &&  vvdodesc[1].Item2 == vvdodesc[2].Item2) _Mode = new QsText("No Mode");
-                else if (vvdodesc[0].Item2 == vvdodesc[1].Item2) _Mode = new QsText($"Bi-Modal ({vvdodesc[0].Item1.ToShortString()}, {vvdodesc[1].Item1.ToShortString()})");
-                else if (vvdodesc[0].Item2 > vvdodesc[1].Item2) _Mode = vvdodesc[0].Item1;
-                else
-                    _Mode = new QsText("No Mode");
-
-                
-            }
-            
-
-            
-
-
-            var vvd = vvdodesc.Select(x => new QsTupleValue(x.Item1.ToValueString(), x.Item2.ToScalarValue())).ToArray();
-            return new QsFlowingTuple(vvd);
-        }
-
-
-        public QsValue Mode()
-        {
-            if (_Mode == null)
-                Frequency();
-
-            return _Mode;
-            
-        }
+        
 
         #region Vector behaviour
         public int Count => ListStorage.Count;
@@ -291,6 +143,14 @@ namespace Qs.Types
             {
                 if (Count == 1) return true;
                 else return false;
+            }
+        }
+
+        public override string SizeText
+        {
+            get
+            {
+                return Count.ToString(CultureInfo.InvariantCulture);
             }
         }
 
@@ -381,11 +241,5 @@ namespace Qs.Types
         }
 
 
-        protected override void OnClearCache()
-        {
-            _AscendedVector = null;
-            _DescendedVector = null;
-            _Mode = null;
-        }
     }
 }

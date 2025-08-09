@@ -12,7 +12,6 @@ using QuantitySystem.Quantities.BaseQuantities;
 using QuantitySystem.Units;
 using System.Text;
 using System.Linq.Expressions;
-using QsRoot;
 using System.Globalization;
 
 
@@ -1051,7 +1050,7 @@ namespace Qs.Runtime
                                             Type InsidePropertyObjectType = InsidePropertyAsObject.GetType();
                                             PropertyInfo IndexerProperty = InsidePropertyObjectType.GetProperty("Item");
 
-                                            var nativeValue = Root.QsToNativeConvert(IndexerProperty.PropertyType, qvResult);
+                                            var nativeValue = QsMarshal.QsToNativeConvert(IndexerProperty.PropertyType, qvResult);
                                             IndexerProperty.SetValue(InsidePropertyAsObject
                                                 , nativeValue
                                                 , new object[] { ParentPropertyInfoIndexer.Value }
@@ -1249,7 +1248,7 @@ namespace Qs.Runtime
                         {
                             // convert enum into Flowing Tuple and return it.
                             
-                            return QsRoot.Root.NativeToQsConvert(t);
+                            return QsMarshal.NativeToQsConvert(t);
                         }
                     }
 

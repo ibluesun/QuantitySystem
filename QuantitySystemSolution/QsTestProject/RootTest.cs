@@ -1,9 +1,9 @@
-﻿using QsRoot;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
+﻿using Microsoft.VisualStudio.TestTools.UnitTesting;
 using System;
 using Qs.Types;
 using QuantitySystem.Units;
 using Qs;
+using Qs.Runtime;
 
 namespace QsTestProject
 {
@@ -74,11 +74,11 @@ namespace QsTestProject
         public void NativeToQsConvertTest()
         {
 
-            var actual = Root.NativeToQsConvert(3);
+            var actual = QsMarshal.NativeToQsConvert(3);
             Assert.AreEqual(typeof(QsScalar), actual.GetType());
 
 
-            actual = Root.NativeToQsConvert(new Bird[] { new Bird(), new Bird(), new Bird(), new Bird(), new Bird() });
+            actual = QsMarshal.NativeToQsConvert(new Bird[] { new Bird(), new Bird(), new Bird(), new Bird(), new Bird() });
 
             Assert.AreEqual(typeof(QsFlowingTuple), actual.GetType());
 

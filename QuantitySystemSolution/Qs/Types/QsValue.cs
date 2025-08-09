@@ -614,5 +614,8 @@ namespace Qs.Types
         {
             OnClearCache();
         }
+
+
+        public virtual string SizeText => "QsValue Size";
     }
 }
